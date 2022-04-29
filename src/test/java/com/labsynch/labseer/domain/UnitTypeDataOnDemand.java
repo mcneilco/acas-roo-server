@@ -16,17 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class UnitTypeDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<UnitType> data;
+    private List<UnitType> data;
 
-	public UnitType getNewTransientUnitType(int index) {
+    public UnitType getNewTransientUnitType(int index) {
         UnitType obj = new UnitType();
         setTypeName(obj, index);
         return obj;
     }
 
-	public void setTypeName(UnitType obj, int index) {
+    public void setTypeName(UnitType obj, int index) {
         String typeName = "typeName_" + index;
         if (typeName.length() > 64) {
             typeName = new Random().nextInt(10) + typeName.substring(1, 64);
@@ -34,7 +34,7 @@ public class UnitTypeDataOnDemand {
         obj.setTypeName(typeName);
     }
 
-	public UnitType getSpecificUnitType(int index) {
+    public UnitType getSpecificUnitType(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -47,18 +47,18 @@ public class UnitTypeDataOnDemand {
         return UnitType.findUnitType(id);
     }
 
-	public UnitType getRandomUnitType() {
+    public UnitType getRandomUnitType() {
         init();
         UnitType obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return UnitType.findUnitType(id);
     }
 
-	public boolean modifyUnitType(UnitType obj) {
+    public boolean modifyUnitType(UnitType obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = UnitType.findUnitTypeEntries(from, to);
@@ -68,7 +68,7 @@ public class UnitTypeDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<UnitType>();
         for (int i = 0; i < 10; i++) {
             UnitType obj = getNewTransientUnitType(i);
@@ -78,7 +78,9 @@ public class UnitTypeDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

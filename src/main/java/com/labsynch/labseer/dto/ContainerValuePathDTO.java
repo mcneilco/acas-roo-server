@@ -12,93 +12,92 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ContainerValuePathDTO {
 
-	public ContainerValuePathDTO() {
-	}
-
-	private String idOrCodeName;
-
-	private String stateType;
-	
-	private String stateKind;
-	
-	private String valueType;
-	
-	private String valueKind;
-	
-	private Collection<ContainerValue> values;
-	
-	public String toJson() {
-        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
-	
-	public static String toJsonArray(Collection<ContainerValuePathDTO> collection) {
-        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+    public ContainerValuePathDTO() {
     }
 
-	public String toString() {
+    private String idOrCodeName;
+
+    private String stateType;
+
+    private String stateKind;
+
+    private String valueType;
+
+    private String valueKind;
+
+    private Collection<ContainerValue> values;
+
+    public String toJson() {
+        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class)
+                .serialize(this);
+    }
+
+    public static String toJsonArray(Collection<ContainerValuePathDTO> collection) {
+        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class)
+                .serialize(collection);
+    }
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String getIdOrCodeName() {
+    public String getIdOrCodeName() {
         return this.idOrCodeName;
     }
 
-	public void setIdOrCodeName(String idOrCodeName) {
+    public void setIdOrCodeName(String idOrCodeName) {
         this.idOrCodeName = idOrCodeName;
     }
 
-	public String getStateType() {
+    public String getStateType() {
         return this.stateType;
     }
 
-	public void setStateType(String stateType) {
+    public void setStateType(String stateType) {
         this.stateType = stateType;
     }
 
-	public String getStateKind() {
+    public String getStateKind() {
         return this.stateKind;
     }
 
-	public void setStateKind(String stateKind) {
+    public void setStateKind(String stateKind) {
         this.stateKind = stateKind;
     }
 
-	public String getValueType() {
+    public String getValueType() {
         return this.valueType;
     }
 
-	public void setValueType(String valueType) {
+    public void setValueType(String valueType) {
         this.valueType = valueType;
     }
 
-	public String getValueKind() {
+    public String getValueKind() {
         return this.valueKind;
     }
 
-	public void setValueKind(String valueKind) {
+    public void setValueKind(String valueKind) {
         this.valueKind = valueKind;
     }
 
-	public Collection<ContainerValue> getValues() {
+    public Collection<ContainerValue> getValues() {
         return this.values;
     }
 
-	public void setValues(Collection<ContainerValue> values) {
+    public void setValues(Collection<ContainerValue> values) {
         this.values = values;
     }
 
-	public static ContainerValuePathDTO fromJsonToContainerValuePathDTO(String json) {
+    public static ContainerValuePathDTO fromJsonToContainerValuePathDTO(String json) {
         return new JSONDeserializer<ContainerValuePathDTO>()
-        .use(null, ContainerValuePathDTO.class).deserialize(json);
+                .use(null, ContainerValuePathDTO.class).deserialize(json);
     }
 
-	public static Collection<ContainerValuePathDTO> fromJsonArrayToCoes(String json) {
+    public static Collection<ContainerValuePathDTO> fromJsonArrayToCoes(String json) {
         return new JSONDeserializer<List<ContainerValuePathDTO>>()
-        .use("values", ContainerValuePathDTO.class).deserialize(json);
+                .use("values", ContainerValuePathDTO.class).deserialize(json);
     }
 }
-
-

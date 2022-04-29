@@ -9,85 +9,82 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ChangePasswordDTO {
-	
-	private String username;
-	
-	private String oldPassword;
-	
-	private String newPassword;
-	
-	private String newPasswordAgain;
-	
-	public ChangePasswordDTO(){
-	}
 
-	public String getUsername() {
+    private String username;
+
+    private String oldPassword;
+
+    private String newPassword;
+
+    private String newPasswordAgain;
+
+    public ChangePasswordDTO() {
+    }
+
+    public String getUsername() {
         return this.username;
     }
 
-	public void setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-	public String getOldPassword() {
+    public String getOldPassword() {
         return this.oldPassword;
     }
 
-	public void setOldPassword(String oldPassword) {
+    public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
     }
 
-	public String getNewPassword() {
+    public String getNewPassword() {
         return this.newPassword;
     }
 
-	public void setNewPassword(String newPassword) {
+    public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
 
-	public String getNewPasswordAgain() {
+    public String getNewPasswordAgain() {
         return this.newPasswordAgain;
     }
 
-	public void setNewPasswordAgain(String newPasswordAgain) {
+    public void setNewPasswordAgain(String newPasswordAgain) {
         this.newPasswordAgain = newPasswordAgain;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static ChangePasswordDTO fromJsonToChangePasswordDTO(String json) {
+    public static ChangePasswordDTO fromJsonToChangePasswordDTO(String json) {
         return new JSONDeserializer<ChangePasswordDTO>()
-        .use(null, ChangePasswordDTO.class).deserialize(json);
+                .use(null, ChangePasswordDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<ChangePasswordDTO> collection) {
+    public static String toJsonArray(Collection<ChangePasswordDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<ChangePasswordDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<ChangePasswordDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<ChangePasswordDTO> fromJsonArrayToChangePasswoes(String json) {
+    public static Collection<ChangePasswordDTO> fromJsonArrayToChangePasswoes(String json) {
         return new JSONDeserializer<List<ChangePasswordDTO>>()
-        .use("values", ChangePasswordDTO.class).deserialize(json);
+                .use("values", ChangePasswordDTO.class).deserialize(json);
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
-
-

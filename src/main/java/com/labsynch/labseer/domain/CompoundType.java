@@ -27,101 +27,105 @@ import flexjson.JSONSerializer;
 
 public class CompoundType {
 
-	@NotNull
+    @NotNull
     private String code;
-    
+
     @NotNull
     private String name;
-    
-    private Integer displayOrder;
-    
-    private String comment;
-    
 
-	public String getCode() {
+    private Integer displayOrder;
+
+    private String comment;
+
+    public String getCode() {
         return this.code;
     }
 
-	public void setCode(String code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
-	public String getName() {
+    public String getName() {
         return this.name;
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-	public Integer getDisplayOrder() {
+    public Integer getDisplayOrder() {
         return this.displayOrder;
     }
 
-	public void setDisplayOrder(Integer displayOrder) {
+    public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
     }
 
-	public String getComment() {
+    public String getComment() {
         return this.comment;
     }
 
-	public void setComment(String comment) {
+    public void setComment(String comment) {
         this.comment = comment;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static CompoundType fromJsonToCompoundType(String json) {
+    public static CompoundType fromJsonToCompoundType(String json) {
         return new JSONDeserializer<CompoundType>()
-        .use(null, CompoundType.class).deserialize(json);
+                .use(null, CompoundType.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<CompoundType> collection) {
+    public static String toJsonArray(Collection<CompoundType> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<CompoundType> collection, String[] fields) {
+    public static String toJsonArray(Collection<CompoundType> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<CompoundType> fromJsonArrayToCompoundTypes(String json) {
+    public static Collection<CompoundType> fromJsonArrayToCompoundTypes(String json) {
         return new JSONDeserializer<List<CompoundType>>()
-        .use("values", CompoundType.class).deserialize(json);
+                .use("values", CompoundType.class).deserialize(json);
     }
 
-	public static Long countFindCompoundTypesByCodeEquals(String code) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static Long countFindCompoundTypesByCodeEquals(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         EntityManager em = CompoundType.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CompoundType AS o WHERE o.code = :code", Long.class);
         q.setParameter("code", code);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<CompoundType> findCompoundTypesByCodeEquals(String code) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static TypedQuery<CompoundType> findCompoundTypesByCodeEquals(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         EntityManager em = CompoundType.entityManager();
-        TypedQuery<CompoundType> q = em.createQuery("SELECT o FROM CompoundType AS o WHERE o.code = :code", CompoundType.class);
+        TypedQuery<CompoundType> q = em.createQuery("SELECT o FROM CompoundType AS o WHERE o.code = :code",
+                CompoundType.class);
         q.setParameter("code", code);
         return q;
     }
 
-	public static TypedQuery<CompoundType> findCompoundTypesByCodeEquals(String code, String sortFieldName, String sortOrder) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static TypedQuery<CompoundType> findCompoundTypesByCodeEquals(String code, String sortFieldName,
+            String sortOrder) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         EntityManager em = CompoundType.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CompoundType AS o WHERE o.code = :code");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -135,26 +139,29 @@ public class CompoundType {
         return q;
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("code", "name", "displayOrder", "comment");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("code", "name",
+            "displayOrder", "comment");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new CompoundType().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countCompoundTypes() {
+    public static long countCompoundTypes() {
         return entityManager().createQuery("SELECT COUNT(o) FROM CompoundType o", Long.class).getSingleResult();
     }
 
-	public static List<CompoundType> findAllCompoundTypes() {
+    public static List<CompoundType> findAllCompoundTypes() {
         return entityManager().createQuery("SELECT o FROM CompoundType o", CompoundType.class).getResultList();
     }
 
-	public static List<CompoundType> findAllCompoundTypes(String sortFieldName, String sortOrder) {
+    public static List<CompoundType> findAllCompoundTypes(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM CompoundType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -165,16 +172,19 @@ public class CompoundType {
         return entityManager().createQuery(jpaQuery, CompoundType.class).getResultList();
     }
 
-	public static CompoundType findCompoundType(Long id) {
-        if (id == null) return null;
+    public static CompoundType findCompoundType(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(CompoundType.class, id);
     }
 
-	public static List<CompoundType> findCompoundTypeEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM CompoundType o", CompoundType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<CompoundType> findCompoundTypeEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM CompoundType o", CompoundType.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<CompoundType> findCompoundTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<CompoundType> findCompoundTypeEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM CompoundType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -182,18 +192,21 @@ public class CompoundType {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, CompoundType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, CompoundType.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -202,48 +215,51 @@ public class CompoundType {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public CompoundType merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         CompoundType merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 }

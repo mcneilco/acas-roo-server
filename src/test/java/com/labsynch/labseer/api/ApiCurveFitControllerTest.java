@@ -31,100 +31,97 @@ import junit.framework.Assert;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 public class ApiCurveFitControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiCurveFitControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    //TODO: write the following tests. Need example data loaded into host5 to be able to set up a test suite.
-    //get fit data by curve id: dose response & Ki
-    //get raw data by curve id
-    //get tg data by curve id
-    //same as 4 above, but by experiment
-    //update fit data
-    //update ki fit data
-    //flag wells
-    
-    
-    @Test
-    @Transactional
-    public void getDisplayMinMaxByCurveId() throws Exception{
-    	String json = "AG-00441632_7080";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/displayminmax")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	Collection<ProtocolValue> results = ProtocolValue.fromJsonArrayToProtocolValues(responseJson);
-    	Assert.assertEquals(2, results.size());
-    }
-    
-    
-    //"AG-00442336_7271"
-    //brian [10:29 AM] this should "AG-00442336_7270"
-    
-    @Test
-    @Transactional
-    public void getFitDataByCurveIdWithMixedRenderingHintExistence() throws Exception{
-    	String json = "[\"AG-00442336_7271\",\"AG-00441632_7080\"]";
+	private MockMvc mockMvc;
 
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    }
-    
-    @Test
-    @Transactional
-    public void getFitDataByCurveIdWithoutRenderingHint() throws Exception{
-    	String json = "[\"AG-00442336_7270\"]";
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
 
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    }
-    
-    @Test
-    @Transactional
-    public void getFitDataByCurveIdWithRenderingHint() throws Exception{
-    	String json = "[\"AG-00441632_7080\"]";
+	// TODO: write the following tests. Need example data loaded into host5 to be
+	// able to set up a test suite.
+	// get fit data by curve id: dose response & Ki
+	// get raw data by curve id
+	// get tg data by curve id
+	// same as 4 above, but by experiment
+	// update fit data
+	// update ki fit data
+	// flag wells
 
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    }
-    
-    
+	@Test
+	@Transactional
+	public void getDisplayMinMaxByCurveId() throws Exception {
+		String json = "AG-00441632_7080";
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/displayminmax")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		Collection<ProtocolValue> results = ProtocolValue.fromJsonArrayToProtocolValues(responseJson);
+		Assert.assertEquals(2, results.size());
+	}
+
+	// "AG-00442336_7271"
+	// brian [10:29 AM] this should "AG-00442336_7270"
+
+	@Test
+	@Transactional
+	public void getFitDataByCurveIdWithMixedRenderingHintExistence() throws Exception {
+		String json = "[\"AG-00442336_7271\",\"AG-00441632_7080\"]";
+
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+	}
+
+	@Test
+	@Transactional
+	public void getFitDataByCurveIdWithoutRenderingHint() throws Exception {
+		String json = "[\"AG-00442336_7270\"]";
+
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+	}
+
+	@Test
+	@Transactional
+	public void getFitDataByCurveIdWithRenderingHint() throws Exception {
+		String json = "[\"AG-00441632_7080\"]";
+
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+	}
 
 }

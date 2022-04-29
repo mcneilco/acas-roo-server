@@ -12,12 +12,10 @@ public interface ItxContainerContainerService {
 	ItxContainerContainer saveLsItxContainer(ItxContainerContainer itxContainer);
 
 	Collection<ItxContainerContainer> saveLsItxContainers(String json);
-	
+
 	Collection<ItxContainerContainer> saveLsItxContainers(Collection<ItxContainerContainer> itxContainerContainers);
 
 	ItxContainerContainer updateItxContainerContainer(
 			ItxContainerContainer jsonItxContainerContainer);
-	
-	
-	
+
 }

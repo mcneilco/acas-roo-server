@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("api/v1/treatmentgroups")
 @Transactional
 public class ApiTreatmentGroupController {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ApiTreatmentGroupController.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiTreatmentGroupController.class);
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
@@ -58,7 +58,7 @@ public class ApiTreatmentGroupController {
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-    	TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
+        TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
         TreatmentGroup savedTreatmentGroup = treatmentGroupService.saveLsTreatmentGroup(treatmentGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -67,7 +67,7 @@ public class ApiTreatmentGroupController {
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
-    	Collection<TreatmentGroup> treatmentGroups = TreatmentGroup.fromJsonArrayToTreatmentGroups(json);
+        Collection<TreatmentGroup> treatmentGroups = TreatmentGroup.fromJsonArrayToTreatmentGroups(json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<TreatmentGroup> savedTreatmentGroups = new ArrayList<TreatmentGroup>();
@@ -80,7 +80,8 @@ public class ApiTreatmentGroupController {
             logger.error("ERROR: " + e);
             return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(savedTreatmentGroups), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(savedTreatmentGroups), headers,
+                HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")

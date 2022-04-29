@@ -37,210 +37,212 @@ import junit.framework.Assert;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 @Transactional
 public class ApiExperimentControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-  //  @Test
-    public void genericSearchByScientist() throws Exception {
-    	String searchString = "bob";
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
-    	Assert.assertFalse(results.isEmpty());
-    }
-    
-  //  @Test
-    public void advancedGeneFilter() throws Exception {
-    	String json = "{\"experimentCodeList\":[\"EXPT-00000001\", \"PROT-00000001\"]}";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=false")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(json)
-    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isCreated())
-//    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    }
-    
-    @Test
-    public void getGeneCodeName() throws Exception {
-    	String json = "{\"requests\":[{\"requestName\":\"HYST2477\"},{\"requestName\":\"2\"}]}";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/getGeneCodeNameFromNameRequest")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(json)
-    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isCreated())
-//    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    }
-    
-    @Test
-    public void genericSearchByProtocolCodeName() throws Exception {
-    	String searchString = "PROT-00000131";
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
-    	Assert.assertFalse(results.isEmpty());
-    }
-    
-//    @Test
-    public void genericSearchByDate() throws Exception {
-    	String searchString = "2015-03-05";
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
-    	Assert.assertFalse(results.isEmpty());
-    }
-    
-//    @Test
-    public void genericSearchByAnalysisStatus() throws Exception {
-    	String searchString = "Fiona approved";
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
-    	Assert.assertFalse(results.isEmpty());
-    }
-    
-//    @Test
-    public void genericSearchByExperimentStatus() throws Exception {
-    	String searchString = "bob";
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
-    	Assert.assertFalse(results.isEmpty());
-    }
-    
-    @Test
-    public void genericSearchForAllExperiments() throws Exception {
-    	String searchString = "fly";
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isInternalServerError())
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Assert.assertTrue(responseJson.contains("Too many"));
-    }
-    
-    @Test
-    public void getExperimentsByCodeName_StubWithProt() throws Exception {
-    	Collection<Experiment> experiments = Experiment.findAllExperiments();
-    	List<String> codeNames = new ArrayList<String>();
-    	for (Experiment experiment : experiments){
-    		codeNames.add("\""+experiment.getCodeName()+"\"");
-    	}
-    	String format = "stubWithProt";
-    	logger.info(codeNames.toString());
-    	String responseJson =  this.mockMvc.perform(post("/api/v1/experiments/codename/jsonArray?with="+format)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(codeNames.toString())
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-    	Collection<ExperimentErrorMessageDTO> responses = ExperimentErrorMessageDTO.fromJsonArrayToExperimentErroes(responseJson);
-    	for (ExperimentErrorMessageDTO response : responses){
-    		Assert.assertNotNull(response.getExperimentCodeName());
-        	Assert.assertNotNull(response.getExperiment());
-        	Assert.assertNotNull(response.getExperiment().getLsStates());
-        	Assert.assertTrue(!response.getExperiment().getLsStates().isEmpty());
-        	Assert.assertNotNull(response.getExperiment().getLsLabels());
-        	Assert.assertTrue(!response.getExperiment().getLsLabels().isEmpty());
-        	Assert.assertNotNull(response.getExperiment().getProtocol());
-        	Assert.assertNotNull(response.getExperiment().getProtocol().getLsLabels());
-        	Assert.assertTrue(!response.getExperiment().getProtocol().getLsLabels().isEmpty());
-    	}
-    }
-    
-    @Test
-    public void getExperimentsAsCodeTables() throws Exception {
-    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andReturn().getResponse().getContentAsString();
-    	Collection<CodeTableDTO> codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-    	Assert.assertFalse(codetables.isEmpty());
-    	logger.info(CodeTableDTO.toJsonArray(codetables));
-    	
-    	responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=default&lsKind=default")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andReturn().getResponse().getContentAsString();
-    	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-    	Assert.assertFalse(codetables.isEmpty());
-    	logger.info(CodeTableDTO.toJsonArray(codetables));
-    	
-    	responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=invalidType")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andReturn().getResponse().getContentAsString();
-    	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-    	Assert.assertTrue(codetables.isEmpty());
-    }
-    
-    @Test
-    public void getExperimentCodesByDateValueComparison() throws Exception {
-    	DateValueComparisonRequest request = new DateValueComparisonRequest();
+	private MockMvc mockMvc;
+
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	// @Test
+	public void genericSearchByScientist() throws Exception {
+		String searchString = "bob";
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/search?q=" + searchString)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
+		Assert.assertFalse(results.isEmpty());
+	}
+
+	// @Test
+	public void advancedGeneFilter() throws Exception {
+		String json = "{\"experimentCodeList\":[\"EXPT-00000001\", \"PROT-00000001\"]}";
+		MockHttpServletResponse response = this.mockMvc.perform(
+				post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=false")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json)
+						.accept(MediaType.APPLICATION_JSON))
+				// .andExpect(status().isCreated())
+				// .andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+	}
+
+	@Test
+	public void getGeneCodeName() throws Exception {
+		String json = "{\"requests\":[{\"requestName\":\"HYST2477\"},{\"requestName\":\"2\"}]}";
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/getGeneCodeNameFromNameRequest")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json)
+				.accept(MediaType.APPLICATION_JSON))
+				// .andExpect(status().isCreated())
+				// .andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+	}
+
+	@Test
+	public void genericSearchByProtocolCodeName() throws Exception {
+		String searchString = "PROT-00000131";
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/search?q=" + searchString)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
+		Assert.assertFalse(results.isEmpty());
+	}
+
+	// @Test
+	public void genericSearchByDate() throws Exception {
+		String searchString = "2015-03-05";
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/search?q=" + searchString)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
+		Assert.assertFalse(results.isEmpty());
+	}
+
+	// @Test
+	public void genericSearchByAnalysisStatus() throws Exception {
+		String searchString = "Fiona approved";
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/search?q=" + searchString)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
+		Assert.assertFalse(results.isEmpty());
+	}
+
+	// @Test
+	public void genericSearchByExperimentStatus() throws Exception {
+		String searchString = "bob";
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/search?q=" + searchString)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
+		Assert.assertFalse(results.isEmpty());
+	}
+
+	@Test
+	public void genericSearchForAllExperiments() throws Exception {
+		String searchString = "fly";
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/search?q=" + searchString)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isInternalServerError())
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Assert.assertTrue(responseJson.contains("Too many"));
+	}
+
+	@Test
+	public void getExperimentsByCodeName_StubWithProt() throws Exception {
+		Collection<Experiment> experiments = Experiment.findAllExperiments();
+		List<String> codeNames = new ArrayList<String>();
+		for (Experiment experiment : experiments) {
+			codeNames.add("\"" + experiment.getCodeName() + "\"");
+		}
+		String format = "stubWithProt";
+		logger.info(codeNames.toString());
+		String responseJson = this.mockMvc.perform(post("/api/v1/experiments/codename/jsonArray?with=" + format)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(codeNames.toString())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+		Collection<ExperimentErrorMessageDTO> responses = ExperimentErrorMessageDTO
+				.fromJsonArrayToExperimentErroes(responseJson);
+		for (ExperimentErrorMessageDTO response : responses) {
+			Assert.assertNotNull(response.getExperimentCodeName());
+			Assert.assertNotNull(response.getExperiment());
+			Assert.assertNotNull(response.getExperiment().getLsStates());
+			Assert.assertTrue(!response.getExperiment().getLsStates().isEmpty());
+			Assert.assertNotNull(response.getExperiment().getLsLabels());
+			Assert.assertTrue(!response.getExperiment().getLsLabels().isEmpty());
+			Assert.assertNotNull(response.getExperiment().getProtocol());
+			Assert.assertNotNull(response.getExperiment().getProtocol().getLsLabels());
+			Assert.assertTrue(!response.getExperiment().getProtocol().getLsLabels().isEmpty());
+		}
+	}
+
+	@Test
+	public void getExperimentsAsCodeTables() throws Exception {
+		String responseJson = this.mockMvc.perform(get("/api/v1/experiments/codetables")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		Collection<CodeTableDTO> codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+		Assert.assertFalse(codetables.isEmpty());
+		logger.info(CodeTableDTO.toJsonArray(codetables));
+
+		responseJson = this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=default&lsKind=default")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+		Assert.assertFalse(codetables.isEmpty());
+		logger.info(CodeTableDTO.toJsonArray(codetables));
+
+		responseJson = this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=invalidType")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+		Assert.assertTrue(codetables.isEmpty());
+	}
+
+	@Test
+	public void getExperimentCodesByDateValueComparison() throws Exception {
+		DateValueComparisonRequest request = new DateValueComparisonRequest();
 		request.setStateType("metadata");
 		request.setStateKind("experiment metadata");
 		request.setValueKind("completion date");
 		request.setSecondsDelta(60);
-		
+
 		String requestJson = request.toJson();
-		
+
 		logger.info(requestJson);
-    	String responseJson =  this.mockMvc.perform(post("/api/v1/experiments/getExperimentCodesByDateValueComparison")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(requestJson)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andReturn().getResponse().getContentAsString();
-    	logger.info(responseJson.toString());
-		
-    }
+		String responseJson = this.mockMvc.perform(post("/api/v1/experiments/getExperimentCodesByDateValueComparison")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		logger.info(responseJson.toString());
+
+	}
 
 }

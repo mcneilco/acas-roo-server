@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TreatmentGroupDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<TreatmentGroup> data;
+    private List<TreatmentGroup> data;
 
-	public TreatmentGroup getNewTransientTreatmentGroup(int index) {
+    public TreatmentGroup getNewTransientTreatmentGroup(int index) {
         TreatmentGroup obj = new TreatmentGroup();
         setCodeName(obj, index);
         setDeleted(obj, index);
@@ -39,7 +39,7 @@ public class TreatmentGroupDataOnDemand {
         return obj;
     }
 
-	public void setCodeName(TreatmentGroup obj, int index) {
+    public void setCodeName(TreatmentGroup obj, int index) {
         String codeName = "codeName_" + index;
         if (codeName.length() > 255) {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
@@ -47,17 +47,17 @@ public class TreatmentGroupDataOnDemand {
         obj.setCodeName(codeName);
     }
 
-	public void setDeleted(TreatmentGroup obj, int index) {
+    public void setDeleted(TreatmentGroup obj, int index) {
         Boolean deleted = true;
         obj.setDeleted(deleted);
     }
 
-	public void setIgnored(TreatmentGroup obj, int index) {
+    public void setIgnored(TreatmentGroup obj, int index) {
         Boolean ignored = true;
         obj.setIgnored(ignored);
     }
 
-	public void setLsKind(TreatmentGroup obj, int index) {
+    public void setLsKind(TreatmentGroup obj, int index) {
         String lsKind = "lsKind_" + index;
         if (lsKind.length() > 255) {
             lsKind = lsKind.substring(0, 255);
@@ -65,12 +65,12 @@ public class TreatmentGroupDataOnDemand {
         obj.setLsKind(lsKind);
     }
 
-	public void setLsTransaction(TreatmentGroup obj, int index) {
+    public void setLsTransaction(TreatmentGroup obj, int index) {
         Long lsTransaction = new Integer(index).longValue();
         obj.setLsTransaction(lsTransaction);
     }
 
-	public void setLsType(TreatmentGroup obj, int index) {
+    public void setLsType(TreatmentGroup obj, int index) {
         String lsType = "lsType_" + index;
         if (lsType.length() > 255) {
             lsType = lsType.substring(0, 255);
@@ -78,7 +78,7 @@ public class TreatmentGroupDataOnDemand {
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(TreatmentGroup obj, int index) {
+    public void setLsTypeAndKind(TreatmentGroup obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = lsTypeAndKind.substring(0, 255);
@@ -86,7 +86,7 @@ public class TreatmentGroupDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public void setModifiedBy(TreatmentGroup obj, int index) {
+    public void setModifiedBy(TreatmentGroup obj, int index) {
         String modifiedBy = "modifiedBy_" + index;
         if (modifiedBy.length() > 255) {
             modifiedBy = modifiedBy.substring(0, 255);
@@ -94,12 +94,15 @@ public class TreatmentGroupDataOnDemand {
         obj.setModifiedBy(modifiedBy);
     }
 
-	public void setModifiedDate(TreatmentGroup obj, int index) {
-        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setModifiedDate(TreatmentGroup obj, int index) {
+        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
     }
 
-	public void setRecordedBy(TreatmentGroup obj, int index) {
+    public void setRecordedBy(TreatmentGroup obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -107,12 +110,15 @@ public class TreatmentGroupDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(TreatmentGroup obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(TreatmentGroup obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public TreatmentGroup getSpecificTreatmentGroup(int index) {
+    public TreatmentGroup getSpecificTreatmentGroup(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -125,18 +131,18 @@ public class TreatmentGroupDataOnDemand {
         return TreatmentGroup.findTreatmentGroup(id);
     }
 
-	public TreatmentGroup getRandomTreatmentGroup() {
+    public TreatmentGroup getRandomTreatmentGroup() {
         init();
         TreatmentGroup obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return TreatmentGroup.findTreatmentGroup(id);
     }
 
-	public boolean modifyTreatmentGroup(TreatmentGroup obj) {
+    public boolean modifyTreatmentGroup(TreatmentGroup obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = TreatmentGroup.findTreatmentGroupEntries(from, to);
@@ -146,7 +152,7 @@ public class TreatmentGroupDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<TreatmentGroup>();
         for (int i = 0; i < 10; i++) {
             TreatmentGroup obj = getNewTransientTreatmentGroup(i);
@@ -156,7 +162,9 @@ public class TreatmentGroupDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

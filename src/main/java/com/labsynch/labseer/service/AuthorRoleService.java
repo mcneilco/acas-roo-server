@@ -16,6 +16,4 @@ public interface AuthorRoleService {
 
 	void deleteAuthorRoleDTOs(Collection<AuthorRoleDTO> authorRoleDTOs);
 
-	
-
 }

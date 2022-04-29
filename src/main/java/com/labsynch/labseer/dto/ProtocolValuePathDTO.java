@@ -12,93 +12,92 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ProtocolValuePathDTO {
 
-	public ProtocolValuePathDTO() {
-	}
-
-	private String idOrCodeName;
-
-	private String stateType;
-	
-	private String stateKind;
-	
-	private String valueType;
-	
-	private String valueKind;
-	
-	private Collection<ProtocolValue> values;
-	
-	public String toJson() {
-        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
-	
-	public static String toJsonArray(Collection<ProtocolValuePathDTO> collection) {
-        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+    public ProtocolValuePathDTO() {
     }
 
-	public String toString() {
+    private String idOrCodeName;
+
+    private String stateType;
+
+    private String stateKind;
+
+    private String valueType;
+
+    private String valueKind;
+
+    private Collection<ProtocolValue> values;
+
+    public String toJson() {
+        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class)
+                .serialize(this);
+    }
+
+    public static String toJsonArray(Collection<ProtocolValuePathDTO> collection) {
+        return new JSONSerializer().include("values").exclude("*.class").transform(new ExcludeNulls(), void.class)
+                .serialize(collection);
+    }
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static ProtocolValuePathDTO fromJsonToProtocolValuePathDTO(String json) {
+    public static ProtocolValuePathDTO fromJsonToProtocolValuePathDTO(String json) {
         return new JSONDeserializer<ProtocolValuePathDTO>()
-        .use(null, ProtocolValuePathDTO.class).deserialize(json);
+                .use(null, ProtocolValuePathDTO.class).deserialize(json);
     }
 
-	public static Collection<ProtocolValuePathDTO> fromJsonArrayToProtocoes(String json) {
+    public static Collection<ProtocolValuePathDTO> fromJsonArrayToProtocoes(String json) {
         return new JSONDeserializer<List<ProtocolValuePathDTO>>()
-        .use("values", ProtocolValuePathDTO.class).deserialize(json);
+                .use("values", ProtocolValuePathDTO.class).deserialize(json);
     }
 
-	public String getIdOrCodeName() {
+    public String getIdOrCodeName() {
         return this.idOrCodeName;
     }
 
-	public void setIdOrCodeName(String idOrCodeName) {
+    public void setIdOrCodeName(String idOrCodeName) {
         this.idOrCodeName = idOrCodeName;
     }
 
-	public String getStateType() {
+    public String getStateType() {
         return this.stateType;
     }
 
-	public void setStateType(String stateType) {
+    public void setStateType(String stateType) {
         this.stateType = stateType;
     }
 
-	public String getStateKind() {
+    public String getStateKind() {
         return this.stateKind;
     }
 
-	public void setStateKind(String stateKind) {
+    public void setStateKind(String stateKind) {
         this.stateKind = stateKind;
     }
 
-	public String getValueType() {
+    public String getValueType() {
         return this.valueType;
     }
 
-	public void setValueType(String valueType) {
+    public void setValueType(String valueType) {
         this.valueType = valueType;
     }
 
-	public String getValueKind() {
+    public String getValueKind() {
         return this.valueKind;
     }
 
-	public void setValueKind(String valueKind) {
+    public void setValueKind(String valueKind) {
         this.valueKind = valueKind;
     }
 
-	public Collection<ProtocolValue> getValues() {
+    public Collection<ProtocolValue> getValues() {
         return this.values;
     }
 
-	public void setValues(Collection<ProtocolValue> values) {
+    public void setValues(Collection<ProtocolValue> values) {
         this.values = values;
     }
 }
-
-

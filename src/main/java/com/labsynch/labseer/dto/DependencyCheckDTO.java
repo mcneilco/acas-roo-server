@@ -24,43 +24,45 @@ import org.springframework.transaction.annotation.Transactional;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class DependencyCheckDTO {
-	
+
 	public DependencyCheckDTO() {
 		this.queryCodeNames = new HashSet<String>();
 		this.dependentCorpNames = new HashSet<String>();
 		this.linkedExperiments = new HashSet<CodeTableDTO>();
 		this.linkedContainers = new HashSet<CodeTableDTO>();
 	}
-	
+
 	public DependencyCheckDTO(Collection<String> queryCodeNames) {
 		this.setQueryCodeNames(queryCodeNames);
 	}
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(DependencyCheckDTO.class);
-	
+
 	private Collection<String> queryCodeNames;
-	
+
 	private Collection<String> dependentCorpNames;
-	
+
 	private Boolean linkedDataExists;
-	
+
 	private Collection<CodeTableDTO> linkedExperiments;
-	
+
 	private Collection<CodeTableDTO> linkedContainers;
 
 	private Collection<ErrorMessageDTO> errors;
-	
+
 	@Transactional
 	public String toJson() {
-	        return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "linkedContainers.*", "queryCodeNames.*", "dependentCorpNames.*").transform(new ExcludeNulls(), void.class).serialize(this);
-	    }
+		return new JSONSerializer().exclude("*.class")
+				.include("linkedExperiments.*", "linkedContainers.*", "queryCodeNames.*", "dependentCorpNames.*")
+				.transform(new ExcludeNulls(), void.class).serialize(this);
+	}
+
 	@Transactional
-	public void checkForDependentData(){
+	public void checkForDependentData() {
 		errors = new HashSet<ErrorMessageDTO>();
 		try {
-			if(countExperimentValueBatchCodes() > 0){
+			if (countExperimentValueBatchCodes() > 0) {
 				linkedDataExists = true;
 				logger.debug("Found Experiment values referencing provided batch codes. Retrieving experiment info.");
 				linkedExperiments.addAll(findExperimentCodeTableDTOsFromExperimentValueBatchCodes());
@@ -71,30 +73,30 @@ public class DependencyCheckDTO {
 			error.setMessage(e.getMessage());
 			errors.add(error);
 		}
-		if(countTreatmentGroupValueBatchCodes() > 0){
+		if (countTreatmentGroupValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found TreatmentGroup values referencing provided batch codes. Retrieving experiment info.");
 			linkedExperiments.addAll(findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes());
 		}
-		if(countAnalysisGroupValueBatchCodes() > 0){
+		if (countAnalysisGroupValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found AnalysisGroup values referencing provided batch codes. Retrieving experiment info.");
 			linkedExperiments.addAll(findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes());
 		}
-		if(countSubjectValueBatchCodes() > 0){
+		if (countSubjectValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found Subject values referencing provided batch codes. Retrieving experiment info.");
 			linkedExperiments.addAll(findExperimentCodeTableDTOsFromSubjectValueBatchCodes());
 		}
-		if(countProtocolValueBatchCodes() > 0){
+		if (countProtocolValueBatchCodes() > 0) {
 			logger.debug("Found Protocol values referencing provided batch codes.");
 			linkedDataExists = true;
 		}
-		if(countLsThingValueBatchCodes() > 0){
+		if (countLsThingValueBatchCodes() > 0) {
 			logger.debug("Found LsThing values referencing provided batch codes.");
 			linkedDataExists = true;
 		}
-		if(countContainerValueBatchCodes() > 0){
+		if (countContainerValueBatchCodes() > 0) {
 			logger.debug("Found Container values referencing provided batch codes. Retrieving container info.");
 			linkedDataExists = true;
 			linkedContainers.addAll(findContainerCodeTableDTOsFromContainerValueBatchCodes());
@@ -115,12 +117,12 @@ public class DependencyCheckDTO {
 				+ "AND c.ignored = false "
 				+ "AND cl.ignored = false "
 				+ "AND cv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
-		
+
 		Collection<CodeTableDTO> containerCodeTableDTOs = new HashSet<CodeTableDTO>();
-		for (Map<String,String> map : q.getResultList()){
+		for (Map<String, String> map : q.getResultList()) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
@@ -144,12 +146,12 @@ public class DependencyCheckDTO {
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
 				+ "AND ev.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
-		
+
 		Collection<CodeTableDTO> experimentCodeTableDTOs = new HashSet<CodeTableDTO>();
-		for (Map<String,String> map : q.getResultList()){
+		for (Map<String, String> map : q.getResultList()) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
@@ -176,12 +178,12 @@ public class DependencyCheckDTO {
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
 				+ "AND agv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
-		
+
 		Collection<CodeTableDTO> experimentCodeTableDTOs = new HashSet<CodeTableDTO>();
-		for (Map<String,String> map : q.getResultList()){
+		for (Map<String, String> map : q.getResultList()) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
@@ -211,12 +213,12 @@ public class DependencyCheckDTO {
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
 				+ "AND sv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
-		
+
 		Collection<CodeTableDTO> experimentCodeTableDTOs = new HashSet<CodeTableDTO>();
-		for (Map<String,String> map : q.getResultList()){
+		for (Map<String, String> map : q.getResultList()) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
@@ -225,7 +227,7 @@ public class DependencyCheckDTO {
 		}
 		return experimentCodeTableDTOs;
 	}
-	
+
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, tgv.codeValue as comments) "
@@ -245,12 +247,12 @@ public class DependencyCheckDTO {
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
 				+ "AND tgv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
-		
+
 		Collection<CodeTableDTO> experimentCodeTableDTOs = new HashSet<CodeTableDTO>();
-		for (Map<String,String> map : q.getResultList()){
+		for (Map<String, String> map : q.getResultList()) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
@@ -278,12 +280,12 @@ public class DependencyCheckDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND sv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private int countTreatmentGroupValueBatchCodes() {
 		EntityManager em = TreatmentGroupValue.entityManager();
 		String sql = "SELECT COUNT(*) "
@@ -300,12 +302,12 @@ public class DependencyCheckDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND tgv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private int countAnalysisGroupValueBatchCodes() {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		String sql = "SELECT COUNT(*) "
@@ -320,12 +322,12 @@ public class DependencyCheckDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND agv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", this.queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private int countExperimentValueBatchCodes() {
 		EntityManager em = TreatmentGroupValue.entityManager();
 		String sql = "SELECT COUNT(*) "
@@ -338,12 +340,12 @@ public class DependencyCheckDTO {
 				+ "AND es.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND ev.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private int countLsThingValueBatchCodes() {
 		EntityManager em = TreatmentGroupValue.entityManager();
 		String sql = "SELECT COUNT(*) "
@@ -356,12 +358,12 @@ public class DependencyCheckDTO {
 				+ "AND lsts.ignored = false "
 				+ "AND lst.ignored = false "
 				+ "AND lstv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private int countContainerValueBatchCodes() {
 		EntityManager em = TreatmentGroupValue.entityManager();
 		String sql = "SELECT COUNT(*) "
@@ -374,12 +376,12 @@ public class DependencyCheckDTO {
 				+ "AND cs.ignored = false "
 				+ "AND c.ignored = false "
 				+ "AND cv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private int countProtocolValueBatchCodes() {
 		EntityManager em = TreatmentGroupValue.entityManager();
 		String sql = "SELECT COUNT(*) "
@@ -392,101 +394,98 @@ public class DependencyCheckDTO {
 				+ "AND ps.ignored = false "
 				+ "AND p.ignored = false "
 				+ "AND pv.codeValue IN :batchCodes";
-		
+
 		TypedQuery<Long> q = em.createQuery(sql, Long.class);
 		q.setParameter("batchCodes", queryCodeNames);
 		return q.getSingleResult().intValue();
 	}
-	
+
 	private void dedupeLinkedExperiments() {
-		HashMap<String,String> experimentMap = new HashMap<String,String>();
-		logger.debug("Incoming size: "+linkedExperiments.size());
-		for (CodeTableDTO codeTable : linkedExperiments){
+		HashMap<String, String> experimentMap = new HashMap<String, String>();
+		logger.debug("Incoming size: " + linkedExperiments.size());
+		for (CodeTableDTO codeTable : linkedExperiments) {
 			experimentMap.put(codeTable.getCode(), codeTable.getName());
 		}
 		HashSet<CodeTableDTO> dedupedExperimentSet = new HashSet<CodeTableDTO>();
-		for (String key : experimentMap.keySet()){
+		for (String key : experimentMap.keySet()) {
 			CodeTableDTO experimentCodeTable = new CodeTableDTO();
 			experimentCodeTable.setCode(key);
 			experimentCodeTable.setName(experimentMap.get(key));
 			dedupedExperimentSet.add(experimentCodeTable);
 		}
 		linkedExperiments = dedupedExperimentSet;
-		logger.debug("Deduped size: "+linkedExperiments.size());
+		logger.debug("Deduped size: " + linkedExperiments.size());
 	}
 
-
 	public Collection<String> getQueryCodeNames() {
-        return this.queryCodeNames;
-    }
+		return this.queryCodeNames;
+	}
 
 	public void setQueryCodeNames(Collection<String> queryCodeNames) {
-        this.queryCodeNames = queryCodeNames;
-    }
+		this.queryCodeNames = queryCodeNames;
+	}
 
 	public Collection<String> getDependentCorpNames() {
-        return this.dependentCorpNames;
-    }
+		return this.dependentCorpNames;
+	}
 
 	public void setDependentCorpNames(Collection<String> dependentCorpNames) {
-        this.dependentCorpNames = dependentCorpNames;
-    }
+		this.dependentCorpNames = dependentCorpNames;
+	}
 
 	public Boolean getLinkedDataExists() {
-        return this.linkedDataExists;
-    }
+		return this.linkedDataExists;
+	}
 
 	public void setLinkedDataExists(Boolean linkedDataExists) {
-        this.linkedDataExists = linkedDataExists;
-    }
+		this.linkedDataExists = linkedDataExists;
+	}
 
 	public Collection<CodeTableDTO> getLinkedExperiments() {
-        return this.linkedExperiments;
-    }
+		return this.linkedExperiments;
+	}
 
 	public void setLinkedExperiments(Collection<CodeTableDTO> linkedExperiments) {
-        this.linkedExperiments = linkedExperiments;
-    }
+		this.linkedExperiments = linkedExperiments;
+	}
 
 	public Collection<CodeTableDTO> getLinkedContainers() {
-        return this.linkedContainers;
-    }
+		return this.linkedContainers;
+	}
 
 	public void setLinkedContainers(Collection<CodeTableDTO> linkedContainers) {
-        this.linkedContainers = linkedContainers;
-    }
+		this.linkedContainers = linkedContainers;
+	}
 
 	public Collection<ErrorMessageDTO> getErrors() {
-        return this.errors;
-    }
+		return this.errors;
+	}
 
 	public void setErrors(Collection<ErrorMessageDTO> errors) {
-        this.errors = errors;
-    }
+		this.errors = errors;
+	}
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	public static DependencyCheckDTO fromJsonToDependencyCheckDTO(String json) {
-        return new JSONDeserializer<DependencyCheckDTO>()
-        .use(null, DependencyCheckDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<DependencyCheckDTO>()
+				.use(null, DependencyCheckDTO.class).deserialize(json);
+	}
 
 	public static String toJsonArray(Collection<DependencyCheckDTO> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(collection);
+	}
 
 	public static String toJsonArray(Collection<DependencyCheckDTO> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(collection);
+	}
 
 	public static Collection<DependencyCheckDTO> fromJsonArrayToDependencyCheckDTO(String json) {
-        return new JSONDeserializer<List<DependencyCheckDTO>>()
-        .use("values", DependencyCheckDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<DependencyCheckDTO>>()
+				.use("values", DependencyCheckDTO.class).deserialize(json);
+	}
 }
-
-

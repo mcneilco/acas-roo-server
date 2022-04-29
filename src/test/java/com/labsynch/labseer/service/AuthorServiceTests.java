@@ -29,8 +29,7 @@ public class AuthorServiceTests {
 
 	@Autowired
 	private AuthorService authorService;
-	
-	
+
 	@Test
 	@Transactional
 	public void getAuthorsByRoleTest() {
@@ -41,7 +40,7 @@ public class AuthorServiceTests {
 		logger.info(Author.toJsonArray(authors));
 
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAuthorProjectsTest() {
@@ -51,13 +50,12 @@ public class AuthorServiceTests {
 		logger.info("------- Results from getAuthorProjectsTest ----------");
 
 		logger.info(LsThing.toJsonArrayStub(projects));
-		
+
 		Collection<CodeTableDTO> codeTableProjects = authorService.convertProjectsToCodeTables(projects);
 		logger.info(CodeTableDTO.toJsonArray(codeTableProjects));
-		
+
 	}
 
-	
 	@Test
 	@Transactional
 	public void getAuthorizeGroupsAndProjectTest() {

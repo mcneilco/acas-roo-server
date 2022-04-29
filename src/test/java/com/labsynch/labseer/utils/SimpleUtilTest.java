@@ -19,9 +19,9 @@ import junit.framework.Assert;
 public class SimpleUtilTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(SimpleUtilTest.class);
-	
+
 	@Test
-	public void splitStringTest(){
+	public void splitStringTest() {
 		String searchString = "\"Fiona Test Experiment 1\" completed";
 		List<String> expectedResults = new ArrayList<String>();
 		expectedResults.add("Fiona Test Experiment 1");

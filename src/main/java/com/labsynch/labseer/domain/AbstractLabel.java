@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class AbstractLabel {
 
-//	@Column(unique = true)
+	// @Column(unique = true)
 	@NotNull
 	@Size(max = 255)
 	private String labelText;
@@ -71,14 +71,14 @@ public abstract class AbstractLabel {
 
 	@NotNull
 	private boolean ignored;
-	
+
 	@NotNull
 	private boolean deleted;
 
 	private Long lsTransaction;
 
 	@Id
-	@SequenceGenerator(name = "abstractLabelGen", sequenceName = "LABEL_PKSEQ", allocationSize=20)
+	@SequenceGenerator(name = "abstractLabelGen", sequenceName = "LABEL_PKSEQ", allocationSize = 20)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "abstractLabelGen")
 	@Column(name = "id")
 	private Long id;
@@ -91,217 +91,229 @@ public abstract class AbstractLabel {
 		this.id = id;
 	}
 
-
 	@PersistenceContext
 	transient EntityManager entityManager;
 
 	public static final EntityManager entityManager() {
 		EntityManager em = new AbstractLabel() {
 		}.entityManager;
-		if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+		if (em == null)
+			throw new IllegalStateException(
+					"Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
 		return em;
 	}
 
-
 	@Transactional
 	public void persist() {
-		if (this.entityManager == null) this.entityManager = entityManager();
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
 		this.setLsTypeAndKind(new StringBuilder().append(this.lsType).append("_").append(this.lsKind).toString());
-		if (this.recordedDate == null) this.recordedDate = new Date();
+		if (this.recordedDate == null)
+			this.recordedDate = new Date();
 		this.entityManager.persist(this);
 	}
 
 	@Transactional
 	public AbstractLabel merge() {
-		if (this.entityManager == null) this.entityManager = entityManager();
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
 		AbstractLabel merged = this.entityManager.merge(this);
 		this.setLsTypeAndKind(new StringBuilder().append(this.lsType).append("_").append(this.lsKind).toString());
-		this.modifiedDate = new Date();		
+		this.modifiedDate = new Date();
 		this.entityManager.flush();
 		return merged;
 	}
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	@Version
-    @Column(name = "version")
-    private Integer version;
+	@Column(name = "version")
+	private Integer version;
 
 	public Integer getVersion() {
-        return this.version;
-    }
+		return this.version;
+	}
 
 	public void setVersion(Integer version) {
-        this.version = version;
-    }
+		this.version = version;
+	}
 
 	public String getLabelText() {
-        return this.labelText;
-    }
+		return this.labelText;
+	}
 
 	public void setLabelText(String labelText) {
-        this.labelText = labelText;
-    }
+		this.labelText = labelText;
+	}
 
 	public String getRecordedBy() {
-        return this.recordedBy;
-    }
+		return this.recordedBy;
+	}
 
 	public void setRecordedBy(String recordedBy) {
-        this.recordedBy = recordedBy;
-    }
+		this.recordedBy = recordedBy;
+	}
 
 	public Date getRecordedDate() {
-        return this.recordedDate;
-    }
+		return this.recordedDate;
+	}
 
 	public void setRecordedDate(Date recordedDate) {
-        this.recordedDate = recordedDate;
-    }
+		this.recordedDate = recordedDate;
+	}
 
 	public Date getModifiedDate() {
-        return this.modifiedDate;
-    }
+		return this.modifiedDate;
+	}
 
 	public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
+		this.modifiedDate = modifiedDate;
+	}
 
 	public boolean isPhysicallyLabled() {
-        return this.physicallyLabled;
-    }
+		return this.physicallyLabled;
+	}
 
 	public void setPhysicallyLabled(boolean physicallyLabled) {
-        this.physicallyLabled = physicallyLabled;
-    }
+		this.physicallyLabled = physicallyLabled;
+	}
 
 	public String getImageFile() {
-        return this.imageFile;
-    }
+		return this.imageFile;
+	}
 
 	public void setImageFile(String imageFile) {
-        this.imageFile = imageFile;
-    }
+		this.imageFile = imageFile;
+	}
 
 	public String getLsType() {
-        return this.lsType;
-    }
+		return this.lsType;
+	}
 
 	public void setLsType(String lsType) {
-        this.lsType = lsType;
-    }
+		this.lsType = lsType;
+	}
 
 	public String getLsKind() {
-        return this.lsKind;
-    }
+		return this.lsKind;
+	}
 
 	public void setLsKind(String lsKind) {
-        this.lsKind = lsKind;
-    }
+		this.lsKind = lsKind;
+	}
 
 	public String getLsTypeAndKind() {
-        return this.lsTypeAndKind;
-    }
+		return this.lsTypeAndKind;
+	}
 
 	public void setLsTypeAndKind(String lsTypeAndKind) {
-        this.lsTypeAndKind = lsTypeAndKind;
-    }
+		this.lsTypeAndKind = lsTypeAndKind;
+	}
 
 	public boolean isPreferred() {
-        return this.preferred;
-    }
+		return this.preferred;
+	}
 
 	public void setPreferred(boolean preferred) {
-        this.preferred = preferred;
-    }
+		this.preferred = preferred;
+	}
 
 	public boolean isIgnored() {
-        return this.ignored;
-    }
+		return this.ignored;
+	}
 
 	public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+		this.ignored = ignored;
+	}
 
 	public boolean isDeleted() {
-        return this.deleted;
-    }
+		return this.deleted;
+	}
 
 	public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
+		this.deleted = deleted;
+	}
 
 	public Long getLsTransaction() {
-        return this.lsTransaction;
-    }
+		return this.lsTransaction;
+	}
 
 	public void setLsTransaction(Long lsTransaction) {
-        this.lsTransaction = lsTransaction;
-    }
+		this.lsTransaction = lsTransaction;
+	}
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("labelText", "recordedBy", "recordedDate", "modifiedDate", "physicallyLabled", "imageFile", "lsType", "lsKind", "lsTypeAndKind", "preferred", "ignored", "deleted", "lsTransaction", "id", "entityManager");
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("labelText", "recordedBy",
+			"recordedDate", "modifiedDate", "physicallyLabled", "imageFile", "lsType", "lsKind", "lsTypeAndKind",
+			"preferred", "ignored", "deleted", "lsTransaction", "id", "entityManager");
 
 	public static long countAbstractLabels() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM AbstractLabel o", Long.class).getSingleResult();
-    }
+		return entityManager().createQuery("SELECT COUNT(o) FROM AbstractLabel o", Long.class).getSingleResult();
+	}
 
 	public static List<AbstractLabel> findAllAbstractLabels() {
-        return entityManager().createQuery("SELECT o FROM AbstractLabel o", AbstractLabel.class).getResultList();
-    }
+		return entityManager().createQuery("SELECT o FROM AbstractLabel o", AbstractLabel.class).getResultList();
+	}
 
 	public static List<AbstractLabel> findAllAbstractLabels(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM AbstractLabel o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, AbstractLabel.class).getResultList();
-    }
+		String jpaQuery = "SELECT o FROM AbstractLabel o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, AbstractLabel.class).getResultList();
+	}
 
 	public static AbstractLabel findAbstractLabel(Long id) {
-        if (id == null) return null;
-        return entityManager().find(AbstractLabel.class, id);
-    }
+		if (id == null)
+			return null;
+		return entityManager().find(AbstractLabel.class, id);
+	}
 
 	public static List<AbstractLabel> findAbstractLabelEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM AbstractLabel o", AbstractLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
+		return entityManager().createQuery("SELECT o FROM AbstractLabel o", AbstractLabel.class)
+				.setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+	}
 
-	public static List<AbstractLabel> findAbstractLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM AbstractLabel o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, AbstractLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
-
-	@Transactional
-    public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        if (this.entityManager.contains(this)) {
-            this.entityManager.remove(this);
-        } else {
-            AbstractLabel attached = AbstractLabel.findAbstractLabel(this.id);
-            this.entityManager.remove(attached);
-        }
-    }
+	public static List<AbstractLabel> findAbstractLabelEntries(int firstResult, int maxResults, String sortFieldName,
+			String sortOrder) {
+		String jpaQuery = "SELECT o FROM AbstractLabel o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, AbstractLabel.class).setFirstResult(firstResult)
+				.setMaxResults(maxResults).getResultList();
+	}
 
 	@Transactional
-    public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.flush();
-    }
+	public void remove() {
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
+		if (this.entityManager.contains(this)) {
+			this.entityManager.remove(this);
+		} else {
+			AbstractLabel attached = AbstractLabel.findAbstractLabel(this.id);
+			this.entityManager.remove(attached);
+		}
+	}
 
 	@Transactional
-    public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.clear();
-    }
+	public void flush() {
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
+		this.entityManager.flush();
+	}
+
+	@Transactional
+	public void clear() {
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
+		this.entityManager.clear();
+	}
 }

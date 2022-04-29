@@ -28,87 +28,88 @@ public class ParentAliasType {
 
     @Size(max = 255)
     private String typeName;
-       
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static ParentAliasType fromJsonToParentAliasType(String json) {
+    public static ParentAliasType fromJsonToParentAliasType(String json) {
         return new JSONDeserializer<ParentAliasType>()
-        .use(null, ParentAliasType.class).deserialize(json);
+                .use(null, ParentAliasType.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<ParentAliasType> collection) {
+    public static String toJsonArray(Collection<ParentAliasType> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<ParentAliasType> collection, String[] fields) {
+    public static String toJsonArray(Collection<ParentAliasType> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<ParentAliasType> fromJsonArrayToParentAliasTypes(String json) {
+    public static Collection<ParentAliasType> fromJsonArrayToParentAliasTypes(String json) {
         return new JSONDeserializer<List<ParentAliasType>>()
-        .use("values", ParentAliasType.class).deserialize(json);
+                .use("values", ParentAliasType.class).deserialize(json);
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new ParentAliasType().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countParentAliasTypes() {
+    public static long countParentAliasTypes() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ParentAliasType o", Long.class).getSingleResult();
     }
 
-	public static List<ParentAliasType> findAllParentAliasTypes() {
+    public static List<ParentAliasType> findAllParentAliasTypes() {
         return entityManager().createQuery("SELECT o FROM ParentAliasType o", ParentAliasType.class).getResultList();
     }
 
-	public static List<ParentAliasType> findAllParentAliasTypes(String sortFieldName, String sortOrder) {
+    public static List<ParentAliasType> findAllParentAliasTypes(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ParentAliasType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -119,16 +120,19 @@ public class ParentAliasType {
         return entityManager().createQuery(jpaQuery, ParentAliasType.class).getResultList();
     }
 
-	public static ParentAliasType findParentAliasType(Long id) {
-        if (id == null) return null;
+    public static ParentAliasType findParentAliasType(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(ParentAliasType.class, id);
     }
 
-	public static List<ParentAliasType> findParentAliasTypeEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM ParentAliasType o", ParentAliasType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<ParentAliasType> findParentAliasTypeEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ParentAliasType o", ParentAliasType.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<ParentAliasType> findParentAliasTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<ParentAliasType> findParentAliasTypeEntries(int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ParentAliasType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -136,18 +140,21 @@ public class ParentAliasType {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, ParentAliasType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, ParentAliasType.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -156,31 +163,34 @@ public class ParentAliasType {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public ParentAliasType merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         ParentAliasType merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String getTypeName() {
+    public String getTypeName() {
         return this.typeName;
     }
 
-	public void setTypeName(String typeName) {
+    public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
 }

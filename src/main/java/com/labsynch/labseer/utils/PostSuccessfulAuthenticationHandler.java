@@ -15,14 +15,14 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
-public class PostSuccessfulAuthenticationHandler extends  SavedRequestAwareAuthenticationSuccessHandler {
+public class PostSuccessfulAuthenticationHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	static Logger logger = LoggerFactory.getLogger(PostSuccessfulAuthenticationHandler.class);
 
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws ServletException, IOException {
 		/*
-		 *  Add post authentication logic in the trackUseLogin method of userService;
+		 * Add post authentication logic in the trackUseLogin method of userService;
 		 */
 		logger.debug("principal info: " + authentication.getPrincipal());
 		Object principal = authentication.getPrincipal();
@@ -40,20 +40,20 @@ public class PostSuccessfulAuthenticationHandler extends  SavedRequestAwareAuthe
 		SecurityUtil.updateUserInfo(authentication.getName());
 		super.onAuthenticationSuccess(request, response, authentication);
 	}
-	
-	protected String getRedirectUrl(HttpServletRequest request) {
-	    HttpSession session = request.getSession(false);
-	    if(session != null) {
-	    	
-	        SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, null);
-	        //(SavedRequest) session.getAttribute(HttpSessionRequestCache.SAVED_REQUEST);
-	        if(savedRequest != null) {
-	            return savedRequest.getRedirectUrl();
-	        }
-	    }
 
-	    /* return a sane default in case data isn't there */
-	    return request.getContextPath() + "/";
+	protected String getRedirectUrl(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+
+			SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, null);
+			// (SavedRequest) session.getAttribute(HttpSessionRequestCache.SAVED_REQUEST);
+			if (savedRequest != null) {
+				return savedRequest.getRedirectUrl();
+			}
+		}
+
+		/* return a sane default in case data isn't there */
+		return request.getContextPath() + "/";
 	}
-	
+
 }

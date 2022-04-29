@@ -23,7 +23,8 @@ public class ItxSubjectContainerStateServiceImpl implements ItxSubjectContainerS
 
 	@Override
 	public ItxSubjectContainerState updateItxSubjectContainerState(ItxSubjectContainerState itxSubjectContainerState) {
-		itxSubjectContainerState.setVersion(ItxSubjectContainerState.findItxSubjectContainerState(itxSubjectContainerState.getId()).getVersion());
+		itxSubjectContainerState.setVersion(
+				ItxSubjectContainerState.findItxSubjectContainerState(itxSubjectContainerState.getId()).getVersion());
 		itxSubjectContainerState.merge();
 		return itxSubjectContainerState;
 	}
@@ -31,7 +32,7 @@ public class ItxSubjectContainerStateServiceImpl implements ItxSubjectContainerS
 	@Override
 	public Collection<ItxSubjectContainerState> updateItxSubjectContainerStates(
 			Collection<ItxSubjectContainerState> itxSubjectContainerStates) {
-		for (ItxSubjectContainerState itxSubjectContainerState : itxSubjectContainerStates){
+		for (ItxSubjectContainerState itxSubjectContainerState : itxSubjectContainerStates) {
 			itxSubjectContainerState = updateItxSubjectContainerState(itxSubjectContainerState);
 		}
 		return null;
@@ -39,7 +40,8 @@ public class ItxSubjectContainerStateServiceImpl implements ItxSubjectContainerS
 
 	@Override
 	public ItxSubjectContainerState saveItxSubjectContainerState(ItxSubjectContainerState itxSubjectContainerState) {
-		itxSubjectContainerState.setItxSubjectContainer(ItxSubjectContainer.findItxSubjectContainer(itxSubjectContainerState.getItxSubjectContainer().getId()));		
+		itxSubjectContainerState.setItxSubjectContainer(
+				ItxSubjectContainer.findItxSubjectContainer(itxSubjectContainerState.getItxSubjectContainer().getId()));
 		itxSubjectContainerState.persist();
 		return itxSubjectContainerState;
 	}
@@ -47,12 +49,10 @@ public class ItxSubjectContainerStateServiceImpl implements ItxSubjectContainerS
 	@Override
 	public Collection<ItxSubjectContainerState> saveItxSubjectContainerStates(
 			Collection<ItxSubjectContainerState> itxSubjectContainerStates) {
-		for (ItxSubjectContainerState itxSubjectContainerState: itxSubjectContainerStates) {
+		for (ItxSubjectContainerState itxSubjectContainerState : itxSubjectContainerStates) {
 			itxSubjectContainerState = saveItxSubjectContainerState(itxSubjectContainerState);
 		}
 		return itxSubjectContainerStates;
 	}
-
-
 
 }

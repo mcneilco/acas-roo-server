@@ -27,37 +27,37 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 public class ApiItxSubjectContainerControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiItxSubjectContainerControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    @Test
-    @Transactional
-    public void createFromJson() throws Exception {
+	private MockMvc mockMvc;
+
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	@Test
+	@Transactional
+	public void createFromJson() throws Exception {
 		String json = "[{\"subject\":{\"id\":6},\"container\":{\"id\":96},\"lsType\":\"default\",\"lsKind\":\"default\",\"recordedBy\":\"jmcneil\",\"recordedDate\":1455732120597,\"lsTransaction\":152}]";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxsubjectcontainers/jsonArray")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(json)
-    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isCreated())
-//    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	Collection<ItxSubjectContainer> postedItx = ItxSubjectContainer.fromJsonArrayToItxSubjectContainers(responseJson);
-    	logger.info(ItxSubjectContainer.toJsonArray(postedItx));
-    }
-    
-    
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxsubjectcontainers/jsonArray")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json)
+				.accept(MediaType.APPLICATION_JSON))
+				// .andExpect(status().isCreated())
+				// .andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		Collection<ItxSubjectContainer> postedItx = ItxSubjectContainer
+				.fromJsonArrayToItxSubjectContainers(responseJson);
+		logger.info(ItxSubjectContainer.toJsonArray(postedItx));
+	}
+
 }

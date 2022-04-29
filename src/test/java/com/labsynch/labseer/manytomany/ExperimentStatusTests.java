@@ -28,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class ExperimentStatusTests {
 
@@ -41,11 +42,11 @@ public class ExperimentStatusTests {
 	private ExperimentService experimentService;
 
 	@Transactional
-	//@Test
+	// @Test
 	public void CountExperimentsTest() {
 		List<Experiment> experiments = Experiment.findAllExperiments();
 		logger.info("number of experiments found -- " + experiments.size());
-		for (Experiment experiment : experiments){
+		for (Experiment experiment : experiments) {
 			logger.info("found experiment: " + experiment.getId());
 			logger.info("found experiment: " + experiment.toPrettyJson());
 		}
@@ -67,7 +68,7 @@ public class ExperimentStatusTests {
 		Set<Experiment> experiments = new HashSet<Experiment>();
 		experiments.add(experiment);
 		Set<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups();
-		for (AnalysisGroup analysisGroup: analysisGroups) {
+		for (AnalysisGroup analysisGroup : analysisGroups) {
 			Set<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
 			for (TreatmentGroup treatmentGroup : treatmentGroups) {
 				Set<Subject> subjects = treatmentGroup.getSubjects();
@@ -75,12 +76,12 @@ public class ExperimentStatusTests {
 					List<SubjectState> subjectStates = SubjectState
 							.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(
 									stateType, stateKind, subject)
-									.getResultList();
+							.getResultList();
 					for (SubjectState subjectState : subjectStates) {
 						List<SubjectValue> subjectValues = SubjectValue
 								.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(
 										subjectState, stateValueType, stateValueKind)
-										.getResultList();
+								.getResultList();
 						for (SubjectValue subjectValue : subjectValues) {
 							if (stateValueType.equalsIgnoreCase("stringValue")) {
 								values.add(subjectValue.getStringValue());
@@ -92,7 +93,7 @@ public class ExperimentStatusTests {
 				}
 			}
 		}
-		
+
 		KeyValueDTO transferDTO = new KeyValueDTO();
 		transferDTO.setKey("lsValue");
 		transferDTO.setValue(values.toString());
@@ -101,6 +102,5 @@ public class ExperimentStatusTests {
 		logger.info(transferDTO.toJson());
 
 	}
-
 
 }

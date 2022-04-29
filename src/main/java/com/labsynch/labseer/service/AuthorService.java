@@ -48,7 +48,8 @@ public interface AuthorService {
 
 	Author signupAuthor(Author author);
 
-	void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception;
+	void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain)
+			throws Exception;
 
 	void resetPassword(String emailAddress);
 

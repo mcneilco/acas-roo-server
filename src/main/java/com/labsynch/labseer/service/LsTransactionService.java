@@ -9,5 +9,4 @@ public interface LsTransactionService {
 
 	LsTransactionQueryDTO searchLsTransactions(LsTransactionQueryDTO query) throws Exception;
 
-	
 }

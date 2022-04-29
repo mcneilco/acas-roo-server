@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
 @Configurable
 public class ItxSubjectContainerValueDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<ItxSubjectContainerValue> data;
+    private List<ItxSubjectContainerValue> data;
 
-	@Autowired
+    @Autowired
     ItxSubjectContainerStateDataOnDemand itxSubjectContainerStateDataOnDemand;
 
-	public ItxSubjectContainerValue getNewTransientItxSubjectContainerValue(int index) {
+    public ItxSubjectContainerValue getNewTransientItxSubjectContainerValue(int index) {
         ItxSubjectContainerValue obj = new ItxSubjectContainerValue();
         setBlobValue(obj, index);
         setClobValue(obj, index);
@@ -69,17 +69,17 @@ public class ItxSubjectContainerValueDataOnDemand {
         return obj;
     }
 
-	public void setBlobValue(ItxSubjectContainerValue obj, int index) {
+    public void setBlobValue(ItxSubjectContainerValue obj, int index) {
         byte[] blobValue = String.valueOf(index).getBytes();
         obj.setBlobValue(blobValue);
     }
 
-	public void setClobValue(ItxSubjectContainerValue obj, int index) {
+    public void setClobValue(ItxSubjectContainerValue obj, int index) {
         String clobValue = "clobValue_" + index;
         obj.setClobValue(clobValue);
     }
 
-	public void setCodeKind(ItxSubjectContainerValue obj, int index) {
+    public void setCodeKind(ItxSubjectContainerValue obj, int index) {
         String codeKind = "codeKind_" + index;
         if (codeKind.length() > 255) {
             codeKind = codeKind.substring(0, 255);
@@ -87,7 +87,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setCodeKind(codeKind);
     }
 
-	public void setCodeOrigin(ItxSubjectContainerValue obj, int index) {
+    public void setCodeOrigin(ItxSubjectContainerValue obj, int index) {
         String codeOrigin = "codeOrigin_" + index;
         if (codeOrigin.length() > 255) {
             codeOrigin = codeOrigin.substring(0, 255);
@@ -95,7 +95,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setCodeOrigin(codeOrigin);
     }
 
-	public void setCodeType(ItxSubjectContainerValue obj, int index) {
+    public void setCodeType(ItxSubjectContainerValue obj, int index) {
         String codeType = "codeType_" + index;
         if (codeType.length() > 255) {
             codeType = codeType.substring(0, 255);
@@ -103,7 +103,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setCodeType(codeType);
     }
 
-	public void setCodeTypeAndKind(ItxSubjectContainerValue obj, int index) {
+    public void setCodeTypeAndKind(ItxSubjectContainerValue obj, int index) {
         String codeTypeAndKind = "codeTypeAndKind_" + index;
         if (codeTypeAndKind.length() > 350) {
             codeTypeAndKind = codeTypeAndKind.substring(0, 350);
@@ -111,7 +111,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setCodeTypeAndKind(codeTypeAndKind);
     }
 
-	public void setCodeValue(ItxSubjectContainerValue obj, int index) {
+    public void setCodeValue(ItxSubjectContainerValue obj, int index) {
         String codeValue = "codeValue_" + index;
         if (codeValue.length() > 255) {
             codeValue = codeValue.substring(0, 255);
@@ -119,7 +119,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setCodeValue(codeValue);
     }
 
-	public void setComments(ItxSubjectContainerValue obj, int index) {
+    public void setComments(ItxSubjectContainerValue obj, int index) {
         String comments = "comments_" + index;
         if (comments.length() > 512) {
             comments = comments.substring(0, 512);
@@ -127,7 +127,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setComments(comments);
     }
 
-	public void setConcUnit(ItxSubjectContainerValue obj, int index) {
+    public void setConcUnit(ItxSubjectContainerValue obj, int index) {
         String concUnit = "concUnit_" + index;
         if (concUnit.length() > 25) {
             concUnit = concUnit.substring(0, 25);
@@ -135,22 +135,25 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setConcUnit(concUnit);
     }
 
-	public void setConcentration(ItxSubjectContainerValue obj, int index) {
+    public void setConcentration(ItxSubjectContainerValue obj, int index) {
         Double concentration = new Integer(index).doubleValue();
         obj.setConcentration(concentration);
     }
 
-	public void setDateValue(ItxSubjectContainerValue obj, int index) {
-        Date dateValue = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setDateValue(ItxSubjectContainerValue obj, int index) {
+        Date dateValue = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setDateValue(dateValue);
     }
 
-	public void setDeleted(ItxSubjectContainerValue obj, int index) {
+    public void setDeleted(ItxSubjectContainerValue obj, int index) {
         Boolean deleted = true;
         obj.setDeleted(deleted);
     }
 
-	public void setFileValue(ItxSubjectContainerValue obj, int index) {
+    public void setFileValue(ItxSubjectContainerValue obj, int index) {
         String fileValue = "fileValue_" + index;
         if (fileValue.length() > 512) {
             fileValue = fileValue.substring(0, 512);
@@ -158,12 +161,12 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setFileValue(fileValue);
     }
 
-	public void setIgnored(ItxSubjectContainerValue obj, int index) {
+    public void setIgnored(ItxSubjectContainerValue obj, int index) {
         Boolean ignored = true;
         obj.setIgnored(ignored);
     }
 
-	public void setLsKind(ItxSubjectContainerValue obj, int index) {
+    public void setLsKind(ItxSubjectContainerValue obj, int index) {
         String lsKind = "lsKind_" + index;
         if (lsKind.length() > 255) {
             lsKind = lsKind.substring(0, 255);
@@ -171,12 +174,12 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setLsKind(lsKind);
     }
 
-	public void setLsTransaction(ItxSubjectContainerValue obj, int index) {
+    public void setLsTransaction(ItxSubjectContainerValue obj, int index) {
         Long lsTransaction = new Integer(index).longValue();
         obj.setLsTransaction(lsTransaction);
     }
 
-	public void setLsType(ItxSubjectContainerValue obj, int index) {
+    public void setLsType(ItxSubjectContainerValue obj, int index) {
         String lsType = "lsType_" + index;
         if (lsType.length() > 64) {
             lsType = lsType.substring(0, 64);
@@ -184,7 +187,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(ItxSubjectContainerValue obj, int index) {
+    public void setLsTypeAndKind(ItxSubjectContainerValue obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 350) {
             lsTypeAndKind = lsTypeAndKind.substring(0, 350);
@@ -192,7 +195,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public void setModifiedBy(ItxSubjectContainerValue obj, int index) {
+    public void setModifiedBy(ItxSubjectContainerValue obj, int index) {
         String modifiedBy = "modifiedBy_" + index;
         if (modifiedBy.length() > 255) {
             modifiedBy = modifiedBy.substring(0, 255);
@@ -200,17 +203,20 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setModifiedBy(modifiedBy);
     }
 
-	public void setModifiedDate(ItxSubjectContainerValue obj, int index) {
-        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setModifiedDate(ItxSubjectContainerValue obj, int index) {
+        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
     }
 
-	public void setNumberOfReplicates(ItxSubjectContainerValue obj, int index) {
+    public void setNumberOfReplicates(ItxSubjectContainerValue obj, int index) {
         Integer numberOfReplicates = new Integer(index);
         obj.setNumberOfReplicates(numberOfReplicates);
     }
 
-	public void setNumericValue(ItxSubjectContainerValue obj, int index) {
+    public void setNumericValue(ItxSubjectContainerValue obj, int index) {
         BigDecimal numericValue = BigDecimal.valueOf(index);
         if (numericValue.compareTo(new BigDecimal("99999999999999999999.999999999999999999")) == 1) {
             numericValue = new BigDecimal("99999999999999999999.999999999999999999");
@@ -218,7 +224,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setNumericValue(numericValue);
     }
 
-	public void setOperatorKind(ItxSubjectContainerValue obj, int index) {
+    public void setOperatorKind(ItxSubjectContainerValue obj, int index) {
         String operatorKind = "operator_" + index;
         if (operatorKind.length() > 10) {
             operatorKind = operatorKind.substring(0, 10);
@@ -226,7 +232,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setOperatorKind(operatorKind);
     }
 
-	public void setOperatorType(ItxSubjectContainerValue obj, int index) {
+    public void setOperatorType(ItxSubjectContainerValue obj, int index) {
         String operatorType = "operatorType_" + index;
         if (operatorType.length() > 25) {
             operatorType = operatorType.substring(0, 25);
@@ -234,7 +240,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setOperatorType(operatorType);
     }
 
-	public void setOperatorTypeAndKind(ItxSubjectContainerValue obj, int index) {
+    public void setOperatorTypeAndKind(ItxSubjectContainerValue obj, int index) {
         String operatorTypeAndKind = "operatorTypeAndKind_" + index;
         if (operatorTypeAndKind.length() > 50) {
             operatorTypeAndKind = operatorTypeAndKind.substring(0, 50);
@@ -242,12 +248,12 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setOperatorTypeAndKind(operatorTypeAndKind);
     }
 
-	public void setPublicData(ItxSubjectContainerValue obj, int index) {
+    public void setPublicData(ItxSubjectContainerValue obj, int index) {
         Boolean publicData = true;
         obj.setPublicData(publicData);
     }
 
-	public void setRecordedBy(ItxSubjectContainerValue obj, int index) {
+    public void setRecordedBy(ItxSubjectContainerValue obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -255,17 +261,20 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(ItxSubjectContainerValue obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(ItxSubjectContainerValue obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public void setSigFigs(ItxSubjectContainerValue obj, int index) {
+    public void setSigFigs(ItxSubjectContainerValue obj, int index) {
         Integer sigFigs = new Integer(index);
         obj.setSigFigs(sigFigs);
     }
 
-	public void setStringValue(ItxSubjectContainerValue obj, int index) {
+    public void setStringValue(ItxSubjectContainerValue obj, int index) {
         String stringValue = "stringValue_" + index;
         if (stringValue.length() > 255) {
             stringValue = stringValue.substring(0, 255);
@@ -273,7 +282,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setStringValue(stringValue);
     }
 
-	public void setUncertainty(ItxSubjectContainerValue obj, int index) {
+    public void setUncertainty(ItxSubjectContainerValue obj, int index) {
         BigDecimal uncertainty = BigDecimal.valueOf(index);
         if (uncertainty.compareTo(new BigDecimal("99999999999999999999.999999999999999999")) == 1) {
             uncertainty = new BigDecimal("99999999999999999999.999999999999999999");
@@ -281,7 +290,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setUncertainty(uncertainty);
     }
 
-	public void setUncertaintyType(ItxSubjectContainerValue obj, int index) {
+    public void setUncertaintyType(ItxSubjectContainerValue obj, int index) {
         String uncertaintyType = "uncertaintyType_" + index;
         if (uncertaintyType.length() > 255) {
             uncertaintyType = uncertaintyType.substring(0, 255);
@@ -289,7 +298,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setUncertaintyType(uncertaintyType);
     }
 
-	public void setUnitKind(ItxSubjectContainerValue obj, int index) {
+    public void setUnitKind(ItxSubjectContainerValue obj, int index) {
         String unitKind = "unitKind_" + index;
         if (unitKind.length() > 25) {
             unitKind = unitKind.substring(0, 25);
@@ -297,7 +306,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setUnitKind(unitKind);
     }
 
-	public void setUnitType(ItxSubjectContainerValue obj, int index) {
+    public void setUnitType(ItxSubjectContainerValue obj, int index) {
         String unitType = "unitType_" + index;
         if (unitType.length() > 25) {
             unitType = unitType.substring(0, 25);
@@ -305,7 +314,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setUnitType(unitType);
     }
 
-	public void setUnitTypeAndKind(ItxSubjectContainerValue obj, int index) {
+    public void setUnitTypeAndKind(ItxSubjectContainerValue obj, int index) {
         String unitTypeAndKind = "unitTypeAndKind_" + index;
         if (unitTypeAndKind.length() > 55) {
             unitTypeAndKind = unitTypeAndKind.substring(0, 55);
@@ -313,7 +322,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setUnitTypeAndKind(unitTypeAndKind);
     }
 
-	public void setUrlValue(ItxSubjectContainerValue obj, int index) {
+    public void setUrlValue(ItxSubjectContainerValue obj, int index) {
         String urlValue = "urlValue_" + index;
         if (urlValue.length() > 2000) {
             urlValue = urlValue.substring(0, 2000);
@@ -321,7 +330,7 @@ public class ItxSubjectContainerValueDataOnDemand {
         obj.setUrlValue(urlValue);
     }
 
-	public ItxSubjectContainerValue getSpecificItxSubjectContainerValue(int index) {
+    public ItxSubjectContainerValue getSpecificItxSubjectContainerValue(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -334,28 +343,29 @@ public class ItxSubjectContainerValueDataOnDemand {
         return ItxSubjectContainerValue.findItxSubjectContainerValue(id);
     }
 
-	public ItxSubjectContainerValue getRandomItxSubjectContainerValue() {
+    public ItxSubjectContainerValue getRandomItxSubjectContainerValue() {
         init();
         ItxSubjectContainerValue obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return ItxSubjectContainerValue.findItxSubjectContainerValue(id);
     }
 
-	public boolean modifyItxSubjectContainerValue(ItxSubjectContainerValue obj) {
+    public boolean modifyItxSubjectContainerValue(ItxSubjectContainerValue obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = ItxSubjectContainerValue.findItxSubjectContainerValueEntries(from, to);
         if (data == null) {
-            throw new IllegalStateException("Find entries implementation for 'ItxSubjectContainerValue' illegally returned null");
+            throw new IllegalStateException(
+                    "Find entries implementation for 'ItxSubjectContainerValue' illegally returned null");
         }
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<ItxSubjectContainerValue>();
         for (int i = 0; i < 10; i++) {
             ItxSubjectContainerValue obj = getNewTransientItxSubjectContainerValue(i);
@@ -365,7 +375,9 @@ public class ItxSubjectContainerValueDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

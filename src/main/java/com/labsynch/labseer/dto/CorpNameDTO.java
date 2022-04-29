@@ -9,61 +9,59 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+public class CorpNameDTO {
 
-public class CorpNameDTO{
+    private int corpNumber;
 
-	private int corpNumber;
-	
-	private String corpName;
+    private String corpName;
 
-
-	public int getCorpNumber() {
+    public int getCorpNumber() {
         return this.corpNumber;
     }
 
-	public void setCorpNumber(int corpNumber) {
+    public void setCorpNumber(int corpNumber) {
         this.corpNumber = corpNumber;
     }
 
-	public String getCorpName() {
+    public String getCorpName() {
         return this.corpName;
     }
 
-	public void setCorpName(String corpName) {
+    public void setCorpName(String corpName) {
         this.corpName = corpName;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static CorpNameDTO fromJsonToCorpNameDTO(String json) {
+    public static CorpNameDTO fromJsonToCorpNameDTO(String json) {
         return new JSONDeserializer<CorpNameDTO>()
-        .use(null, CorpNameDTO.class).deserialize(json);
+                .use(null, CorpNameDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<CorpNameDTO> collection) {
+    public static String toJsonArray(Collection<CorpNameDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<CorpNameDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<CorpNameDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<CorpNameDTO> fromJsonArrayToCoes(String json) {
+    public static Collection<CorpNameDTO> fromJsonArrayToCoes(String json) {
         return new JSONDeserializer<List<CorpNameDTO>>()
-        .use("values", CorpNameDTO.class).deserialize(json);
+                .use("values", CorpNameDTO.class).deserialize(json);
     }
 }

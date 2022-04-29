@@ -16,6 +16,4 @@ public interface ItxLsThingLsThingService {
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<ItxLsThingLsThing> itxLsThingLsThings);
 
-	
-	
 }

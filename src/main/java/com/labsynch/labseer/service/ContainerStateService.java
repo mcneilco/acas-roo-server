@@ -48,6 +48,4 @@ public interface ContainerStateService {
 			ContainerValueRequestDTO requestDTO, Boolean like, Boolean rightLike)
 			throws Exception;
 
-	
-	
 }

@@ -39,22 +39,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
-
 /**
  * 
  */
 @SuppressWarnings("deprecation")
 @Service("acasAuthenticationProvider")
 public class ACASAuthenticationProvider extends
-AbstractUserDetailsAuthenticationProvider {
+		AbstractUserDetailsAuthenticationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(ACASAuthenticationProvider.class);
 
 	private String adminUser;
 
 	private String adminPassword;
-
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
@@ -70,7 +67,6 @@ AbstractUserDetailsAuthenticationProvider {
 		this.adminPassword = adminPassword;
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,7 +81,7 @@ AbstractUserDetailsAuthenticationProvider {
 	@Transactional
 	protected void additionalAuthenticationChecks(UserDetails arg0,
 			UsernamePasswordAuthenticationToken arg1)
-					throws AuthenticationException {
+			throws AuthenticationException {
 		return;
 
 	}
@@ -103,22 +99,20 @@ AbstractUserDetailsAuthenticationProvider {
 	@Transactional
 	protected UserDetails retrieveUser(String username,
 			UsernamePasswordAuthenticationToken authentication)
-					throws AuthenticationException {
-		logger.debug( "Inside retrieveUser");
+			throws AuthenticationException {
+		logger.debug("Inside retrieveUser");
 		logger.debug("here is the current auth strategy: " + propertiesUtilService.getAuthStrategy());
 		logger.debug("here is the current username: " + username);
 
-
-
 		String password = (String) authentication.getCredentials();
-		if (! StringUtils.hasText(password)) {
+		if (!StringUtils.hasText(password)) {
 			throw new BadCredentialsException("Please enter password");
 		}
 
 		messageDigestPasswordEncoder.setEncodeHashAsBase64(true);
 		String encryptedPassword = null;
 		try {
-			if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")){
+			if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")) {
 				encryptedPassword = getBase64ShaHash(password);
 			} else {
 				encryptedPassword = getBase64ShaHash(password);
@@ -129,22 +123,22 @@ AbstractUserDetailsAuthenticationProvider {
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} 
+		}
 
 		UserDetails user = null;
 		String expectedPassword = null;
 		Boolean enabled = true;
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		
-		if (adminUser == null){
+
+		if (adminUser == null) {
 			logger.info("the default adminUser is null");
 		}
-		
+
 		if (adminUser != null && adminUser.equals(username)) {
 			// pseudo-user admin (ie not configured via Person)
-			expectedPassword = adminPassword; 
+			expectedPassword = adminPassword;
 			// authenticate admin
-			if (! encryptedPassword.equals(expectedPassword)) {
+			if (!encryptedPassword.equals(expectedPassword)) {
 				throw new BadCredentialsException("Invalid password");
 			}
 			// authorize admin
@@ -154,13 +148,13 @@ AbstractUserDetailsAuthenticationProvider {
 
 			try {
 
-				if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")){
+				if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")) {
 					expectedPassword = getPropertiesPassword(username);
 
-				}	else {
+				} else {
 
-					TypedQuery<Author> query= Author.findAuthorsByUserName(username);
-					if (query.getResultList().size() == 0){
+					TypedQuery<Author> query = Author.findAuthorsByUserName(username);
+					if (query.getResultList().size() == 0) {
 						query = Author.findAuthorsByEmailAddress(username);
 					}
 
@@ -168,9 +162,9 @@ AbstractUserDetailsAuthenticationProvider {
 
 					expectedPassword = targetUser.getPassword();
 
-					TypedQuery<AuthorRole> roleQuery=AuthorRole.findAuthorRolesByUserEntry(targetUser);
+					TypedQuery<AuthorRole> roleQuery = AuthorRole.findAuthorRolesByUserEntry(targetUser);
 					List<AuthorRole> userRoles = roleQuery.getResultList();
-					for(AuthorRole userRole:userRoles){
+					for (AuthorRole userRole : userRoles) {
 						authorities.add(new SimpleGrantedAuthority(userRole.getRoleEntry().getRoleName()));
 					}
 					enabled = targetUser.getEnabled();
@@ -181,11 +175,11 @@ AbstractUserDetailsAuthenticationProvider {
 				}
 				// authenticate the person
 
-				if (! StringUtils.hasText(expectedPassword)) {
-					throw new BadCredentialsException("No password for " + username + 
+				if (!StringUtils.hasText(expectedPassword)) {
+					throw new BadCredentialsException("No password for " + username +
 							" set in database, contact administrator");
 				}
-				if (! encryptedPassword.equals(expectedPassword)) {
+				if (!encryptedPassword.equals(expectedPassword)) {
 					throw new BadCredentialsException("Invalid Password");
 				}
 
@@ -206,19 +200,19 @@ AbstractUserDetailsAuthenticationProvider {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return new org.springframework.security.core.userdetails.User(
 				username,
 				password,
-				enabled, // enabled 
+				enabled, // enabled
 				true, // account not expired
-				true, // credentials not expired 
+				true, // credentials not expired
 				true, // account not locked
-				authorities
-				);
+				authorities);
 	}
 
-	public static String getBase64ShaHash(final String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+	public static String getBase64ShaHash(final String str)
+			throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		final MessageDigest md = MessageDigest.getInstance("SHA");
 		md.update(str.getBytes("UTF-8"));
 		final byte[] bites = md.digest();
@@ -226,10 +220,11 @@ AbstractUserDetailsAuthenticationProvider {
 		final Base64 base64 = new Base64();
 		final String encoded = base64.encodeAsString(bites);
 		logger.debug("new encoded password: " + encoded);
-		return encoded; 
+		return encoded;
 	}
 
-	public static String getBase64Sha256Hash(final String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+	public static String getBase64Sha256Hash(final String str)
+			throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		final MessageDigest md = MessageDigest.getInstance("SHA-256");
 		md.update(str.getBytes("UTF-8"));
 		final byte[] bites = md.digest();
@@ -237,7 +232,7 @@ AbstractUserDetailsAuthenticationProvider {
 		final Base64 base64 = new Base64();
 		final String encoded = base64.encodeAsString(bites);
 		logger.debug("new encoded password: " + encoded);
-		return encoded; 
+		return encoded;
 	}
 
 	public String getPropertiesPassword(String userName) throws IOException, NoSuchAlgorithmException {
@@ -245,21 +240,21 @@ AbstractUserDetailsAuthenticationProvider {
 		String password = null;
 
 		Properties properties = new Properties();
-		FileInputStream propertyStream = new FileInputStream(propertiesUtilService.getSecurityProperties()); 
+		FileInputStream propertyStream = new FileInputStream(propertiesUtilService.getSecurityProperties());
 		properties.load(propertyStream);
 		propertyStream.close();
 
 		String encryptedPassword = null;
 		String passwordString = properties.getProperty(userName);
-		if (passwordString != null && passwordString.length() > 0){
+		if (passwordString != null && passwordString.length() > 0) {
 			List<String> passwordList = new ArrayList<String>();
 			String[] parsedEntry = passwordString.split("\\{SHA\\}|,");
-			for (String word : parsedEntry){
+			for (String word : parsedEntry) {
 				logger.debug("parsed word: " + word);
 				passwordList.add(word);
 			}
 
-			if (passwordString.contains("{SHA}")){
+			if (passwordString.contains("{SHA}")) {
 				logger.debug("the entry starts with {SHA}");
 				logger.debug("here is the encrypted password: " + passwordList.get(1));
 				encryptedPassword = passwordList.get(1);
@@ -274,5 +269,5 @@ AbstractUserDetailsAuthenticationProvider {
 
 		return encryptedPassword;
 	}
-	
+
 }

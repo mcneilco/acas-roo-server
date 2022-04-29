@@ -1,9 +1,9 @@
 package com.labsynch.labseer.utils;
 
 public class StatCalc {
-	private int count;   // Number of numbers that have been entered.
-	private Double sum;  // The sum of all the items that have been entered.
-	private Double squareSum;  // The sum of the squares of all the items.
+	private int count; // Number of numbers that have been entered.
+	private Double sum; // The sum of all the items that have been entered.
+	private Double squareSum; // The sum of the squares of all the items.
 	private Double product; // The product of all the items
 
 	public StatCalc() {
@@ -12,15 +12,16 @@ public class StatCalc {
 		squareSum = 0.0;
 		product = 1.0;
 	}
+
 	public void add(double num) {
 		// Add the number to the dataset.
 		count++;
 		sum += num;
-		squareSum += num*num;
+		squareSum += num * num;
 		product *= num;
 	}
 
-	public int getCount() {   
+	public int getCount() {
 		// Return number of items that have been entered.
 		return count;
 	}
@@ -29,6 +30,7 @@ public class StatCalc {
 		// Return the sum of all the items that have been entered.
 		return sum;
 	}
+
 	public Double getProduct() {
 		// Return the product of all the items that have been entered.
 		return product;
@@ -37,22 +39,23 @@ public class StatCalc {
 	public Double getArithmeticMean() {
 		// Return average of all the items that have been entered.
 		// Value is Double.NaN if count == 0.
-		return sum / count;  
+		return sum / count;
 	}
+
 	public Double getGeometricMean() {
 		// Return geometric mean of all the items that have been entered.
 		// Value is Double.NaN if count == 0.
-		return Math.pow(product,1/count);  
+		return Math.pow(product, 1 / count);
 	}
 
-	public Double getStandardDeviation() {  
+	public Double getStandardDeviation() {
 		// Return standard deviation of all the items that have been entered.
 		// Value will be Double.NaN if count == 0.
 		Double mean = getArithmeticMean();
-		Double stdDev = squareSum/count - mean*mean;
-		if(stdDev < 0.000000000001) {
+		Double stdDev = squareSum / count - mean * mean;
+		if (stdDev < 0.000000000001) {
 			stdDev = 0.0;
 		}
-		return Math.sqrt( stdDev );
+		return Math.sqrt(stdDev);
 	}
 }

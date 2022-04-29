@@ -20,14 +20,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class AnalysisGroupLabelDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<AnalysisGroupLabel> data;
+    private List<AnalysisGroupLabel> data;
 
-	@Autowired
+    @Autowired
     AnalysisGroupDataOnDemand analysisGroupDataOnDemand;
 
-	public AnalysisGroupLabel getNewTransientAnalysisGroupLabel(int index) {
+    public AnalysisGroupLabel getNewTransientAnalysisGroupLabel(int index) {
         AnalysisGroupLabel obj = new AnalysisGroupLabel();
         setAnalysisGroup(obj, index);
         setDeleted(obj, index);
@@ -46,22 +46,22 @@ public class AnalysisGroupLabelDataOnDemand {
         return obj;
     }
 
-	public void setAnalysisGroup(AnalysisGroupLabel obj, int index) {
+    public void setAnalysisGroup(AnalysisGroupLabel obj, int index) {
         AnalysisGroup analysisGroup = analysisGroupDataOnDemand.getRandomAnalysisGroup();
         obj.setAnalysisGroup(analysisGroup);
     }
 
-	public void setDeleted(AnalysisGroupLabel obj, int index) {
+    public void setDeleted(AnalysisGroupLabel obj, int index) {
         Boolean deleted = true;
         obj.setDeleted(deleted);
     }
 
-	public void setIgnored(AnalysisGroupLabel obj, int index) {
+    public void setIgnored(AnalysisGroupLabel obj, int index) {
         Boolean ignored = true;
         obj.setIgnored(ignored);
     }
 
-	public void setImageFile(AnalysisGroupLabel obj, int index) {
+    public void setImageFile(AnalysisGroupLabel obj, int index) {
         String imageFile = "imageFile_" + index;
         if (imageFile.length() > 255) {
             imageFile = imageFile.substring(0, 255);
@@ -69,7 +69,7 @@ public class AnalysisGroupLabelDataOnDemand {
         obj.setImageFile(imageFile);
     }
 
-	public void setLabelText(AnalysisGroupLabel obj, int index) {
+    public void setLabelText(AnalysisGroupLabel obj, int index) {
         String labelText = "labelText_" + index;
         if (labelText.length() > 255) {
             labelText = labelText.substring(0, 255);
@@ -77,7 +77,7 @@ public class AnalysisGroupLabelDataOnDemand {
         obj.setLabelText(labelText);
     }
 
-	public void setLsKind(AnalysisGroupLabel obj, int index) {
+    public void setLsKind(AnalysisGroupLabel obj, int index) {
         String lsKind = "lsKind_" + index;
         if (lsKind.length() > 255) {
             lsKind = lsKind.substring(0, 255);
@@ -85,12 +85,12 @@ public class AnalysisGroupLabelDataOnDemand {
         obj.setLsKind(lsKind);
     }
 
-	public void setLsTransaction(AnalysisGroupLabel obj, int index) {
+    public void setLsTransaction(AnalysisGroupLabel obj, int index) {
         Long lsTransaction = new Integer(index).longValue();
         obj.setLsTransaction(lsTransaction);
     }
 
-	public void setLsType(AnalysisGroupLabel obj, int index) {
+    public void setLsType(AnalysisGroupLabel obj, int index) {
         String lsType = "lsType_" + index;
         if (lsType.length() > 64) {
             lsType = lsType.substring(0, 64);
@@ -98,7 +98,7 @@ public class AnalysisGroupLabelDataOnDemand {
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(AnalysisGroupLabel obj, int index) {
+    public void setLsTypeAndKind(AnalysisGroupLabel obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = lsTypeAndKind.substring(0, 255);
@@ -106,22 +106,25 @@ public class AnalysisGroupLabelDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public void setModifiedDate(AnalysisGroupLabel obj, int index) {
-        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setModifiedDate(AnalysisGroupLabel obj, int index) {
+        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
     }
 
-	public void setPhysicallyLabled(AnalysisGroupLabel obj, int index) {
+    public void setPhysicallyLabled(AnalysisGroupLabel obj, int index) {
         Boolean physicallyLabled = true;
         obj.setPhysicallyLabled(physicallyLabled);
     }
 
-	public void setPreferred(AnalysisGroupLabel obj, int index) {
+    public void setPreferred(AnalysisGroupLabel obj, int index) {
         Boolean preferred = true;
         obj.setPreferred(preferred);
     }
 
-	public void setRecordedBy(AnalysisGroupLabel obj, int index) {
+    public void setRecordedBy(AnalysisGroupLabel obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -129,12 +132,15 @@ public class AnalysisGroupLabelDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(AnalysisGroupLabel obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(AnalysisGroupLabel obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public AnalysisGroupLabel getSpecificAnalysisGroupLabel(int index) {
+    public AnalysisGroupLabel getSpecificAnalysisGroupLabel(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -147,28 +153,29 @@ public class AnalysisGroupLabelDataOnDemand {
         return AnalysisGroupLabel.findAnalysisGroupLabel(id);
     }
 
-	public AnalysisGroupLabel getRandomAnalysisGroupLabel() {
+    public AnalysisGroupLabel getRandomAnalysisGroupLabel() {
         init();
         AnalysisGroupLabel obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return AnalysisGroupLabel.findAnalysisGroupLabel(id);
     }
 
-	public boolean modifyAnalysisGroupLabel(AnalysisGroupLabel obj) {
+    public boolean modifyAnalysisGroupLabel(AnalysisGroupLabel obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = AnalysisGroupLabel.findAnalysisGroupLabelEntries(from, to);
         if (data == null) {
-            throw new IllegalStateException("Find entries implementation for 'AnalysisGroupLabel' illegally returned null");
+            throw new IllegalStateException(
+                    "Find entries implementation for 'AnalysisGroupLabel' illegally returned null");
         }
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<AnalysisGroupLabel>();
         for (int i = 0; i < 10; i++) {
             AnalysisGroupLabel obj = getNewTransientAnalysisGroupLabel(i);
@@ -178,7 +185,9 @@ public class AnalysisGroupLabelDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

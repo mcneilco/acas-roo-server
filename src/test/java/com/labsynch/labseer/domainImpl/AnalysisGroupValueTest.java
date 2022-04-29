@@ -23,49 +23,53 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class AnalysisGroupValueTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueTest.class);
-	
-	//@Test
+
+	// @Test
 	@Transactional
-    public void getLsthingsByName() {
-    	String lsType = "gene";
+	public void getLsthingsByName() {
+		String lsType = "gene";
 		String lsKind = "entrez gene";
 		String labelType = "name";
 		String labelKind = "Entrez Gene ID";
 		String labelText = "47767";
-		List<LsThing> results = LsThing.findLsThingByLabelText(lsType, lsKind, labelType, labelKind, labelText).getResultList();
+		List<LsThing> results = LsThing.findLsThingByLabelText(lsType, lsKind, labelType, labelKind, labelText)
+				.getResultList();
 		logger.info("query labelText: " + labelText + " number of results: " + results.size());
-		if (results.size()>0){
-			for(LsThing result : results){
-				//12597
-				logger.info("attempting to output JSON: -----------------  " + result.getCodeName() + "  " + result.getId());
-//				LsThing newThing = LsThing.findLsThing(result.getId());
-//				Set<LsTag> tags = newThing.getLsTags();
-//				for (LsTag tag:tags){
-//					logger.info("tag here: " + tag.toJson());
-//				}
+		if (results.size() > 0) {
+			for (LsThing result : results) {
+				// 12597
+				logger.info("attempting to output JSON: -----------------  " + result.getCodeName() + "  "
+						+ result.getId());
+				// LsThing newThing = LsThing.findLsThing(result.getId());
+				// Set<LsTag> tags = newThing.getLsTags();
+				// for (LsTag tag:tags){
+				// logger.info("tag here: " + tag.toJson());
+				// }
 				logger.info(result.toJson());
 			}
 		}
 	}
-	
-		@Test
+
+	@Test
 	@Transactional
-	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
-			
+	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind() {
+
 		Long experimentId = 9L;
 		String stateType = "data";
 		String stateKind = "Generic";
-		List<AnalysisGroupValue> results = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+		List<AnalysisGroupValue> results = AnalysisGroupValue
+				.findAnalysisGroupValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
 		logger.info(AnalysisGroupValue.toJsonArray(results));
-		assert(results.size() == 11);
+		assert (results.size() == 11);
 	}
-	
-	//@Test
+
+	// @Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -73,14 +77,16 @@ public class AnalysisGroupValueTest {
 		String stateKind = "experiment metadata";
 		List<AnalysisGroupValue> results = new ArrayList<AnalysisGroupValue>();
 		try {
-			results = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
-		} catch(IllegalArgumentException ex ) {
+			results = AnalysisGroupValue
+					.findAnalysisGroupValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind)
+					.getResultList();
+		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());
 		}
-		assert(results.size() == 0);
+		assert (results.size() == 0);
 	}
-	
-	//@Test
+
+	// @Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000003";
@@ -90,46 +96,54 @@ public class AnalysisGroupValueTest {
 		boolean didCatch = false;
 		try {
 			experiment = Experiment.findExperimentsByCodeNameEquals(experimentCodeName).getSingleResult();
-		} catch(NoResultException nre) {
+		} catch (NoResultException nre) {
 			logger.info(nre.getMessage());
 			didCatch = true;
 		}
 		List<AnalysisGroupValue> results = new ArrayList<AnalysisGroupValue>();
 		try {
-			results = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKind(experiment.getId(), stateType, stateKind).getResultList();
-		} catch(IllegalArgumentException ex ) {
+			results = AnalysisGroupValue
+					.findAnalysisGroupValuesByExptIDAndStateTypeKind(experiment.getId(), stateType, stateKind)
+					.getResultList();
+		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());
-			assert(results.size() == 0);
+			assert (results.size() == 0);
 			didCatch = true;
 		}
-		if(!didCatch) assert(results.size() == 11);
+		if (!didCatch)
+			assert (results.size() == 11);
 	}
-	
-	//@Test
+
+	// @Test
 	@Transactional
-	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
-			
+	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind() {
+
 		Long experimentId = 9L;
 		String stateType = "data";
 		String stateKind = "Generic";
 		String valueType = "numericValue";
 		String valueKind = "solubility";
-		List<AnalysisGroupValue> results = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind).getResultList();
+		List<AnalysisGroupValue> results = AnalysisGroupValue
+				.findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind,
+						valueType, valueKind)
+				.getResultList();
 		logger.info(AnalysisGroupValue.toJsonArray(results));
-		assert(results.size() == 2);
+		assert (results.size() == 2);
 	}
-	
-	//@Test
+
+	// @Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKind() {
 		Long analysisGroupId = 10L;
 		String stateType = "data";
 		String stateKind = "Generic";
-		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue
+				.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind)
+				.getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
-	
-	//@Test
+
+	// @Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKindAndValueTypeKind() {
 		Long analysisGroupId = 10L;
@@ -137,10 +151,13 @@ public class AnalysisGroupValueTest {
 		String stateKind = "Generic";
 		String valueType = "stringValue";
 		String valueKind = "Assay Comment";
-		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind).getResultList();
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue
+				.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType,
+						stateKind, valueType, valueKind)
+				.getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
-	
+
 	@Test
 	@Transactional
 	public void queryAGDataTest() {
@@ -156,15 +173,14 @@ public class AnalysisGroupValueTest {
 		searchRequest.setBatchCodeList(finalUniqueBatchCodes);
 		logger.info(searchRequest.toJson());
 		boolean onlyPublicData = true;
-		List<AnalysisGroupValueDTO> results = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData);
+		List<AnalysisGroupValueDTO> results = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes,
+				searchRequest.getExperimentCodeList(), onlyPublicData);
 		logger.info("number of results found: " + results.size());
 		logger.info(AnalysisGroupValueDTO.toPrettyJsonArray(results));
-		
-//		Experiment experiment = Experiment.findExperiment(17151L);
-//		logger.info(experiment.toJson());
-		
+
+		// Experiment experiment = Experiment.findExperiment(17151L);
+		// logger.info(experiment.toJson());
+
 	}
 
-	
-	
 }

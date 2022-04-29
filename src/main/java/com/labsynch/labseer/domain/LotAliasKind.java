@@ -28,7 +28,7 @@ import flexjson.JSONSerializer;
 @Configurable
 
 public class LotAliasKind {
-	
+
     @NotNull
     @ManyToOne
     @JoinColumn(name = "ls_type")
@@ -36,58 +36,58 @@ public class LotAliasKind {
 
     @Size(max = 255)
     private String kindName;
- 
-    
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsType", "kindName");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsType", "kindName");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new LotAliasKind().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countLotAliasKinds() {
+    public static long countLotAliasKinds() {
         return entityManager().createQuery("SELECT COUNT(o) FROM LotAliasKind o", Long.class).getSingleResult();
     }
 
-	public static List<LotAliasKind> findAllLotAliasKinds() {
+    public static List<LotAliasKind> findAllLotAliasKinds() {
         return entityManager().createQuery("SELECT o FROM LotAliasKind o", LotAliasKind.class).getResultList();
     }
 
-	public static List<LotAliasKind> findAllLotAliasKinds(String sortFieldName, String sortOrder) {
+    public static List<LotAliasKind> findAllLotAliasKinds(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM LotAliasKind o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -98,16 +98,19 @@ public class LotAliasKind {
         return entityManager().createQuery(jpaQuery, LotAliasKind.class).getResultList();
     }
 
-	public static LotAliasKind findLotAliasKind(Long id) {
-        if (id == null) return null;
+    public static LotAliasKind findLotAliasKind(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(LotAliasKind.class, id);
     }
 
-	public static List<LotAliasKind> findLotAliasKindEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM LotAliasKind o", LotAliasKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<LotAliasKind> findLotAliasKindEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM LotAliasKind o", LotAliasKind.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<LotAliasKind> findLotAliasKindEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<LotAliasKind> findLotAliasKindEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM LotAliasKind o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -115,18 +118,21 @@ public class LotAliasKind {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, LotAliasKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, LotAliasKind.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -135,69 +141,72 @@ public class LotAliasKind {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public LotAliasKind merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         LotAliasKind merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public LotAliasType getLsType() {
+    public LotAliasType getLsType() {
         return this.lsType;
     }
 
-	public void setLsType(LotAliasType lsType) {
+    public void setLsType(LotAliasType lsType) {
         this.lsType = lsType;
     }
 
-	public String getKindName() {
+    public String getKindName() {
         return this.kindName;
     }
 
-	public void setKindName(String kindName) {
+    public void setKindName(String kindName) {
         this.kindName = kindName;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static LotAliasKind fromJsonToLotAliasKind(String json) {
+    public static LotAliasKind fromJsonToLotAliasKind(String json) {
         return new JSONDeserializer<LotAliasKind>()
-        .use(null, LotAliasKind.class).deserialize(json);
+                .use(null, LotAliasKind.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<LotAliasKind> collection) {
+    public static String toJsonArray(Collection<LotAliasKind> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<LotAliasKind> collection, String[] fields) {
+    public static String toJsonArray(Collection<LotAliasKind> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<LotAliasKind> fromJsonArrayToLotAliasKinds(String json) {
+    public static Collection<LotAliasKind> fromJsonArrayToLotAliasKinds(String json) {
         return new JSONDeserializer<List<LotAliasKind>>()
-        .use("values", LotAliasKind.class).deserialize(json);
+                .use("values", LotAliasKind.class).deserialize(json);
     }
 }

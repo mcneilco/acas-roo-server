@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ItxExperimentExperimentValueService {
 
-	ItxExperimentExperimentValue updateItxExperimentExperimentValue(ItxExperimentExperimentValue itxExperimentExperimentValue);
+	ItxExperimentExperimentValue updateItxExperimentExperimentValue(
+			ItxExperimentExperimentValue itxExperimentExperimentValue);
 
 	Collection<ItxExperimentExperimentValue> updateItxExperimentExperimentValues(
 			Collection<ItxExperimentExperimentValue> itxExperimentExperimentValues);
 
-	ItxExperimentExperimentValue saveItxExperimentExperimentValue(ItxExperimentExperimentValue itxExperimentExperimentValue);
+	ItxExperimentExperimentValue saveItxExperimentExperimentValue(
+			ItxExperimentExperimentValue itxExperimentExperimentValue);
 
 	Collection<ItxExperimentExperimentValue> saveItxExperimentExperimentValues(
 			Collection<ItxExperimentExperimentValue> itxExperimentExperimentValues);

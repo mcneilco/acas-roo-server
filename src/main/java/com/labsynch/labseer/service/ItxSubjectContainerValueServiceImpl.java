@@ -23,7 +23,8 @@ public class ItxSubjectContainerValueServiceImpl implements ItxSubjectContainerV
 
 	@Override
 	public ItxSubjectContainerValue updateItxSubjectContainerValue(ItxSubjectContainerValue itxSubjectContainerValue) {
-		itxSubjectContainerValue.setVersion(ItxSubjectContainerValue.findItxSubjectContainerValue(itxSubjectContainerValue.getId()).getVersion());
+		itxSubjectContainerValue.setVersion(
+				ItxSubjectContainerValue.findItxSubjectContainerValue(itxSubjectContainerValue.getId()).getVersion());
 		itxSubjectContainerValue.merge();
 		return itxSubjectContainerValue;
 	}
@@ -31,7 +32,7 @@ public class ItxSubjectContainerValueServiceImpl implements ItxSubjectContainerV
 	@Override
 	public Collection<ItxSubjectContainerValue> updateItxSubjectContainerValues(
 			Collection<ItxSubjectContainerValue> itxSubjectContainerValues) {
-		for (ItxSubjectContainerValue itxSubjectContainerValue : itxSubjectContainerValues){
+		for (ItxSubjectContainerValue itxSubjectContainerValue : itxSubjectContainerValues) {
 			itxSubjectContainerValue = updateItxSubjectContainerValue(itxSubjectContainerValue);
 		}
 		return null;
@@ -39,7 +40,8 @@ public class ItxSubjectContainerValueServiceImpl implements ItxSubjectContainerV
 
 	@Override
 	public ItxSubjectContainerValue saveItxSubjectContainerValue(ItxSubjectContainerValue itxSubjectContainerValue) {
-		itxSubjectContainerValue.setLsState(ItxSubjectContainerState.findItxSubjectContainerState(itxSubjectContainerValue.getLsState().getId()));		
+		itxSubjectContainerValue.setLsState(
+				ItxSubjectContainerState.findItxSubjectContainerState(itxSubjectContainerValue.getLsState().getId()));
 		itxSubjectContainerValue.persist();
 		return itxSubjectContainerValue;
 	}
@@ -47,12 +49,10 @@ public class ItxSubjectContainerValueServiceImpl implements ItxSubjectContainerV
 	@Override
 	public Collection<ItxSubjectContainerValue> saveItxSubjectContainerValues(
 			Collection<ItxSubjectContainerValue> itxSubjectContainerValues) {
-		for (ItxSubjectContainerValue itxSubjectContainerValue: itxSubjectContainerValues) {
+		for (ItxSubjectContainerValue itxSubjectContainerValue : itxSubjectContainerValues) {
 			itxSubjectContainerValue = saveItxSubjectContainerValue(itxSubjectContainerValue);
 		}
 		return itxSubjectContainerValues;
 	}
-
-
 
 }

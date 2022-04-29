@@ -64,14 +64,14 @@ public abstract class AbstractState {
 
 	@NotNull
 	private boolean ignored;
-	
+
 	@NotNull
 	private boolean deleted;
 
 	private Long lsTransaction;
 
 	@Id
-	@SequenceGenerator(name = "abstractStateGen", sequenceName = "STATE_PKSEQ", allocationSize=20)
+	@SequenceGenerator(name = "abstractStateGen", sequenceName = "STATE_PKSEQ", allocationSize = 20)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "abstractStateGen")
 	@Column(name = "id")
 	private Long id;
@@ -90,21 +90,26 @@ public abstract class AbstractState {
 	public static final EntityManager entityManager() {
 		EntityManager em = new AbstractState() {
 		}.entityManager;
-		if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+		if (em == null)
+			throw new IllegalStateException(
+					"Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
 		return em;
 	}
 
 	@Transactional
 	public void persist() {
-		if (this.entityManager == null) this.entityManager = entityManager();
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
 		this.setLsTypeAndKind(new StringBuilder().append(this.lsType).append("_").append(this.lsKind).toString());
-		if (this.recordedDate == null) this.recordedDate = new Date();
+		if (this.recordedDate == null)
+			this.recordedDate = new Date();
 		this.entityManager.persist(this);
 	}
 
 	@Transactional
 	public AbstractState merge() {
-		if (this.entityManager == null) this.entityManager = entityManager();
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
 		this.setLsTypeAndKind(new StringBuilder().append(this.lsType).append("_").append(this.lsKind).toString());
 		this.modifiedDate = new Date();
 		AbstractState merged = this.entityManager.merge(this);
@@ -112,172 +117,180 @@ public abstract class AbstractState {
 		return merged;
 	}
 
-
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	@Version
-    @Column(name = "version")
-    private Integer version;
+	@Column(name = "version")
+	private Integer version;
 
 	public Integer getVersion() {
-        return this.version;
-    }
+		return this.version;
+	}
 
 	public void setVersion(Integer version) {
-        this.version = version;
-    }
+		this.version = version;
+	}
 
 	public String getRecordedBy() {
-        return this.recordedBy;
-    }
+		return this.recordedBy;
+	}
 
 	public void setRecordedBy(String recordedBy) {
-        this.recordedBy = recordedBy;
-    }
+		this.recordedBy = recordedBy;
+	}
 
 	public Date getRecordedDate() {
-        return this.recordedDate;
-    }
+		return this.recordedDate;
+	}
 
 	public void setRecordedDate(Date recordedDate) {
-        this.recordedDate = recordedDate;
-    }
+		this.recordedDate = recordedDate;
+	}
 
 	public String getModifiedBy() {
-        return this.modifiedBy;
-    }
+		return this.modifiedBy;
+	}
 
 	public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
+		this.modifiedBy = modifiedBy;
+	}
 
 	public Date getModifiedDate() {
-        return this.modifiedDate;
-    }
+		return this.modifiedDate;
+	}
 
 	public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
+		this.modifiedDate = modifiedDate;
+	}
 
 	public String getLsType() {
-        return this.lsType;
-    }
+		return this.lsType;
+	}
 
 	public void setLsType(String lsType) {
-        this.lsType = lsType;
-    }
+		this.lsType = lsType;
+	}
 
 	public String getLsKind() {
-        return this.lsKind;
-    }
+		return this.lsKind;
+	}
 
 	public void setLsKind(String lsKind) {
-        this.lsKind = lsKind;
-    }
+		this.lsKind = lsKind;
+	}
 
 	public String getLsTypeAndKind() {
-        return this.lsTypeAndKind;
-    }
+		return this.lsTypeAndKind;
+	}
 
 	public void setLsTypeAndKind(String lsTypeAndKind) {
-        this.lsTypeAndKind = lsTypeAndKind;
-    }
+		this.lsTypeAndKind = lsTypeAndKind;
+	}
 
 	public String getComments() {
-        return this.comments;
-    }
+		return this.comments;
+	}
 
 	public void setComments(String comments) {
-        this.comments = comments;
-    }
+		this.comments = comments;
+	}
 
 	public boolean isIgnored() {
-        return this.ignored;
-    }
+		return this.ignored;
+	}
 
 	public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+		this.ignored = ignored;
+	}
 
 	public boolean isDeleted() {
-        return this.deleted;
-    }
+		return this.deleted;
+	}
 
 	public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
+		this.deleted = deleted;
+	}
 
 	public Long getLsTransaction() {
-        return this.lsTransaction;
-    }
+		return this.lsTransaction;
+	}
 
 	public void setLsTransaction(Long lsTransaction) {
-        this.lsTransaction = lsTransaction;
-    }
+		this.lsTransaction = lsTransaction;
+	}
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("recordedBy", "recordedDate", "modifiedBy", "modifiedDate", "lsType", "lsKind", "lsTypeAndKind", "comments", "ignored", "deleted", "lsTransaction", "id", "entityManager");
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("recordedBy",
+			"recordedDate", "modifiedBy", "modifiedDate", "lsType", "lsKind", "lsTypeAndKind", "comments", "ignored",
+			"deleted", "lsTransaction", "id", "entityManager");
 
 	public static long countAbstractStates() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM AbstractState o", Long.class).getSingleResult();
-    }
+		return entityManager().createQuery("SELECT COUNT(o) FROM AbstractState o", Long.class).getSingleResult();
+	}
 
 	public static List<AbstractState> findAllAbstractStates() {
-        return entityManager().createQuery("SELECT o FROM AbstractState o", AbstractState.class).getResultList();
-    }
+		return entityManager().createQuery("SELECT o FROM AbstractState o", AbstractState.class).getResultList();
+	}
 
 	public static List<AbstractState> findAllAbstractStates(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM AbstractState o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, AbstractState.class).getResultList();
-    }
+		String jpaQuery = "SELECT o FROM AbstractState o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, AbstractState.class).getResultList();
+	}
 
 	public static AbstractState findAbstractState(Long id) {
-        if (id == null) return null;
-        return entityManager().find(AbstractState.class, id);
-    }
+		if (id == null)
+			return null;
+		return entityManager().find(AbstractState.class, id);
+	}
 
 	public static List<AbstractState> findAbstractStateEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM AbstractState o", AbstractState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
+		return entityManager().createQuery("SELECT o FROM AbstractState o", AbstractState.class)
+				.setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+	}
 
-	public static List<AbstractState> findAbstractStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM AbstractState o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, AbstractState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
-
-	@Transactional
-    public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        if (this.entityManager.contains(this)) {
-            this.entityManager.remove(this);
-        } else {
-            AbstractState attached = AbstractState.findAbstractState(this.id);
-            this.entityManager.remove(attached);
-        }
-    }
+	public static List<AbstractState> findAbstractStateEntries(int firstResult, int maxResults, String sortFieldName,
+			String sortOrder) {
+		String jpaQuery = "SELECT o FROM AbstractState o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, AbstractState.class).setFirstResult(firstResult)
+				.setMaxResults(maxResults).getResultList();
+	}
 
 	@Transactional
-    public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.flush();
-    }
+	public void remove() {
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
+		if (this.entityManager.contains(this)) {
+			this.entityManager.remove(this);
+		} else {
+			AbstractState attached = AbstractState.findAbstractState(this.id);
+			this.entityManager.remove(attached);
+		}
+	}
 
 	@Transactional
-    public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.clear();
-    }
+	public void flush() {
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
+		this.entityManager.flush();
+	}
+
+	@Transactional
+	public void clear() {
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
+		this.entityManager.clear();
+	}
 }

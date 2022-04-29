@@ -13,7 +13,5 @@ public interface ItxSubjectContainerService {
 
 	ItxSubjectContainer updateItxSubjectContainer(
 			ItxSubjectContainer jsonItxSubjectContainer);
-	
-	
-	
+
 }

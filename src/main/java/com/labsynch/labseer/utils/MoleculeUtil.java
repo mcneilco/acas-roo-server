@@ -15,70 +15,71 @@ import org.springframework.stereotype.Component;
 public class MoleculeUtil {
 
 	static Logger logger = LoggerFactory.getLogger(MoleculeUtil.class);
-	
+
 	private static CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
-	
+
 	@Autowired
 	public MoleculeUtil(CmpdRegMoleculeFactory cmpdRegMoleculeFactory) {
 		MoleculeUtil.cmpdRegMoleculeFactory = cmpdRegMoleculeFactory;
 	}
 
-	public static boolean validateMolProperty(CmpdRegMolecule mol, String propName){
-				
+	public static boolean validateMolProperty(CmpdRegMolecule mol, String propName) {
+
 		// note: new method introduced in 5.7 - deprecates the method below
 		// (MPropHandler.convertToString(mol.properties(), "date_submitted")
 		boolean validProperty = false;
 		String molProperty = null;
 
-		if (propName != null && mol.getProperty(propName) != null){
+		if (propName != null && mol.getProperty(propName) != null) {
 			molProperty = mol.getProperty(propName).trim();
-			if (!molProperty.equalsIgnoreCase("")){
+			if (!molProperty.equalsIgnoreCase("")) {
 				validProperty = true;
 			}
-		} 
-		
+		}
+
 		return validProperty;
 	}
-	
-	public static String getMolProperty(CmpdRegMolecule mol, String propName){
+
+	public static String getMolProperty(CmpdRegMolecule mol, String propName) {
 		// note: new method introduced in 5.7 - deprecates the method below
 		// (MPropHandler.convertToString(mol.properties(), "date_submitted")
-//		MPropHandler.convertToString(mol.properties(), propName.trim());			
-		
+		// MPropHandler.convertToString(mol.properties(), propName.trim());
+
 		String molProperty = null;
-		if (mol.getProperty(propName) != null){
+		if (mol.getProperty(propName) != null) {
 			molProperty = mol.getProperty(propName).trim();
 		} else {
 			logger.error("the requested property is null: " + propName);
 		}
-		
+
 		return molProperty;
 	}
 
-	public static CmpdRegMolecule setMolProperty(CmpdRegMolecule mol, String key, String value){
+	public static CmpdRegMolecule setMolProperty(CmpdRegMolecule mol, String key, String value) {
 		mol.setProperty(key, value);
 		return mol;
 	}
-	
 
-	public static byte[] exportMolAsBin(CmpdRegMolecule mol, String imageFormat, String hSize, String wSize) throws IOException{
+	public static byte[] exportMolAsBin(CmpdRegMolecule mol, String imageFormat, String hSize, String wSize)
+			throws IOException {
 		return mol.toBinary(mol, imageFormat, hSize, wSize);
 	}
 
-	public static String exportMolAsText(CmpdRegMolecule mol, String exportFormat) throws IOException, CmpdRegMolFormatException{
-		if (exportFormat.equalsIgnoreCase("smiles")){
+	public static String exportMolAsText(CmpdRegMolecule mol, String exportFormat)
+			throws IOException, CmpdRegMolFormatException {
+		if (exportFormat.equalsIgnoreCase("smiles")) {
 			return mol.getSmiles();
-		}else if (exportFormat.equalsIgnoreCase("mrv")) {
+		} else if (exportFormat.equalsIgnoreCase("mrv")) {
 			return mol.getMrvStructure();
-		}else {
+		} else {
 			return mol.getMolStructure();
 		}
 
 	}
-	
+
 	public static String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
 		CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
 		return mol.getFormula();
 	}
-	
+
 }

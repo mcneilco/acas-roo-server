@@ -37,7 +37,7 @@ public interface GeneThingService {
 
 	Collection<GeneOrthologDTO> saveOrthologInteractions(Collection<GeneOrthologDTO> geneOrthologs);
 
-//	void fixDiscontinuedEntrezGeneIDs(String geneHistoryFile, String taxonomyId) throws IOException;
-
+	// void fixDiscontinuedEntrezGeneIDs(String geneHistoryFile, String taxonomyId)
+	// throws IOException;
 
 }

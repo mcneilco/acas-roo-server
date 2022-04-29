@@ -1,6 +1,5 @@
 package com.labsynch.labseer.dto;
 
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -11,91 +10,89 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class SetTubeLocationDTO {
 
-	private String barcode;
-	
-	private String locationBreadCrumb;
-		
-	private String user;
-		
-	private Date date;
-	
-	private String rootLabel;
-	
+    private String barcode;
 
-	public String toString() {
+    private String locationBreadCrumb;
+
+    private String user;
+
+    private Date date;
+
+    private String rootLabel;
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String getBarcode() {
+    public String getBarcode() {
         return this.barcode;
     }
 
-	public void setBarcode(String barcode) {
+    public void setBarcode(String barcode) {
         this.barcode = barcode;
     }
 
-	public String getLocationBreadCrumb() {
+    public String getLocationBreadCrumb() {
         return this.locationBreadCrumb;
     }
 
-	public void setLocationBreadCrumb(String locationBreadCrumb) {
+    public void setLocationBreadCrumb(String locationBreadCrumb) {
         this.locationBreadCrumb = locationBreadCrumb;
     }
 
-	public String getUser() {
+    public String getUser() {
         return this.user;
     }
 
-	public void setUser(String user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
-	public Date getDate() {
+    public Date getDate() {
         return this.date;
     }
 
-	public void setDate(Date date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-	public String getRootLabel() {
+    public String getRootLabel() {
         return this.rootLabel;
     }
 
-	public void setRootLabel(String rootLabel) {
+    public void setRootLabel(String rootLabel) {
         this.rootLabel = rootLabel;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static SetTubeLocationDTO fromJsonToSetTubeLocationDTO(String json) {
+    public static SetTubeLocationDTO fromJsonToSetTubeLocationDTO(String json) {
         return new JSONDeserializer<SetTubeLocationDTO>()
-        .use(null, SetTubeLocationDTO.class).deserialize(json);
+                .use(null, SetTubeLocationDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<SetTubeLocationDTO> collection) {
+    public static String toJsonArray(Collection<SetTubeLocationDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<SetTubeLocationDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<SetTubeLocationDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<SetTubeLocationDTO> fromJsonArrayToSetTubeLocatioes(String json) {
+    public static Collection<SetTubeLocationDTO> fromJsonArrayToSetTubeLocatioes(String json) {
         return new JSONDeserializer<List<SetTubeLocationDTO>>()
-        .use("values", SetTubeLocationDTO.class).deserialize(json);
+                .use("values", SetTubeLocationDTO.class).deserialize(json);
     }
 }

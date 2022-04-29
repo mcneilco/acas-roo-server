@@ -12,15 +12,14 @@ public interface ItxProtocolProtocolService {
 	ItxProtocolProtocol saveLsItxProtocol(ItxProtocolProtocol itxProtocol) throws Exception;
 
 	Collection<ItxProtocolProtocol> saveLsItxProtocols(String json);
-	
-	Collection<ItxProtocolProtocol> saveLsItxProtocols(Collection<ItxProtocolProtocol> itxProtocolProtocols) throws Exception;
+
+	Collection<ItxProtocolProtocol> saveLsItxProtocols(Collection<ItxProtocolProtocol> itxProtocolProtocols)
+			throws Exception;
 
 	ItxProtocolProtocol updateItxProtocolProtocol(
 			ItxProtocolProtocol jsonItxProtocolProtocol);
 
 	Collection<ItxProtocolProtocol> findItxProtocolProtocolsByFirstProtocol(
 			Long firstProtocolId) throws Exception;
-	
-	
-	
+
 }

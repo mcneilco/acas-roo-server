@@ -16,25 +16,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Configurable
 public class SimpleJsonDateTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(SimpleJsonDateTest.class);
-	
+    private static final Logger logger = LoggerFactory.getLogger(SimpleJsonDateTest.class);
+
     @Test
-    public void parseContainerValueDate() throws Exception{
+    public void parseContainerValueDate() throws Exception {
         String json = "{\"dateValue\":-68400000}";
         ContainerValue value = ContainerValue.fromJsonToContainerValue(json);
         logger.info("here is the date value: " + value.getDateValue());
     }
 
-    //@Test
-    public void parseContainerValueIsoDate() throws Exception{
+    // @Test
+    public void parseContainerValueIsoDate() throws Exception {
         String json = "{\"dateValue\":\"2007-04-05T14:30Z\"}";
         ContainerValue value = ContainerValue.fromJsonToContainerValue(json);
         logger.info("here is the date value: " + value.getDateValue());
     }
-    
-    
+
     @Test
-    public void parseExperimentValueDate() throws Exception{
+    public void parseExperimentValueDate() throws Exception {
         String json = "{\"dateValue\":-68400000, \"numericValue\":123.456789}";
         ExperimentValue value = ExperimentValue.fromJsonToExperimentValue(json);
         logger.info("here is the date value: " + value.getDateValue());

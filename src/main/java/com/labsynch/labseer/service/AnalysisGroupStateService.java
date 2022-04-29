@@ -16,7 +16,7 @@ public interface AnalysisGroupStateService {
 
 	AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKind(
 			Long analysisGroupId, String stateType, String stateKind);
-	
+
 	AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindAndRecordedBy(
 			Long analysisGroupId, String stateType, String stateKind, String recordedBy);
 
@@ -41,6 +41,4 @@ public interface AnalysisGroupStateService {
 	Collection<AnalysisGroupStatePathDTO> getAnalysisGroupStates(
 			Collection<GenericStatePathRequest> genericRequests);
 
-	
-	
 }

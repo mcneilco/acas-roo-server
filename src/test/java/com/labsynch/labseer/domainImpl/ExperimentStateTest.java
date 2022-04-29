@@ -18,24 +18,26 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class ExperimentStateTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentStateTest.class);
-	
+
 	@Test
 	@Transactional
-	public void QueryExperimentStateByExpIdAndStateTypeKind(){
-			
+	public void QueryExperimentStateByExpIdAndStateTypeKind() {
+
 		Long experimentId = 9L;
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
-		List<ExperimentState> results = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+		List<ExperimentState> results = ExperimentState
+				.findExperimentStatesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
 		logger.info(ExperimentState.toJsonArray(results));
-		assert(results.size() == 5);
+		assert (results.size() == 5);
 	}
-	
+
 	@Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKindWithBadData() {
@@ -44,13 +46,14 @@ public class ExperimentStateTest {
 		String stateKind = "experiment metadata";
 		List<ExperimentState> results = new ArrayList<ExperimentState>();
 		try {
-			results = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
-		} catch(IllegalArgumentException ex ) {
+			results = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(experimentId, stateType, stateKind)
+					.getResultList();
+		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());
 		}
-		assert(results.size() == 0);
+		assert (results.size() == 0);
 	}
-	
+
 	@Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKindWithCodeName() {
@@ -61,18 +64,21 @@ public class ExperimentStateTest {
 		boolean didCatch = false;
 		try {
 			experiment = Experiment.findExperimentsByCodeNameEquals(experimentCodeName).getSingleResult();
-		} catch(NoResultException nre) {
+		} catch (NoResultException nre) {
 			logger.info(nre.getMessage());
 			didCatch = true;
 		}
 		List<ExperimentState> results = new ArrayList<ExperimentState>();
 		try {
-			results = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(experiment.getId(), stateType, stateKind).getResultList();
-		} catch(IllegalArgumentException ex ) {
+			results = ExperimentState
+					.findExperimentStatesByExptIDAndStateTypeKind(experiment.getId(), stateType, stateKind)
+					.getResultList();
+		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());
-			assert(results.size() == 0);
+			assert (results.size() == 0);
 			didCatch = true;
 		}
-		if(!didCatch) assert(results.size() == 5);
+		if (!didCatch)
+			assert (results.size() == 5);
 	}
 }

@@ -35,104 +35,106 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 public class ApiItxProtocolProtocolControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiItxProtocolProtocolControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    @Test
-    @Transactional
-    @Rollback(value=true)
-    public void createFromJson() throws Exception {
-    	List<Protocol> protocols = Protocol.findProtocolEntries(0, 2);
-    	Protocol firstProtocol = protocols.get(0);
-    	Protocol secondProtocol = protocols.get(1);
-    	ItxProtocolProtocol newItx = new ItxProtocolProtocol();
-    	newItx.setFirstProtocol(firstProtocol);
-    	newItx.setSecondProtocol(secondProtocol);
-    	newItx.setLsType("has member");
-    	newItx.setLsKind("parent_child");
-    	newItx.setRecordedBy("test");
-    	newItx.setRecordedDate(new Date());
-    	String json = newItx.toJson();
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxprotocolprotocols/")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(json)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isCreated())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	ItxProtocolProtocol postedItx = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(responseJson);
-    	logger.info(postedItx.toJson());
-    }
-    
-    @Test
-    @Transactional
-    @Rollback(value=true)
-    public void createFromJsonArray() throws Exception {
-    	List<Protocol> protocols = Protocol.findProtocolEntries(0, 3);
-    	Protocol firstProtocol = protocols.get(0);
-    	Protocol secondProtocol = protocols.get(1);
-    	Protocol thirdProtocol = protocols.get(2);
-    	ItxProtocolProtocol newItx = new ItxProtocolProtocol();
-    	newItx.setFirstProtocol(firstProtocol);
-    	newItx.setSecondProtocol(secondProtocol);
-    	newItx.setLsType("has member");
-    	newItx.setLsKind("parent_child");
-    	newItx.setRecordedBy("test");
-    	newItx.setRecordedDate(new Date());
-    	ItxProtocolProtocol newItx2 = new ItxProtocolProtocol();
-    	newItx2.setFirstProtocol(firstProtocol);
-    	newItx2.setSecondProtocol(thirdProtocol);
-    	newItx2.setLsType("has member");
-    	newItx2.setLsKind("parent_child");
-    	newItx2.setRecordedBy("test");
-    	newItx2.setRecordedDate(new Date());
-    	Collection<ItxProtocolProtocol> itxProtocolProtocols = new ArrayList<ItxProtocolProtocol>();
-    	itxProtocolProtocols.add(newItx);
-    	itxProtocolProtocols.add(newItx2);
-    	String json = ItxProtocolProtocol.toJsonArray(itxProtocolProtocols);
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxprotocolprotocols/jsonArray")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(json)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isCreated())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	Collection<ItxProtocolProtocol> results = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(responseJson);
-    	logger.info(ItxProtocolProtocol.toJsonArray(results));
-    }
-    
-    @Test
-    @Transactional
-    @Rollback(value=true)
-    public void getByFirstProtocol() throws Exception {
-    	ItxProtocolProtocol itx = (ItxProtocolProtocol) ItxProtocolProtocol.findAbstractThingEntries(0, 1).get(0);
-    	Long firstProtocolId = itx.getFirstProtocol().getId();
-    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/itxprotocolprotocols/findByFirstProtocol/"+firstProtocolId)
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isCreated())
-//    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	Collection<ItxProtocolProtocol> foundItxs = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(responseJson);
-    	logger.info(ItxProtocolProtocol.toJsonArray(foundItxs));
-    }
-    
+	private MockMvc mockMvc;
+
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	@Test
+	@Transactional
+	@Rollback(value = true)
+	public void createFromJson() throws Exception {
+		List<Protocol> protocols = Protocol.findProtocolEntries(0, 2);
+		Protocol firstProtocol = protocols.get(0);
+		Protocol secondProtocol = protocols.get(1);
+		ItxProtocolProtocol newItx = new ItxProtocolProtocol();
+		newItx.setFirstProtocol(firstProtocol);
+		newItx.setSecondProtocol(secondProtocol);
+		newItx.setLsType("has member");
+		newItx.setLsKind("parent_child");
+		newItx.setRecordedBy("test");
+		newItx.setRecordedDate(new Date());
+		String json = newItx.toJson();
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxprotocolprotocols/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		ItxProtocolProtocol postedItx = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(responseJson);
+		logger.info(postedItx.toJson());
+	}
+
+	@Test
+	@Transactional
+	@Rollback(value = true)
+	public void createFromJsonArray() throws Exception {
+		List<Protocol> protocols = Protocol.findProtocolEntries(0, 3);
+		Protocol firstProtocol = protocols.get(0);
+		Protocol secondProtocol = protocols.get(1);
+		Protocol thirdProtocol = protocols.get(2);
+		ItxProtocolProtocol newItx = new ItxProtocolProtocol();
+		newItx.setFirstProtocol(firstProtocol);
+		newItx.setSecondProtocol(secondProtocol);
+		newItx.setLsType("has member");
+		newItx.setLsKind("parent_child");
+		newItx.setRecordedBy("test");
+		newItx.setRecordedDate(new Date());
+		ItxProtocolProtocol newItx2 = new ItxProtocolProtocol();
+		newItx2.setFirstProtocol(firstProtocol);
+		newItx2.setSecondProtocol(thirdProtocol);
+		newItx2.setLsType("has member");
+		newItx2.setLsKind("parent_child");
+		newItx2.setRecordedBy("test");
+		newItx2.setRecordedDate(new Date());
+		Collection<ItxProtocolProtocol> itxProtocolProtocols = new ArrayList<ItxProtocolProtocol>();
+		itxProtocolProtocols.add(newItx);
+		itxProtocolProtocols.add(newItx2);
+		String json = ItxProtocolProtocol.toJsonArray(itxProtocolProtocols);
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxprotocolprotocols/jsonArray")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		Collection<ItxProtocolProtocol> results = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(responseJson);
+		logger.info(ItxProtocolProtocol.toJsonArray(results));
+	}
+
+	@Test
+	@Transactional
+	@Rollback(value = true)
+	public void getByFirstProtocol() throws Exception {
+		ItxProtocolProtocol itx = (ItxProtocolProtocol) ItxProtocolProtocol.findAbstractThingEntries(0, 1).get(0);
+		Long firstProtocolId = itx.getFirstProtocol().getId();
+		MockHttpServletResponse response = this.mockMvc
+				.perform(get("/api/v1/itxprotocolprotocols/findByFirstProtocol/" + firstProtocolId)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				// .andExpect(status().isCreated())
+				// .andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		Collection<ItxProtocolProtocol> foundItxs = ItxProtocolProtocol
+				.fromJsonArrayToItxProtocolProtocols(responseJson);
+		logger.info(ItxProtocolProtocol.toJsonArray(foundItxs));
+	}
+
 }

@@ -10,15 +10,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class GeneOrthologDTO {
-	
-	private Long id;
-	private String recordedBy;
+
+    private Long id;
+    private String recordedBy;
 
     private Integer rowIndex;
 
-	private String geneId;
+    private String geneId;
     private String symbol;
     private String taxId;
     private String species;
@@ -29,231 +28,231 @@ public class GeneOrthologDTO {
     private String mappedTaxId;
     private String mappedSpecies;
     private String mappedTypeOfGene;
-    
+
     private Integer mappedScore;
     private Integer mappedPerc;
     private Integer mappedHitLen;
     private Double mappedPercRatio;
-    
+
     private Integer mappedLocalIndex;
     private Integer mappedGeneIndex;
     private Integer mappedIsoformIndex;
-    
+
     private String orthCode;
     private String versionName;
     private Integer curationLevel;
     private String curator;
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer().exclude("*.class").serialize(this);
     }
-	
 
-	public static GeneOrthologDTO fromJsonToGeneOrthologDTO(String json) {
+    public static GeneOrthologDTO fromJsonToGeneOrthologDTO(String json) {
         return new JSONDeserializer<GeneOrthologDTO>().use(null, GeneOrthologDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<GeneOrthologDTO> collection) {
+    public static String toJsonArray(Collection<GeneOrthologDTO> collection) {
         return new JSONSerializer().exclude("*.class").serialize(collection);
     }
-	
-	public static Collection<GeneOrthologDTO> fromJsonArrayToGeneOrtholoes(String json) {
-        return new JSONDeserializer<List<GeneOrthologDTO>>().use(null, ArrayList.class).use("values", GeneOrthologDTO.class).deserialize(json);
+
+    public static Collection<GeneOrthologDTO> fromJsonArrayToGeneOrtholoes(String json) {
+        return new JSONDeserializer<List<GeneOrthologDTO>>().use(null, ArrayList.class)
+                .use("values", GeneOrthologDTO.class).deserialize(json);
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public String getRecordedBy() {
+    public String getRecordedBy() {
         return this.recordedBy;
     }
 
-	public void setRecordedBy(String recordedBy) {
+    public void setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
     }
 
-	public Integer getRowIndex() {
+    public Integer getRowIndex() {
         return this.rowIndex;
     }
 
-	public void setRowIndex(Integer rowIndex) {
+    public void setRowIndex(Integer rowIndex) {
         this.rowIndex = rowIndex;
     }
 
-	public String getGeneId() {
+    public String getGeneId() {
         return this.geneId;
     }
 
-	public void setGeneId(String geneId) {
+    public void setGeneId(String geneId) {
         this.geneId = geneId;
     }
 
-	public String getSymbol() {
+    public String getSymbol() {
         return this.symbol;
     }
 
-	public void setSymbol(String symbol) {
+    public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
 
-	public String getTaxId() {
+    public String getTaxId() {
         return this.taxId;
     }
 
-	public void setTaxId(String taxId) {
+    public void setTaxId(String taxId) {
         this.taxId = taxId;
     }
 
-	public String getSpecies() {
+    public String getSpecies() {
         return this.species;
     }
 
-	public void setSpecies(String species) {
+    public void setSpecies(String species) {
         this.species = species;
     }
 
-	public String getTypeOfGene() {
+    public String getTypeOfGene() {
         return this.typeOfGene;
     }
 
-	public void setTypeOfGene(String typeOfGene) {
+    public void setTypeOfGene(String typeOfGene) {
         this.typeOfGene = typeOfGene;
     }
 
-	public String getMappedGeneId() {
+    public String getMappedGeneId() {
         return this.mappedGeneId;
     }
 
-	public void setMappedGeneId(String mappedGeneId) {
+    public void setMappedGeneId(String mappedGeneId) {
         this.mappedGeneId = mappedGeneId;
     }
 
-	public String getMappedSymbol() {
+    public String getMappedSymbol() {
         return this.mappedSymbol;
     }
 
-	public void setMappedSymbol(String mappedSymbol) {
+    public void setMappedSymbol(String mappedSymbol) {
         this.mappedSymbol = mappedSymbol;
     }
 
-	public String getMappedTaxId() {
+    public String getMappedTaxId() {
         return this.mappedTaxId;
     }
 
-	public void setMappedTaxId(String mappedTaxId) {
+    public void setMappedTaxId(String mappedTaxId) {
         this.mappedTaxId = mappedTaxId;
     }
 
-	public String getMappedSpecies() {
+    public String getMappedSpecies() {
         return this.mappedSpecies;
     }
 
-	public void setMappedSpecies(String mappedSpecies) {
+    public void setMappedSpecies(String mappedSpecies) {
         this.mappedSpecies = mappedSpecies;
     }
 
-	public String getMappedTypeOfGene() {
+    public String getMappedTypeOfGene() {
         return this.mappedTypeOfGene;
     }
 
-	public void setMappedTypeOfGene(String mappedTypeOfGene) {
+    public void setMappedTypeOfGene(String mappedTypeOfGene) {
         this.mappedTypeOfGene = mappedTypeOfGene;
     }
 
-	public Integer getMappedScore() {
+    public Integer getMappedScore() {
         return this.mappedScore;
     }
 
-	public void setMappedScore(Integer mappedScore) {
+    public void setMappedScore(Integer mappedScore) {
         this.mappedScore = mappedScore;
     }
 
-	public Integer getMappedPerc() {
+    public Integer getMappedPerc() {
         return this.mappedPerc;
     }
 
-	public void setMappedPerc(Integer mappedPerc) {
+    public void setMappedPerc(Integer mappedPerc) {
         this.mappedPerc = mappedPerc;
     }
 
-	public Integer getMappedHitLen() {
+    public Integer getMappedHitLen() {
         return this.mappedHitLen;
     }
 
-	public void setMappedHitLen(Integer mappedHitLen) {
+    public void setMappedHitLen(Integer mappedHitLen) {
         this.mappedHitLen = mappedHitLen;
     }
 
-	public Double getMappedPercRatio() {
+    public Double getMappedPercRatio() {
         return this.mappedPercRatio;
     }
 
-	public void setMappedPercRatio(Double mappedPercRatio) {
+    public void setMappedPercRatio(Double mappedPercRatio) {
         this.mappedPercRatio = mappedPercRatio;
     }
 
-	public Integer getMappedLocalIndex() {
+    public Integer getMappedLocalIndex() {
         return this.mappedLocalIndex;
     }
 
-	public void setMappedLocalIndex(Integer mappedLocalIndex) {
+    public void setMappedLocalIndex(Integer mappedLocalIndex) {
         this.mappedLocalIndex = mappedLocalIndex;
     }
 
-	public Integer getMappedGeneIndex() {
+    public Integer getMappedGeneIndex() {
         return this.mappedGeneIndex;
     }
 
-	public void setMappedGeneIndex(Integer mappedGeneIndex) {
+    public void setMappedGeneIndex(Integer mappedGeneIndex) {
         this.mappedGeneIndex = mappedGeneIndex;
     }
 
-	public Integer getMappedIsoformIndex() {
+    public Integer getMappedIsoformIndex() {
         return this.mappedIsoformIndex;
     }
 
-	public void setMappedIsoformIndex(Integer mappedIsoformIndex) {
+    public void setMappedIsoformIndex(Integer mappedIsoformIndex) {
         this.mappedIsoformIndex = mappedIsoformIndex;
     }
 
-	public String getOrthCode() {
+    public String getOrthCode() {
         return this.orthCode;
     }
 
-	public void setOrthCode(String orthCode) {
+    public void setOrthCode(String orthCode) {
         this.orthCode = orthCode;
     }
 
-	public String getVersionName() {
+    public String getVersionName() {
         return this.versionName;
     }
 
-	public void setVersionName(String versionName) {
+    public void setVersionName(String versionName) {
         this.versionName = versionName;
     }
 
-	public Integer getCurationLevel() {
+    public Integer getCurationLevel() {
         return this.curationLevel;
     }
 
-	public void setCurationLevel(Integer curationLevel) {
+    public void setCurationLevel(Integer curationLevel) {
         this.curationLevel = curationLevel;
     }
 
-	public String getCurator() {
+    public String getCurator() {
         return this.curator;
     }
 
-	public void setCurator(String curator) {
+    public void setCurator(String curator) {
         this.curator = curator;
     }
 }

@@ -16,12 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class RawCurveDataDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RawCurveDataDTOTest.class);
-	
+
 	@Test
 	@Transactional
 	public void getRawCurveDataTest() {
@@ -35,13 +36,13 @@ public class RawCurveDataDTOTest {
 			Assert.assertNotNull(result.getCurveId());
 			Assert.assertNotNull(result.getResponseSubjectValueId());
 			Assert.assertNotNull(result.getResponse());
-//			Assert.assertNotNull(result.getResponseUnits());
+			// Assert.assertNotNull(result.getResponseUnits());
 			Assert.assertNotNull(result.getDose());
 			Assert.assertNotNull(result.getDoseUnits());
 		}
-		
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAllRawCurveDataDataByExperimentTest() {
@@ -57,7 +58,7 @@ public class RawCurveDataDTOTest {
 			Assert.assertNotNull(result.getCurveId());
 			Assert.assertNotNull(result.getResponseSubjectValueId());
 			Assert.assertNotNull(result.getResponse());
-//			Assert.assertNotNull(result.getResponseUnits());
+			// Assert.assertNotNull(result.getResponseUnits());
 			Assert.assertNotNull(result.getDose());
 			Assert.assertNotNull(result.getDoseUnits());
 		}

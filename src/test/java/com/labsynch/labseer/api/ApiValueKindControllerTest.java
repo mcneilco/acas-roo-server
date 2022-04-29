@@ -33,51 +33,52 @@ import junit.framework.Assert;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 public class ApiValueKindControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiValueKindControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    @Test
-    public void getOrCreateValueKinds() throws Exception {
-    	String json = "[{\"lsType\":\"test\",\"lsKind\":\"test\"}]";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/valuekinds/getOrCreate/jsonArray")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isCreated())
-    			.andExpect(content().contentType("application/json;charset=utf-8"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	List<ValueKind> dtos = (List<ValueKind>) ValueKind.fromJsonArrayToValueKinds(responseJson);
-    	Assert.assertNotNull(dtos.get(0).getId());
-    }
-    
-    @Test
-    public void getValueKindsByDTO() throws Exception {
-    	String json = "[{\"lsType\":\"codeValue\",\"lsKind\":\"scientist\"}]";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/valuekinds/get/jsonArray")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json;charset=utf-8"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	List<ValueTypeKindDTO> dtos = (List<ValueTypeKindDTO>) ValueTypeKindDTO.fromJsonArrayToValueTypeKindDTO(responseJson);
-    	Assert.assertNotNull(dtos.get(0).getValueKind());
-    }
+	private MockMvc mockMvc;
+
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	@Test
+	public void getOrCreateValueKinds() throws Exception {
+		String json = "[{\"lsType\":\"test\",\"lsKind\":\"test\"}]";
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/valuekinds/getOrCreate/jsonArray")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isCreated())
+				.andExpect(content().contentType("application/json;charset=utf-8"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		List<ValueKind> dtos = (List<ValueKind>) ValueKind.fromJsonArrayToValueKinds(responseJson);
+		Assert.assertNotNull(dtos.get(0).getId());
+	}
+
+	@Test
+	public void getValueKindsByDTO() throws Exception {
+		String json = "[{\"lsType\":\"codeValue\",\"lsKind\":\"scientist\"}]";
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/valuekinds/get/jsonArray")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=utf-8"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		List<ValueTypeKindDTO> dtos = (List<ValueTypeKindDTO>) ValueTypeKindDTO
+				.fromJsonArrayToValueTypeKindDTO(responseJson);
+		Assert.assertNotNull(dtos.get(0).getValueKind());
+	}
 
 }

@@ -19,12 +19,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class FlagWellDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(TgDataDTO.class);
-	
+
 	@Test
 	@Transactional
 	public void findResponseSubjectValuesByTreatmentGroup() {
@@ -43,7 +44,7 @@ public class FlagWellDTOTest {
 				+ "AND resultsState.lsKind = :resultsStateKind "
 				+ "AND resultsValue.lsType = :resultsValueType "
 				+ "AND resultsValue.lsKind = :resultsValueKind ", SubjectValue.class);
-		
+
 		q.setParameter("resultsStateType", "data");
 		q.setParameter("resultsStateKind", "results");
 		q.setParameter("resultsValueType", "numericValue");
@@ -52,9 +53,9 @@ public class FlagWellDTOTest {
 		q.setParameter("ignored", true);
 		Collection<SubjectValue> results = q.getResultList();
 		logger.debug(SubjectValue.toJsonArray(results));
-		
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void findResponseSubjectValuesByTreatmentGroup_2() {
@@ -62,9 +63,9 @@ public class FlagWellDTOTest {
 		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
 		Collection<SubjectValue> results = FlagWellDTO.findNotKONumericValueSubjectValues(treatmentGroup);
 		logger.info(SubjectValue.toJsonArray(results));
-		
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void findRenderingHintTest() {
@@ -72,9 +73,9 @@ public class FlagWellDTOTest {
 		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
 		String renderingHint = CurveFitDTO.findRenderingHint(treatmentGroup);
 		logger.debug(renderingHint);
-		
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void findBatchCodeSubjectValueTest() {
@@ -83,7 +84,7 @@ public class FlagWellDTOTest {
 		SubjectValue sv = FlagWellDTO.findBatchCodeSubjectValue(treatmentGroup);
 		logger.info(sv.toJson());
 	}
-	
+
 	@Test
 	@Transactional
 	public void updateWellFlagsTest() {
@@ -101,7 +102,7 @@ public class FlagWellDTOTest {
 		Collection<FlagWellDTO> flagWellDTOs = new HashSet<FlagWellDTO>();
 		flagWellDTOs.add(flagWellDTO);
 		FlagWellDTO.updateWellFlags(flagWellDTOs);
-		
+
 	}
-	
+
 }

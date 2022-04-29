@@ -7,7 +7,6 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 
-
 public interface LotService {
 
 	public Lot updateLotWeight(Lot lot);

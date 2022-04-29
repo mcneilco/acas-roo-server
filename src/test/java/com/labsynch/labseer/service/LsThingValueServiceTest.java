@@ -1,5 +1,4 @@
 
-
 package com.labsynch.labseer.service;
 
 import com.labsynch.labseer.domain.LsThingValue;
@@ -16,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import junit.framework.Assert;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class LsThingValueServiceTest {
 
@@ -27,18 +26,18 @@ public class LsThingValueServiceTest {
 	@Autowired
 	private LsThingValueService lsThingValueService;
 
-	
 	@Test
 	@Transactional
 	public void updateLsThingValueTest() {
-//		String idOrCodeName = "18311";
+		// String idOrCodeName = "18311";
 		String idOrCodeName = "GENE-000002";
 		String stateType = "metadata";
 		String stateKind = "gene metadata";
 		String valueType = "stringValue";
 		String valueKind = "status";
 		String value = "Deleted";
-		LsThingValue lsThingValue = lsThingValueService.updateLsThingValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		LsThingValue lsThingValue = lsThingValueService.updateLsThingValue(idOrCodeName, stateType, stateKind,
+				valueType, valueKind, value);
 		Assert.assertNotNull(lsThingValue);
 		logger.info(lsThingValue.toJson());
 	}

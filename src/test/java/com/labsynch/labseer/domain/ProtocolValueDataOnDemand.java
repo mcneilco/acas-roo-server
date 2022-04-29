@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
 @Configurable
 public class ProtocolValueDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<ProtocolValue> data;
+    private List<ProtocolValue> data;
 
-	@Autowired
+    @Autowired
     ProtocolStateDataOnDemand protocolStateDataOnDemand;
 
-	public ProtocolValue getNewTransientProtocolValue(int index) {
+    public ProtocolValue getNewTransientProtocolValue(int index) {
         ProtocolValue obj = new ProtocolValue();
         setBlobValue(obj, index);
         setClobValue(obj, index);
@@ -70,17 +70,17 @@ public class ProtocolValueDataOnDemand {
         return obj;
     }
 
-	public void setBlobValue(ProtocolValue obj, int index) {
+    public void setBlobValue(ProtocolValue obj, int index) {
         byte[] blobValue = String.valueOf(index).getBytes();
         obj.setBlobValue(blobValue);
     }
 
-	public void setClobValue(ProtocolValue obj, int index) {
+    public void setClobValue(ProtocolValue obj, int index) {
         String clobValue = "clobValue_" + index;
         obj.setClobValue(clobValue);
     }
 
-	public void setCodeKind(ProtocolValue obj, int index) {
+    public void setCodeKind(ProtocolValue obj, int index) {
         String codeKind = "codeKind_" + index;
         if (codeKind.length() > 255) {
             codeKind = codeKind.substring(0, 255);
@@ -88,7 +88,7 @@ public class ProtocolValueDataOnDemand {
         obj.setCodeKind(codeKind);
     }
 
-	public void setCodeOrigin(ProtocolValue obj, int index) {
+    public void setCodeOrigin(ProtocolValue obj, int index) {
         String codeOrigin = "codeOrigin_" + index;
         if (codeOrigin.length() > 255) {
             codeOrigin = codeOrigin.substring(0, 255);
@@ -96,7 +96,7 @@ public class ProtocolValueDataOnDemand {
         obj.setCodeOrigin(codeOrigin);
     }
 
-	public void setCodeType(ProtocolValue obj, int index) {
+    public void setCodeType(ProtocolValue obj, int index) {
         String codeType = "codeType_" + index;
         if (codeType.length() > 255) {
             codeType = codeType.substring(0, 255);
@@ -104,7 +104,7 @@ public class ProtocolValueDataOnDemand {
         obj.setCodeType(codeType);
     }
 
-	public void setCodeTypeAndKind(ProtocolValue obj, int index) {
+    public void setCodeTypeAndKind(ProtocolValue obj, int index) {
         String codeTypeAndKind = "codeTypeAndKind_" + index;
         if (codeTypeAndKind.length() > 350) {
             codeTypeAndKind = codeTypeAndKind.substring(0, 350);
@@ -112,7 +112,7 @@ public class ProtocolValueDataOnDemand {
         obj.setCodeTypeAndKind(codeTypeAndKind);
     }
 
-	public void setCodeValue(ProtocolValue obj, int index) {
+    public void setCodeValue(ProtocolValue obj, int index) {
         String codeValue = "codeValue_" + index;
         if (codeValue.length() > 255) {
             codeValue = codeValue.substring(0, 255);
@@ -120,7 +120,7 @@ public class ProtocolValueDataOnDemand {
         obj.setCodeValue(codeValue);
     }
 
-	public void setComments(ProtocolValue obj, int index) {
+    public void setComments(ProtocolValue obj, int index) {
         String comments = "comments_" + index;
         if (comments.length() > 512) {
             comments = comments.substring(0, 512);
@@ -128,7 +128,7 @@ public class ProtocolValueDataOnDemand {
         obj.setComments(comments);
     }
 
-	public void setConcUnit(ProtocolValue obj, int index) {
+    public void setConcUnit(ProtocolValue obj, int index) {
         String concUnit = "concUnit_" + index;
         if (concUnit.length() > 25) {
             concUnit = concUnit.substring(0, 25);
@@ -136,22 +136,25 @@ public class ProtocolValueDataOnDemand {
         obj.setConcUnit(concUnit);
     }
 
-	public void setConcentration(ProtocolValue obj, int index) {
+    public void setConcentration(ProtocolValue obj, int index) {
         Double concentration = new Integer(index).doubleValue();
         obj.setConcentration(concentration);
     }
 
-	public void setDateValue(ProtocolValue obj, int index) {
-        Date dateValue = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setDateValue(ProtocolValue obj, int index) {
+        Date dateValue = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setDateValue(dateValue);
     }
 
-	public void setDeleted(ProtocolValue obj, int index) {
+    public void setDeleted(ProtocolValue obj, int index) {
         Boolean deleted = true;
         obj.setDeleted(deleted);
     }
 
-	public void setFileValue(ProtocolValue obj, int index) {
+    public void setFileValue(ProtocolValue obj, int index) {
         String fileValue = "fileValue_" + index;
         if (fileValue.length() > 512) {
             fileValue = fileValue.substring(0, 512);
@@ -159,12 +162,12 @@ public class ProtocolValueDataOnDemand {
         obj.setFileValue(fileValue);
     }
 
-	public void setIgnored(ProtocolValue obj, int index) {
+    public void setIgnored(ProtocolValue obj, int index) {
         Boolean ignored = true;
         obj.setIgnored(ignored);
     }
 
-	public void setLsKind(ProtocolValue obj, int index) {
+    public void setLsKind(ProtocolValue obj, int index) {
         String lsKind = "lsKind_" + index;
         if (lsKind.length() > 255) {
             lsKind = lsKind.substring(0, 255);
@@ -172,17 +175,17 @@ public class ProtocolValueDataOnDemand {
         obj.setLsKind(lsKind);
     }
 
-	public void setLsState(ProtocolValue obj, int index) {
+    public void setLsState(ProtocolValue obj, int index) {
         ProtocolState lsState = protocolStateDataOnDemand.getRandomProtocolState();
         obj.setLsState(lsState);
     }
 
-	public void setLsTransaction(ProtocolValue obj, int index) {
+    public void setLsTransaction(ProtocolValue obj, int index) {
         Long lsTransaction = new Integer(index).longValue();
         obj.setLsTransaction(lsTransaction);
     }
 
-	public void setLsType(ProtocolValue obj, int index) {
+    public void setLsType(ProtocolValue obj, int index) {
         String lsType = "lsType_" + index;
         if (lsType.length() > 64) {
             lsType = lsType.substring(0, 64);
@@ -190,7 +193,7 @@ public class ProtocolValueDataOnDemand {
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(ProtocolValue obj, int index) {
+    public void setLsTypeAndKind(ProtocolValue obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 350) {
             lsTypeAndKind = lsTypeAndKind.substring(0, 350);
@@ -198,7 +201,7 @@ public class ProtocolValueDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public void setModifiedBy(ProtocolValue obj, int index) {
+    public void setModifiedBy(ProtocolValue obj, int index) {
         String modifiedBy = "modifiedBy_" + index;
         if (modifiedBy.length() > 255) {
             modifiedBy = modifiedBy.substring(0, 255);
@@ -206,17 +209,20 @@ public class ProtocolValueDataOnDemand {
         obj.setModifiedBy(modifiedBy);
     }
 
-	public void setModifiedDate(ProtocolValue obj, int index) {
-        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setModifiedDate(ProtocolValue obj, int index) {
+        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
     }
 
-	public void setNumberOfReplicates(ProtocolValue obj, int index) {
+    public void setNumberOfReplicates(ProtocolValue obj, int index) {
         Integer numberOfReplicates = new Integer(index);
         obj.setNumberOfReplicates(numberOfReplicates);
     }
 
-	public void setNumericValue(ProtocolValue obj, int index) {
+    public void setNumericValue(ProtocolValue obj, int index) {
         BigDecimal numericValue = BigDecimal.valueOf(index);
         if (numericValue.compareTo(new BigDecimal("99999999999999999999.999999999999999999")) == 1) {
             numericValue = new BigDecimal("99999999999999999999.999999999999999999");
@@ -224,7 +230,7 @@ public class ProtocolValueDataOnDemand {
         obj.setNumericValue(numericValue);
     }
 
-	public void setOperatorKind(ProtocolValue obj, int index) {
+    public void setOperatorKind(ProtocolValue obj, int index) {
         String operatorKind = "operator_" + index;
         if (operatorKind.length() > 10) {
             operatorKind = operatorKind.substring(0, 10);
@@ -232,7 +238,7 @@ public class ProtocolValueDataOnDemand {
         obj.setOperatorKind(operatorKind);
     }
 
-	public void setOperatorType(ProtocolValue obj, int index) {
+    public void setOperatorType(ProtocolValue obj, int index) {
         String operatorType = "operatorType_" + index;
         if (operatorType.length() > 25) {
             operatorType = operatorType.substring(0, 25);
@@ -240,7 +246,7 @@ public class ProtocolValueDataOnDemand {
         obj.setOperatorType(operatorType);
     }
 
-	public void setOperatorTypeAndKind(ProtocolValue obj, int index) {
+    public void setOperatorTypeAndKind(ProtocolValue obj, int index) {
         String operatorTypeAndKind = "operatorTypeAndKind_" + index;
         if (operatorTypeAndKind.length() > 50) {
             operatorTypeAndKind = operatorTypeAndKind.substring(0, 50);
@@ -248,12 +254,12 @@ public class ProtocolValueDataOnDemand {
         obj.setOperatorTypeAndKind(operatorTypeAndKind);
     }
 
-	public void setPublicData(ProtocolValue obj, int index) {
+    public void setPublicData(ProtocolValue obj, int index) {
         Boolean publicData = true;
         obj.setPublicData(publicData);
     }
 
-	public void setRecordedBy(ProtocolValue obj, int index) {
+    public void setRecordedBy(ProtocolValue obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -261,17 +267,20 @@ public class ProtocolValueDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(ProtocolValue obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(ProtocolValue obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public void setSigFigs(ProtocolValue obj, int index) {
+    public void setSigFigs(ProtocolValue obj, int index) {
         Integer sigFigs = new Integer(index);
         obj.setSigFigs(sigFigs);
     }
 
-	public void setStringValue(ProtocolValue obj, int index) {
+    public void setStringValue(ProtocolValue obj, int index) {
         String stringValue = "stringValue_" + index;
         if (stringValue.length() > 255) {
             stringValue = stringValue.substring(0, 255);
@@ -279,7 +288,7 @@ public class ProtocolValueDataOnDemand {
         obj.setStringValue(stringValue);
     }
 
-	public void setUncertainty(ProtocolValue obj, int index) {
+    public void setUncertainty(ProtocolValue obj, int index) {
         BigDecimal uncertainty = BigDecimal.valueOf(index);
         if (uncertainty.compareTo(new BigDecimal("99999999999999999999.999999999999999999")) == 1) {
             uncertainty = new BigDecimal("99999999999999999999.999999999999999999");
@@ -287,7 +296,7 @@ public class ProtocolValueDataOnDemand {
         obj.setUncertainty(uncertainty);
     }
 
-	public void setUncertaintyType(ProtocolValue obj, int index) {
+    public void setUncertaintyType(ProtocolValue obj, int index) {
         String uncertaintyType = "uncertaintyType_" + index;
         if (uncertaintyType.length() > 255) {
             uncertaintyType = uncertaintyType.substring(0, 255);
@@ -295,7 +304,7 @@ public class ProtocolValueDataOnDemand {
         obj.setUncertaintyType(uncertaintyType);
     }
 
-	public void setUnitKind(ProtocolValue obj, int index) {
+    public void setUnitKind(ProtocolValue obj, int index) {
         String unitKind = "unitKind_" + index;
         if (unitKind.length() > 25) {
             unitKind = unitKind.substring(0, 25);
@@ -303,7 +312,7 @@ public class ProtocolValueDataOnDemand {
         obj.setUnitKind(unitKind);
     }
 
-	public void setUnitType(ProtocolValue obj, int index) {
+    public void setUnitType(ProtocolValue obj, int index) {
         String unitType = "unitType_" + index;
         if (unitType.length() > 25) {
             unitType = unitType.substring(0, 25);
@@ -311,7 +320,7 @@ public class ProtocolValueDataOnDemand {
         obj.setUnitType(unitType);
     }
 
-	public void setUnitTypeAndKind(ProtocolValue obj, int index) {
+    public void setUnitTypeAndKind(ProtocolValue obj, int index) {
         String unitTypeAndKind = "unitTypeAndKind_" + index;
         if (unitTypeAndKind.length() > 55) {
             unitTypeAndKind = unitTypeAndKind.substring(0, 55);
@@ -319,7 +328,7 @@ public class ProtocolValueDataOnDemand {
         obj.setUnitTypeAndKind(unitTypeAndKind);
     }
 
-	public void setUrlValue(ProtocolValue obj, int index) {
+    public void setUrlValue(ProtocolValue obj, int index) {
         String urlValue = "urlValue_" + index;
         if (urlValue.length() > 2000) {
             urlValue = urlValue.substring(0, 2000);
@@ -327,7 +336,7 @@ public class ProtocolValueDataOnDemand {
         obj.setUrlValue(urlValue);
     }
 
-	public ProtocolValue getSpecificProtocolValue(int index) {
+    public ProtocolValue getSpecificProtocolValue(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -340,18 +349,18 @@ public class ProtocolValueDataOnDemand {
         return ProtocolValue.findProtocolValue(id);
     }
 
-	public ProtocolValue getRandomProtocolValue() {
+    public ProtocolValue getRandomProtocolValue() {
         init();
         ProtocolValue obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return ProtocolValue.findProtocolValue(id);
     }
 
-	public boolean modifyProtocolValue(ProtocolValue obj) {
+    public boolean modifyProtocolValue(ProtocolValue obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = ProtocolValue.findProtocolValueEntries(from, to);
@@ -361,7 +370,7 @@ public class ProtocolValueDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<ProtocolValue>();
         for (int i = 0; i < 10; i++) {
             ProtocolValue obj = getNewTransientProtocolValue(i);
@@ -371,7 +380,9 @@ public class ProtocolValueDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

@@ -32,50 +32,47 @@ import junit.framework.Assert;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 public class ApiCompoundsControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiCompoundsControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    
-    @Test
-    @Transactional
-    public void checkBatchCodeDependencies() throws Exception{
-    	Collection<String> batchCodes = new HashSet<String>();
+	private MockMvc mockMvc;
+
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	@Test
+	@Transactional
+	public void checkBatchCodeDependencies() throws Exception {
+		Collection<String> batchCodes = new HashSet<String>();
 		batchCodes.add("CMPD-0000001-01A");
 		batchCodes.add("CMPD-0000002-01A");
 		batchCodes.add("CMPD-0000003-01A");
 		batchCodes.add("NOT-A-VALID-BATCH-CODE");
-		
+
 		CmpdRegBatchCodeDTO cmpdRegBatchCodeDTO = new CmpdRegBatchCodeDTO(batchCodes);
 		String json = cmpdRegBatchCodeDTO.toJson();
 		logger.info(json);
 		Assert.assertFalse(json.equals("{}"));
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/compounds/checkBatchDependencies")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(json))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	CmpdRegBatchCodeDTO result = CmpdRegBatchCodeDTO.fromJsonToCmpdRegBatchCodeDTO(responseJson);
-    	Assert.assertTrue(result.getLinkedDataExists());
-    	Assert.assertNotNull(result.getLinkedExperiments());
-    	Assert.assertFalse(result.getLinkedExperiments().isEmpty());
-    }
-    
-    
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/compounds/checkBatchDependencies")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		CmpdRegBatchCodeDTO result = CmpdRegBatchCodeDTO.fromJsonToCmpdRegBatchCodeDTO(responseJson);
+		Assert.assertTrue(result.getLinkedDataExists());
+		Assert.assertNotNull(result.getLinkedExperiments());
+		Assert.assertFalse(result.getLinkedExperiments().isEmpty());
+	}
 
 }

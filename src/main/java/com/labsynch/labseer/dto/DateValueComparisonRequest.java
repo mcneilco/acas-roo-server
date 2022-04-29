@@ -9,113 +9,109 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class DateValueComparisonRequest {
-	
-	private String lsType;
-	
-	private String lsKind;
-	
-	private String stateType;
-	
-	private String stateKind;
-	
-	private String valueKind;
-	
-	private Integer secondsDelta;
-	
-	private Boolean newerThanModified; 
-	
 
-	public String getLsType() {
+    private String lsType;
+
+    private String lsKind;
+
+    private String stateType;
+
+    private String stateKind;
+
+    private String valueKind;
+
+    private Integer secondsDelta;
+
+    private Boolean newerThanModified;
+
+    public String getLsType() {
         return this.lsType;
     }
 
-	public void setLsType(String lsType) {
+    public void setLsType(String lsType) {
         this.lsType = lsType;
     }
 
-	public String getLsKind() {
+    public String getLsKind() {
         return this.lsKind;
     }
 
-	public void setLsKind(String lsKind) {
+    public void setLsKind(String lsKind) {
         this.lsKind = lsKind;
     }
 
-	public String getStateType() {
+    public String getStateType() {
         return this.stateType;
     }
 
-	public void setStateType(String stateType) {
+    public void setStateType(String stateType) {
         this.stateType = stateType;
     }
 
-	public String getStateKind() {
+    public String getStateKind() {
         return this.stateKind;
     }
 
-	public void setStateKind(String stateKind) {
+    public void setStateKind(String stateKind) {
         this.stateKind = stateKind;
     }
 
-	public String getValueKind() {
+    public String getValueKind() {
         return this.valueKind;
     }
 
-	public void setValueKind(String valueKind) {
+    public void setValueKind(String valueKind) {
         this.valueKind = valueKind;
     }
 
-	public Integer getSecondsDelta() {
+    public Integer getSecondsDelta() {
         return this.secondsDelta;
     }
 
-	public void setSecondsDelta(Integer secondsDelta) {
+    public void setSecondsDelta(Integer secondsDelta) {
         this.secondsDelta = secondsDelta;
     }
 
-	public Boolean getNewerThanModified() {
+    public Boolean getNewerThanModified() {
         return this.newerThanModified;
     }
 
-	public void setNewerThanModified(Boolean newerThanModified) {
+    public void setNewerThanModified(Boolean newerThanModified) {
         this.newerThanModified = newerThanModified;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static DateValueComparisonRequest fromJsonToDateValueComparisonRequest(String json) {
+    public static DateValueComparisonRequest fromJsonToDateValueComparisonRequest(String json) {
         return new JSONDeserializer<DateValueComparisonRequest>()
-        .use(null, DateValueComparisonRequest.class).deserialize(json);
+                .use(null, DateValueComparisonRequest.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<DateValueComparisonRequest> collection) {
+    public static String toJsonArray(Collection<DateValueComparisonRequest> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<DateValueComparisonRequest> collection, String[] fields) {
+    public static String toJsonArray(Collection<DateValueComparisonRequest> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<DateValueComparisonRequest> fromJsonArrayToDateValueComparisonRequests(String json) {
+    public static Collection<DateValueComparisonRequest> fromJsonArrayToDateValueComparisonRequests(String json) {
         return new JSONDeserializer<List<DateValueComparisonRequest>>()
-        .use("values", DateValueComparisonRequest.class).deserialize(json);
+                .use("values", DateValueComparisonRequest.class).deserialize(json);
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
-
-

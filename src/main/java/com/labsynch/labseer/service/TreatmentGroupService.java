@@ -20,8 +20,8 @@ public interface TreatmentGroupService {
 
 	TreatmentGroup saveLsTreatmentGroup(TreatmentGroup treatmentGroup);
 
-	TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup, Date recordedDate);
-
+	TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup,
+			Date recordedDate);
 
 	HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
 			HashMap<String, TempThingDTO> analysisGroupMap,
@@ -29,5 +29,5 @@ public interface TreatmentGroupService {
 
 	HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
 			String treatmentGroupFilePath, HashMap<String, TempThingDTO> output) throws IOException;
-	
+
 }

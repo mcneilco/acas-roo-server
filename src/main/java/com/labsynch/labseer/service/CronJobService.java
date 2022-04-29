@@ -11,7 +11,4 @@ public interface CronJobService {
 
 	CronJob updateCronJob(CronJob cronJob);
 
-
-
-
 }

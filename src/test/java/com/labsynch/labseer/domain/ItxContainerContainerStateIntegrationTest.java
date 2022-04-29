@@ -25,83 +25,103 @@ public class ItxContainerContainerStateIntegrationTest {
     public void testMarkerMethod() {
     }
 
-	@Autowired
+    @Autowired
     ItxContainerContainerStateDataOnDemand dod;
 
-	@Test
+    @Test
     public void testCountItxContainerContainerStates() {
-        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", dod.getRandomItxContainerContainerState());
+        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly",
+                dod.getRandomItxContainerContainerState());
         long count = ItxContainerContainerState.countItxContainerContainerStates();
-        Assert.assertTrue("Counter for 'ItxContainerContainerState' incorrectly reported there were no entries", count > 0);
+        Assert.assertTrue("Counter for 'ItxContainerContainerState' incorrectly reported there were no entries",
+                count > 0);
     }
 
-	@Test
+    @Test
     public void testFindItxContainerContainerState() {
         ItxContainerContainerState obj = dod.getRandomItxContainerContainerState();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to provide an identifier", id);
         obj = ItxContainerContainerState.findItxContainerContainerState(id);
-        Assert.assertNotNull("Find method for 'ItxContainerContainerState' illegally returned null for id '" + id + "'", obj);
-        Assert.assertEquals("Find method for 'ItxContainerContainerState' returned the incorrect identifier", id, obj.getId());
+        Assert.assertNotNull("Find method for 'ItxContainerContainerState' illegally returned null for id '" + id + "'",
+                obj);
+        Assert.assertEquals("Find method for 'ItxContainerContainerState' returned the incorrect identifier", id,
+                obj.getId());
     }
 
-	@Test
+    @Test
     public void testFindAllItxContainerContainerStates() {
-        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", dod.getRandomItxContainerContainerState());
+        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly",
+                dod.getRandomItxContainerContainerState());
         long count = ItxContainerContainerState.countItxContainerContainerStates();
-        Assert.assertTrue("Too expensive to perform a find all test for 'ItxContainerContainerState', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
+        Assert.assertTrue("Too expensive to perform a find all test for 'ItxContainerContainerState', as there are "
+                + count
+                + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test",
+                count < 250);
         List<ItxContainerContainerState> result = ItxContainerContainerState.findAllItxContainerContainerStates();
         Assert.assertNotNull("Find all method for 'ItxContainerContainerState' illegally returned null", result);
-        Assert.assertTrue("Find all method for 'ItxContainerContainerState' failed to return any data", result.size() > 0);
+        Assert.assertTrue("Find all method for 'ItxContainerContainerState' failed to return any data",
+                result.size() > 0);
     }
 
-	@Test
+    @Test
     public void testFindItxContainerContainerStateEntries() {
-        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", dod.getRandomItxContainerContainerState());
+        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly",
+                dod.getRandomItxContainerContainerState());
         long count = ItxContainerContainerState.countItxContainerContainerStates();
-        if (count > 20) count = 20;
+        if (count > 20)
+            count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
-        List<ItxContainerContainerState> result = ItxContainerContainerState.findItxContainerContainerStateEntries(firstResult, maxResults);
+        List<ItxContainerContainerState> result = ItxContainerContainerState
+                .findItxContainerContainerStateEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'ItxContainerContainerState' illegally returned null", result);
-        Assert.assertEquals("Find entries method for 'ItxContainerContainerState' returned an incorrect number of entries", count, result.size());
+        Assert.assertEquals(
+                "Find entries method for 'ItxContainerContainerState' returned an incorrect number of entries", count,
+                result.size());
     }
 
-	@Test
+    @Test
     public void testFlush() {
         ItxContainerContainerState obj = dod.getRandomItxContainerContainerState();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to provide an identifier", id);
         obj = ItxContainerContainerState.findItxContainerContainerState(id);
-        Assert.assertNotNull("Find method for 'ItxContainerContainerState' illegally returned null for id '" + id + "'", obj);
-        boolean modified =  dod.modifyItxContainerContainerState(obj);
+        Assert.assertNotNull("Find method for 'ItxContainerContainerState' illegally returned null for id '" + id + "'",
+                obj);
+        boolean modified = dod.modifyItxContainerContainerState(obj);
         Integer currentVersion = obj.getVersion();
         obj.flush();
-        Assert.assertTrue("Version for 'ItxContainerContainerState' failed to increment on flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
+        Assert.assertTrue("Version for 'ItxContainerContainerState' failed to increment on flush directive",
+                (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
 
-	@Test
+    @Test
     public void testMergeUpdate() {
         ItxContainerContainerState obj = dod.getRandomItxContainerContainerState();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to provide an identifier", id);
         obj = ItxContainerContainerState.findItxContainerContainerState(id);
-        boolean modified =  dod.modifyItxContainerContainerState(obj);
+        boolean modified = dod.modifyItxContainerContainerState(obj);
         Integer currentVersion = obj.getVersion();
-        ItxContainerContainerState merged = (ItxContainerContainerState)obj.merge();
+        ItxContainerContainerState merged = (ItxContainerContainerState) obj.merge();
         obj.flush();
-        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
-        Assert.assertTrue("Version for 'ItxContainerContainerState' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
+        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(),
+                id);
+        Assert.assertTrue("Version for 'ItxContainerContainerState' failed to increment on merge and flush directive",
+                (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
 
-	@Test
+    @Test
     public void testPersist() {
-        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", dod.getRandomItxContainerContainerState());
+        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly",
+                dod.getRandomItxContainerContainerState());
         ItxContainerContainerState obj = dod.getNewTransientItxContainerContainerState(Integer.MAX_VALUE);
-        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to provide a new transient entity", obj);
+        Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to provide a new transient entity",
+                obj);
         Assert.assertNull("Expected 'ItxContainerContainerState' identifier to be null", obj.getId());
         try {
             obj.persist();
@@ -109,7 +129,9 @@ public class ItxContainerContainerStateIntegrationTest {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                 final ConstraintViolation<?> cv = iter.next();
-                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath())
+                        .append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue())
+                        .append(")").append("]");
             }
             throw new IllegalStateException(msg.toString(), e);
         }
@@ -117,7 +139,7 @@ public class ItxContainerContainerStateIntegrationTest {
         Assert.assertNotNull("Expected 'ItxContainerContainerState' identifier to no longer be null", obj.getId());
     }
 
-	@Test
+    @Test
     public void testRemove() {
         ItxContainerContainerState obj = dod.getRandomItxContainerContainerState();
         Assert.assertNotNull("Data on demand for 'ItxContainerContainerState' failed to initialize correctly", obj);
@@ -126,6 +148,7 @@ public class ItxContainerContainerStateIntegrationTest {
         obj = ItxContainerContainerState.findItxContainerContainerState(id);
         obj.remove();
         obj.flush();
-        Assert.assertNull("Failed to remove 'ItxContainerContainerState' with identifier '" + id + "'", ItxContainerContainerState.findItxContainerContainerState(id));
+        Assert.assertNull("Failed to remove 'ItxContainerContainerState' with identifier '" + id + "'",
+                ItxContainerContainerState.findItxContainerContainerState(id));
     }
 }

@@ -38,62 +38,63 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-public class ProtocolDTO{
+
+public class ProtocolDTO {
 
     private static final Logger logger = LoggerFactory.getLogger(ProtocolDTO.class);
 
     public ProtocolDTO(Protocol protocol) {
-    	this.setShortDescription(protocol.getShortDescription());
-    	this.setId(protocol.getId());
-    	this.setVersion(protocol.getVersion());
-    	this.setRecordedBy(protocol.getRecordedBy());
-		this.setRecordedDate(protocol.getRecordedDate());
-		this.setLsTransaction(protocol.getLsTransaction());
-		this.setModifiedBy(protocol.getModifiedBy());
-		this.setModifiedDate(protocol.getModifiedDate());
-		this.setIgnored(protocol.isIgnored());
-		this.setDeleted(protocol.isDeleted());
-		this.setCodeName(protocol.getCodeName());
-		this.setLsKind(protocol.getLsKind());
-		this.setExperiments(protocol.getExperiments());
-		this.setLsStates(protocol.getLsStates());
-		this.setLsLabels(protocol.getLsLabels());
-		this.setLsTags(protocol.getLsTags());
-		this.setFirstProtocols(protocol.getFirstProtocols());
-		this.setSecondProtocols(protocol.getSecondProtocols());
-		this.setExperimentCount(countExperiments(protocol));
+        this.setShortDescription(protocol.getShortDescription());
+        this.setId(protocol.getId());
+        this.setVersion(protocol.getVersion());
+        this.setRecordedBy(protocol.getRecordedBy());
+        this.setRecordedDate(protocol.getRecordedDate());
+        this.setLsTransaction(protocol.getLsTransaction());
+        this.setModifiedBy(protocol.getModifiedBy());
+        this.setModifiedDate(protocol.getModifiedDate());
+        this.setIgnored(protocol.isIgnored());
+        this.setDeleted(protocol.isDeleted());
+        this.setCodeName(protocol.getCodeName());
+        this.setLsKind(protocol.getLsKind());
+        this.setExperiments(protocol.getExperiments());
+        this.setLsStates(protocol.getLsStates());
+        this.setLsLabels(protocol.getLsLabels());
+        this.setLsTags(protocol.getLsTags());
+        this.setFirstProtocols(protocol.getFirstProtocols());
+        this.setSecondProtocols(protocol.getSecondProtocols());
+        this.setExperimentCount(countExperiments(protocol));
     }
 
     private String shortDescription;
-    
-	private Long id;
-	
-	private Integer version;
-    
-	private String lsType;
 
-	private String lsKind;
-	
-	private String codeName;
+    private Long id;
 
-	private String recordedBy;
+    private Integer version;
 
-	private Date recordedDate;
+    private String lsType;
 
-	private String modifiedBy;
+    private String lsKind;
 
-	private Date modifiedDate;
+    private String codeName;
 
-	private boolean ignored;
-	
-	private boolean deleted;
+    private String recordedBy;
 
-	private Long lsTransaction;
-	
-	private Integer experimentCount;
-    
-	private Set<ThingPage> thingPage = new HashSet<ThingPage>();
-	
+    private Date recordedDate;
+
+    private String modifiedBy;
+
+    private Date modifiedDate;
+
+    private boolean ignored;
+
+    private boolean deleted;
+
+    private Long lsTransaction;
+
+    private Integer experimentCount;
+
+    private Set<ThingPage> thingPage = new HashSet<ThingPage>();
+
     private Set<ProtocolState> lsStates = new HashSet<ProtocolState>();
 
     private Set<Experiment> experiments = new HashSet<Experiment>();
@@ -105,244 +106,269 @@ public class ProtocolDTO{
     private Set<ItxProtocolProtocol> firstProtocols = new HashSet<ItxProtocolProtocol>();
 
     private Set<ItxProtocolProtocol> secondProtocols = new HashSet<ItxProtocolProtocol>();
-    
-    public static Collection<ProtocolDTO> convertCollectionToProtocolDTO (Collection<Protocol> protocols) {
-    	Collection<ProtocolDTO> protocolDTOs = new HashSet<ProtocolDTO>();
-    	for (Protocol protocol: protocols) {
-    		ProtocolDTO protocolDTO = new ProtocolDTO(protocol);
-    		protocolDTOs.add(protocolDTO);
-    	}
-    	return protocolDTOs;
+
+    public static Collection<ProtocolDTO> convertCollectionToProtocolDTO(Collection<Protocol> protocols) {
+        Collection<ProtocolDTO> protocolDTOs = new HashSet<ProtocolDTO>();
+        for (Protocol protocol : protocols) {
+            ProtocolDTO protocolDTO = new ProtocolDTO(protocol);
+            protocolDTOs.add(protocolDTO);
+        }
+        return protocolDTOs;
     }
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol").include("lsTags", "lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class)
+                .serialize(this);
     }
 
     @Transactional
     public String toPrettyJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true)
+                .transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol").include("lsTags", "lsLabels", "lsStates.lsValues", "experiments.lsLabels", "experiments.lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "experiments.lsLabels",
+                        "experiments.lsStates.lsValues")
+                .prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toPrettyJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol").include("lsTags", "lsLabels", "lsStates.lsValues", "experiments.lsLabels", "experiments.lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "experiments.lsLabels",
+                        "experiments.lsStates.lsValues")
+                .prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public static String toPrettyJsonArray(Collection<ProtocolDTO> collection) {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol").include("lsTags", "lsLabels", "lsStates.lsValues", "experiments.lsLabels", "experiments.lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "experiments.lsLabels",
+                        "experiments.lsStates.lsValues")
+                .prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toPrettyJsonArrayStub(Collection<ProtocolDTO> collection) {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true)
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArray(Collection<ProtocolDTO> collection) {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStub(Collection<ProtocolDTO> collection) {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol", "lsLabels.protocol").include("lsTags", "lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(collection);
-    }
-    
-    private int countExperiments(Protocol protocol) {
-    	Collection<Experiment> experiments = protocol.getExperiments();
-    	int count = 0;
-    	for (Experiment experiment : experiments) {
-    		if (!experiment.isIgnored()) count++;
-    	}
-    	return count;
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol",
+                        "lsLabels.protocol")
+                .include("lsTags", "lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class)
+                .serialize(collection);
     }
 
-	public String getShortDescription() {
+    private int countExperiments(Protocol protocol) {
+        Collection<Experiment> experiments = protocol.getExperiments();
+        int count = 0;
+        for (Experiment experiment : experiments) {
+            if (!experiment.isIgnored())
+                count++;
+        }
+        return count;
+    }
+
+    public String getShortDescription() {
         return this.shortDescription;
     }
 
-	public void setShortDescription(String shortDescription) {
+    public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String getLsType() {
+    public String getLsType() {
         return this.lsType;
     }
 
-	public void setLsType(String lsType) {
+    public void setLsType(String lsType) {
         this.lsType = lsType;
     }
 
-	public String getLsKind() {
+    public String getLsKind() {
         return this.lsKind;
     }
 
-	public void setLsKind(String lsKind) {
+    public void setLsKind(String lsKind) {
         this.lsKind = lsKind;
     }
 
-	public String getCodeName() {
+    public String getCodeName() {
         return this.codeName;
     }
 
-	public void setCodeName(String codeName) {
+    public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
 
-	public String getRecordedBy() {
+    public String getRecordedBy() {
         return this.recordedBy;
     }
 
-	public void setRecordedBy(String recordedBy) {
+    public void setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
     }
 
-	public Date getRecordedDate() {
+    public Date getRecordedDate() {
         return this.recordedDate;
     }
 
-	public void setRecordedDate(Date recordedDate) {
+    public void setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
     }
 
-	public String getModifiedBy() {
+    public String getModifiedBy() {
         return this.modifiedBy;
     }
 
-	public void setModifiedBy(String modifiedBy) {
+    public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
-	public Date getModifiedDate() {
+    public Date getModifiedDate() {
         return this.modifiedDate;
     }
 
-	public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 
-	public boolean isIgnored() {
+    public boolean isIgnored() {
         return this.ignored;
     }
 
-	public void setIgnored(boolean ignored) {
+    public void setIgnored(boolean ignored) {
         this.ignored = ignored;
     }
 
-	public boolean isDeleted() {
+    public boolean isDeleted() {
         return this.deleted;
     }
 
-	public void setDeleted(boolean deleted) {
+    public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 
-	public Long getLsTransaction() {
+    public Long getLsTransaction() {
         return this.lsTransaction;
     }
 
-	public void setLsTransaction(Long lsTransaction) {
+    public void setLsTransaction(Long lsTransaction) {
         this.lsTransaction = lsTransaction;
     }
 
-	public Integer getExperimentCount() {
+    public Integer getExperimentCount() {
         return this.experimentCount;
     }
 
-	public void setExperimentCount(Integer experimentCount) {
+    public void setExperimentCount(Integer experimentCount) {
         this.experimentCount = experimentCount;
     }
 
-	public Set<ThingPage> getThingPage() {
+    public Set<ThingPage> getThingPage() {
         return this.thingPage;
     }
 
-	public void setThingPage(Set<ThingPage> thingPage) {
+    public void setThingPage(Set<ThingPage> thingPage) {
         this.thingPage = thingPage;
     }
 
-	public Set<ProtocolState> getLsStates() {
+    public Set<ProtocolState> getLsStates() {
         return this.lsStates;
     }
 
-	public void setLsStates(Set<ProtocolState> lsStates) {
+    public void setLsStates(Set<ProtocolState> lsStates) {
         this.lsStates = lsStates;
     }
 
-	public Set<Experiment> getExperiments() {
+    public Set<Experiment> getExperiments() {
         return this.experiments;
     }
 
-	public void setExperiments(Set<Experiment> experiments) {
+    public void setExperiments(Set<Experiment> experiments) {
         this.experiments = experiments;
     }
 
-	public Set<ProtocolLabel> getLsLabels() {
+    public Set<ProtocolLabel> getLsLabels() {
         return this.lsLabels;
     }
 
-	public void setLsLabels(Set<ProtocolLabel> lsLabels) {
+    public void setLsLabels(Set<ProtocolLabel> lsLabels) {
         this.lsLabels = lsLabels;
     }
 
-	public Set<LsTag> getLsTags() {
+    public Set<LsTag> getLsTags() {
         return this.lsTags;
     }
 
-	public void setLsTags(Set<LsTag> lsTags) {
+    public void setLsTags(Set<LsTag> lsTags) {
         this.lsTags = lsTags;
     }
 
-	public Set<ItxProtocolProtocol> getFirstProtocols() {
+    public Set<ItxProtocolProtocol> getFirstProtocols() {
         return this.firstProtocols;
     }
 
-	public void setFirstProtocols(Set<ItxProtocolProtocol> firstProtocols) {
+    public void setFirstProtocols(Set<ItxProtocolProtocol> firstProtocols) {
         this.firstProtocols = firstProtocols;
     }
 
-	public Set<ItxProtocolProtocol> getSecondProtocols() {
+    public Set<ItxProtocolProtocol> getSecondProtocols() {
         return this.secondProtocols;
     }
 
-	public void setSecondProtocols(Set<ItxProtocolProtocol> secondProtocols) {
+    public void setSecondProtocols(Set<ItxProtocolProtocol> secondProtocols) {
         this.secondProtocols = secondProtocols;
     }
 
-	public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsTags", "lsStates", "experiments", "lsLabels").toString();
+    public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .setExcludeFieldNames("lsTags", "lsStates", "experiments", "lsLabels").toString();
     }
 
-	public static ProtocolDTO fromJsonToProtocolDTO(String json) {
+    public static ProtocolDTO fromJsonToProtocolDTO(String json) {
         return new JSONDeserializer<ProtocolDTO>()
-        .use(null, ProtocolDTO.class).deserialize(json);
+                .use(null, ProtocolDTO.class).deserialize(json);
     }
 
-	public static Collection<ProtocolDTO> fromJsonArrayToProtocoes(String json) {
+    public static Collection<ProtocolDTO> fromJsonArrayToProtocoes(String json) {
         return new JSONDeserializer<List<ProtocolDTO>>()
-        .use("values", ProtocolDTO.class).deserialize(json);
+                .use("values", ProtocolDTO.class).deserialize(json);
     }
 }

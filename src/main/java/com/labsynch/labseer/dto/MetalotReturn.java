@@ -16,60 +16,61 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 import flexjson.transformer.DateTransformer;
 
-
 public class MetalotReturn {
-	
-	Metalot metalot;
-	ArrayList<ErrorMessage> errors;
-	
-	@Transactional
-	public String toJson() {
-        String json = new JSONSerializer().include("errors","metalot.isosalts", "metalot.fileLists", "metalot.lot", "metalot.lot.lotAliases", "metalot.lot.saltForm.parent.parentAliases").exclude("*.class", "metalot.isosalts.saltForm", "metalot.fileList.lot")
-        		.transform( new DateTransformer( "MM/dd/yyyy"), Date.class)
-        		.serialize(this);
-//        System.out.println("fromMetaLotToJson");
-//        System.out.println(json);
+
+    Metalot metalot;
+    ArrayList<ErrorMessage> errors;
+
+    @Transactional
+    public String toJson() {
+        String json = new JSONSerializer()
+                .include("errors", "metalot.isosalts", "metalot.fileLists", "metalot.lot", "metalot.lot.lotAliases",
+                        "metalot.lot.saltForm.parent.parentAliases")
+                .exclude("*.class", "metalot.isosalts.saltForm", "metalot.fileList.lot")
+                .transform(new DateTransformer("MM/dd/yyyy"), Date.class)
+                .serialize(this);
+        // System.out.println("fromMetaLotToJson");
+        // System.out.println(json);
         return json;
-	}
+    }
 
-
-	public Metalot getMetalot() {
+    public Metalot getMetalot() {
         return this.metalot;
     }
 
-	public void setMetalot(Metalot metalot) {
+    public void setMetalot(Metalot metalot) {
         this.metalot = metalot;
     }
 
-	public ArrayList<ErrorMessage> getErrors() {
+    public ArrayList<ErrorMessage> getErrors() {
         return this.errors;
     }
 
-	public void setErrors(ArrayList<ErrorMessage> errors) {
+    public void setErrors(ArrayList<ErrorMessage> errors) {
         this.errors = errors;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static MetalotReturn fromJsonToMetalotReturn(String json) {
+    public static MetalotReturn fromJsonToMetalotReturn(String json) {
         return new JSONDeserializer<MetalotReturn>()
-        .use(null, MetalotReturn.class).deserialize(json);
+                .use(null, MetalotReturn.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<MetalotReturn> collection) {
+    public static String toJsonArray(Collection<MetalotReturn> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<MetalotReturn> collection, String[] fields) {
+    public static String toJsonArray(Collection<MetalotReturn> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<MetalotReturn> fromJsonArrayToMetalotReturns(String json) {
+    public static Collection<MetalotReturn> fromJsonArrayToMetalotReturns(String json) {
         return new JSONDeserializer<List<MetalotReturn>>()
-        .use("values", MetalotReturn.class).deserialize(json);
+                .use("values", MetalotReturn.class).deserialize(json);
     }
 }

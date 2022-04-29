@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Transactional
 @RequestMapping("api/v1/experimentlabels")
 @Controller
@@ -26,22 +25,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ApiExperimentLabelController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentLabelController.class);
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
+
 	@RequestMapping(params = "find=ByLabelTextLikeAndLabelTypeAndKindEqualsAndPreferredNotAndIgnoredNot", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> jsonFindExperimentLabelsByLabelTextLikeAndLabelTypeAndKindEqualsAndPreferredNotAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam("labelTypeAndKind") String labelTypeAndKind, @RequestParam(value = "preferred", required = false) boolean preferred, @RequestParam(value = "ignored", required = false) boolean ignored) {
-      HttpHeaders headers = new HttpHeaders();
-      headers.add("Content-Type", "application/json; charset=utf-8");
-      return new ResponseEntity<String>(ExperimentLabel.toJsonArray(ExperimentLabel.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(labelText, labelTypeAndKind, preferred, ignored).getResultList()), headers, HttpStatus.OK);
+	public ResponseEntity<java.lang.String> jsonFindExperimentLabelsByLabelTextLikeAndLabelTypeAndKindEqualsAndPreferredNotAndIgnoredNot(
+			@RequestParam("labelText") String labelText, @RequestParam("labelTypeAndKind") String labelTypeAndKind,
+			@RequestParam(value = "preferred", required = false) boolean preferred,
+			@RequestParam(value = "ignored", required = false) boolean ignored) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		return new ResponseEntity<String>(
+				ExperimentLabel.toJsonArray(ExperimentLabel
+						.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(
+								labelText, labelTypeAndKind, preferred, ignored)
+						.getResultList()),
+				headers, HttpStatus.OK);
 	}
 
 	@Transactional
 	@RequestMapping(params = "FindByName", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> jsonFindExperimentLabelByNameGet(@RequestParam("name") String name, 
+	public ResponseEntity<java.lang.String> jsonFindExperimentLabelByNameGet(@RequestParam("name") String name,
 			@RequestParam(value = "protocolId", required = false) Long protocolId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

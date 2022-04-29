@@ -21,17 +21,19 @@ public class BitSetUserType extends ImmutableType<BitSet> {
 
     @Override
     public int[] sqlTypes() {
-        return new int[]{Types.OTHER};
+        return new int[] { Types.OTHER };
     }
 
     @Override
-    public BitSet get(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws SQLException {
+    public BitSet get(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+            throws SQLException {
         String stringBits = rs.getString(names[0]);
         return (stringBits != null) ? SimpleUtil.stringToBitSet(stringBits) : null;
     }
 
     @Override
-    public void set(PreparedStatement st, BitSet value, int index, SharedSessionContractImplementor session) throws SQLException {
+    public void set(PreparedStatement st, BitSet value, int index, SharedSessionContractImplementor session)
+            throws SQLException {
         if (value == null) {
             st.setNull(index, Types.OTHER);
         } else {

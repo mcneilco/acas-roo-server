@@ -15,22 +15,24 @@ import org.springframework.transaction.annotation.Transactional;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class LsThingStateServiceTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LsThingStateServiceTest.class);
 
 	@Autowired
 	private LsThingStateService lsThingStateService;
-	
+
 	@Test
 	@Transactional
 	public void createLsThingStateByLsThingIdAndStateTypeKindTest() {
 		Long lsThingId = 18311L;
 		String lsType = "metadata";
 		String lsKind = "gene metadata";
-		LsThingState lsThingState = lsThingStateService.createLsThingStateByLsThingIdAndStateTypeKind(lsThingId, lsType, lsKind);
+		LsThingState lsThingState = lsThingStateService.createLsThingStateByLsThingIdAndStateTypeKind(lsThingId, lsType,
+				lsKind);
 		Assert.assertNotNull(lsThingState);
 		logger.info(lsThingState.toJson());
 	}

@@ -10,8 +10,8 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import chemaxon.formats.MolFormatException;
 
 @Component
-public class CmpdRegMoleculeFactoryJChemImpl implements CmpdRegMoleculeFactory{
-	
+public class CmpdRegMoleculeFactoryJChemImpl implements CmpdRegMoleculeFactory {
+
 	@Override
 	public CmpdRegMolecule getCmpdRegMolecule(String molStructure) throws CmpdRegMolFormatException {
 		try {

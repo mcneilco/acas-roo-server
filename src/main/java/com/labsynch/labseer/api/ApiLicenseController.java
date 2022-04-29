@@ -41,7 +41,7 @@ public class ApiLicenseController {
 		} catch (IOException e) {
 			logger.error(e.toString());
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-		} catch (PGPException  e) {
+		} catch (PGPException e) {
 			logger.error(e.toString());
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		} catch (URISyntaxException e) {
@@ -53,6 +53,5 @@ public class ApiLicenseController {
 		}
 		return new ResponseEntity<String>(licenseInfo.toJson(), headers, HttpStatus.OK);
 	}
-
 
 }

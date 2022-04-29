@@ -11,18 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import junit.framework.Assert;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class ValueTypeKindDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ValueTypeKindDTOTest.class);
 
 	@Transactional
 	@Test
-	public void findValueKind(){
-		ValueTypeKindDTO dto = new ValueTypeKindDTO("codeValue","scientist");
+	public void findValueKind() {
+		ValueTypeKindDTO dto = new ValueTypeKindDTO("codeValue", "scientist");
 		Assert.assertNull(dto.getValueKind());
 		dto.findValueKind();
 		Assert.assertNotNull(dto.getValueKind());

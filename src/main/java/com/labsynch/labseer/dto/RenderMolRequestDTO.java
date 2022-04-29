@@ -9,93 +9,89 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class RenderMolRequestDTO {
-	
-	private String codeName;
-	
-	private String molStructure;
-	
-	private Integer height;
-	
-	private Integer width;
-	
-	private String format;
 
+    private String codeName;
 
-	public String toString() {
+    private String molStructure;
+
+    private Integer height;
+
+    private Integer width;
+
+    private String format;
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static RenderMolRequestDTO fromJsonToRenderMolRequestDTO(String json) {
+    public static RenderMolRequestDTO fromJsonToRenderMolRequestDTO(String json) {
         return new JSONDeserializer<RenderMolRequestDTO>()
-        .use(null, RenderMolRequestDTO.class).deserialize(json);
+                .use(null, RenderMolRequestDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<RenderMolRequestDTO> collection) {
+    public static String toJsonArray(Collection<RenderMolRequestDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<RenderMolRequestDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<RenderMolRequestDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<RenderMolRequestDTO> fromJsonArrayToRenderMoes(String json) {
+    public static Collection<RenderMolRequestDTO> fromJsonArrayToRenderMoes(String json) {
         return new JSONDeserializer<List<RenderMolRequestDTO>>()
-        .use("values", RenderMolRequestDTO.class).deserialize(json);
+                .use("values", RenderMolRequestDTO.class).deserialize(json);
     }
 
-	public String getCodeName() {
+    public String getCodeName() {
         return this.codeName;
     }
 
-	public void setCodeName(String codeName) {
+    public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
 
-	public String getMolStructure() {
+    public String getMolStructure() {
         return this.molStructure;
     }
 
-	public void setMolStructure(String molStructure) {
+    public void setMolStructure(String molStructure) {
         this.molStructure = molStructure;
     }
 
-	public Integer getHeight() {
+    public Integer getHeight() {
         return this.height;
     }
 
-	public void setHeight(Integer height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-	public Integer getWidth() {
+    public Integer getWidth() {
         return this.width;
     }
 
-	public void setWidth(Integer width) {
+    public void setWidth(Integer width) {
         this.width = width;
     }
 
-	public String getFormat() {
+    public String getFormat() {
         return this.format;
     }
 
-	public void setFormat(String format) {
+    public void setFormat(String format) {
         this.format = format;
     }
 }
-
-

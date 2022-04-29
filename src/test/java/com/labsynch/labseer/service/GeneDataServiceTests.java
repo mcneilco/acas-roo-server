@@ -1,5 +1,4 @@
 
-
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
@@ -23,34 +22,31 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
 @Configurable
 public class GeneDataServiceTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(GeneDataServiceTests.class);
-	
-    @Autowired
-    private LsThingService lsThingService;
+
+	@Autowired
+	private LsThingService lsThingService;
 
 	@Autowired
 	private GeneThingService geneThingService;
-	
 
 	@Autowired
 	private ExperimentService experimentService;
 
-
 	// user enters an Entrez Gene ID to fetch all experiment data
 	// service return an annotated DTO for display in Gene Page
 	// return data as a long form
-	
+
 	// input: gene ID = 5
-	// 
-	
+	//
+
 	@Test
-	public void Test_1() throws IOException{
+	public void Test_1() throws IOException {
 		String geneId = "30970";
 		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
 		Collection<PreferredNameDTO> requests = new ArrayList<PreferredNameDTO>();
@@ -59,19 +55,19 @@ public class GeneDataServiceTests {
 		requests.add(nameDTO);
 		requestDTO.setRequests(requests);
 		PreferredNameResultsDTO resultNames = lsThingService.getGeneCodeNameFromName(requestDTO.toJson());
-		
+
 		Set<String> geneCodeList = new HashSet<String>();
 
 		Collection<PreferredNameDTO> preferredNames = resultNames.getResults();
-		for (PreferredNameDTO preferredName : preferredNames){
-			logger.info(preferredName.toJson());		
+		for (PreferredNameDTO preferredName : preferredNames) {
+			logger.info(preferredName.toJson());
 			geneCodeList.add(preferredName.getReferenceName());
 		}
-		
+
 		Boolean publicData = true;
 		Collection<AnalysisGroupValueDTO> agValues = null;
 		try {
-			if (publicData){
+			if (publicData) {
 				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList, publicData).getResultList();
 			} else {
 				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList).getResultList();
@@ -79,12 +75,9 @@ public class GeneDataServiceTests {
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}
-		
-		logger.info(AnalysisGroupValueDTO.toJsonArray(agValues));
-		
-		
-	}
-	
 
+		logger.info(AnalysisGroupValueDTO.toJsonArray(agValues));
+
+	}
 
 }

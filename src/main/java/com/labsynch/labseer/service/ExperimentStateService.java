@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ExperimentStateService {
-	
-	public List<ExperimentState> getExperimentStatesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, 
+
+	public List<ExperimentState> getExperimentStatesByExperimentIdAndStateTypeKind(Long experimentId, String stateType,
 			String stateKind);
 
 	public String getCsvList(List<ExperimentState> experimentStates);
@@ -35,5 +35,5 @@ public interface ExperimentStateService {
 
 	public Collection<ExperimentStatePathDTO> getExperimentStates(
 			Collection<GenericStatePathRequest> genericRequests);
-	
+
 }

@@ -24,35 +24,36 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 
 	@Autowired
 	private AutoLabelService autoLabelService;
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
-	
+
 	@Override
-	public ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing){
+	public ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing) {
 		ItxLsThingLsThing newItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
 		newItxLsThingLsThing.persist();
 
-		if(itxLsThingLsThing.getLsStates() != null){
+		if (itxLsThingLsThing.getLsStates() != null) {
 			Set<ItxLsThingLsThingState> lsStates = new HashSet<ItxLsThingLsThingState>();
-			for(ItxLsThingLsThingState itxLsThingLsThingState : itxLsThingLsThing.getLsStates()){
+			for (ItxLsThingLsThingState itxLsThingLsThingState : itxLsThingLsThing.getLsStates()) {
 				ItxLsThingLsThingState newItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
 				newItxLsThingLsThingState.setItxLsThingLsThing(newItxLsThingLsThing);
-				logger.debug("here is the newItxLsThingLsThingState before save: " + newItxLsThingLsThingState.toJson());
+				logger.debug(
+						"here is the newItxLsThingLsThingState before save: " + newItxLsThingLsThingState.toJson());
 				newItxLsThingLsThingState.persist();
 				logger.debug("persisted the newItxLsThingLsThingState: " + newItxLsThingLsThingState.toJson());
-				
-				if (itxLsThingLsThingState.getLsValues() != null){
+
+				if (itxLsThingLsThingState.getLsValues() != null) {
 					Set<ItxLsThingLsThingValue> lsValues = new HashSet<ItxLsThingLsThingValue>();
-					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+					for (ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()) {
 						logger.debug("itxLsThingLsThingValue: " + itxLsThingLsThingValue.toJson());
-						ItxLsThingLsThingValue newItxLsThingLsThingValue = new ItxLsThingLsThingValue(itxLsThingLsThingValue);
+						ItxLsThingLsThingValue newItxLsThingLsThingValue = new ItxLsThingLsThingValue(
+								itxLsThingLsThingValue);
 						newItxLsThingLsThingValue.setLsState(newItxLsThingLsThingState);
 						newItxLsThingLsThingValue.persist();
 						lsValues.add(newItxLsThingLsThingValue);
 						logger.debug("persisted the itxLsThingLsThingValue: " + newItxLsThingLsThingValue.toJson());
-					}	
+					}
 					newItxLsThingLsThingState.setLsValues(lsValues);
 				} else {
 					logger.debug("No itxLsThingLsThing values to save");
@@ -63,99 +64,110 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 		}
 		return newItxLsThingLsThing;
 	}
-	
-//	public void updateItxLsStates(ItxLsThingLsThing jsonItxLsThingLsThing, ItxLsThingLsThing updatedItxLsThingLsThing){
-//		if(jsonItxLsThingLsThing.getLsStates() != null){
-//			for(ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()){
-//				ItxLsThingLsThingState updatedItxLsThingLsThingState;
-//				if (itxLsThingLsThingState.getId() == null){
-//					updatedItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
-//					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
-//					updatedItxLsThingLsThingState.persist();
-//					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
-//				} else {
-//					updatedItxLsThingLsThingState = ItxLsThingLsThingState.updateNoMerge(itxLsThingLsThingState);
-//					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
-//					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
-//
-//				}
-//				if (itxLsThingLsThingState.getLsValues() != null){
-//					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
-//						ItxLsThingLsThingValue updatedItxLsThingLsThingValue;
-//						if (itxLsThingLsThingValue.getId() == null){
-//							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.create(itxLsThingLsThingValue);
-//							updatedItxLsThingLsThingValue.setLsState(ItxLsThingLsThingState.findItxLsThingLsThingState(updatedItxLsThingLsThingState.getId()));
-//							updatedItxLsThingLsThingValue.persist();
-//							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
-//						} else {
-//							itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
-//							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
-//							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
-//							logger.debug("updated itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
-//						}
-//					}	
-//				} else {
-//					logger.debug("No itxLsThingLsThing values to update");
-//				}
-//			}
-//		}
-//	}
-	
+
+	// public void updateItxLsStates(ItxLsThingLsThing jsonItxLsThingLsThing,
+	// ItxLsThingLsThing updatedItxLsThingLsThing){
+	// if(jsonItxLsThingLsThing.getLsStates() != null){
+	// for(ItxLsThingLsThingState itxLsThingLsThingState :
+	// jsonItxLsThingLsThing.getLsStates()){
+	// ItxLsThingLsThingState updatedItxLsThingLsThingState;
+	// if (itxLsThingLsThingState.getId() == null){
+	// updatedItxLsThingLsThingState = new
+	// ItxLsThingLsThingState(itxLsThingLsThingState);
+	// updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+	// updatedItxLsThingLsThingState.persist();
+	// updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
+	// } else {
+	// updatedItxLsThingLsThingState =
+	// ItxLsThingLsThingState.updateNoMerge(itxLsThingLsThingState);
+	// updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+	// logger.debug("updated itxLsThingLsThing state " +
+	// updatedItxLsThingLsThingState.getId());
+	//
+	// }
+	// if (itxLsThingLsThingState.getLsValues() != null){
+	// for(ItxLsThingLsThingValue itxLsThingLsThingValue :
+	// itxLsThingLsThingState.getLsValues()){
+	// ItxLsThingLsThingValue updatedItxLsThingLsThingValue;
+	// if (itxLsThingLsThingValue.getId() == null){
+	// updatedItxLsThingLsThingValue =
+	// ItxLsThingLsThingValue.create(itxLsThingLsThingValue);
+	// updatedItxLsThingLsThingValue.setLsState(ItxLsThingLsThingState.findItxLsThingLsThingState(updatedItxLsThingLsThingState.getId()));
+	// updatedItxLsThingLsThingValue.persist();
+	// updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
+	// } else {
+	// itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+	// updatedItxLsThingLsThingValue =
+	// ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
+	// updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
+	// logger.debug("updated itxLsThingLsThing value " +
+	// updatedItxLsThingLsThingValue.getId());
+	// }
+	// }
+	// } else {
+	// logger.debug("No itxLsThingLsThing values to update");
+	// }
+	// }
+	// }
+	// }
+
 	@Override
 	@Transactional
-	public ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing jsonItxLsThingLsThing){
-		
+	public ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing jsonItxLsThingLsThing) {
+
 		ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.updateNoStates(jsonItxLsThingLsThing);
 		updatedItxLsThingLsThing.merge();
 		logger.debug("here is the updated itx: " + updatedItxLsThingLsThing.toJson());
 		logger.debug("----------------- here is the itx id " + updatedItxLsThingLsThing.getId() + "   -----------");
-		
-		if(jsonItxLsThingLsThing.getLsStates() != null){
-			for(ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()){
+
+		if (jsonItxLsThingLsThing.getLsStates() != null) {
+			for (ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()) {
 				logger.debug("-------- current itxLsThingLsThingState ID: " + itxLsThingLsThingState.getId());
 				ItxLsThingLsThingState updatedItxLsThingLsThingState;
-				if (itxLsThingLsThingState.getId() == null){
+				if (itxLsThingLsThingState.getId() == null) {
 					updatedItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
-					updatedItxLsThingLsThingState.setItxLsThingLsThing(ItxLsThingLsThing.findItxLsThingLsThing(updatedItxLsThingLsThing.getId()));
+					updatedItxLsThingLsThingState.setItxLsThingLsThing(
+							ItxLsThingLsThing.findItxLsThingLsThing(updatedItxLsThingLsThing.getId()));
 					updatedItxLsThingLsThingState.persist();
 					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
 				} else {
 
-					if (itxLsThingLsThingState.getItxLsThingLsThing() == null) itxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
-					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);			
+					if (itxLsThingLsThingState.getItxLsThingLsThing() == null)
+						itxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);
 					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
 					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
 
 				}
-				if (itxLsThingLsThingState.getLsValues() != null){
-					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+				if (itxLsThingLsThingState.getLsValues() != null) {
+					for (ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()) {
 						ItxLsThingLsThingValue updatedItxLsThingLsThingValue;
-						if (itxLsThingLsThingValue.getId() == null){
+						if (itxLsThingLsThingValue.getId() == null) {
 							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.create(itxLsThingLsThingValue);
 							updatedItxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
 							updatedItxLsThingLsThingValue.persist();
 							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
 
 						} else {
-							//itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+							// itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
 							itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
 							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
 							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
 						}
-					}	
+					}
 				} else {
 					logger.debug("No itxLsThingLsThing values to update");
 				}
 			}
 		}
-		
+
 		return updatedItxLsThingLsThing;
 	}
 
 	@Override
 	public Collection<CodeTableDTO> convertToCodeTables(Collection<ItxLsThingLsThing> itxLsThingLsThings) {
 		Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
-		for (ItxLsThingLsThing itx : itxLsThingLsThings){
+		for (ItxLsThingLsThing itx : itxLsThingLsThings) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setId(itx.getId());
 			codeTable.setCode(itx.getCodeName());
@@ -163,28 +175,31 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 			codeTable.setIgnored(itx.isIgnored());
 			codeTables.add(codeTable);
 		}
-		
+
 		return codeTables;
 	}
 
-//	@Override
-//	@Transactional
-//	public ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing jsonItxLsThingLsThing) {
-//		ItxLsThingLsThing updatedItxLsThingLsThing;
-//		jsonItxLsThingLsThing.setFirstLsThing(LsThing.findLsThing(jsonItxLsThingLsThing.getFirstLsThing().getId()));
-//		jsonItxLsThingLsThing.setSecondLsThing(LsThing.findLsThing(jsonItxLsThingLsThing.getSecondLsThing().getId()));
-//		if (jsonItxLsThingLsThing.getId() == null){
-//			//need to save a new itx
-//			logger.debug("saving new itxLsThingLsThing: " + jsonItxLsThingLsThing.toJson());
-//			updatedItxLsThingLsThing = saveItxLsThingLsThing(jsonItxLsThingLsThing);
-//		}else {
-//			//old itx needs to be updated
-//			updatedItxLsThingLsThing = ItxLsThingLsThing.update(jsonItxLsThingLsThing);
-//		}
-////		ItxLsThingLsThingState
-//		ItxLsThingLsThing returnObject = ItxLsThingLsThing.findItxLsThingLsThing(updatedItxLsThingLsThing.getId());
-////		Set<ItxLsThingLsThingState> lsStates = ItxLsThingLsThingState.f
-////		returnObject.setLsStates(lsStates);
-//		return returnObject;
-//	}
+	// @Override
+	// @Transactional
+	// public ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing
+	// jsonItxLsThingLsThing) {
+	// ItxLsThingLsThing updatedItxLsThingLsThing;
+	// jsonItxLsThingLsThing.setFirstLsThing(LsThing.findLsThing(jsonItxLsThingLsThing.getFirstLsThing().getId()));
+	// jsonItxLsThingLsThing.setSecondLsThing(LsThing.findLsThing(jsonItxLsThingLsThing.getSecondLsThing().getId()));
+	// if (jsonItxLsThingLsThing.getId() == null){
+	// //need to save a new itx
+	// logger.debug("saving new itxLsThingLsThing: " +
+	// jsonItxLsThingLsThing.toJson());
+	// updatedItxLsThingLsThing = saveItxLsThingLsThing(jsonItxLsThingLsThing);
+	// }else {
+	// //old itx needs to be updated
+	// updatedItxLsThingLsThing = ItxLsThingLsThing.update(jsonItxLsThingLsThing);
+	// }
+	//// ItxLsThingLsThingState
+	// ItxLsThingLsThing returnObject =
+	// ItxLsThingLsThing.findItxLsThingLsThing(updatedItxLsThingLsThing.getId());
+	//// Set<ItxLsThingLsThingState> lsStates = ItxLsThingLsThingState.f
+	//// returnObject.setLsStates(lsStates);
+	// return returnObject;
+	// }
 }

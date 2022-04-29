@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ApiAnalysisGroupController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);
-	
+
 	@Autowired
 	private ExperimentValueService experimentValueService;
 
@@ -53,7 +53,7 @@ public class ApiAnalysisGroupController {
 
 	@Autowired
 	private AnalysisGroupService analysisGroupService;
-	
+
 	@Autowired
 	private AnalysisGroupValueService analysisGroupValueService;
 
@@ -70,20 +70,24 @@ public class ApiAnalysisGroupController {
 			@RequestParam("stateType") String stateType,
 			@RequestParam("stateKind") String stateKind,
 			@RequestParam("stateValueType") String stateValueType,
-			@RequestParam("stateValueKind") String stateValueKind
-			) {
+			@RequestParam("stateValueKind") String stateValueKind) {
 		List<String> values = new ArrayList<String>();
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
 
-		if (analysisGroup != null){
+		if (analysisGroup != null) {
 			Set<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
-			for (TreatmentGroup treatmentGroup : treatmentGroups){
+			for (TreatmentGroup treatmentGroup : treatmentGroups) {
 				Set<Subject> subjects = treatmentGroup.getSubjects();
-				for (Subject subject : subjects){
-					List<SubjectState> subjectStates = SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(stateType, stateKind, subject).getResultList();
-					for (SubjectState subjectState : subjectStates){
-						List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(subjectState, stateValueType, stateValueKind).getResultList();
-						for (SubjectValue subjectValue : subjectValues){
+				for (Subject subject : subjects) {
+					List<SubjectState> subjectStates = SubjectState
+							.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(stateType, stateKind, subject)
+							.getResultList();
+					for (SubjectState subjectState : subjectStates) {
+						List<SubjectValue> subjectValues = SubjectValue
+								.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(subjectState, stateValueType,
+										stateValueKind)
+								.getResultList();
+						for (SubjectValue subjectValue : subjectValues) {
 							if (stateValueType.equalsIgnoreCase("stringValue")) {
 								values.add(subjectValue.getStringValue());
 							} else if (stateValueType.equalsIgnoreCase("numericValue")) {
@@ -92,7 +96,7 @@ public class ApiAnalysisGroupController {
 						}
 					}
 				}
-			}			
+			}
 		}
 
 		HttpHeaders headers = new HttpHeaders();
@@ -103,158 +107,170 @@ public class ApiAnalysisGroupController {
 		return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
 	}
 
+	// @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers =
+	// "Accept=application/json")
+	// @ResponseBody
+	// public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
+	// AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.add("Content-Type", "application/json; charset=utf-8");
+	// if (analysisGroup == null) {
+	// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	// }
+	// return new ResponseEntity<String>(analysisGroup.toJson(), headers,
+	// HttpStatus.OK);
+	// }
 
-
-//	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
-//    @ResponseBody
-//    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
-//        AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Type", "application/json; charset=utf-8");
-//        if (analysisGroup == null) {
-//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
-//    }
-	
 	@Transactional
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
-        AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        if (analysisGroup == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        if (with != null) {
-            if (with.equalsIgnoreCase("fullobject")) {
-                return new ResponseEntity<String>(analysisGroup.toFullJson(), headers, HttpStatus.OK);
-            } else if (with.equalsIgnoreCase("prettyjson")) {
-                return new ResponseEntity<String>(analysisGroup.toPrettyJson(), headers, HttpStatus.OK);
-            } else if (with.equalsIgnoreCase("prettyjsonstub")) {
-                return new ResponseEntity<String>(analysisGroup.toPrettyJsonStub(), headers, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
-            }
-        } else {
-            return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
-        }
-    }
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}", headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id,
+			@RequestParam(value = "with", required = false) String with) {
+		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		if (analysisGroup == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		if (with != null) {
+			if (with.equalsIgnoreCase("fullobject")) {
+				return new ResponseEntity<String>(analysisGroup.toFullJson(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(analysisGroup.toPrettyJson(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjsonstub")) {
+				return new ResponseEntity<String>(analysisGroup.toPrettyJsonStub(), headers, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers,
+						HttpStatus.NOT_IMPLEMENTED);
+			}
+		} else {
+			return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> listJson() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        List<AnalysisGroup> result = AnalysisGroup.findAllAnalysisGroups();
-        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(result), headers, HttpStatus.OK);
-    }
+	@ResponseBody
+	public ResponseEntity<String> listJson() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		List<AnalysisGroup> result = AnalysisGroup.findAllAnalysisGroups();
+		return new ResponseEntity<String>(AnalysisGroup.toJsonArray(result), headers, HttpStatus.OK);
+	}
 
-//	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-//    public ResponseEntity<String> createFromJson(@RequestBody String json) {
-//        AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
-//        analysisGroup.persist();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Type", "application/json");
-//        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-//    }
-	
-    @Transactional
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-    	AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
-        AnalysisGroup newAnalysisGroup = null;
+	// @RequestMapping(method = RequestMethod.POST, headers =
+	// "Accept=application/json")
+	// public ResponseEntity<String> createFromJson(@RequestBody String json) {
+	// AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
+	// analysisGroup.persist();
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.add("Content-Type", "application/json");
+	// return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+	// }
+
+	@Transactional
+	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+		AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
+		AnalysisGroup newAnalysisGroup = null;
 		try {
 			newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(newAnalysisGroup.toJson(), headers, HttpStatus.CREATED);
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		return new ResponseEntity<String>(newAnalysisGroup.toJson(), headers, HttpStatus.CREATED);
+	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
+	public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
 		Collection<AnalysisGroup> analysisGroups = AnalysisGroup.fromJsonArrayToAnalysisGroups(json);
 		Collection<AnalysisGroup> savedAnalysisGroups = new HashSet<AnalysisGroup>();
-        for (AnalysisGroup analysisGroup: analysisGroups) {
-        	try {
+		for (AnalysisGroup analysisGroup : analysisGroups) {
+			try {
 				AnalysisGroup savedAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
 				savedAnalysisGroups.add(savedAnalysisGroup);
 			} catch (NotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(savedAnalysisGroups), headers, HttpStatus.CREATED);
-    }
-	
+		}
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		return new ResponseEntity<String>(AnalysisGroup.toJsonArray(savedAnalysisGroups), headers, HttpStatus.CREATED);
+	}
+
 	@Transactional
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJson(@RequestBody AnalysisGroup analysisGroup) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
-//        if (analysisGroup.merge() == null) {
-//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-//        }
-        return new ResponseEntity<String>(updatedAnalysisGroup.toJson(), headers, HttpStatus.OK);
-    }
+	public ResponseEntity<String> updateFromJson(@RequestBody AnalysisGroup analysisGroup) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
+		// if (analysisGroup.merge() == null) {
+		// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		// }
+		return new ResponseEntity<String>(updatedAnalysisGroup.toJson(), headers, HttpStatus.OK);
+	}
 
 	@Transactional
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+	public ResponseEntity<String> updateFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
 		Collection<AnalysisGroup> updatedAnalysisGroups = new HashSet<AnalysisGroup>();
-        for (AnalysisGroup analysisGroup: analysisGroups) {
-        	AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
-        	updatedAnalysisGroups.add(updatedAnalysisGroup);
-//            if (analysisGroup.merge() == null) {
-//                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-//            }
-        }
-        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(updatedAnalysisGroups), headers, HttpStatus.OK);
-    }
+		for (AnalysisGroup analysisGroup : analysisGroups) {
+			AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
+			updatedAnalysisGroups.add(updatedAnalysisGroup);
+			// if (analysisGroup.merge() == null) {
+			// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			// }
+		}
+		return new ResponseEntity<String>(AnalysisGroup.toJsonArray(updatedAnalysisGroups), headers, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
-        AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        if (analysisGroup == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        analysisGroup.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
+	public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
+		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		if (analysisGroup == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		analysisGroup.remove();
+		return new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
 
-//TODO: work out a different strategy with the many to many
-//	@RequestMapping(params = "find=ByExperiment", headers = "Accept=application/json")
-//    @ResponseBody
-//    public ResponseEntity<String> jsonFindAnalysisGroupsByExperiment(@RequestParam("experiment") Experiment experiment) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Type", "application/json; charset=utf-8");
-//        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByExperiments(experiment).getResultList()), headers, HttpStatus.OK);
-//    }
+	// TODO: work out a different strategy with the many to many
+	// @RequestMapping(params = "find=ByExperiment", headers =
+	// "Accept=application/json")
+	// @ResponseBody
+	// public ResponseEntity<String>
+	// jsonFindAnalysisGroupsByExperiment(@RequestParam("experiment") Experiment
+	// experiment) {
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.add("Content-Type", "application/json; charset=utf-8");
+	// return new
+	// ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByExperiments(experiment).getResultList()),
+	// headers, HttpStatus.OK);
+	// }
 
 	@RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
-    }
-	
+	@ResponseBody
+	public ResponseEntity<String> jsonFindAnalysisGroupsByLsTransactionEquals(
+			@RequestParam("lsTransaction") Long lsTransaction) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		return new ResponseEntity<String>(
+				AnalysisGroup.toJsonArray(
+						AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction).getResultList()),
+				headers, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> getAnalysisGroupValuesByIdOrCodeNameFilter31 (
+	public ResponseEntity<String> getAnalysisGroupValuesByIdOrCodeNameFilter31(
 			@PathVariable("analysisGroupIdOrCodeName") String analysisGroupIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
@@ -264,20 +280,22 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
+		if (SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
-		} else {		
+		} else {
 			try {
-				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName).getSingleResult();
-			} catch(Exception ex) {
+				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName)
+						.getSingleResult();
+			} catch (Exception ex) {
 				analysisGroup = null;
 			}
 		}
 
 		List<AnalysisGroupValue> analysisGroupValues;
-		if(analysisGroup != null) {
+		if (analysisGroup != null) {
 			Long analysisGroupId = analysisGroup.getId();
-			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
+			analysisGroupValues = analysisGroupValueService
+					.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
 		} else {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
@@ -285,15 +303,16 @@ public class ApiAnalysisGroupController {
 			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			//default format is json
-			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers, HttpStatus.OK);
+			// default format is json
+			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers,
+					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> getSubjectValuesByAnalysisGroupIdOrCodeNameFilter31 (
+	public ResponseEntity<String> getSubjectValuesByAnalysisGroupIdOrCodeNameFilter31(
 			@PathVariable("analysisGroupIdOrCodeName") String analysisGroupIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
@@ -303,20 +322,22 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
+		if (SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
-		} else {		
+		} else {
 			try {
-				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName).getSingleResult();
-			} catch(Exception ex) {
+				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName)
+						.getSingleResult();
+			} catch (Exception ex) {
 				analysisGroup = null;
 			}
 		}
 
 		List<SubjectValue> subjectValues;
-		if(analysisGroup != null) {
+		if (analysisGroup != null) {
 			Long analysisGroupId = analysisGroup.getId();
-			subjectValues = subjectValueService.getSubjectValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
+			subjectValues = subjectValueService.getSubjectValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId,
+					stateType, stateKind);
 		} else {
 			subjectValues = new ArrayList<SubjectValue>();
 		}
@@ -324,7 +345,7 @@ public class ApiAnalysisGroupController {
 			String outputString = subjectValueService.getCsvList(subjectValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			//default format is json
+			// default format is json
 			return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues), headers, HttpStatus.OK);
 		}
 	}
@@ -332,7 +353,7 @@ public class ApiAnalysisGroupController {
 	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> getTreatmentGroupValuesByAnalysisGroupIdOrCodeNameAndStateTypeKindFilter41 (
+	public ResponseEntity<String> getTreatmentGroupValuesByAnalysisGroupIdOrCodeNameAndStateTypeKindFilter41(
 			@PathVariable("analysisGroupIdOrCodeName") String analysisGroupIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
@@ -342,20 +363,22 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
+		if (SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
-		} else {		
+		} else {
 			try {
-				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName).getSingleResult();
-			} catch(Exception ex) {
+				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName)
+						.getSingleResult();
+			} catch (Exception ex) {
 				analysisGroup = null;
 			}
 		}
 
 		List<TreatmentGroupValue> treatmentGroupValues;
-		if(analysisGroup != null) {
+		if (analysisGroup != null) {
 			Long analysisGroupId = analysisGroup.getId();
-			treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
+			treatmentGroupValues = treatmentGroupValueService
+					.getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
 		} else {
 			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
 		}
@@ -363,16 +386,17 @@ public class ApiAnalysisGroupController {
 			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			//default format is json
-			return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues), headers, HttpStatus.OK);
+			// default format is json
+			return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues), headers,
+					HttpStatus.OK);
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> getAnalysisGroupValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter3 (
+	public ResponseEntity<String> getAnalysisGroupValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter3(
 			@PathVariable("analysisGroupIdOrCodeName") String analysisGroupIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
@@ -384,20 +408,23 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
+		if (SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
-		} else {		
+		} else {
 			try {
-				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName).getSingleResult();
-			} catch(Exception ex) {
+				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName)
+						.getSingleResult();
+			} catch (Exception ex) {
 				analysisGroup = null;
 			}
 		}
 
 		List<AnalysisGroupValue> analysisGroupValues;
-		if(analysisGroup != null) {
+		if (analysisGroup != null) {
 			Long analysisGroupId = analysisGroup.getId();
-			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind);
+			analysisGroupValues = analysisGroupValueService
+					.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType,
+							stateKind, valueType, valueKind);
 		} else {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
@@ -405,11 +432,10 @@ public class ApiAnalysisGroupController {
 			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			//default format is json
-			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers, HttpStatus.OK);
+			// default format is json
+			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers,
+					HttpStatus.OK);
 		}
 	}
 
-
-	
 }

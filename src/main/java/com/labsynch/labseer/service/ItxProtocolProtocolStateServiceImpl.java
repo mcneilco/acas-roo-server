@@ -23,7 +23,8 @@ public class ItxProtocolProtocolStateServiceImpl implements ItxProtocolProtocolS
 
 	@Override
 	public ItxProtocolProtocolState updateItxProtocolProtocolState(ItxProtocolProtocolState itxProtocolProtocolState) {
-		itxProtocolProtocolState.setVersion(ItxProtocolProtocolState.findItxProtocolProtocolState(itxProtocolProtocolState.getId()).getVersion());
+		itxProtocolProtocolState.setVersion(
+				ItxProtocolProtocolState.findItxProtocolProtocolState(itxProtocolProtocolState.getId()).getVersion());
 		itxProtocolProtocolState.merge();
 		return itxProtocolProtocolState;
 	}
@@ -31,7 +32,7 @@ public class ItxProtocolProtocolStateServiceImpl implements ItxProtocolProtocolS
 	@Override
 	public Collection<ItxProtocolProtocolState> updateItxProtocolProtocolStates(
 			Collection<ItxProtocolProtocolState> itxProtocolProtocolStates) {
-		for (ItxProtocolProtocolState itxProtocolProtocolState : itxProtocolProtocolStates){
+		for (ItxProtocolProtocolState itxProtocolProtocolState : itxProtocolProtocolStates) {
 			itxProtocolProtocolState = updateItxProtocolProtocolState(itxProtocolProtocolState);
 		}
 		return null;
@@ -39,7 +40,8 @@ public class ItxProtocolProtocolStateServiceImpl implements ItxProtocolProtocolS
 
 	@Override
 	public ItxProtocolProtocolState saveItxProtocolProtocolState(ItxProtocolProtocolState itxProtocolProtocolState) {
-		itxProtocolProtocolState.setItxProtocolProtocol(ItxProtocolProtocol.findItxProtocolProtocol(itxProtocolProtocolState.getItxProtocolProtocol().getId()));		
+		itxProtocolProtocolState.setItxProtocolProtocol(
+				ItxProtocolProtocol.findItxProtocolProtocol(itxProtocolProtocolState.getItxProtocolProtocol().getId()));
 		itxProtocolProtocolState.persist();
 		return itxProtocolProtocolState;
 	}
@@ -47,12 +49,10 @@ public class ItxProtocolProtocolStateServiceImpl implements ItxProtocolProtocolS
 	@Override
 	public Collection<ItxProtocolProtocolState> saveItxProtocolProtocolStates(
 			Collection<ItxProtocolProtocolState> itxProtocolProtocolStates) {
-		for (ItxProtocolProtocolState itxProtocolProtocolState: itxProtocolProtocolStates) {
+		for (ItxProtocolProtocolState itxProtocolProtocolState : itxProtocolProtocolStates) {
 			itxProtocolProtocolState = saveItxProtocolProtocolState(itxProtocolProtocolState);
 		}
 		return itxProtocolProtocolStates;
 	}
-
-
 
 }

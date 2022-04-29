@@ -36,26 +36,29 @@ public interface ExperimentService {
 
 	Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues);
 
-	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData);
+	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest,
+			Boolean onlyPublicData);
 
 	public Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes);
 
 	public boolean isSoftDeleted(Experiment experiment);
-	
+
 	public Collection<JSTreeNodeDTO> getExperimentNodesByProtocolTree(
 			Collection<String> codeValues);
 
 	public Collection<Experiment> findExperimentsByMetadataJson(String json);
-	
+
 	public Collection<Experiment> findExperimentsByMetadataJson(
 			List<StringCollectionDTO> metaDataList);
-	
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName) throws TooManyResultsException;
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, List<String> projects) throws TooManyResultsException;
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName)
+			throws TooManyResultsException;
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query)  throws TooManyResultsException;
-	
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, List<String> projects)
+			throws TooManyResultsException;
+
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query) throws TooManyResultsException;
+
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);
 
 	public Set<Experiment> findExperimentsByRequestMetadata(
@@ -80,10 +83,10 @@ public interface ExperimentService {
 	public PreferredNameResultsDTO getCodeNameFromName(String experimentType,
 			String experimentKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO);
+
 	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
-	
+
 	public Collection<String> getExperimentCodesByDateValueComparison(
 			DateValueComparisonRequest requestDTO) throws Exception;
 
-	
 }

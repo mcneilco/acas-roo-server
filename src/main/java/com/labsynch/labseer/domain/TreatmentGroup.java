@@ -39,11 +39,15 @@ public class TreatmentGroup extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch = FetchType.LAZY)
     private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
 
-    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, mappedBy = "treatmentGroups")
+    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST,
+            javax.persistence.CascadeType.MERGE }, mappedBy = "treatmentGroups")
     private Set<Subject> subjects = new HashSet<Subject>();
 
-    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "ANALYSISGROUP_TREATMENTGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "treatment_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") })
+    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST,
+            javax.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @JoinTable(name = "ANALYSISGROUP_TREATMENTGROUP", joinColumns = {
+            @javax.persistence.JoinColumn(name = "treatment_group_id") }, inverseJoinColumns = {
+                    @javax.persistence.JoinColumn(name = "analysis_group_id") })
     private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     public TreatmentGroup() {
@@ -73,7 +77,8 @@ public class TreatmentGroup extends AbstractThing {
         this.setLsType(treatmentGroupDTO.getLsType());
     }
 
-    public static com.labsynch.labseer.domain.TreatmentGroup update(com.labsynch.labseer.domain.TreatmentGroup treatmentGroup) {
+    public static com.labsynch.labseer.domain.TreatmentGroup update(
+            com.labsynch.labseer.domain.TreatmentGroup treatmentGroup) {
         TreatmentGroup updatedTreatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroup.getId());
         updatedTreatmentGroup.setRecordedBy(treatmentGroup.getRecordedBy());
         updatedTreatmentGroup.setRecordedDate(treatmentGroup.getRecordedDate());
@@ -90,7 +95,10 @@ public class TreatmentGroup extends AbstractThing {
     }
 
     public String toJson() {
-        return new JSONSerializer().include("lsLabels", "lsStates.lsValues", "subjects").exclude("*.class", "analysisGroups.experiments", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroups").serialize(this);
+        return new JSONSerializer()
+                .include("lsLabels", "lsStates.lsValues", "subjects").exclude("*.class", "analysisGroups.experiments",
+                        "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroups")
+                .serialize(this);
     }
 
     public static com.labsynch.labseer.domain.TreatmentGroup fromJsonToTreatmentGroup(String json) {
@@ -98,19 +106,25 @@ public class TreatmentGroup extends AbstractThing {
     }
 
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.TreatmentGroup> collection) {
-        return new JSONSerializer().include("lsLabels", "lsStates.lsValues", "subjects").exclude("*.class", "analysisGroup.experiment", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup").serialize(collection);
+        return new JSONSerializer()
+                .include("lsLabels", "lsStates.lsValues", "subjects").exclude("*.class", "analysisGroup.experiment",
+                        "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup")
+                .serialize(collection);
     }
 
     public static Collection<com.labsynch.labseer.domain.TreatmentGroup> fromJsonArrayToTreatmentGroups(String json) {
-        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class).use("values", TreatmentGroup.class).deserialize(json);
+        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class)
+                .use("values", TreatmentGroup.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.TreatmentGroup> fromJsonArrayToTreatmentGroups(Reader json) {
-        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class).use("values", TreatmentGroup.class).deserialize(json);
+        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class)
+                .use("values", TreatmentGroup.class).deserialize(json);
     }
 
     public static int deleteByExperimentID(Long experimentId) {
-        if (experimentId == null) return 0;
+        if (experimentId == null)
+            return 0;
         EntityManager em = SubjectValue.entityManager();
         String deleteSQL = "DELETE FROM TreatmentGroup t WHERE TreatmentGroup IN (SELECT t FROM TreatmentGroup t JOIN t.analysisGroups a JOIN a.experiments e WHERE e.id = :experimentId)";
         Query q = em.createQuery(deleteSQL);
@@ -140,67 +154,79 @@ public class TreatmentGroup extends AbstractThing {
         }
         subjects.clear();
         EntityManager em = TreatmentGroup.entityManager();
-        Query q1 = em.createNativeQuery("DELETE FROM treatmentGroup_subject o WHERE o.treatment_group_id = :id", TreatmentGroup.class);
+        Query q1 = em.createNativeQuery("DELETE FROM treatmentGroup_subject o WHERE o.treatment_group_id = :id",
+                TreatmentGroup.class);
         q1.setParameter("id", id);
         q1.executeUpdate();
         treatmentGroup.remove();
         return subjectIds;
     }
 
-	public static Long countFindTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
-        if (analysisGroups == null) throw new IllegalArgumentException("The analysisGroups argument is required");
+    public static Long countFindTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+        if (analysisGroups == null)
+            throw new IllegalArgumentException("The analysisGroups argument is required");
         EntityManager em = TreatmentGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE");
         for (int i = 0; i < analysisGroups.size(); i++) {
-            if (i > 0) queryBuilder.append(" AND");
+            if (i > 0)
+                queryBuilder.append(" AND");
             queryBuilder.append(" :analysisGroups_item").append(i).append(" MEMBER OF o.analysisGroups");
         }
         TypedQuery q = em.createQuery(queryBuilder.toString(), Long.class);
         int analysisGroupsIndex = 0;
-        for (AnalysisGroup _analysisgroup: analysisGroups) {
+        for (AnalysisGroup _analysisgroup : analysisGroups) {
             q.setParameter("analysisGroups_item" + analysisGroupsIndex++, _analysisgroup);
         }
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindTreatmentGroupsByCodeNameEquals(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static Long countFindTreatmentGroupsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = TreatmentGroup.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE o.codeName = :codeName", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE o.codeName = :codeName",
+                Long.class);
         q.setParameter("codeName", codeName);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static Long countFindTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = TreatmentGroup.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction",
+                Long.class);
         q.setParameter("lsTransaction", lsTransaction);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<TreatmentGroup> findTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
-        if (analysisGroups == null) throw new IllegalArgumentException("The analysisGroups argument is required");
+    public static TypedQuery<TreatmentGroup> findTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+        if (analysisGroups == null)
+            throw new IllegalArgumentException("The analysisGroups argument is required");
         EntityManager em = TreatmentGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE");
         for (int i = 0; i < analysisGroups.size(); i++) {
-            if (i > 0) queryBuilder.append(" AND");
+            if (i > 0)
+                queryBuilder.append(" AND");
             queryBuilder.append(" :analysisGroups_item").append(i).append(" MEMBER OF o.analysisGroups");
         }
         TypedQuery<TreatmentGroup> q = em.createQuery(queryBuilder.toString(), TreatmentGroup.class);
         int analysisGroupsIndex = 0;
-        for (AnalysisGroup _analysisgroup: analysisGroups) {
+        for (AnalysisGroup _analysisgroup : analysisGroups) {
             q.setParameter("analysisGroups_item" + analysisGroupsIndex++, _analysisgroup);
         }
         return q;
     }
 
-	public static TypedQuery<TreatmentGroup> findTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups, String sortFieldName, String sortOrder) {
-        if (analysisGroups == null) throw new IllegalArgumentException("The analysisGroups argument is required");
+    public static TypedQuery<TreatmentGroup> findTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups,
+            String sortFieldName, String sortOrder) {
+        if (analysisGroups == null)
+            throw new IllegalArgumentException("The analysisGroups argument is required");
         EntityManager em = TreatmentGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE");
         for (int i = 0; i < analysisGroups.size(); i++) {
-            if (i > 0) queryBuilder.append(" AND");
+            if (i > 0)
+                queryBuilder.append(" AND");
             queryBuilder.append(" :analysisGroups_item").append(i).append(" MEMBER OF o.analysisGroups");
         }
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -211,24 +237,29 @@ public class TreatmentGroup extends AbstractThing {
         }
         TypedQuery<TreatmentGroup> q = em.createQuery(queryBuilder.toString(), TreatmentGroup.class);
         int analysisGroupsIndex = 0;
-        for (AnalysisGroup _analysisgroup: analysisGroups) {
+        for (AnalysisGroup _analysisgroup : analysisGroups) {
             q.setParameter("analysisGroups_item" + analysisGroupsIndex++, _analysisgroup);
         }
         return q;
     }
 
-	public static TypedQuery<TreatmentGroup> findTreatmentGroupsByCodeNameEquals(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<TreatmentGroup> findTreatmentGroupsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = TreatmentGroup.entityManager();
-        TypedQuery<TreatmentGroup> q = em.createQuery("SELECT o FROM TreatmentGroup AS o WHERE o.codeName = :codeName", TreatmentGroup.class);
+        TypedQuery<TreatmentGroup> q = em.createQuery("SELECT o FROM TreatmentGroup AS o WHERE o.codeName = :codeName",
+                TreatmentGroup.class);
         q.setParameter("codeName", codeName);
         return q;
     }
 
-	public static TypedQuery<TreatmentGroup> findTreatmentGroupsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<TreatmentGroup> findTreatmentGroupsByCodeNameEquals(String codeName, String sortFieldName,
+            String sortOrder) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = TreatmentGroup.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE o.codeName = :codeName");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM TreatmentGroup AS o WHERE o.codeName = :codeName");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -240,18 +271,23 @@ public class TreatmentGroup extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<TreatmentGroup> findTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static TypedQuery<TreatmentGroup> findTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = TreatmentGroup.entityManager();
-        TypedQuery<TreatmentGroup> q = em.createQuery("SELECT o FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction", TreatmentGroup.class);
+        TypedQuery<TreatmentGroup> q = em.createQuery(
+                "SELECT o FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction", TreatmentGroup.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }
 
-	public static TypedQuery<TreatmentGroup> findTreatmentGroupsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static TypedQuery<TreatmentGroup> findTreatmentGroupsByLsTransactionEquals(Long lsTransaction,
+            String sortFieldName, String sortOrder) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = TreatmentGroup.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -263,17 +299,18 @@ public class TreatmentGroup extends AbstractThing {
         return q;
     }
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsLabels", "lsStates", "subjects", "analysisGroups");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsLabels", "lsStates",
+            "subjects", "analysisGroups");
 
-	public static long countTreatmentGroups() {
+    public static long countTreatmentGroups() {
         return entityManager().createQuery("SELECT COUNT(o) FROM TreatmentGroup o", Long.class).getSingleResult();
     }
 
-	public static List<TreatmentGroup> findAllTreatmentGroups() {
+    public static List<TreatmentGroup> findAllTreatmentGroups() {
         return entityManager().createQuery("SELECT o FROM TreatmentGroup o", TreatmentGroup.class).getResultList();
     }
 
-	public static List<TreatmentGroup> findAllTreatmentGroups(String sortFieldName, String sortOrder) {
+    public static List<TreatmentGroup> findAllTreatmentGroups(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM TreatmentGroup o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -284,16 +321,19 @@ public class TreatmentGroup extends AbstractThing {
         return entityManager().createQuery(jpaQuery, TreatmentGroup.class).getResultList();
     }
 
-	public static TreatmentGroup findTreatmentGroup(Long id) {
-        if (id == null) return null;
+    public static TreatmentGroup findTreatmentGroup(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(TreatmentGroup.class, id);
     }
 
-	public static List<TreatmentGroup> findTreatmentGroupEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM TreatmentGroup o", TreatmentGroup.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<TreatmentGroup> findTreatmentGroupEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM TreatmentGroup o", TreatmentGroup.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<TreatmentGroup> findTreatmentGroupEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<TreatmentGroup> findTreatmentGroupEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM TreatmentGroup o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -301,50 +341,52 @@ public class TreatmentGroup extends AbstractThing {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, TreatmentGroup.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, TreatmentGroup.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public TreatmentGroup merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         TreatmentGroup merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public Set<TreatmentGroupLabel> getLsLabels() {
+    public Set<TreatmentGroupLabel> getLsLabels() {
         return this.lsLabels;
     }
 
-	public void setLsLabels(Set<TreatmentGroupLabel> lsLabels) {
+    public void setLsLabels(Set<TreatmentGroupLabel> lsLabels) {
         this.lsLabels = lsLabels;
     }
 
-	public Set<TreatmentGroupState> getLsStates() {
+    public Set<TreatmentGroupState> getLsStates() {
         return this.lsStates;
     }
 
-	public void setLsStates(Set<TreatmentGroupState> lsStates) {
+    public void setLsStates(Set<TreatmentGroupState> lsStates) {
         this.lsStates = lsStates;
     }
 
-	public Set<Subject> getSubjects() {
+    public Set<Subject> getSubjects() {
         return this.subjects;
     }
 
-	public void setSubjects(Set<Subject> subjects) {
+    public void setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
     }
 
-	public Set<AnalysisGroup> getAnalysisGroups() {
+    public Set<AnalysisGroup> getAnalysisGroups() {
         return this.analysisGroups;
     }
 
-	public void setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+    public void setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
         this.analysisGroups = analysisGroups;
     }
 }

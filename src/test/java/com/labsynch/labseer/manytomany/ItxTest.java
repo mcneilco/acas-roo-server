@@ -28,16 +28,17 @@ import org.springframework.transaction.annotation.Transactional;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class ItxTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ItxTest.class);
-	
+
 	public HashMap<String, Long> makeTestStack() {
-		//each of these methods creates the full stack from protocol to subject.
+		// each of these methods creates the full stack from protocol to subject.
 		Date now = new Date();
-		//create 2 Protocols
+		// create 2 Protocols
 		Protocol protocol = new Protocol();
 		protocol.setRecordedBy("test user");
 		protocol.setRecordedDate(now);
@@ -45,7 +46,7 @@ public class ItxTest {
 		protocol.setLsType("default");
 		protocol.setLsTransaction(98765L);
 		protocol.persist();
-		
+
 		Protocol protocol2 = new Protocol();
 		protocol2.setRecordedBy("test user 2");
 		protocol2.setRecordedDate(now);
@@ -53,50 +54,50 @@ public class ItxTest {
 		protocol2.setLsType("default");
 		protocol2.setLsTransaction(98765L);
 		protocol2.persist();
-		
-		//create 3 Experiments
+
+		// create 3 Experiments
 		Experiment e1 = new Experiment();
-        e1.setCodeName("T-EXPT-1111111");
-        Experiment e2 = new Experiment();
-        e2.setCodeName("T-EXPT-22222222");
-        Experiment e3 = new Experiment();
-        e3.setCodeName("T-EXPT-33333333");
-        Set<Experiment> allExperiments = new HashSet<Experiment>();
-        allExperiments.add(e1);
-        allExperiments.add(e2);
-        allExperiments.add(e3);
-        for (Experiment experiment: allExperiments) {
-        	experiment.setIgnored(false);
-        	experiment.setLsKind(protocol.getLsKind());
-        	experiment.setLsType(protocol.getLsType());
-        	experiment.setRecordedBy(protocol.getRecordedBy());
-        	experiment.setRecordedDate(protocol.getRecordedDate());
-            experiment.setLsTransaction(protocol.getLsTransaction());
-        	experiment.setProtocol(protocol);
-        }
-        
-		//create 3 AnalysisGroups
-        AnalysisGroup a1= new AnalysisGroup();
-        a1.setCodeName("T-AG-11111111");
-        AnalysisGroup a2= new AnalysisGroup();
-        a2.setCodeName("T-AG-22222222");
-        AnalysisGroup a3= new AnalysisGroup();
-        a3.setCodeName("T-AG-33333333");
-        Set<AnalysisGroup> allAnalysisGroups = new HashSet<AnalysisGroup>();
-        allAnalysisGroups.add(a1);
-        allAnalysisGroups.add(a2);
-        allAnalysisGroups.add(a3);
-        for (AnalysisGroup analysisGroup: allAnalysisGroups) {
-        	analysisGroup.setIgnored(e1.isIgnored());
-            analysisGroup.setLsKind(e1.getLsKind());
-            analysisGroup.setLsType(e1.getLsType());
-            analysisGroup.setRecordedBy(e1.getRecordedBy());
-            analysisGroup.setRecordedDate(e1.getRecordedDate());
-            analysisGroup.setLsTransaction(e1.getLsTransaction());
-        }
-        
-        //create 3 TreatmentGroups
-        TreatmentGroup t1 = new TreatmentGroup();
+		e1.setCodeName("T-EXPT-1111111");
+		Experiment e2 = new Experiment();
+		e2.setCodeName("T-EXPT-22222222");
+		Experiment e3 = new Experiment();
+		e3.setCodeName("T-EXPT-33333333");
+		Set<Experiment> allExperiments = new HashSet<Experiment>();
+		allExperiments.add(e1);
+		allExperiments.add(e2);
+		allExperiments.add(e3);
+		for (Experiment experiment : allExperiments) {
+			experiment.setIgnored(false);
+			experiment.setLsKind(protocol.getLsKind());
+			experiment.setLsType(protocol.getLsType());
+			experiment.setRecordedBy(protocol.getRecordedBy());
+			experiment.setRecordedDate(protocol.getRecordedDate());
+			experiment.setLsTransaction(protocol.getLsTransaction());
+			experiment.setProtocol(protocol);
+		}
+
+		// create 3 AnalysisGroups
+		AnalysisGroup a1 = new AnalysisGroup();
+		a1.setCodeName("T-AG-11111111");
+		AnalysisGroup a2 = new AnalysisGroup();
+		a2.setCodeName("T-AG-22222222");
+		AnalysisGroup a3 = new AnalysisGroup();
+		a3.setCodeName("T-AG-33333333");
+		Set<AnalysisGroup> allAnalysisGroups = new HashSet<AnalysisGroup>();
+		allAnalysisGroups.add(a1);
+		allAnalysisGroups.add(a2);
+		allAnalysisGroups.add(a3);
+		for (AnalysisGroup analysisGroup : allAnalysisGroups) {
+			analysisGroup.setIgnored(e1.isIgnored());
+			analysisGroup.setLsKind(e1.getLsKind());
+			analysisGroup.setLsType(e1.getLsType());
+			analysisGroup.setRecordedBy(e1.getRecordedBy());
+			analysisGroup.setRecordedDate(e1.getRecordedDate());
+			analysisGroup.setLsTransaction(e1.getLsTransaction());
+		}
+
+		// create 3 TreatmentGroups
+		TreatmentGroup t1 = new TreatmentGroup();
 		t1.setCodeName("T-TG-11111111");
 		TreatmentGroup t2 = new TreatmentGroup();
 		t2.setCodeName("T-TG-22222222");
@@ -106,16 +107,16 @@ public class ItxTest {
 		allTreatmentGroups.add(t1);
 		allTreatmentGroups.add(t2);
 		allTreatmentGroups.add(t3);
-		for (TreatmentGroup treatmentGroup: allTreatmentGroups) {
+		for (TreatmentGroup treatmentGroup : allTreatmentGroups) {
 			treatmentGroup.setIgnored(a1.isIgnored());
 			treatmentGroup.setLsKind(a1.getLsKind());
 			treatmentGroup.setLsType(a1.getLsType());
 			treatmentGroup.setRecordedBy(a1.getRecordedBy());
-            treatmentGroup.setRecordedDate(a1.getRecordedDate());
+			treatmentGroup.setRecordedDate(a1.getRecordedDate());
 			treatmentGroup.setLsTransaction(a1.getLsTransaction());
 		}
-		
-		//create 3 Subjects
+
+		// create 3 Subjects
 		Subject s1 = new Subject();
 		s1.setCodeName("T-SUBJ-11111111");
 		Subject s2 = new Subject();
@@ -126,16 +127,16 @@ public class ItxTest {
 		allSubjects.add(s1);
 		allSubjects.add(s2);
 		allSubjects.add(s3);
-		for (Subject subject: allSubjects) {
+		for (Subject subject : allSubjects) {
 			subject.setIgnored(t1.isIgnored());
 			subject.setLsKind(t1.getLsKind());
 			subject.setLsType(t1.getLsType());
 			subject.setRecordedBy(t1.getRecordedBy());
-            subject.setRecordedDate(t1.getRecordedDate());
+			subject.setRecordedDate(t1.getRecordedDate());
 			subject.setLsTransaction(t1.getLsTransaction());
 		}
-		
-		//Create 3 Containers
+
+		// Create 3 Containers
 		Container c1 = new Container();
 		c1.setCodeName("T-CONT-11111111");
 		Container c2 = new Container();
@@ -146,7 +147,7 @@ public class ItxTest {
 		allContainers.add(c1);
 		allContainers.add(c2);
 		allContainers.add(c3);
-		for (Container container: allContainers) {
+		for (Container container : allContainers) {
 			container.setIgnored(s1.isIgnored());
 			container.setLsKind(s1.getLsKind());
 			container.setLsType(s1.getLsType());
@@ -154,9 +155,9 @@ public class ItxTest {
 			container.setRecordedDate(s1.getRecordedDate());
 			container.setLsTransaction(s1.getLsTransaction());
 		}
-		
-		//Create Itx (interactions) objects
-		//ItxExperimentExperiment
+
+		// Create Itx (interactions) objects
+		// ItxExperimentExperiment
 		ItxExperimentExperiment itxe1e2 = new ItxExperimentExperiment();
 		itxe1e2.setFirstExperiment(e1);
 		itxe1e2.setSecondExperiment(e2);
@@ -170,14 +171,14 @@ public class ItxTest {
 		allItxExperimentExperiments.add(itxe1e2);
 		allItxExperimentExperiments.add(itxe2e3);
 		allItxExperimentExperiments.add(itxe1e3);
-		for (ItxExperimentExperiment itxExperimentExperiment: allItxExperimentExperiments) {
+		for (ItxExperimentExperiment itxExperimentExperiment : allItxExperimentExperiments) {
 			itxExperimentExperiment.setLsKind(e1.getLsKind());
 			itxExperimentExperiment.setLsType(e1.getLsType());
 			itxExperimentExperiment.setRecordedBy(e1.getRecordedBy());
 			itxExperimentExperiment.setRecordedDate(e1.getRecordedDate());
 		}
-		
-		//ItxProtocolProtocol
+
+		// ItxProtocolProtocol
 		ItxProtocolProtocol itxp1p2 = new ItxProtocolProtocol();
 		itxp1p2.setFirstProtocol(protocol);
 		itxp1p2.setSecondProtocol(protocol2);
@@ -185,8 +186,8 @@ public class ItxTest {
 		itxp1p2.setLsKind(protocol.getLsKind());
 		itxp1p2.setRecordedBy(protocol.getRecordedBy());
 		itxp1p2.setRecordedDate(protocol.getRecordedDate());
-		
-		//ItxContainerContainer
+
+		// ItxContainerContainer
 		ItxContainerContainer itxc1c2 = new ItxContainerContainer();
 		itxc1c2.setFirstContainer(c1);
 		itxc1c2.setSecondContainer(c2);
@@ -200,13 +201,13 @@ public class ItxTest {
 		allItxContainerContainers.add(itxc1c2);
 		allItxContainerContainers.add(itxc2c3);
 		allItxContainerContainers.add(itxc1c3);
-		for (ItxContainerContainer itxContainerContainer: allItxContainerContainers) {
+		for (ItxContainerContainer itxContainerContainer : allItxContainerContainers) {
 			itxContainerContainer.setLsKind(c1.getLsKind());
 			itxContainerContainer.setLsType(c1.getLsType());
 			itxContainerContainer.setRecordedBy(c1.getRecordedBy());
 			itxContainerContainer.setRecordedDate(c1.getRecordedDate());
 		}
-		//ItxSubjectContainer
+		// ItxSubjectContainer
 		ItxSubjectContainer itxs1c2 = new ItxSubjectContainer();
 		itxs1c2.setSubject(s1);
 		itxs1c2.setContainer(c2);
@@ -224,14 +225,14 @@ public class ItxTest {
 		allItxSubjectContainer.add(itxs2c3);
 		allItxSubjectContainer.add(itxs1c3);
 		allItxSubjectContainer.add(itxs3c1);
-		for (ItxSubjectContainer itxSubjectContainer: allItxSubjectContainer) {
+		for (ItxSubjectContainer itxSubjectContainer : allItxSubjectContainer) {
 			itxSubjectContainer.setLsKind(c1.getLsKind());
 			itxSubjectContainer.setLsType(c1.getLsType());
 			itxSubjectContainer.setRecordedBy(c1.getRecordedBy());
 			itxSubjectContainer.setRecordedDate(c1.getRecordedDate());
 		}
-		
-		//Create the various Sets for mapping
+
+		// Create the various Sets for mapping
 		Set<AnalysisGroup> e1AnalysisGroups = new HashSet<AnalysisGroup>();
 		e1AnalysisGroups.add(a1);
 		e1AnalysisGroups.add(a3);
@@ -286,8 +287,8 @@ public class ItxTest {
 		Set<TreatmentGroup> s3TreatmentGroups = new HashSet<TreatmentGroup>();
 		s3TreatmentGroups.add(t1);
 		s3TreatmentGroups.add(t3);
-		
-		//Make groups of interactions
+
+		// Make groups of interactions
 		Set<ItxExperimentExperiment> e1FirstExperiments = new HashSet<ItxExperimentExperiment>();
 		e1FirstExperiments.add(itxe1e2);
 		e1FirstExperiments.add(itxe1e3);
@@ -298,12 +299,12 @@ public class ItxTest {
 		Set<ItxExperimentExperiment> e3SecondExperiments = new HashSet<ItxExperimentExperiment>();
 		e3SecondExperiments.add(itxe1e3);
 		e3SecondExperiments.add(itxe2e3);
-		
+
 		Set<ItxProtocolProtocol> p1FirstProtocols = new HashSet<ItxProtocolProtocol>();
 		p1FirstProtocols.add(itxp1p2);
 		Set<ItxProtocolProtocol> p2SecondProtocols = new HashSet<ItxProtocolProtocol>();
 		p2SecondProtocols.add(itxp1p2);
-		
+
 		Set<ItxContainerContainer> c1FirstContainers = new HashSet<ItxContainerContainer>();
 		c1FirstContainers.add(itxc1c3);
 		c1FirstContainers.add(itxc1c2);
@@ -314,7 +315,7 @@ public class ItxTest {
 		Set<ItxContainerContainer> c3SecondContainers = new HashSet<ItxContainerContainer>();
 		c3SecondContainers.add(itxc1c3);
 		c3SecondContainers.add(itxc2c3);
-		
+
 		Set<ItxSubjectContainer> s1Containers = new HashSet<ItxSubjectContainer>();
 		s1Containers.add(itxs1c3);
 		s1Containers.add(itxs1c2);
@@ -329,8 +330,8 @@ public class ItxTest {
 		Set<ItxSubjectContainer> c3Subjects = new HashSet<ItxSubjectContainer>();
 		c3Subjects.add(itxs1c3);
 		c3Subjects.add(itxs2c3);
-		
-		//Then assign all the groups to their owners to create the mappings
+
+		// Then assign all the groups to their owners to create the mappings
 		e1.setAnalysisGroups(e1AnalysisGroups);
 		e2.setAnalysisGroups(e2AnalysisGroups);
 		e3.setAnalysisGroups(e3AnalysisGroups);
@@ -349,32 +350,32 @@ public class ItxTest {
 		s1.setTreatmentGroups(s1TreatmentGroups);
 		s2.setTreatmentGroups(s2TreatmentGroups);
 		s3.setTreatmentGroups(s3TreatmentGroups);
-		
-		//Then assign interactions to their owners
+
+		// Then assign interactions to their owners
 		e1.setFirstExperiments(e1FirstExperiments);
 		e2.setFirstExperiments(e2FirstExperiments);
 		e2.setSecondExperiments(e2SecondExperiments);
 		e3.setSecondExperiments(e3SecondExperiments);
-		
+
 		protocol.setFirstProtocols(p1FirstProtocols);
 		protocol2.setSecondProtocols(p2SecondProtocols);
-		
+
 		c1.setFirstContainers(c1FirstContainers);
 		c2.setFirstContainers(c2FirstContainers);
 		c2.setSecondContainers(c2SecondContainers);
 		c3.setSecondContainers(c3SecondContainers);
-		
+
 		s1.setContainers(s1Containers);
 		s2.setContainers(s2Containers);
 		s3.setContainers(s3Containers);
 		c1.setSubjects(c1Subjects);
 		c2.setSubjects(c2Subjects);
 		c3.setSubjects(c3Subjects);
-		
-		//Then persist and flush everything to the database
+
+		// Then persist and flush everything to the database
 		e1.persist();
-		//all the other objects are taken care of by our CascadeType.PERSIST setting
-		
+		// all the other objects are taken care of by our CascadeType.PERSIST setting
+
 		HashMap<String, Long> idMap = new HashMap<String, Long>();
 		idMap.put("e1", e1.getId());
 		idMap.put("e2", e2.getId());
@@ -393,40 +394,44 @@ public class ItxTest {
 		idMap.put("c1", c1.getId());
 		idMap.put("c2", c2.getId());
 		idMap.put("c3", c3.getId());
-		
+
 		return idMap;
 	}
-	
+
 	@Transactional
 	@Test
 	public void itxExperimentRemoveTest() {
 		HashMap<String, Long> idMap = makeTestStack();
 		Experiment e1 = Experiment.findExperiment(idMap.get("e1"));
 		Experiment e2 = Experiment.findExperiment(idMap.get("e2"));
-//		logger.debug("--------e2 first experiments:" + e2.getFirstExperiments().size());
-//		logger.debug("--------e2 second experiments:" + e2.getSecondExperiments().size());
-//		Experiment.removeExperimentItxAware(e1.getId());
+		// logger.debug("--------e2 first experiments:" +
+		// e2.getFirstExperiments().size());
+		// logger.debug("--------e2 second experiments:" +
+		// e2.getSecondExperiments().size());
+		// Experiment.removeExperimentItxAware(e1.getId());
 		e1.remove();
 		Experiment check = Experiment.findExperiment(idMap.get("e1"));
 		Assert.assertNull(check);
 	}
-	
+
 	@Test
 	@Transactional
 	public void runMakeTestStack() {
 		HashMap<String, Long> idMap = makeTestStack();
-//		Collection<Long> experimentIds = new HashSet<Long>();
-//		experimentIds.add(idMap.get("e1"));
-//		experimentIds.add(idMap.get("e2"));
-//		experimentIds.add(idMap.get("e3"));
-//		for (Long id: experimentIds) {
-//			Collection<Long> analysisGroups = Experiment.removeExperimentCascadeAware(id);
-//	        Collection<Long> treatmentGroups = AnalysisGroup.removeOrphans(analysisGroups);
-//	        Collection<Long> subjects = TreatmentGroup.removeOrphans(treatmentGroups);
-//	        Subject.removeOrphans(subjects);
-//		}
+		// Collection<Long> experimentIds = new HashSet<Long>();
+		// experimentIds.add(idMap.get("e1"));
+		// experimentIds.add(idMap.get("e2"));
+		// experimentIds.add(idMap.get("e3"));
+		// for (Long id: experimentIds) {
+		// Collection<Long> analysisGroups =
+		// Experiment.removeExperimentCascadeAware(id);
+		// Collection<Long> treatmentGroups =
+		// AnalysisGroup.removeOrphans(analysisGroups);
+		// Collection<Long> subjects = TreatmentGroup.removeOrphans(treatmentGroups);
+		// Subject.removeOrphans(subjects);
+		// }
 	}
-	
+
 	@Transactional
 	@Test
 	public void itxFullRemoveTest() {
@@ -448,7 +453,7 @@ public class ItxTest {
 		Container c1 = Container.findContainer(idMap.get("c1"));
 		Container c2 = Container.findContainer(idMap.get("c2"));
 		Container c3 = Container.findContainer(idMap.get("c3"));
-		
+
 		e1.remove();
 		e2.remove();
 		e3.remove();
@@ -466,7 +471,7 @@ public class ItxTest {
 		c1.remove();
 		c2.remove();
 		c3.remove();
-		
+
 		Experiment e1check = Experiment.findExperiment(idMap.get("e1"));
 		Experiment e2check = Experiment.findExperiment(idMap.get("e2"));
 		Experiment e3check = Experiment.findExperiment(idMap.get("e3"));
@@ -484,7 +489,7 @@ public class ItxTest {
 		Container c1check = Container.findContainer(idMap.get("c1"));
 		Container c2check = Container.findContainer(idMap.get("c2"));
 		Container c3check = Container.findContainer(idMap.get("c3"));
-		
+
 		Assert.assertNull(e1check);
 		Assert.assertNull(e2check);
 		Assert.assertNull(e3check);
@@ -503,6 +508,5 @@ public class ItxTest {
 		Assert.assertNull(c2check);
 		Assert.assertNull(c3check);
 	}
-	
-	
+
 }

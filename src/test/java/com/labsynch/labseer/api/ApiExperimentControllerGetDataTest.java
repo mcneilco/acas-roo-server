@@ -27,45 +27,46 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 @Transactional
 public class ApiExperimentControllerGetDataTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentControllerGetDataTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    @Test
-    public void getAGValueData() throws Exception {
-    	String searchRequestJSON = "{\"advancedFilter\":null,\"advancedFilterSQL\":null,\"batchCodeList\":[],\"booleanFilter\":null,\"experimentCodeList\":[\"EXPT-00001844\"],\"searchFilters\":[]}";
-		ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(searchRequestJSON);
+	private MockMvc mockMvc;
 
-//    	ExperimentSearchRequestDTO searchRequest = new ExperimentSearchRequestDTO();
-//    	Set<String> experimentCodeList = new HashSet<String>();
-//    	experimentCodeList.add("EXPT-00001844");
-//		searchRequest.setExperimentCodeList(experimentCodeList);
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	@Test
+	public void getAGValueData() throws Exception {
+		String searchRequestJSON = "{\"advancedFilter\":null,\"advancedFilterSQL\":null,\"batchCodeList\":[],\"booleanFilter\":null,\"experimentCodeList\":[\"EXPT-00001844\"],\"searchFilters\":[]}";
+		ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO
+				.fromJsonToExperimentSearchRequestDTO(searchRequestJSON);
+
+		// ExperimentSearchRequestDTO searchRequest = new ExperimentSearchRequestDTO();
+		// Set<String> experimentCodeList = new HashSet<String>();
+		// experimentCodeList.add("EXPT-00001844");
+		// searchRequest.setExperimentCodeList(experimentCodeList);
 
 		logger.info("########## searchRequest JSON ############");
 		logger.info(searchRequest.toJson());
-    	
-    	MockHttpServletResponse response =  this.mockMvc.perform(post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON)
-    			.content(searchRequest.toJson()))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	logger.info(response.getContentAsString());
-    	
-    }
- 
+
+		MockHttpServletResponse response = this.mockMvc
+				.perform(post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist")
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
+						.content(searchRequest.toJson()))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		logger.info(response.getContentAsString());
+
+	}
 
 }

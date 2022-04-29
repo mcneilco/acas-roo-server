@@ -9,65 +9,61 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ExperimentCodeDTO {
-	
-	private String experimentCode;
-	private String protocolCode;
-	
-	public ExperimentCodeDTO(){
-	}
 
+    private String experimentCode;
+    private String protocolCode;
 
-	public String toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+    public ExperimentCodeDTO() {
     }
 
-	public String toJson(String[] fields) {
+    public String toJson() {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public static ExperimentCodeDTO fromJsonToExperimentCodeDTO(String json) {
+    public String toJson(String[] fields) {
+        return new JSONSerializer()
+                .include(fields).exclude("*.class").serialize(this);
+    }
+
+    public static ExperimentCodeDTO fromJsonToExperimentCodeDTO(String json) {
         return new JSONDeserializer<ExperimentCodeDTO>()
-        .use(null, ExperimentCodeDTO.class).deserialize(json);
+                .use(null, ExperimentCodeDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<ExperimentCodeDTO> collection) {
+    public static String toJsonArray(Collection<ExperimentCodeDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<ExperimentCodeDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<ExperimentCodeDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<ExperimentCodeDTO> fromJsonArrayToExperimentCoes(String json) {
+    public static Collection<ExperimentCodeDTO> fromJsonArrayToExperimentCoes(String json) {
         return new JSONDeserializer<List<ExperimentCodeDTO>>()
-        .use("values", ExperimentCodeDTO.class).deserialize(json);
+                .use("values", ExperimentCodeDTO.class).deserialize(json);
     }
 
-	public String getExperimentCode() {
+    public String getExperimentCode() {
         return this.experimentCode;
     }
 
-	public void setExperimentCode(String experimentCode) {
+    public void setExperimentCode(String experimentCode) {
         this.experimentCode = experimentCode;
     }
 
-	public String getProtocolCode() {
+    public String getProtocolCode() {
         return this.protocolCode;
     }
 
-	public void setProtocolCode(String protocolCode) {
+    public void setProtocolCode(String protocolCode) {
         this.protocolCode = protocolCode;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
-
-

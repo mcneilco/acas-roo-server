@@ -1,5 +1,4 @@
 
-
 package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
@@ -24,30 +23,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import junit.framework.Assert;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class ExperimentStateServiceTests {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentStateServiceTests.class);
-	
+
 	@Autowired
 	private ExperimentStateService experimentStateService;
-	
-//	@Test
+
+	// @Test
 	@Transactional
-	public void QueryExperimentStateByExpIdAndStateTypeKind(){
-			
+	public void QueryExperimentStateByExpIdAndStateTypeKind() {
+
 		Long experimentId = 9L;
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
-		List<ExperimentState> results = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		List<ExperimentState> results = experimentStateService
+				.getExperimentStatesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
 		logger.info(ExperimentState.toJsonArray(results));
-		assert(results.size() == 5);
+		assert (results.size() == 5);
 	}
-	
-//	@Test
+
+	// @Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -55,14 +55,15 @@ public class ExperimentStateServiceTests {
 		String stateKind = "experiment metadata";
 		List<ExperimentState> results = new ArrayList<ExperimentState>();
 		try {
-			results = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
-		} catch(IllegalArgumentException ex ) {
+			results = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experimentId, stateType,
+					stateKind);
+		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());
 		}
-		assert(results.size() == 0);
+		assert (results.size() == 0);
 	}
-	
-//	@Test
+
+	// @Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000003";
@@ -72,32 +73,35 @@ public class ExperimentStateServiceTests {
 		boolean didCatch = false;
 		try {
 			experiment = Experiment.findExperimentsByCodeNameEquals(experimentCodeName).getSingleResult();
-		} catch(NoResultException nre) {
+		} catch (NoResultException nre) {
 			logger.info(nre.getMessage());
 			didCatch = true;
 		}
 		List<ExperimentState> results = new ArrayList<ExperimentState>();
 		try {
-			results = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experiment.getId(), stateType, stateKind);
-		} catch(IllegalArgumentException ex ) {
+			results = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experiment.getId(),
+					stateType, stateKind);
+		} catch (IllegalArgumentException ex) {
 			logger.info(ex.getMessage());
-			assert(results.size() == 0);
+			assert (results.size() == 0);
 			didCatch = true;
 		}
-		if(!didCatch) assert(results.size() == 5);
+		if (!didCatch)
+			assert (results.size() == 5);
 	}
-	
-//	@Test
+
+	// @Test
 	@Transactional
 	public void createExperimentStateByExperimentIdAndStateTypeKindTest() {
 		Long experimentId = 2L;
 		String lsType = "metadata";
 		String lsKind = "experiment metadata";
-		ExperimentState exptState = experimentStateService.createExperimentStateByExperimentIdAndStateTypeKind(experimentId, lsType, lsKind);
+		ExperimentState exptState = experimentStateService
+				.createExperimentStateByExperimentIdAndStateTypeKind(experimentId, lsType, lsKind);
 		Assert.assertNotNull(exptState);
 		logger.info(exptState.toJson());
 	}
-	
+
 	@Test
 	@Transactional
 	public void createExperimentStatesFromJson() {
@@ -107,23 +111,23 @@ public class ExperimentStateServiceTests {
 		Assert.assertNotNull(exptStates);
 		logger.info(ExperimentState.toJsonArray(exptStates));
 	}
-	
+
 	@Test
 	public void deleteExperimentStates() {
 		String codeName = "EXPT-";
 		List<Experiment> experiments = Experiment.findExperimentsByCodeNameLike(codeName).getResultList();
-		for (Experiment experiment : experiments){
-			for (ExperimentState es : ExperimentState.findExperimentStatesByExperiment(experiment).getResultList()){
-				if (es.getLsType().equalsIgnoreCase("metadata") && es.getLsKind().equalsIgnoreCase("data column order")){
-					for (ExperimentValue ev : ExperimentValue.findExperimentValuesByLsState(es).getResultList()){
+		for (Experiment experiment : experiments) {
+			for (ExperimentState es : ExperimentState.findExperimentStatesByExperiment(experiment).getResultList()) {
+				if (es.getLsType().equalsIgnoreCase("metadata")
+						&& es.getLsKind().equalsIgnoreCase("data column order")) {
+					for (ExperimentValue ev : ExperimentValue.findExperimentValuesByLsState(es).getResultList()) {
 						ev.remove();
 					}
 					es.remove();
 				}
 			}
 		}
-		
-		
+
 	}
-	
+
 }

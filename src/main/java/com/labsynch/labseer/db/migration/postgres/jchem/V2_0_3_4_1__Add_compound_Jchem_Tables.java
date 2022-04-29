@@ -14,10 +14,10 @@ import chemaxon.jchem.db.UpdateHandler;
 import chemaxon.util.ConnectionHandler;
 
 public class V2_0_3_4_1__Add_compound_Jchem_Tables implements JdbcMigration {
- 
+
 	Logger logger = LoggerFactory.getLogger(V2_0_3_4_1__Add_compound_Jchem_Tables.class);
 
-	//create the jchem table to store the compounds
+	// create the jchem table to store the compounds
 
 	public void migrate(Connection conn) throws Exception {
 		logger.info("Creating Compound Structure Table");
@@ -30,7 +30,7 @@ public class V2_0_3_4_1__Add_compound_Jchem_Tables implements JdbcMigration {
 		conn.setAutoCommit(false);
 		logger.info("connection autocommit mode: " + conn.getAutoCommit());
 
-	}	
+	}
 
 	private boolean createJChemTable(Connection conn, String tableName, boolean tautomerDupe) {
 		ConnectionHandler ch = new ConnectionHandler();
@@ -41,26 +41,24 @@ public class V2_0_3_4_1__Add_compound_Jchem_Tables implements JdbcMigration {
 			e1.printStackTrace();
 		}
 
-		StructureTableOptions options = new StructureTableOptions(tableName, StructureTableOptions.TABLE_TYPE_MOLECULES);
+		StructureTableOptions options = new StructureTableOptions(tableName,
+				StructureTableOptions.TABLE_TYPE_MOLECULES);
 		options.setTautomerDuplicateChecking(tautomerDupe);
 
 		try {
 			String[] tables = UpdateHandler.getStructureTables(ch);
-			List<String> tableList = Arrays.asList(tables); 
-			if (!tableList.contains(tableName)){
-				UpdateHandler.createStructureTable(ch, options );
-				logger.info("created the Jchem structure table " + tableName );
+			List<String> tableList = Arrays.asList(tables);
+			if (!tableList.contains(tableName)) {
+				UpdateHandler.createStructureTable(ch, options);
+				logger.info("created the Jchem structure table " + tableName);
 			}
 		} catch (SQLException e) {
-			logger.error("SQL error. Unable to create the Jchem structure table " + tableName );
+			logger.error("SQL error. Unable to create the Jchem structure table " + tableName);
 			e.printStackTrace();
 		}
 
 		return true;
-		
+
 	}
 
-
-
 }
-

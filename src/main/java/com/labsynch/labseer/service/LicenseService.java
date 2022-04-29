@@ -13,6 +13,4 @@ public interface LicenseService {
 
 	LicenseDTO getLicenseInfo() throws IOException, PGPException, URISyntaxException;
 
-
-
 }

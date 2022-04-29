@@ -10,7 +10,7 @@ public class StructureSaveException extends Exception {
 	public StructureSaveException() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public StructureSaveException(String message) {
 		super(message);
 	}

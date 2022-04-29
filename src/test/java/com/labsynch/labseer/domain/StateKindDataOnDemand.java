@@ -17,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class StateKindDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<StateKind> data;
+    private List<StateKind> data;
 
-	@Autowired
+    @Autowired
     StateTypeDataOnDemand stateTypeDataOnDemand;
 
-	public StateKind getNewTransientStateKind(int index) {
+    public StateKind getNewTransientStateKind(int index) {
         StateKind obj = new StateKind();
         setKindName(obj, index);
         setLsType(obj, index);
@@ -32,7 +32,7 @@ public class StateKindDataOnDemand {
         return obj;
     }
 
-	public void setKindName(StateKind obj, int index) {
+    public void setKindName(StateKind obj, int index) {
         String kindName = "kindName_" + index;
         if (kindName.length() > 64) {
             kindName = kindName.substring(0, 64);
@@ -40,12 +40,12 @@ public class StateKindDataOnDemand {
         obj.setKindName(kindName);
     }
 
-	public void setLsType(StateKind obj, int index) {
+    public void setLsType(StateKind obj, int index) {
         StateType lsType = stateTypeDataOnDemand.getRandomStateType();
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(StateKind obj, int index) {
+    public void setLsTypeAndKind(StateKind obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = new Random().nextInt(10) + lsTypeAndKind.substring(1, 255);
@@ -53,7 +53,7 @@ public class StateKindDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public StateKind getSpecificStateKind(int index) {
+    public StateKind getSpecificStateKind(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -66,18 +66,18 @@ public class StateKindDataOnDemand {
         return StateKind.findStateKind(id);
     }
 
-	public StateKind getRandomStateKind() {
+    public StateKind getRandomStateKind() {
         init();
         StateKind obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return StateKind.findStateKind(id);
     }
 
-	public boolean modifyStateKind(StateKind obj) {
+    public boolean modifyStateKind(StateKind obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = StateKind.findStateKindEntries(from, to);
@@ -87,7 +87,7 @@ public class StateKindDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<StateKind>();
         for (int i = 0; i < 10; i++) {
             StateKind obj = getNewTransientStateKind(i);
@@ -97,7 +97,9 @@ public class StateKindDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

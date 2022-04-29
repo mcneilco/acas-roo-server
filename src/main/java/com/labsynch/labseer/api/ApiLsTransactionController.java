@@ -27,11 +27,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 public class ApiLsTransactionController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ApiLsTransactionController.class);
-	
-	@Autowired
-	private LsTransactionService lsTransactionService;
-	
+    private static final Logger logger = LoggerFactory.getLogger(ApiLsTransactionController.class);
+
+    @Autowired
+    private LsTransactionService lsTransactionService;
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
@@ -55,9 +55,9 @@ public class ApiLsTransactionController {
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String lsTransaction) {
-    	LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
-    	logger.info(inputLsTransaction.toJson());
-    	inputLsTransaction.persist();
+        LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
+        logger.info(inputLsTransaction.toJson());
+        inputLsTransaction.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(inputLsTransaction.toJson(), headers, HttpStatus.CREATED);
@@ -70,16 +70,17 @@ public class ApiLsTransactionController {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(LsTransaction.toJsonArray(lsTransactions),headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(LsTransaction.toJsonArray(lsTransactions), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = { "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String lsTransaction, @PathVariable("id") Long id) {
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String lsTransaction,
+            @PathVariable("id") Long id) {
 
-    	LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
-    	logger.info(inputLsTransaction.toJson());
-    	
-    	HttpHeaders headers = new HttpHeaders();
+        LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
+        logger.info(inputLsTransaction.toJson());
+
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         if (inputLsTransaction.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -93,7 +94,7 @@ public class ApiLsTransactionController {
         headers.add("Content-Type", "application/json");
         List<LsTransaction> updatedLsTransactions = new ArrayList<LsTransaction>();
         for (LsTransaction lsTransaction : lsTransactions) {
-        	LsTransaction updatedLsTransaction = lsTransaction.merge();
+            LsTransaction updatedLsTransaction = lsTransaction.merge();
             if (updatedLsTransaction == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
@@ -113,18 +114,18 @@ public class ApiLsTransactionController {
         lsTransaction.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    
+
     @RequestMapping(value = "/search", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> searchLsTransactions(@RequestBody LsTransactionQueryDTO query) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        try{
-        	LsTransactionQueryDTO response = lsTransactionService.searchLsTransactions(query);
-        	return new ResponseEntity<String>(response.toJson(), headers, HttpStatus.OK);
-        }catch (Exception e){
-        	logger.error("Caught exception searching for LsTransactions",e);
-        	return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            LsTransactionQueryDTO response = lsTransactionService.searchLsTransactions(query);
+            return new ResponseEntity<String>(response.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Caught exception searching for LsTransactions", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+
     }
 }

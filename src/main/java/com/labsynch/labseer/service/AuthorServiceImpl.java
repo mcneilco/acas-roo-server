@@ -62,12 +62,11 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
+
 	@Autowired
 	private transient MailSender mailSender;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceImpl.class);
-
 
 	@Override
 	public CodeTableDTO getAuthorCodeTable(Author author) {
@@ -79,7 +78,6 @@ public class AuthorServiceImpl implements AuthorService {
 		return codeTable;
 	}
 
-
 	@Override
 	public List<CodeTableDTO> convertToCodeTables(List<Author> authors) {
 		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
@@ -87,28 +85,28 @@ public class AuthorServiceImpl implements AuthorService {
 			CodeTableDTO codeTable = getAuthorCodeTable(author);
 			codeTableList.add(codeTable);
 		}
-		return codeTableList;	
+		return codeTableList;
 	}
 
 	@Override
-	public Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName){
+	public Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName) {
 		List<LsRole> roleEntries = LsRole.findLsRolesByRoleNameEquals(authorRoleName).getResultList();
 		Collection<Author> authors = new HashSet<Author>();
-		for (LsRole roleEntry : roleEntries){
+		for (LsRole roleEntry : roleEntries) {
 			Collection<AuthorRole> authorRoles = AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList();
-			for (AuthorRole authorRole : authorRoles){
+			for (AuthorRole authorRole : authorRoles) {
 				authors.add(authorRole.getUserEntry());
-			}	
+			}
 		}
 		return authors;
 	}
 
 	@Override
-	public Collection<LsThing> getUserProjects(String userName	){
+	public Collection<LsThing> getUserProjects(String userName) {
 		Collection<LsThing> projectThings = new HashSet<LsThing>();
 		List<Author> authors = Author.findAuthorsByUserName(userName).getResultList();
 		Author author = null;
-		if (authors.size() == 0){
+		if (authors.size() == 0) {
 			logger.error("No author found by name: " + userName);
 		} else if (authors.size() > 1) {
 			logger.error("Found multiple authors by name: " + userName);
@@ -116,24 +114,25 @@ public class AuthorServiceImpl implements AuthorService {
 		} else {
 			author = authors.get(0);
 		}
-		if (author != null){
-			Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
-			if (propertiesUtilService.getEnableProjectRoles()){
+		if (author != null) {
+			Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project")
+					.getResultList();
+			if (propertiesUtilService.getEnableProjectRoles()) {
 				Collection<LsThing> filteredProjects = new ArrayList<LsThing>();
 				boolean isAdmin = false;
 				Set<AuthorRole> roles = author.getAuthorRoles();
 				Set<String> allowedProjectCodes = new HashSet<String>();
-				for (AuthorRole role : roles){
+				for (AuthorRole role : roles) {
 					LsRole entry = role.getRoleEntry();
-					if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
+					if (entry.getLsType() != null && entry.getLsType().equalsIgnoreCase("Project")) {
 						allowedProjectCodes.add(entry.getLsKind());
-					}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
+					} else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())) {
 						isAdmin = true;
 					}
 				}
 				if (isAdmin) {
 					filteredProjects.addAll(allProjects);
-				}else {
+				} else {
 					for (LsThing project : allProjects) {
 						boolean isRestricted = false;
 						for (LsThingState state : project.getLsStates()) {
@@ -142,21 +141,23 @@ public class AuthorServiceImpl implements AuthorService {
 									if (!value.isIgnored()) {
 										if (value.getLsKind().equals("is restricted")) {
 											Boolean projRestricted = Boolean.valueOf(value.getCodeValue());
-											if (projRestricted != null) isRestricted = projRestricted;
+											if (projRestricted != null)
+												isRestricted = projRestricted;
 										}
 									}
 								}
 							}
 						}
 						if (isRestricted) {
-							if (allowedProjectCodes.contains(project.getCodeName())) filteredProjects.add(project);
-						}else {
+							if (allowedProjectCodes.contains(project.getCodeName()))
+								filteredProjects.add(project);
+						} else {
 							filteredProjects.add(project);
 						}
 					}
 				}
 				projectThings.addAll(filteredProjects);
-			}else{
+			} else {
 				projectThings.addAll(allProjects);
 			}
 		}
@@ -166,32 +167,36 @@ public class AuthorServiceImpl implements AuthorService {
 	}
 
 	@Override
-	public AuthGroupsAndProjectsDTO getAuthGroupsAndProjects(){
+	public AuthGroupsAndProjectsDTO getAuthGroupsAndProjects() {
 		AuthGroupsAndProjectsDTO agp = new AuthGroupsAndProjectsDTO();
 		Collection<AuthProjectGroupsDTO> authProjectsGroups = new ArrayList<AuthProjectGroupsDTO>();
-		Collection<AuthGroupsDTO> authGroups = new HashSet<AuthGroupsDTO>() ;
+		Collection<AuthGroupsDTO> authGroups = new HashSet<AuthGroupsDTO>();
 		List<LsRole> allRoles = LsRole.findAllLsRoles();
 		AuthGroupsDTO ag;
 		Collection<String> members;
 
-		for (LsRole lsRole : allRoles){
+		for (LsRole lsRole : allRoles) {
 			ag = new AuthGroupsDTO();
 			members = new HashSet<String>();
-			ag.setName(new StringBuilder().append(lsRole.getLsType()).append("_").append(lsRole.getLsKind()).append("_").append(lsRole.getRoleName()).toString());
+			ag.setName(new StringBuilder().append(lsRole.getLsType()).append("_").append(lsRole.getLsKind()).append("_")
+					.append(lsRole.getRoleName()).toString());
 			Set<AuthorRole> authorRoles = lsRole.getAuthorRoles();
-			for (AuthorRole authorRole : authorRoles){
+			for (AuthorRole authorRole : authorRoles) {
 				members.add(authorRole.getUserEntry().getUserName());
 			}
 			ag.setMembers(members);
 			logger.info(ag.toJson());
-			authGroups.add(ag);			
+			authGroups.add(ag);
 		}
 
-		//Collection<LsThing> 
-//		Collection<LsThing> projectCollection = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
-		List<LsThing> projectList = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
-		
-		Collection<LsThing> projectCollection = new ArrayList<LsThing>(projectList);		
+		// Collection<LsThing>
+		// Collection<LsThing> projectCollection =
+		// LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project",
+		// "project").getResultList();
+		List<LsThing> projectList = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project")
+				.getResultList();
+
+		Collection<LsThing> projectCollection = new ArrayList<LsThing>(projectList);
 		AuthProjectGroupsDTO authProjectGroup;
 		Collection<String> groups;
 		List<LsRole> projectRoles;
@@ -201,48 +206,58 @@ public class AuthorServiceImpl implements AuthorService {
 		boolean active = true;
 		boolean isRestricted = true;
 
-		for (LsThing project : projectCollection){
-			if (!project.isIgnored()){
-				projectRoles = LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals("Project", project.getCodeName()).getResultList();
+		for (LsThing project : projectCollection) {
+			if (!project.isIgnored()) {
+				projectRoles = LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals("Project", project.getCodeName())
+						.getResultList();
 				groups = new HashSet<String>();
-				for (LsRole projectRole : projectRoles){
-					groups.add(new StringBuilder().append(projectRole.getLsType()).append("_").append(projectRole.getLsKind()).append("_").append(projectRole.getRoleName()).toString());
+				for (LsRole projectRole : projectRoles) {
+					groups.add(new StringBuilder().append(projectRole.getLsType()).append("_")
+							.append(projectRole.getLsKind()).append("_").append(projectRole.getRoleName()).toString());
 				}
-				if (propertiesUtilService.getAcasAdminRole() !=null && propertiesUtilService.getAcasAdminRole().length()> 0){
-					List<LsRole> acasAdminRoles = LsRole.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
-					for (LsRole acasAdminRole : acasAdminRoles){
-						groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
+				if (propertiesUtilService.getAcasAdminRole() != null
+						&& propertiesUtilService.getAcasAdminRole().length() > 0) {
+					List<LsRole> acasAdminRoles = LsRole
+							.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
+					for (LsRole acasAdminRole : acasAdminRoles) {
+						groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_")
+								.append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName())
+								.toString());
 					}
 				}
 
 				projectLabels = project.getLsLabels();
-				for (LsThingLabel projectLabel : projectLabels){
-					if (!projectLabel.isIgnored()){
-						if (projectLabel.getLsType().equalsIgnoreCase("name")){
-							if (projectLabel.getLsKind().equalsIgnoreCase("Project Name")){
+				for (LsThingLabel projectLabel : projectLabels) {
+					if (!projectLabel.isIgnored()) {
+						if (projectLabel.getLsType().equalsIgnoreCase("name")) {
+							if (projectLabel.getLsKind().equalsIgnoreCase("Project Name")) {
 								projectName = projectLabel.getLabelText();
-							} else if (projectLabel.getLsKind().equalsIgnoreCase("Project Alias")){
+							} else if (projectLabel.getLsKind().equalsIgnoreCase("Project Alias")) {
 								projectAlias = projectLabel.getLabelText();
-							}						
+							}
 						}
 					}
 				}
-				for (LsThingState projectState : project.getLsStates()){
-					for (LsThingValue projectValue : projectState.getLsValues()){
-						if (!projectValue.isIgnored()){
-							if (projectValue.getLsKind().equalsIgnoreCase("project status")){
-								if (projectValue.getCodeValue().equalsIgnoreCase("Active")) active = true;
-								else if (projectValue.getCodeValue().equalsIgnoreCase("Inactive")) active = false;
-							}else if (projectValue.getLsKind().equalsIgnoreCase("is restricted")){
-								if (projectValue.getCodeValue().equalsIgnoreCase("true")) isRestricted = true;
-								else if (projectValue.getCodeValue().equalsIgnoreCase("false")) isRestricted = false;
+				for (LsThingState projectState : project.getLsStates()) {
+					for (LsThingValue projectValue : projectState.getLsValues()) {
+						if (!projectValue.isIgnored()) {
+							if (projectValue.getLsKind().equalsIgnoreCase("project status")) {
+								if (projectValue.getCodeValue().equalsIgnoreCase("Active"))
+									active = true;
+								else if (projectValue.getCodeValue().equalsIgnoreCase("Inactive"))
+									active = false;
+							} else if (projectValue.getLsKind().equalsIgnoreCase("is restricted")) {
+								if (projectValue.getCodeValue().equalsIgnoreCase("true"))
+									isRestricted = true;
+								else if (projectValue.getCodeValue().equalsIgnoreCase("false"))
+									isRestricted = false;
 							}
 						}
 					}
 				}
 
 				authProjectGroup = new AuthProjectGroupsDTO();
-				authProjectGroup.setId(project.getId());				
+				authProjectGroup.setId(project.getId());
 				authProjectGroup.setCode(project.getCodeName());
 				authProjectGroup.setName(projectName);
 				authProjectGroup.setAlias(projectAlias);
@@ -266,7 +281,7 @@ public class AuthorServiceImpl implements AuthorService {
 		CodeTableDTO codeTable = new CodeTableDTO();
 		logger.debug("current project: " + project.getCodeName());
 		Set<LsThingLabel> projectLabels = project.getLsLabels();
-		for (LsThingLabel projectLabel : projectLabels){
+		for (LsThingLabel projectLabel : projectLabels) {
 			logger.debug(projectLabel.getLabelText());
 		}
 		codeTable.setName(LsThingLabel.pickBestLabel(project.getLsLabels()).getLabelText());
@@ -275,7 +290,6 @@ public class AuthorServiceImpl implements AuthorService {
 		return codeTable;
 	}
 
-
 	@Override
 	public List<CodeTableDTO> convertProjectsToCodeTables(Collection<LsThing> projects) {
 		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
@@ -283,34 +297,36 @@ public class AuthorServiceImpl implements AuthorService {
 			CodeTableDTO codeTable = getProjectCodeTable(project);
 			codeTableList.add(codeTable);
 		}
-		return codeTableList;	
+		return codeTableList;
 	}
-
 
 	@Override
 	public Collection<Author> findAuthorsByRoleTypeAndRoleKindAndRoleName(
 			String roleType, String roleKind, String roleName) {
-		List<LsRole> roleEntries = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(roleType, roleKind, roleName).getResultList();
+		List<LsRole> roleEntries = LsRole
+				.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(roleType, roleKind, roleName)
+				.getResultList();
 		Collection<Author> authors = new HashSet<Author>();
-		for (LsRole roleEntry : roleEntries){
+		for (LsRole roleEntry : roleEntries) {
 			Collection<AuthorRole> authorRoles = AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList();
-			for (AuthorRole authorRole : authorRoles){
+			for (AuthorRole authorRole : authorRoles) {
 				authors.add(authorRole.getUserEntry());
-			}	
+			}
 		}
 		return authors;
 	}
-	
+
 	@Override
 	@Transactional
 	public Author signupAuthor(Author author) {
 		Random random = new Random(System.currentTimeMillis());
 		String activationKey = "activationKey:" + random.nextInt();
-		if (logger.isDebugEnabled()) logger.debug("activation key is :" + activationKey);
+		if (logger.isDebugEnabled())
+			logger.debug("activation key is :" + activationKey);
 		author.setActivationKey(activationKey);
 		author.setEnabled(false);
 		author.setLocked(false);
-		
+
 		String randomPassword = generateRandomPassword();
 		author.setPassword(randomPassword);
 		String encryptedPassword = null;
@@ -322,24 +338,29 @@ public class AuthorServiceImpl implements AuthorService {
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} 
+		}
 		author.setPassword(encryptedPassword);
-		
-		author = saveAuthor(author);		
-		
+
+		author = saveAuthor(author);
+
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(author.getEmailAddress());
 		mail.setSubject("User Activation");
-		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) mail.setFrom(propertiesUtilService.getEmailFromAddress());
-		
-		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +""
-				+ "\n Your username is: "+author.getUserName()
-				+ "\n Your temporary password is: "+randomPassword );
-		
-		try{
+		if (propertiesUtilService.getEmailFromAddress() != null
+				&& !propertiesUtilService.getEmailFromAddress().equals(""))
+			mail.setFrom(propertiesUtilService.getEmailFromAddress());
+
+		mail.setText(
+				"Hi " + author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: "
+						+ propertiesUtilService.getClientPath() + "/activateUser?emailAddress="
+						+ author.getEmailAddress() + "&activate=" + activationKey + ""
+						+ "\n Your username is: " + author.getUserName()
+						+ "\n Your temporary password is: " + randomPassword);
+
+		try {
 			mailSender.send(mail);
-		}catch (Exception e){
-			logger.error("Caught exception trying to send email. ",e);
+		} catch (Exception e) {
+			logger.error("Caught exception trying to send email. ", e);
 		}
 
 		return author;
@@ -348,50 +369,61 @@ public class AuthorServiceImpl implements AuthorService {
 	@Override
 	@Transactional
 	public Author saveAuthor(Author author) {
-		if (logger.isDebugEnabled()) logger.debug("incoming meta author: " + author.toJson() + "\n");
+		if (logger.isDebugEnabled())
+			logger.debug("incoming meta author: " + author.toJson() + "\n");
 		Author newAuthor = new Author(author);
-		if (newAuthor.getCodeName() == null){
+		if (newAuthor.getCodeName() == null) {
 			newAuthor.setCodeName(autoLabelService.getAuthorCodeName());
 		}
-		if (newAuthor.getLsType() == null) newAuthor.setLsType("default");
-		if (newAuthor.getLsKind() == null) newAuthor.setLsKind("default");
-		if (newAuthor.getLsTypeAndKind() == null) newAuthor.setLsTypeAndKind(newAuthor.getLsType()+"_"+newAuthor.getLsKind());
+		if (newAuthor.getLsType() == null)
+			newAuthor.setLsType("default");
+		if (newAuthor.getLsKind() == null)
+			newAuthor.setLsKind("default");
+		if (newAuthor.getLsTypeAndKind() == null)
+			newAuthor.setLsTypeAndKind(newAuthor.getLsType() + "_" + newAuthor.getLsKind());
 		newAuthor.persist();
-		if (author.getLsLabels() != null){
+		if (author.getLsLabels() != null) {
 			Set<AuthorLabel> lsLabels = new HashSet<AuthorLabel>();
-			for(AuthorLabel authorLabel : author.getLsLabels()){
+			for (AuthorLabel authorLabel : author.getLsLabels()) {
 				AuthorLabel newAuthorLabel = new AuthorLabel(authorLabel);
 				newAuthorLabel.setAuthor(newAuthor);
-				if (logger.isDebugEnabled()) logger.debug("here is the newAuthorLabel before save: " + newAuthorLabel.toJson());
+				if (logger.isDebugEnabled())
+					logger.debug("here is the newAuthorLabel before save: " + newAuthorLabel.toJson());
 				newAuthorLabel.persist();
 				lsLabels.add(newAuthorLabel);
 			}
 			newAuthor.setLsLabels(lsLabels);
 		} else {
-			if (logger.isDebugEnabled()) logger.debug("No author labels to save");	
+			if (logger.isDebugEnabled())
+				logger.debug("No author labels to save");
 		}
 
-		if (author.getLsStates() != null){
+		if (author.getLsStates() != null) {
 			Set<AuthorState> lsStates = new HashSet<AuthorState>();
-			for(AuthorState lsState : author.getLsStates()){
+			for (AuthorState lsState : author.getLsStates()) {
 				AuthorState newLsState = new AuthorState(lsState);
 				newLsState.setAuthor(newAuthor);
-				if (logger.isDebugEnabled()) logger.debug("here is the newLsState before save: " + newLsState.toJson());
+				if (logger.isDebugEnabled())
+					logger.debug("here is the newLsState before save: " + newLsState.toJson());
 				newLsState.persist();
-				if (logger.isDebugEnabled()) logger.debug("persisted the newLsState: " + newLsState.toJson());
-				if (lsState.getLsValues() != null){
+				if (logger.isDebugEnabled())
+					logger.debug("persisted the newLsState: " + newLsState.toJson());
+				if (lsState.getLsValues() != null) {
 					Set<AuthorValue> lsValues = new HashSet<AuthorValue>();
-					for(AuthorValue authorValue : lsState.getLsValues()){
-						if (logger.isDebugEnabled()) logger.debug("authorValue: " + authorValue.toJson());
+					for (AuthorValue authorValue : lsState.getLsValues()) {
+						if (logger.isDebugEnabled())
+							logger.debug("authorValue: " + authorValue.toJson());
 						AuthorValue newAuthorValue = AuthorValue.create(authorValue);
 						newAuthorValue.setLsState(newLsState);
 						newAuthorValue.persist();
 						lsValues.add(newAuthorValue);
-						if (logger.isDebugEnabled()) logger.debug("persisted the authorValue: " + newAuthorValue.toJson());
+						if (logger.isDebugEnabled())
+							logger.debug("persisted the authorValue: " + newAuthorValue.toJson());
 					}
 					newLsState.setLsValues(lsValues);
 				} else {
-					if (logger.isDebugEnabled()) logger.debug("No author values to save");
+					if (logger.isDebugEnabled())
+						logger.debug("No author values to save");
 				}
 				lsStates.add(newLsState);
 			}
@@ -401,14 +433,13 @@ public class AuthorServiceImpl implements AuthorService {
 		return Author.findAuthor(newAuthor.getId());
 	}
 
-
 	@Override
 	public Author updateAuthor(Author author) {
 		logger.info("incoming meta author: " + author.toJson() + "\n");
 		Author updatedAuthor = Author.update(author);
-		if (author.getLsLabels() != null){
-			for(AuthorLabel authorLabel : author.getLsLabels()){
-				if (authorLabel.getId() == null){
+		if (author.getLsLabels() != null) {
+			for (AuthorLabel authorLabel : author.getLsLabels()) {
+				if (authorLabel.getId() == null) {
 					AuthorLabel newAuthorLabel = new AuthorLabel(authorLabel);
 					newAuthorLabel.setAuthor(updatedAuthor);
 					newAuthorLabel.persist();
@@ -417,50 +448,56 @@ public class AuthorServiceImpl implements AuthorService {
 					AuthorLabel updatedLabel = AuthorLabel.update(authorLabel);
 					updatedAuthor.getLsLabels().add(updatedLabel);
 				}
-			}	
+			}
 		} else {
-			logger.info("No author labels to update");	
+			logger.info("No author labels to update");
 		}
 		updateLsStates(author, updatedAuthor);
 		return Author.findAuthor(updatedAuthor.getId());
 	}
 
-	public void updateLsStates(Author jsonAuthor, Author updatedAuthor){
-		if(jsonAuthor.getLsStates() != null){
-			for(AuthorState lsThingState : jsonAuthor.getLsStates()){
+	public void updateLsStates(Author jsonAuthor, Author updatedAuthor) {
+		if (jsonAuthor.getLsStates() != null) {
+			for (AuthorState lsThingState : jsonAuthor.getLsStates()) {
 				AuthorState updatedAuthorState;
-				if (lsThingState.getId() == null){
+				if (lsThingState.getId() == null) {
 					updatedAuthorState = new AuthorState(lsThingState);
 					updatedAuthorState.setAuthor(updatedAuthor);
 					updatedAuthorState.persist();
 					updatedAuthor.getLsStates().add(updatedAuthorState);
-					if (logger.isDebugEnabled()) logger.debug("persisted new lsThing state " + updatedAuthorState.getId());
+					if (logger.isDebugEnabled())
+						logger.debug("persisted new lsThing state " + updatedAuthorState.getId());
 
 				} else {
 					updatedAuthorState = AuthorState.update(lsThingState);
 					updatedAuthor.getLsStates().add(updatedAuthorState);
 
-					if (logger.isDebugEnabled()) logger.debug("updated lsThing state " + updatedAuthorState.getId());
+					if (logger.isDebugEnabled())
+						logger.debug("updated lsThing state " + updatedAuthorState.getId());
 
 				}
-				if (lsThingState.getLsValues() != null){
-					for(AuthorValue lsThingValue : lsThingState.getLsValues()){
-						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedAuthorState);
+				if (lsThingState.getLsValues() != null) {
+					for (AuthorValue lsThingValue : lsThingState.getLsValues()) {
+						if (lsThingValue.getLsState() == null)
+							lsThingValue.setLsState(updatedAuthorState);
 						AuthorValue updatedAuthorValue;
-						if (lsThingValue.getId() == null){
+						if (lsThingValue.getId() == null) {
 							updatedAuthorValue = AuthorValue.create(lsThingValue);
 							updatedAuthorValue.setLsState(AuthorState.findAuthorState(updatedAuthorState.getId()));
 							updatedAuthorValue.persist();
 							updatedAuthorState.getLsValues().add(updatedAuthorValue);
 						} else {
 							updatedAuthorValue = AuthorValue.update(lsThingValue);
-							if (logger.isDebugEnabled()) logger.debug("updated lsThing value " + updatedAuthorValue.getId());
+							if (logger.isDebugEnabled())
+								logger.debug("updated lsThing value " + updatedAuthorValue.getId());
 						}
-						if (logger.isDebugEnabled()) logger.debug("checking lsThingValue " + updatedAuthorValue.toJson());
+						if (logger.isDebugEnabled())
+							logger.debug("checking lsThingValue " + updatedAuthorValue.toJson());
 
-					}	
+					}
 				} else {
-					if (logger.isDebugEnabled()) logger.debug("No lsThing values to update");
+					if (logger.isDebugEnabled())
+						logger.debug("No lsThing values to update");
 				}
 			}
 		}
@@ -469,150 +506,160 @@ public class AuthorServiceImpl implements AuthorService {
 	@Override
 	public Author getOrCreateAuthor(Author author) {
 		String userName = author.getUserName();
-		try{
+		try {
 			Author foundAuthor = Author.findAuthorsByUserName(userName).getSingleResult();
 			return foundAuthor;
-		}catch(NoResultException e){
-			logger.debug("Author "+userName+" not found. Creating new author");
+		} catch (NoResultException e) {
+			logger.debug("Author " + userName + " not found. Creating new author");
 			return saveAuthor(author);
 		}
 	}
-	
+
 	@Override
-	public Collection<Author> getAuthorsByIds(Collection<Long> authorIds){
+	public Collection<Author> getAuthorsByIds(Collection<Long> authorIds) {
 		Collection<Author> authors = new ArrayList<Author>();
-		for (Long id : authorIds){
+		for (Long id : authorIds) {
 			authors.add(Author.findAuthor(id));
 		}
 		return authors;
 	}
-	
+
 	@Override
-	public Collection<Long> searchAuthorIdsByQueryDTO(AuthorQueryDTO query) throws Exception{
-		List<Long> authorIdList = new ArrayList<Long>();	
+	public Collection<Long> searchAuthorIdsByQueryDTO(AuthorQueryDTO query) throws Exception {
+		List<Long> authorIdList = new ArrayList<Long>();
 		EntityManager em = Author.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
 		Root<Author> thing = criteria.from(Author.class);
 		List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, query);
-		if (query.getLsType() != null){
+		if (query.getLsType() != null) {
 			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
 			predicateList.add(thingType);
 		}
-		if (query.getLsKind() != null){
+		if (query.getLsKind() != null) {
 			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getLsKind());
 			predicateList.add(thingKind);
 		}
 		Predicate[] predicates = new Predicate[0];
-		//gather all predicates
+		// gather all predicates
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		authorIdList = q.getResultList();
-		logger.debug("Found "+authorIdList.size()+" results.");
+		logger.debug("Found " + authorIdList.size() + " results.");
 		return authorIdList;
 	}
-	
-	private List<Predicate> buildPredicatesForQueryDTO(CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteria, Root<Author> thing, AuthorQueryDTO query) throws Exception{
-		
+
+	private List<Predicate> buildPredicatesForQueryDTO(CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteria,
+			Root<Author> thing, AuthorQueryDTO query) throws Exception {
+
 		criteria.select(thing.<Long>get("id"));
 		criteria.distinct(true);
 		List<Predicate> predicateList = new ArrayList<Predicate>();
-		//root author properties
-		
-		//recordedDates
-		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
-			try{
-				Predicate createdDateBetween = criteriaBuilder.between(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan(), query.getRecordedDateLessThan());
+		// root author properties
+
+		// recordedDates
+		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null) {
+			try {
+				Predicate createdDateBetween = criteriaBuilder.between(thing.<Date>get("recordedDate"),
+						query.getRecordedDateGreaterThan(), query.getRecordedDateLessThan());
 				predicateList.add(createdDateBetween);
-			}catch (Exception e){
-				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
-				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
+			} catch (Exception e) {
+				logger.error("Caught exception trying to parse " + query.getRecordedDateGreaterThan() + " or "
+						+ query.getRecordedDateLessThan() + " as a date.", e);
+				throw new Exception("Caught exception trying to parse " + query.getRecordedDateGreaterThan() + " or "
+						+ query.getRecordedDateLessThan() + " as a date.", e);
 			}
-		}
-		else if (query.getRecordedDateGreaterThan() != null){
-			try{
-				Predicate createdDateFrom = criteriaBuilder.greaterThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan());
+		} else if (query.getRecordedDateGreaterThan() != null) {
+			try {
+				Predicate createdDateFrom = criteriaBuilder.greaterThanOrEqualTo(thing.<Date>get("recordedDate"),
+						query.getRecordedDateGreaterThan());
 				predicateList.add(createdDateFrom);
-			}catch (Exception e){
-				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
-				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
+			} catch (Exception e) {
+				logger.error("Caught exception trying to parse " + query.getRecordedDateGreaterThan() + " as a date.",
+						e);
+				throw new Exception(
+						"Caught exception trying to parse " + query.getRecordedDateGreaterThan() + " as a date.", e);
 			}
-		}
-		else if (query.getRecordedDateLessThan() != null){
-			try{
-				Predicate createdDateTo = criteriaBuilder.lessThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateLessThan());
+		} else if (query.getRecordedDateLessThan() != null) {
+			try {
+				Predicate createdDateTo = criteriaBuilder.lessThanOrEqualTo(thing.<Date>get("recordedDate"),
+						query.getRecordedDateLessThan());
 				predicateList.add(createdDateTo);
-			}catch (Exception e){
-				logger.error("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
-				throw new Exception("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
+			} catch (Exception e) {
+				logger.error("Caught exception trying to parse " + query.getRecordedDateLessThan() + " as a date.", e);
+				throw new Exception(
+						"Caught exception trying to parse " + query.getRecordedDateLessThan() + " as a date.", e);
 			}
 		}
-		if (query.getRecordedBy() != null){
-			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"), '%'+query.getRecordedBy()+'%');
+		if (query.getRecordedBy() != null) {
+			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"),
+					'%' + query.getRecordedBy() + '%');
 			predicateList.add(recordedBy);
 		}
-		if (query.getFirstName() != null){
-			Predicate firstName = criteriaBuilder.like(thing.<String>get("firstName"), '%'+query.getFirstName()+'%');
+		if (query.getFirstName() != null) {
+			Predicate firstName = criteriaBuilder.like(thing.<String>get("firstName"),
+					'%' + query.getFirstName() + '%');
 			predicateList.add(firstName);
 		}
-		if (query.getLastName() != null){
-			Predicate lastName = criteriaBuilder.like(thing.<String>get("lastName"), '%'+query.getLastName()+'%');
+		if (query.getLastName() != null) {
+			Predicate lastName = criteriaBuilder.like(thing.<String>get("lastName"), '%' + query.getLastName() + '%');
 			predicateList.add(lastName);
 		}
-		if (query.getUserName() != null){
-			Predicate userName = criteriaBuilder.like(thing.<String>get("userName"), '%'+query.getUserName()+'%');
+		if (query.getUserName() != null) {
+			Predicate userName = criteriaBuilder.like(thing.<String>get("userName"), '%' + query.getUserName() + '%');
 			predicateList.add(userName);
 		}
-		
-		//values
-		if (query.getValues() != null){
-			for (ValueQueryDTO valueQuery : query.getValues()){
+
+		// values
+		if (query.getValues() != null) {
+			for (ValueQueryDTO valueQuery : query.getValues()) {
 				List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
 				Join<Author, AuthorState> state = thing.join("lsStates");
 				Join<AuthorState, AuthorValue> value = state.join("lsValues");
-				
+
 				Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
 				Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
 				valuePredicatesList.add(stateNotIgn);
 				valuePredicatesList.add(valueNotIgn);
-				
-				if (valueQuery.getStateType() != null){
-					Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),valueQuery.getStateType());
+
+				if (valueQuery.getStateType() != null) {
+					Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"), valueQuery.getStateType());
 					valuePredicatesList.add(stateType);
 				}
-				if (valueQuery.getStateKind() != null){
-					Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+				if (valueQuery.getStateKind() != null) {
+					Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"), valueQuery.getStateKind());
 					valuePredicatesList.add(stateKind);
 				}
-				if (valueQuery.getValueType() != null){
-					Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),valueQuery.getValueType());
+				if (valueQuery.getValueType() != null) {
+					Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"), valueQuery.getValueType());
 					valuePredicatesList.add(valueType);
 				}
-				if (valueQuery.getValueKind() != null){
-					Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+				if (valueQuery.getValueKind() != null) {
+					Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"), valueQuery.getValueKind());
 					valuePredicatesList.add(valueKind);
 				}
-				if (valueQuery.getValue() != null){
-					if (valueQuery.getValueType() == null){
+				if (valueQuery.getValue() != null) {
+					if (valueQuery.getValueType() == null) {
 						logger.error("valueType must be specified if value is specified!");
 						throw new Exception("valueType must be specified if value is specified!");
-					}else if (valueQuery.getValueType().equalsIgnoreCase("dateValue")){
+					} else if (valueQuery.getValueType().equalsIgnoreCase("dateValue")) {
 						String postgresTimeUnit = "day";
-						Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+						Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class,
+								criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
 						Calendar cal = Calendar.getInstance(); // locale-specific
 						boolean parsedTime = false;
-						if (SimpleUtil.isNumeric(valueQuery.getValue())){
+						if (SimpleUtil.isNumeric(valueQuery.getValue())) {
 							cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
 							parsedTime = true;
-						}else{
-							try{
+						} else {
+							try {
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 								cal.setTime(sdf.parse(valueQuery.getValue()));
 								parsedTime = true;
-							}catch (Exception e){
-								logger.warn("Failed to parse date in Author generic query for value",e);
+							} catch (Exception e) {
+								logger.warn("Failed to parse date in Author generic query for value", e);
 							}
 						}
 						cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -622,38 +669,42 @@ public class AuthorServiceImpl implements AuthorService {
 						long time = cal.getTimeInMillis();
 						Date queryDate = new Date(time);
 						Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
-						if (parsedTime) valuePredicatesList.add(valueLike);
-					}else{
-						//only works with string value types: stringValue, codeValue, fileValue, clobValue
-						Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+						if (parsedTime)
+							valuePredicatesList.add(valueLike);
+					} else {
+						// only works with string value types: stringValue, codeValue, fileValue,
+						// clobValue
+						Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()),
+								'%' + valueQuery.getValue() + '%');
 						valuePredicatesList.add(valueLike);
 					}
 				}
-				//gather predicates with AND
+				// gather predicates with AND
 				Predicate[] valuePredicates = new Predicate[0];
 				valuePredicates = valuePredicatesList.toArray(valuePredicates);
 				predicateList.add(criteriaBuilder.and(valuePredicates));
 			}
 		}
-		
-		//labels
-		if (query.getLabels() != null){
-			for (LabelQueryDTO queryLabel : query.getLabels()){
+
+		// labels
+		if (query.getLabels() != null) {
+			for (LabelQueryDTO queryLabel : query.getLabels()) {
 				Join<Author, AuthorLabel> label = thing.join("lsLabels");
 				List<Predicate> labelPredicatesList = new ArrayList<Predicate>();
-				if (queryLabel.getLabelType() != null){
+				if (queryLabel.getLabelType() != null) {
 					Predicate labelType = criteriaBuilder.equal(label.<String>get("lsType"), queryLabel.getLabelType());
 					labelPredicatesList.add(labelType);
 				}
-				if (queryLabel.getLabelKind() != null){
+				if (queryLabel.getLabelKind() != null) {
 					Predicate labelKind = criteriaBuilder.equal(label.<String>get("lsKind"), queryLabel.getLabelKind());
 					labelPredicatesList.add(labelKind);
 				}
-				if (queryLabel.getLabelText() != null){
-					Predicate labelText = criteriaBuilder.like(label.<String>get("labelText"), '%'+queryLabel.getLabelText()+'%');
+				if (queryLabel.getLabelText() != null) {
+					Predicate labelText = criteriaBuilder.like(label.<String>get("labelText"),
+							'%' + queryLabel.getLabelText() + '%');
 					labelPredicatesList.add(labelText);
 				}
-				//gather labels
+				// gather labels
 				Predicate[] labelPredicates = new Predicate[0];
 				labelPredicates = labelPredicatesList.toArray(labelPredicates);
 				predicateList.add(criteriaBuilder.and(labelPredicates));
@@ -662,60 +713,61 @@ public class AuthorServiceImpl implements AuthorService {
 		return predicateList;
 	}
 
-
 	@Override
 	public Collection<Long> searchAuthorIdsByBrowserQueryDTO(
-			AuthorBrowserQueryDTO query) throws Exception{
-		List<Long> authorIdList = new ArrayList<Long>();	
+			AuthorBrowserQueryDTO query) throws Exception {
+		List<Long> authorIdList = new ArrayList<Long>();
 		EntityManager em = Author.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
 		Root<Author> thing = criteria.from(Author.class);
 		List<Predicate> metaPredicateList = new ArrayList<Predicate>();
-		//split query string into terms
+		// split query string into terms
 		String queryString = query.getQueryString().replaceAll("\\*", "%");
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
 		logger.debug("Number of search terms: " + splitQuery.size());
-		//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
-		for (String searchTerm : splitQuery){
+		// for each search term, construct a queryDTO with that term filled in every
+		// search position of the passed in queryDTO
+		for (String searchTerm : splitQuery) {
 			AuthorQueryDTO queryDTO = new AuthorQueryDTO(query.getQueryDTO());
-			if (queryDTO.getValues() != null){
-				for (ValueQueryDTO value : queryDTO.getValues()){
+			if (queryDTO.getValues() != null) {
+				for (ValueQueryDTO value : queryDTO.getValues()) {
 					value.setValue(searchTerm);
 				}
 			}
-			if (queryDTO.getLabels() != null){
-				for (LabelQueryDTO label : queryDTO.getLabels()){
+			if (queryDTO.getLabels() != null) {
+				for (LabelQueryDTO label : queryDTO.getLabels()) {
 					label.setLabelText(searchTerm);
 				}
 			}
 			queryDTO.setFirstName(searchTerm);
 			queryDTO.setLastName(searchTerm);
 			queryDTO.setUserName(searchTerm);
-			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
+			// get a list of predicates for that queryDTO, OR them all together, then add to
+			// the meta list
 			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
 			Predicate[] predicates = new Predicate[0];
 			predicates = predicateList.toArray(predicates);
 			Predicate searchTermPredicate = criteriaBuilder.or(predicates);
 			metaPredicateList.add(searchTermPredicate);
 		}
-		//add in thingType and thingKind as required at top level
-		if (query.getQueryDTO().getLsType() != null){
+		// add in thingType and thingKind as required at top level
+		if (query.getQueryDTO().getLsType() != null) {
 			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getQueryDTO().getLsType());
 			metaPredicateList.add(thingType);
 		}
-		if (query.getQueryDTO().getLsKind() != null){
+		if (query.getQueryDTO().getLsKind() != null) {
 			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getQueryDTO().getLsKind());
 			metaPredicateList.add(thingKind);
 		}
-		//gather the predicates for each search term, and AND them all together
+		// gather the predicates for each search term, and AND them all together
 		Predicate[] metaPredicates = new Predicate[0];
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		authorIdList = q.getResultList();
-		logger.debug("Found "+authorIdList.size()+" results.");
+		logger.debug("Found " + authorIdList.size() + " results.");
 		return authorIdList;
 	}
 
@@ -724,23 +776,24 @@ public class AuthorServiceImpl implements AuthorService {
 	private String generateRandomPassword() {
 		return RandomStringUtils.randomAlphanumeric(temporaryPasswordLength);
 	}
-	
+
 	@Override
-	public void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception {
+	public void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain)
+			throws Exception {
 		String storedPassword = author.getPassword();
-			
-			String encryptedPassword = null;
-			try {
-				encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(currentPassword);
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (Exception e){
-				logger.error("exception checking user password for change password",e);
-			}			
+
+		String encryptedPassword = null;
+		try {
+			encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(currentPassword);
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (Exception e) {
+			logger.error("exception checking user password for change password", e);
+		}
 		if (!storedPassword.equals(encryptedPassword)) {
 			throw new Exception("Current password is incorrect.");
 		}
@@ -756,17 +809,17 @@ public class AuthorServiceImpl implements AuthorService {
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} catch (Exception e){
-			logger.error("exception checking user password for change password",e);
+		} catch (Exception e) {
+			logger.error("exception checking user password for change password", e);
 		}
 		if (encryptedPassword.equals(encryptedNewPassword)) {
 			throw new Exception("New password cannot be the same as old password.");
 		}
-		//validation complete -> change the password
+		// validation complete -> change the password
 		author.setPassword(encryptedNewPassword);
 		author.merge();
 	}
-	
+
 	@Override
 	public void resetPassword(String emailAddress) {
 		Author foundAuthor = Author.findAuthorsByEmailAddress(emailAddress).getSingleResult();
@@ -780,18 +833,22 @@ public class AuthorServiceImpl implements AuthorService {
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} 
+		}
 		foundAuthor.setPassword(encryptedPassword);
-		
+
 		foundAuthor.merge();
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(emailAddress);
-		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) mail.setFrom(propertiesUtilService.getEmailFromAddress());
+		if (propertiesUtilService.getEmailFromAddress() != null
+				&& !propertiesUtilService.getEmailFromAddress().equals(""))
+			mail.setFrom(propertiesUtilService.getEmailFromAddress());
 
 		mail.setSubject("ACAS Password Recovery");
-		mail.setText("Hi "+foundAuthor.getFirstName()+",\n"
-				+ "You recently requested for your password to be reset. Your temporary password is "+newPassword+"\n"
-				+ "Please login to ACAS here and change your password. "+ propertiesUtilService.getClientPath()+"/passwordChange");
+		mail.setText("Hi " + foundAuthor.getFirstName() + ",\n"
+				+ "You recently requested for your password to be reset. Your temporary password is " + newPassword
+				+ "\n"
+				+ "Please login to ACAS here and change your password. " + propertiesUtilService.getClientPath()
+				+ "/passwordChange");
 		mailSender.send(mail);
 	}
 

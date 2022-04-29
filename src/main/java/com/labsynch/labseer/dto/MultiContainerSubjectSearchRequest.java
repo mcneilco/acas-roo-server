@@ -9,114 +9,114 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class MultiContainerSubjectSearchRequest {
-	
-	Integer maxResults;
 
-	String protocolLabelLike;
-	
-	String experimentLabelLike;
-	
-	Collection<String> containerCodes;
-	
-	String subjectType;
-	
-	String subjectKind;
+    Integer maxResults;
 
-	Collection<ValueQueryDTO> values;
-	
-	public MultiContainerSubjectSearchRequest(){
-		
-	}
+    String protocolLabelLike;
 
-	public Integer getMaxResults() {
+    String experimentLabelLike;
+
+    Collection<String> containerCodes;
+
+    String subjectType;
+
+    String subjectKind;
+
+    Collection<ValueQueryDTO> values;
+
+    public MultiContainerSubjectSearchRequest() {
+
+    }
+
+    public Integer getMaxResults() {
         return this.maxResults;
     }
 
-	public void setMaxResults(Integer maxResults) {
+    public void setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;
     }
 
-	public String getProtocolLabelLike() {
+    public String getProtocolLabelLike() {
         return this.protocolLabelLike;
     }
 
-	public void setProtocolLabelLike(String protocolLabelLike) {
+    public void setProtocolLabelLike(String protocolLabelLike) {
         this.protocolLabelLike = protocolLabelLike;
     }
 
-	public String getExperimentLabelLike() {
+    public String getExperimentLabelLike() {
         return this.experimentLabelLike;
     }
 
-	public void setExperimentLabelLike(String experimentLabelLike) {
+    public void setExperimentLabelLike(String experimentLabelLike) {
         this.experimentLabelLike = experimentLabelLike;
     }
 
-	public Collection<String> getContainerCodes() {
+    public Collection<String> getContainerCodes() {
         return this.containerCodes;
     }
 
-	public void setContainerCodes(Collection<String> containerCodes) {
+    public void setContainerCodes(Collection<String> containerCodes) {
         this.containerCodes = containerCodes;
     }
 
-	public String getSubjectType() {
+    public String getSubjectType() {
         return this.subjectType;
     }
 
-	public void setSubjectType(String subjectType) {
+    public void setSubjectType(String subjectType) {
         this.subjectType = subjectType;
     }
 
-	public String getSubjectKind() {
+    public String getSubjectKind() {
         return this.subjectKind;
     }
 
-	public void setSubjectKind(String subjectKind) {
+    public void setSubjectKind(String subjectKind) {
         this.subjectKind = subjectKind;
     }
 
-	public Collection<ValueQueryDTO> getValues() {
+    public Collection<ValueQueryDTO> getValues() {
         return this.values;
     }
 
-	public void setValues(Collection<ValueQueryDTO> values) {
+    public void setValues(Collection<ValueQueryDTO> values) {
         this.values = values;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static MultiContainerSubjectSearchRequest fromJsonToMultiContainerSubjectSearchRequest(String json) {
+    public static MultiContainerSubjectSearchRequest fromJsonToMultiContainerSubjectSearchRequest(String json) {
         return new JSONDeserializer<MultiContainerSubjectSearchRequest>()
-        .use(null, MultiContainerSubjectSearchRequest.class).deserialize(json);
+                .use(null, MultiContainerSubjectSearchRequest.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<MultiContainerSubjectSearchRequest> collection) {
+    public static String toJsonArray(Collection<MultiContainerSubjectSearchRequest> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<MultiContainerSubjectSearchRequest> collection, String[] fields) {
+    public static String toJsonArray(Collection<MultiContainerSubjectSearchRequest> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<MultiContainerSubjectSearchRequest> fromJsonArrayToMultiContainerSubjectSearchRequests(String json) {
+    public static Collection<MultiContainerSubjectSearchRequest> fromJsonArrayToMultiContainerSubjectSearchRequests(
+            String json) {
         return new JSONDeserializer<List<MultiContainerSubjectSearchRequest>>()
-        .use("values", MultiContainerSubjectSearchRequest.class).deserialize(json);
+                .use("values", MultiContainerSubjectSearchRequest.class).deserialize(json);
     }
 }

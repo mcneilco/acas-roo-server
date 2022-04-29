@@ -18,29 +18,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Configurable
 @Entity
 public class LsSeqSubject {
-	
-	
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new LsSeqSubject().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countLsSeqSubjects() {
+    public static long countLsSeqSubjects() {
         return entityManager().createQuery("SELECT COUNT(o) FROM LsSeqSubject o", Long.class).getSingleResult();
     }
 
-	public static List<LsSeqSubject> findAllLsSeqSubjects() {
+    public static List<LsSeqSubject> findAllLsSeqSubjects() {
         return entityManager().createQuery("SELECT o FROM LsSeqSubject o", LsSeqSubject.class).getResultList();
     }
 
-	public static List<LsSeqSubject> findAllLsSeqSubjects(String sortFieldName, String sortOrder) {
+    public static List<LsSeqSubject> findAllLsSeqSubjects(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM LsSeqSubject o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -51,16 +51,19 @@ public class LsSeqSubject {
         return entityManager().createQuery(jpaQuery, LsSeqSubject.class).getResultList();
     }
 
-	public static LsSeqSubject findLsSeqSubject(Long id) {
-        if (id == null) return null;
+    public static LsSeqSubject findLsSeqSubject(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(LsSeqSubject.class, id);
     }
 
-	public static List<LsSeqSubject> findLsSeqSubjectEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM LsSeqSubject o", LsSeqSubject.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<LsSeqSubject> findLsSeqSubjectEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM LsSeqSubject o", LsSeqSubject.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<LsSeqSubject> findLsSeqSubjectEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<LsSeqSubject> findLsSeqSubjectEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM LsSeqSubject o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -68,18 +71,21 @@ public class LsSeqSubject {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, LsSeqSubject.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, LsSeqSubject.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -88,49 +94,52 @@ public class LsSeqSubject {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public LsSeqSubject merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         LsSeqSubject merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	@Id
+    @Id
     @SequenceGenerator(name = "lsSeqSubjectGen", sequenceName = "LSSEQ_SUBJ_PKSEQ")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqSubjectGen")
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 }

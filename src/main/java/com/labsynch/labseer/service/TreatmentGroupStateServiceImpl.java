@@ -25,41 +25,47 @@ import com.labsynch.labseer.utils.SimpleUtil;
 public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateService {
 
 	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupStateServiceImpl.class);
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
 	@Override
 	public List<TreatmentGroupState> getTreatmentGroupStatesByTreatmentGroupIdAndStateTypeKind(
 			Long treatmentGroupId, String stateType, String stateKind) {
-		
-			List<TreatmentGroupState> treatmentGroupStates = TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(treatmentGroupId, stateType, stateKind).getResultList();
 
-			return treatmentGroupStates;
-		
+		List<TreatmentGroupState> treatmentGroupStates = TreatmentGroupState
+				.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(treatmentGroupId, stateType, stateKind)
+				.getResultList();
+
+		return treatmentGroupStates;
+
 	}
-	
+
 	@Override
-	public Collection<TreatmentGroupState> ignoreAllTreatmentGroupStates(Collection<TreatmentGroupState> treatmentGroupStates) {
-		//mark treatmentGroupStates and values as ignore 
+	public Collection<TreatmentGroupState> ignoreAllTreatmentGroupStates(
+			Collection<TreatmentGroupState> treatmentGroupStates) {
+		// mark treatmentGroupStates and values as ignore
 		Collection<TreatmentGroupState> treatmentGroupStateSet = new HashSet<TreatmentGroupState>();
-		for (TreatmentGroupState queryTreatmentGroupState : treatmentGroupStates){
-			TreatmentGroupState treatmentGroupState = TreatmentGroupState.findTreatmentGroupState(queryTreatmentGroupState.getId());			
-				for(TreatmentGroupValue treatmentGroupValue : TreatmentGroupValue.findTreatmentGroupValuesByLsState(treatmentGroupState).getResultList()){
-					treatmentGroupValue.setIgnored(true);
-					treatmentGroupValue.merge();
-				}
-				treatmentGroupState.setIgnored(true);
-				treatmentGroupState.merge();
-				treatmentGroupStateSet.add(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()));
+		for (TreatmentGroupState queryTreatmentGroupState : treatmentGroupStates) {
+			TreatmentGroupState treatmentGroupState = TreatmentGroupState
+					.findTreatmentGroupState(queryTreatmentGroupState.getId());
+			for (TreatmentGroupValue treatmentGroupValue : TreatmentGroupValue
+					.findTreatmentGroupValuesByLsState(treatmentGroupState).getResultList()) {
+				treatmentGroupValue.setIgnored(true);
+				treatmentGroupValue.merge();
+			}
+			treatmentGroupState.setIgnored(true);
+			treatmentGroupState.merge();
+			treatmentGroupStateSet.add(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()));
 		}
 
-		return(treatmentGroupStateSet);
+		return (treatmentGroupStateSet);
 
 	}
 
 	@Override
-	public TreatmentGroupState createTreatmentGroupStateByTreatmentGroupIdAndStateTypeKind(Long treatmentGroupId, String stateType, String stateKind) {
+	public TreatmentGroupState createTreatmentGroupStateByTreatmentGroupIdAndStateTypeKind(Long treatmentGroupId,
+			String stateType, String stateKind) {
 		TreatmentGroupState treatmentGroupState = new TreatmentGroupState();
 		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupId);
 		treatmentGroupState.setTreatmentGroup(treatmentGroup);
@@ -73,10 +79,11 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 	@Override
 	public TreatmentGroupState saveTreatmentGroupState(
 			TreatmentGroupState treatmentGroupState) {
-		treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupState.getTreatmentGroup().getId()));		
+		treatmentGroupState
+				.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupState.getTreatmentGroup().getId()));
 		treatmentGroupState.persist();
 		Set<TreatmentGroupValue> savedValues = new HashSet<TreatmentGroupValue>();
-		for (TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
+		for (TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()) {
 			treatmentGroupValue.setLsState(treatmentGroupState);
 			treatmentGroupValue.persist();
 			savedValues.add(treatmentGroupValue);
@@ -89,16 +96,17 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 	@Override
 	public Collection<TreatmentGroupState> saveTreatmentGroupStates(
 			Collection<TreatmentGroupState> treatmentGroupStates) {
-		for (TreatmentGroupState treatmentGroupState: treatmentGroupStates) {
+		for (TreatmentGroupState treatmentGroupState : treatmentGroupStates) {
 			treatmentGroupState = saveTreatmentGroupState(treatmentGroupState);
 		}
 		return treatmentGroupStates;
 	}
-	
+
 	@Override
 	public TreatmentGroupState updateTreatmentGroupState(
 			TreatmentGroupState treatmentGroupState) {
-		treatmentGroupState.setVersion(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()).getVersion());
+		treatmentGroupState
+				.setVersion(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()).getVersion());
 		treatmentGroupState.merge();
 		return treatmentGroupState;
 	}
@@ -106,21 +114,21 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 	@Override
 	public Collection<TreatmentGroupState> updateTreatmentGroupStates(
 			Collection<TreatmentGroupState> treatmentGroupStates) {
-		for (TreatmentGroupState treatmentGroupState : treatmentGroupStates){
+		for (TreatmentGroupState treatmentGroupState : treatmentGroupStates) {
 			treatmentGroupState = updateTreatmentGroupState(treatmentGroupState);
 		}
 		return null;
 	}
-	
+
 	@Override
 	public TreatmentGroupState getTreatmentGroupState(String idOrCodeName,
 			String stateType, String stateKind) {
 		TreatmentGroupState state = null;
-		try{
+		try {
 			Collection<TreatmentGroupState> states = getTreatmentGroupStates(idOrCodeName, stateType, stateKind);
 			state = states.iterator().next();
-		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+		} catch (Exception e) {
+			logger.error("Caught error " + e.toString() + " trying to find a state.", e);
 			state = null;
 		}
 		return state;
@@ -130,23 +138,28 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 	public Collection<TreatmentGroupStatePathDTO> getTreatmentGroupStates(
 			Collection<GenericStatePathRequest> genericRequests) {
 		Collection<TreatmentGroupStatePathDTO> results = new ArrayList<TreatmentGroupStatePathDTO>();
-		for (GenericStatePathRequest request : genericRequests){
+		for (GenericStatePathRequest request : genericRequests) {
 			TreatmentGroupStatePathDTO result = new TreatmentGroupStatePathDTO();
 			result.setIdOrCodeName(request.getIdOrCodeName());
 			result.setStateType(request.getStateType());
 			result.setStateKind(request.getStateKind());
-			result.setStates(getTreatmentGroupStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			result.setStates(
+					getTreatmentGroupStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
 			results.add(result);
 		}
 		return results;
 	}
-	
-	private Collection<TreatmentGroupState> getTreatmentGroupStates(String idOrCodeName, String stateType, String stateKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
+
+	private Collection<TreatmentGroupState> getTreatmentGroupStates(String idOrCodeName, String stateType,
+			String stateKind) {
+		if (SimpleUtil.isNumeric(idOrCodeName)) {
 			Long id = Long.valueOf(idOrCodeName);
-			return TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(id, stateType, stateKind).getResultList();
-		}else{
-			return TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+			return TreatmentGroupState
+					.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(id, stateType, stateKind)
+					.getResultList();
+		} else {
+			return TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupCodeNameAndStateTypeKind(idOrCodeName,
+					stateType, stateKind).getResultList();
 		}
 	}
 

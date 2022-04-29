@@ -35,64 +35,66 @@ public class UncertaintyKind {
     @JoinColumn(name = "ls_type")
     private String kindName;
 
-	@Id
+    @Id
     @SequenceGenerator(name = "uncertaintyKindGen", sequenceName = "UNCERTAINTY_KIND_PKSEQ")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "uncertaintyKindGen")
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String getKindName() {
+    public String getKindName() {
         return this.kindName;
     }
 
-	public void setKindName(String kindName) {
+    public void setKindName(String kindName) {
         this.kindName = kindName;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("kindName");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("kindName");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new UncertaintyKind().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countUncertaintyKinds() {
+    public static long countUncertaintyKinds() {
         return entityManager().createQuery("SELECT COUNT(o) FROM UncertaintyKind o", Long.class).getSingleResult();
     }
 
-	public static List<UncertaintyKind> findAllUncertaintyKinds() {
+    public static List<UncertaintyKind> findAllUncertaintyKinds() {
         return entityManager().createQuery("SELECT o FROM UncertaintyKind o", UncertaintyKind.class).getResultList();
     }
 
-	public static List<UncertaintyKind> findAllUncertaintyKinds(String sortFieldName, String sortOrder) {
+    public static List<UncertaintyKind> findAllUncertaintyKinds(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM UncertaintyKind o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -103,16 +105,19 @@ public class UncertaintyKind {
         return entityManager().createQuery(jpaQuery, UncertaintyKind.class).getResultList();
     }
 
-	public static UncertaintyKind findUncertaintyKind(Long id) {
-        if (id == null) return null;
+    public static UncertaintyKind findUncertaintyKind(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(UncertaintyKind.class, id);
     }
 
-	public static List<UncertaintyKind> findUncertaintyKindEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM UncertaintyKind o", UncertaintyKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<UncertaintyKind> findUncertaintyKindEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM UncertaintyKind o", UncertaintyKind.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<UncertaintyKind> findUncertaintyKindEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<UncertaintyKind> findUncertaintyKindEntries(int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM UncertaintyKind o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -120,18 +125,21 @@ public class UncertaintyKind {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, UncertaintyKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, UncertaintyKind.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -140,53 +148,56 @@ public class UncertaintyKind {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public UncertaintyKind merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         UncertaintyKind merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static UncertaintyKind fromJsonToUncertaintyKind(String json) {
+    public static UncertaintyKind fromJsonToUncertaintyKind(String json) {
         return new JSONDeserializer<UncertaintyKind>()
-        .use(null, UncertaintyKind.class).deserialize(json);
+                .use(null, UncertaintyKind.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<UncertaintyKind> collection) {
+    public static String toJsonArray(Collection<UncertaintyKind> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<UncertaintyKind> collection, String[] fields) {
+    public static String toJsonArray(Collection<UncertaintyKind> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<UncertaintyKind> fromJsonArrayToUncertaintyKinds(String json) {
+    public static Collection<UncertaintyKind> fromJsonArrayToUncertaintyKinds(String json) {
         return new JSONDeserializer<List<UncertaintyKind>>()
-        .use("values", UncertaintyKind.class).deserialize(json);
+                .use("values", UncertaintyKind.class).deserialize(json);
     }
 }

@@ -25,36 +25,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProtocolStateServiceImpl implements ProtocolStateService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProtocolStateServiceImpl.class);
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
 	@Override
 	public Collection<ProtocolState> ignoreAllProtocolStates(Collection<ProtocolState> protocolStates) {
-		//mark protocolStates and values as ignore 
+		// mark protocolStates and values as ignore
 		Collection<ProtocolState> protocolStateSet = new HashSet<ProtocolState>();
-		for (ProtocolState queryProtocolState : protocolStates){
-			ProtocolState protocolState = ProtocolState.findProtocolState(queryProtocolState.getId());			
-				for(ProtocolValue protocolValue : ProtocolValue.findProtocolValuesByLsState(protocolState).getResultList()){
-					protocolValue.setIgnored(true);
-					protocolValue.merge();
-				}
-				protocolState.setIgnored(true);
-				protocolState.merge();
-				protocolStateSet.add(ProtocolState.findProtocolState(protocolState.getId()));
+		for (ProtocolState queryProtocolState : protocolStates) {
+			ProtocolState protocolState = ProtocolState.findProtocolState(queryProtocolState.getId());
+			for (ProtocolValue protocolValue : ProtocolValue.findProtocolValuesByLsState(protocolState)
+					.getResultList()) {
+				protocolValue.setIgnored(true);
+				protocolValue.merge();
+			}
+			protocolState.setIgnored(true);
+			protocolState.merge();
+			protocolStateSet.add(ProtocolState.findProtocolState(protocolState.getId()));
 		}
 
-		return(protocolStateSet);
+		return (protocolStateSet);
 
 	}
 
 	@Override
 	public List<ProtocolState> getProtocolStatesByProtocolIdAndStateTypeKind(
 			Long protocolId, String stateType, String stateKind) {
-		
-			List<ProtocolState> protocolStates = ProtocolState.findProtocolStatesByProtocolIDAndStateTypeKind(protocolId, stateType, stateKind).getResultList();
 
-			return protocolStates;
+		List<ProtocolState> protocolStates = ProtocolState
+				.findProtocolStatesByProtocolIDAndStateTypeKind(protocolId, stateType, stateKind).getResultList();
+
+		return protocolStates;
 	}
 
 	@Override
@@ -73,10 +75,10 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 	@Override
 	public ProtocolState saveProtocolState(
 			ProtocolState protocolState) {
-		protocolState.setProtocol(Protocol.findProtocol(protocolState.getProtocol().getId()));		
+		protocolState.setProtocol(Protocol.findProtocol(protocolState.getProtocol().getId()));
 		protocolState.persist();
 		Set<ProtocolValue> savedValues = new HashSet<ProtocolValue>();
-		for (ProtocolValue protocolValue : protocolState.getLsValues()){
+		for (ProtocolValue protocolValue : protocolState.getLsValues()) {
 			protocolValue.setLsState(protocolState);
 			protocolValue.persist();
 			savedValues.add(protocolValue);
@@ -89,12 +91,12 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 	@Override
 	public Collection<ProtocolState> saveProtocolStates(
 			Collection<ProtocolState> protocolStates) {
-		for (ProtocolState protocolState: protocolStates) {
+		for (ProtocolState protocolState : protocolStates) {
 			protocolState = saveProtocolState(protocolState);
 		}
 		return protocolStates;
 	}
-	
+
 	@Override
 	public ProtocolState updateProtocolState(
 			ProtocolState protocolState) {
@@ -106,21 +108,21 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 	@Override
 	public Collection<ProtocolState> updateProtocolStates(
 			Collection<ProtocolState> protocolStates) {
-		for (ProtocolState protocolState : protocolStates){
+		for (ProtocolState protocolState : protocolStates) {
 			protocolState = updateProtocolState(protocolState);
 		}
 		return null;
 	}
-	
+
 	@Override
 	public ProtocolState getProtocolState(String idOrCodeName,
 			String stateType, String stateKind) {
 		ProtocolState state = null;
-		try{
+		try {
 			Collection<ProtocolState> states = getProtocolStates(idOrCodeName, stateType, stateKind);
 			state = states.iterator().next();
-		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+		} catch (Exception e) {
+			logger.error("Caught error " + e.toString() + " trying to find a state.", e);
 			state = null;
 		}
 		return state;
@@ -130,23 +132,27 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 	public Collection<ProtocolStatePathDTO> getProtocolStates(
 			Collection<GenericStatePathRequest> genericRequests) {
 		Collection<ProtocolStatePathDTO> results = new ArrayList<ProtocolStatePathDTO>();
-		for (GenericStatePathRequest request : genericRequests){
+		for (GenericStatePathRequest request : genericRequests) {
 			ProtocolStatePathDTO result = new ProtocolStatePathDTO();
 			result.setIdOrCodeName(request.getIdOrCodeName());
 			result.setStateType(request.getStateType());
 			result.setStateKind(request.getStateKind());
-			result.setStates(getProtocolStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			result.setStates(
+					getProtocolStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
 			results.add(result);
 		}
 		return results;
 	}
-	
-	private Collection<ProtocolState> getProtocolStates(String idOrCodeName, String stateType, String stateKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
+
+	private Collection<ProtocolState> getProtocolStates(String idOrCodeName, String stateType, String stateKind) {
+		if (SimpleUtil.isNumeric(idOrCodeName)) {
 			Long id = Long.valueOf(idOrCodeName);
-			return ProtocolState.findProtocolStatesByProtocolIDAndStateTypeKind(id, stateType, stateKind).getResultList();
-		}else{
-			return ProtocolState.findProtocolStatesByProtocolCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+			return ProtocolState.findProtocolStatesByProtocolIDAndStateTypeKind(id, stateType, stateKind)
+					.getResultList();
+		} else {
+			return ProtocolState
+					.findProtocolStatesByProtocolCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind)
+					.getResultList();
 		}
 	}
 

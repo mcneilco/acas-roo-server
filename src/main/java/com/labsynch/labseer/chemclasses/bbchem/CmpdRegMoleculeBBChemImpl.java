@@ -25,7 +25,8 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		this.bbChemStructureService = bbChemStructureService;
 	}
 
-	public CmpdRegMoleculeBBChemImpl(String singleSDF, BBChemStructureService bbChemStructureService) throws CmpdRegMolFormatException {
+	public CmpdRegMoleculeBBChemImpl(String singleSDF, BBChemStructureService bbChemStructureService)
+			throws CmpdRegMolFormatException {
 		this.bbChemStructureService = bbChemStructureService;
 		this.molecule = bbChemStructureService.parseSDF(singleSDF).get(0);
 	}
@@ -38,7 +39,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	@Override
 	public String getProperty(String key) {
 		String prop = this.molecule.getProperties().get(key);
-		if(prop.equals("")) {
+		if (prop.equals("")) {
 			return null;
 		} else {
 			return prop;
@@ -67,9 +68,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getFormula() {
-		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) { 
-			return null; 
-		} else if(this.molecule.getMolecularFormula() != null) {
+		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
+			return null;
+		} else if (this.molecule.getMolecularFormula() != null) {
 			return this.molecule.getMolecularFormula();
 		} else {
 			try {
@@ -84,9 +85,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public Double getExactMass() {
-		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) { 
-			return null; 
-		} else if(this.molecule.getExactMolWeight() != null) {
+		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
+			return null;
+		} else if (this.molecule.getExactMolWeight() != null) {
 			return this.molecule.getExactMolWeight();
 		} else {
 			try {
@@ -96,14 +97,14 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 				logger.error(e.getMessage());
 				return null;
 			}
-		}	
+		}
 	}
 
 	@Override
 	public Double getMass() {
-		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) { 
-			return null; 
-		} else if(this.molecule.getAverageMolWeight() != null) {
+		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
+			return null;
+		} else if (this.molecule.getAverageMolWeight() != null) {
 			return this.molecule.getAverageMolWeight();
 		} else {
 			try {
@@ -118,9 +119,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public int getTotalCharge() {
-		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) { 
-			return -1; 
-		} else if(this.molecule.getTotalCharge() != null) {
+		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
+			return -1;
+		} else if (this.molecule.getTotalCharge() != null) {
 			return this.molecule.getTotalCharge();
 		} else {
 			try {
@@ -135,9 +136,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getSmiles() {
-		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) { 
-			return null; 
-		} else if(this.molecule.getSmiles() != null) {
+		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
+			return null;
+		} else if (this.molecule.getSmiles() != null) {
 			return this.molecule.getSmiles();
 		} else {
 			try {

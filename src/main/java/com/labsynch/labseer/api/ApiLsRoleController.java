@@ -27,7 +27,7 @@ public class ApiLsRoleController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiLsRoleController.class);
 
-	//CRUD routes
+	// CRUD routes
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<java.lang.String> getById(@PathVariable("id") Long id) {
@@ -36,22 +36,22 @@ public class ApiLsRoleController {
 		LsRole result = LsRole.findLsRole(id);
 		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> listJson(@RequestParam(value="lsType", required=false) String lsType,
-			@RequestParam(value="lsKind", required=false) String lsKind,
-			@RequestParam(value="format", required=false) String format) {
+	public ResponseEntity<String> listJson(@RequestParam(value = "lsType", required = false) String lsType,
+			@RequestParam(value = "lsKind", required = false) String lsKind,
+			@RequestParam(value = "format", required = false) String format) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<LsRole> allLsRoles;
 		if (lsType != null && lsKind != null) {
 			allLsRoles = LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
-		}else if (lsType != null) {
+		} else if (lsType != null) {
 			allLsRoles = LsRole.findLsRolesByLsTypeEquals(lsType).getResultList();
-		}else if (lsKind != null) {
+		} else if (lsKind != null) {
 			allLsRoles = LsRole.findLsRolesByLsKindEquals(lsKind).getResultList();
-		}else {
+		} else {
 			allLsRoles = LsRole.findAllLsRoles();
 		}
 		if (format != null && format.equalsIgnoreCase("codetable")) {
@@ -66,12 +66,12 @@ public class ApiLsRoleController {
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			LsRole lsRole = LsRole.fromJsonToLsRole(json);
 			lsRole.persist();
 			return new ResponseEntity<String>(lsRole.toJson(), headers, HttpStatus.CREATED);
-		}catch (Exception e){
-			logger.error("Caught exception saving lsRole",e);
+		} catch (Exception e) {
+			logger.error("Caught exception saving lsRole", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -81,7 +81,7 @@ public class ApiLsRoleController {
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			Collection<LsRole> lsRoles = LsRole.fromJsonArrayToLsRoles(json);
 			Collection<LsRole> savedLsRoles = new ArrayList<LsRole>();
 			for (LsRole lsRole : lsRoles) {
@@ -89,8 +89,8 @@ public class ApiLsRoleController {
 				savedLsRoles.add(lsRole);
 			}
 			return new ResponseEntity<String>(LsRole.toJsonArray(savedLsRoles), headers, HttpStatus.CREATED);
-		}catch (Exception e){
-			logger.error("Caught exception saving lsRole",e);
+		} catch (Exception e) {
+			logger.error("Caught exception saving lsRole", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -113,7 +113,7 @@ public class ApiLsRoleController {
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			Collection<LsRole> lsRoles = LsRole.fromJsonArrayToLsRoles(json);
 			Collection<LsRole> updatedLsRoles = new ArrayList<LsRole>();
 			for (LsRole lsRole : lsRoles) {
@@ -121,8 +121,8 @@ public class ApiLsRoleController {
 				updatedLsRoles.add(updatedLsRole);
 			}
 			return new ResponseEntity<String>(LsRole.toJsonArray(updatedLsRoles), headers, HttpStatus.OK);
-		}catch (Exception e){
-			logger.error("Caught exception updating lsRoles",e);
+		} catch (Exception e) {
+			logger.error("Caught exception updating lsRoles", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -139,4 +139,3 @@ public class ApiLsRoleController {
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 }
-

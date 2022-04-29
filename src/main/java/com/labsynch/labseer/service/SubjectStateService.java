@@ -36,6 +36,4 @@ public interface SubjectStateService {
 	Collection<SubjectStatePathDTO> getSubjectStates(
 			Collection<GenericStatePathRequest> genericRequests);
 
-	
-	
 }

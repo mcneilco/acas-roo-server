@@ -39,7 +39,6 @@ import flexjson.JSONSerializer;
 
 public class FileList {
 
-	
     private static final Logger logger = LoggerFactory.getLogger(FileList.class);
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -86,7 +85,8 @@ public class FileList {
                 logger.debug("new directory created " + savePath);
             }
             logger.debug(" Saving file: " + this.name + " to  " + saveFileName);
-            String urlString = "http://localhost:8888/imageFolder/" + this.getSubdir() + File.separator + this.getFileName();
+            String urlString = "http://localhost:8888/imageFolder/" + this.getSubdir() + File.separator
+                    + this.getFileName();
             logger.debug("url string " + urlString);
             FileOutputStream f = new FileOutputStream(saveFileName);
             int ch = 0;
@@ -187,67 +187,72 @@ public class FileList {
     public void setSubdir(String subdir) {
         this.subdir = subdir;
     }
-    
+
     public static TypedQuery<FileList> findFileListsByLot(Lot lot) {
-        if (lot == null) throw new IllegalArgumentException("The lot argument is required");
+        if (lot == null)
+            throw new IllegalArgumentException("The lot argument is required");
         EntityManager em = FileList.entityManager();
         TypedQuery<FileList> q = em.createQuery("SELECT o FROM FileList AS o WHERE o.lot = :lot", FileList.class);
         q.setParameter("lot", lot);
         return q;
     }
-    
+
     public static TypedQuery<FileList> findFileListsByUrlEquals(String url) {
-        if (url == null || url.length() == 0) throw new IllegalArgumentException("The url argument is required");
+        if (url == null || url.length() == 0)
+            throw new IllegalArgumentException("The url argument is required");
         EntityManager em = FileList.entityManager();
-        TypedQuery<FileList> q = em.createQuery("SELECT o FROM FileList AS o WHERE o.url = :url ORDER by o", FileList.class);
+        TypedQuery<FileList> q = em.createQuery("SELECT o FROM FileList AS o WHERE o.url = :url ORDER by o",
+                FileList.class);
         q.setParameter("url", url);
         return q;
     }
-    
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public static Long countFindFileListsByLot(Lot lot) {
-        if (lot == null) throw new IllegalArgumentException("The lot argument is required");
+    public static Long countFindFileListsByLot(Lot lot) {
+        if (lot == null)
+            throw new IllegalArgumentException("The lot argument is required");
         EntityManager em = FileList.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM FileList AS o WHERE o.lot = :lot", Long.class);
         q.setParameter("lot", lot);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindFileListsByUrlEquals(String url) {
-        if (url == null || url.length() == 0) throw new IllegalArgumentException("The url argument is required");
+    public static Long countFindFileListsByUrlEquals(String url) {
+        if (url == null || url.length() == 0)
+            throw new IllegalArgumentException("The url argument is required");
         EntityManager em = FileList.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM FileList AS o WHERE o.url = :url", Long.class);
         q.setParameter("url", url);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<FileList> findFileListsByLot(Lot lot, String sortFieldName, String sortOrder) {
-        if (lot == null) throw new IllegalArgumentException("The lot argument is required");
+    public static TypedQuery<FileList> findFileListsByLot(Lot lot, String sortFieldName, String sortOrder) {
+        if (lot == null)
+            throw new IllegalArgumentException("The lot argument is required");
         EntityManager em = FileList.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM FileList AS o WHERE o.lot = :lot");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -261,8 +266,9 @@ public class FileList {
         return q;
     }
 
-	public static TypedQuery<FileList> findFileListsByUrlEquals(String url, String sortFieldName, String sortOrder) {
-        if (url == null || url.length() == 0) throw new IllegalArgumentException("The url argument is required");
+    public static TypedQuery<FileList> findFileListsByUrlEquals(String url, String sortFieldName, String sortOrder) {
+        if (url == null || url.length() == 0)
+            throw new IllegalArgumentException("The url argument is required");
         EntityManager em = FileList.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM FileList AS o WHERE o.url = :url");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -276,56 +282,59 @@ public class FileList {
         return q;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static FileList fromJsonToFileList(String json) {
+    public static FileList fromJsonToFileList(String json) {
         return new JSONDeserializer<FileList>()
-        .use(null, FileList.class).deserialize(json);
+                .use(null, FileList.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<FileList> collection) {
+    public static String toJsonArray(Collection<FileList> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<FileList> collection, String[] fields) {
+    public static String toJsonArray(Collection<FileList> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<FileList> fromJsonArrayToFileLists(String json) {
+    public static Collection<FileList> fromJsonArrayToFileLists(String json) {
         return new JSONDeserializer<List<FileList>>()
-        .use("values", FileList.class).deserialize(json);
+                .use("values", FileList.class).deserialize(json);
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lot", "description", "name", "type", "size", "url", "ie", "uploaded", "file", "fileName", "subdir", "filePath");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lot",
+            "description", "name", "type", "size", "url", "ie", "uploaded", "file", "fileName", "subdir", "filePath");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new FileList().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countFileLists() {
+    public static long countFileLists() {
         return entityManager().createQuery("SELECT COUNT(o) FROM FileList o", Long.class).getSingleResult();
     }
 
-	public static List<FileList> findAllFileLists() {
+    public static List<FileList> findAllFileLists() {
         return entityManager().createQuery("SELECT o FROM FileList o", FileList.class).getResultList();
     }
 
-	public static List<FileList> findAllFileLists(String sortFieldName, String sortOrder) {
+    public static List<FileList> findAllFileLists(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM FileList o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -336,16 +345,19 @@ public class FileList {
         return entityManager().createQuery(jpaQuery, FileList.class).getResultList();
     }
 
-	public static FileList findFileList(Long id) {
-        if (id == null) return null;
+    public static FileList findFileList(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(FileList.class, id);
     }
 
-	public static List<FileList> findFileListEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM FileList o", FileList.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<FileList> findFileListEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM FileList o", FileList.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	public static List<FileList> findFileListEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<FileList> findFileListEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM FileList o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -353,18 +365,21 @@ public class FileList {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, FileList.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, FileList.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -373,35 +388,38 @@ public class FileList {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public FileList merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         FileList merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String getFilePath() {
+    public String getFilePath() {
         return this.filePath;
     }
 
-	public void setFilePath(String filePath) {
+    public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
 }

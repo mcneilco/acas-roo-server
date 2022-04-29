@@ -9,133 +9,129 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ExperimentFilterSearchDTO {
-	
-	private String queryId;
 
-	private String termName;
+    private String queryId;
 
-	private Long experimentId;
+    private String termName;
 
-	private String codeName;
-	
-	private String experimentCode;
+    private Long experimentId;
 
-	private String lsType;
+    private String codeName;
 
-	private String lsKind;
+    private String experimentCode;
 
-	private String operator;
+    private String lsType;
 
-	private String filterValue;
+    private String lsKind;
 
+    private String operator;
 
-	public String toString() {
+    private String filterValue;
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static ExperimentFilterSearchDTO fromJsonToExperimentFilterSearchDTO(String json) {
+    public static ExperimentFilterSearchDTO fromJsonToExperimentFilterSearchDTO(String json) {
         return new JSONDeserializer<ExperimentFilterSearchDTO>()
-        .use(null, ExperimentFilterSearchDTO.class).deserialize(json);
+                .use(null, ExperimentFilterSearchDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<ExperimentFilterSearchDTO> collection) {
+    public static String toJsonArray(Collection<ExperimentFilterSearchDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<ExperimentFilterSearchDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<ExperimentFilterSearchDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<ExperimentFilterSearchDTO> fromJsonArrayToExperimentFilterSearchDTO(String json) {
+    public static Collection<ExperimentFilterSearchDTO> fromJsonArrayToExperimentFilterSearchDTO(String json) {
         return new JSONDeserializer<List<ExperimentFilterSearchDTO>>()
-        .use("values", ExperimentFilterSearchDTO.class).deserialize(json);
+                .use("values", ExperimentFilterSearchDTO.class).deserialize(json);
     }
 
-	public String getQueryId() {
+    public String getQueryId() {
         return this.queryId;
     }
 
-	public void setQueryId(String queryId) {
+    public void setQueryId(String queryId) {
         this.queryId = queryId;
     }
 
-	public String getTermName() {
+    public String getTermName() {
         return this.termName;
     }
 
-	public void setTermName(String termName) {
+    public void setTermName(String termName) {
         this.termName = termName;
     }
 
-	public Long getExperimentId() {
+    public Long getExperimentId() {
         return this.experimentId;
     }
 
-	public void setExperimentId(Long experimentId) {
+    public void setExperimentId(Long experimentId) {
         this.experimentId = experimentId;
     }
 
-	public String getCodeName() {
+    public String getCodeName() {
         return this.codeName;
     }
 
-	public void setCodeName(String codeName) {
+    public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
 
-	public String getExperimentCode() {
+    public String getExperimentCode() {
         return this.experimentCode;
     }
 
-	public void setExperimentCode(String experimentCode) {
+    public void setExperimentCode(String experimentCode) {
         this.experimentCode = experimentCode;
     }
 
-	public String getLsType() {
+    public String getLsType() {
         return this.lsType;
     }
 
-	public void setLsType(String lsType) {
+    public void setLsType(String lsType) {
         this.lsType = lsType;
     }
 
-	public String getLsKind() {
+    public String getLsKind() {
         return this.lsKind;
     }
 
-	public void setLsKind(String lsKind) {
+    public void setLsKind(String lsKind) {
         this.lsKind = lsKind;
     }
 
-	public String getOperator() {
+    public String getOperator() {
         return this.operator;
     }
 
-	public void setOperator(String operator) {
+    public void setOperator(String operator) {
         this.operator = operator;
     }
 
-	public String getFilterValue() {
+    public String getFilterValue() {
         return this.filterValue;
     }
 
-	public void setFilterValue(String filterValue) {
+    public void setFilterValue(String filterValue) {
         this.filterValue = filterValue;
     }
 }
-
-

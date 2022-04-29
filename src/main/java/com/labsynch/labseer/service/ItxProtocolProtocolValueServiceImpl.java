@@ -25,7 +25,8 @@ public class ItxProtocolProtocolValueServiceImpl implements ItxProtocolProtocolV
 
 	@Override
 	public ItxProtocolProtocolValue updateItxProtocolProtocolValue(ItxProtocolProtocolValue itxProtocolProtocolValue) {
-		itxProtocolProtocolValue.setVersion(ItxProtocolProtocolValue.findItxProtocolProtocolValue(itxProtocolProtocolValue.getId()).getVersion());
+		itxProtocolProtocolValue.setVersion(
+				ItxProtocolProtocolValue.findItxProtocolProtocolValue(itxProtocolProtocolValue.getId()).getVersion());
 		itxProtocolProtocolValue.merge();
 		return itxProtocolProtocolValue;
 	}
@@ -33,7 +34,7 @@ public class ItxProtocolProtocolValueServiceImpl implements ItxProtocolProtocolV
 	@Override
 	public Collection<ItxProtocolProtocolValue> updateItxProtocolProtocolValues(
 			Collection<ItxProtocolProtocolValue> itxProtocolProtocolValues) {
-		for (ItxProtocolProtocolValue itxProtocolProtocolValue : itxProtocolProtocolValues){
+		for (ItxProtocolProtocolValue itxProtocolProtocolValue : itxProtocolProtocolValues) {
 			itxProtocolProtocolValue = updateItxProtocolProtocolValue(itxProtocolProtocolValue);
 		}
 		return null;
@@ -41,7 +42,8 @@ public class ItxProtocolProtocolValueServiceImpl implements ItxProtocolProtocolV
 
 	@Override
 	public ItxProtocolProtocolValue saveItxProtocolProtocolValue(ItxProtocolProtocolValue itxProtocolProtocolValue) {
-		itxProtocolProtocolValue.setLsState(ItxProtocolProtocolState.findItxProtocolProtocolState(itxProtocolProtocolValue.getLsState().getId()));		
+		itxProtocolProtocolValue.setLsState(
+				ItxProtocolProtocolState.findItxProtocolProtocolState(itxProtocolProtocolValue.getLsState().getId()));
 		itxProtocolProtocolValue.persist();
 		return itxProtocolProtocolValue;
 	}
@@ -49,12 +51,10 @@ public class ItxProtocolProtocolValueServiceImpl implements ItxProtocolProtocolV
 	@Override
 	public Collection<ItxProtocolProtocolValue> saveItxProtocolProtocolValues(
 			Collection<ItxProtocolProtocolValue> itxProtocolProtocolValues) {
-		for (ItxProtocolProtocolValue itxProtocolProtocolValue: itxProtocolProtocolValues) {
+		for (ItxProtocolProtocolValue itxProtocolProtocolValue : itxProtocolProtocolValues) {
 			itxProtocolProtocolValue = saveItxProtocolProtocolValue(itxProtocolProtocolValue);
 		}
 		return itxProtocolProtocolValues;
 	}
-
-
 
 }

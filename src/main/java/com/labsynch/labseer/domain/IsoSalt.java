@@ -33,7 +33,7 @@ import flexjson.JSONSerializer;
 
 public class IsoSalt {
 
-	private static final Logger logger = LoggerFactory.getLogger(IsoSalt.class);
+    private static final Logger logger = LoggerFactory.getLogger(IsoSalt.class);
 
     @ManyToOne
     @JoinColumn(name = "isotope")
@@ -54,7 +54,6 @@ public class IsoSalt {
     @JoinColumn(name = "salt_form")
     private SaltForm saltForm;
 
-    
     public String toJson() {
         return new JSONSerializer().exclude("*.class", "saltForm").serialize(this);
     }
@@ -68,30 +67,33 @@ public class IsoSalt {
     }
 
     public static Collection<IsoSalt> fromJsonArrayToIsoSalts(String json) {
-        return new JSONDeserializer<List<IsoSalt>>().use(null, ArrayList.class).use("values", IsoSalt.class).deserialize(json);
+        return new JSONDeserializer<List<IsoSalt>>().use(null, ArrayList.class).use("values", IsoSalt.class)
+                .deserialize(json);
     }
-    
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "isotope", "salt", "type", "equivalents", "ignore", "saltForm");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "isotope", "salt",
+            "type", "equivalents", "ignore", "saltForm");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new IsoSalt().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countIsoSalts() {
+    public static long countIsoSalts() {
         return entityManager().createQuery("SELECT COUNT(o) FROM IsoSalt o", Long.class).getSingleResult();
     }
 
-	public static List<IsoSalt> findAllIsoSalts() {
+    public static List<IsoSalt> findAllIsoSalts() {
         return entityManager().createQuery("SELECT o FROM IsoSalt o", IsoSalt.class).getResultList();
     }
 
-	public static List<IsoSalt> findAllIsoSalts(String sortFieldName, String sortOrder) {
+    public static List<IsoSalt> findAllIsoSalts(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM IsoSalt o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -102,16 +104,19 @@ public class IsoSalt {
         return entityManager().createQuery(jpaQuery, IsoSalt.class).getResultList();
     }
 
-	public static IsoSalt findIsoSalt(Long id) {
-        if (id == null) return null;
+    public static IsoSalt findIsoSalt(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(IsoSalt.class, id);
     }
 
-	public static List<IsoSalt> findIsoSaltEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM IsoSalt o", IsoSalt.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<IsoSalt> findIsoSaltEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM IsoSalt o", IsoSalt.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	public static List<IsoSalt> findIsoSaltEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<IsoSalt> findIsoSaltEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM IsoSalt o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -119,18 +124,21 @@ public class IsoSalt {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, IsoSalt.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, IsoSalt.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -139,131 +147,142 @@ public class IsoSalt {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public IsoSalt merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         IsoSalt merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public Isotope getIsotope() {
+    public Isotope getIsotope() {
         return this.isotope;
     }
 
-	public void setIsotope(Isotope isotope) {
+    public void setIsotope(Isotope isotope) {
         this.isotope = isotope;
     }
 
-	public Salt getSalt() {
+    public Salt getSalt() {
         return this.salt;
     }
 
-	public void setSalt(Salt salt) {
+    public void setSalt(Salt salt) {
         this.salt = salt;
     }
 
-	public String getType() {
+    public String getType() {
         return this.type;
     }
 
-	public void setType(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-	public Double getEquivalents() {
+    public Double getEquivalents() {
         return this.equivalents;
     }
 
-	public void setEquivalents(Double equivalents) {
+    public void setEquivalents(Double equivalents) {
         this.equivalents = equivalents;
     }
 
-	public Boolean getIgnore() {
+    public Boolean getIgnore() {
         return this.ignore;
     }
 
-	public void setIgnore(Boolean ignore) {
+    public void setIgnore(Boolean ignore) {
         this.ignore = ignore;
     }
 
-	public SaltForm getSaltForm() {
+    public SaltForm getSaltForm() {
         return this.saltForm;
     }
 
-	public void setSaltForm(SaltForm saltForm) {
+    public void setSaltForm(SaltForm saltForm) {
         this.saltForm = saltForm;
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static Long countFindIsoSaltsBySaltForm(SaltForm saltForm) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
+    public static Long countFindIsoSaltsBySaltForm(SaltForm saltForm) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
         EntityManager em = IsoSalt.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM IsoSalt AS o WHERE o.saltForm = :saltForm", Long.class);
         q.setParameter("saltForm", saltForm);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindIsoSaltsBySaltFormAndType(SaltForm saltForm, String type) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
-        if (type == null || type.length() == 0) throw new IllegalArgumentException("The type argument is required");
+    public static Long countFindIsoSaltsBySaltFormAndType(SaltForm saltForm, String type) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        if (type == null || type.length() == 0)
+            throw new IllegalArgumentException("The type argument is required");
         EntityManager em = IsoSalt.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM IsoSalt AS o WHERE o.saltForm = :saltForm AND o.type = :type", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM IsoSalt AS o WHERE o.saltForm = :saltForm AND o.type = :type", Long.class);
         q.setParameter("saltForm", saltForm);
         q.setParameter("type", type);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<IsoSalt> findIsoSaltsBySaltForm(SaltForm saltForm) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
+    public static TypedQuery<IsoSalt> findIsoSaltsBySaltForm(SaltForm saltForm) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
         EntityManager em = IsoSalt.entityManager();
-        TypedQuery<IsoSalt> q = em.createQuery("SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm", IsoSalt.class);
+        TypedQuery<IsoSalt> q = em.createQuery("SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm",
+                IsoSalt.class);
         q.setParameter("saltForm", saltForm);
         return q;
     }
 
-	public static TypedQuery<IsoSalt> findIsoSaltsBySaltForm(SaltForm saltForm, String sortFieldName, String sortOrder) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
+    public static TypedQuery<IsoSalt> findIsoSaltsBySaltForm(SaltForm saltForm, String sortFieldName,
+            String sortOrder) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
         EntityManager em = IsoSalt.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -277,21 +296,28 @@ public class IsoSalt {
         return q;
     }
 
-	public static TypedQuery<IsoSalt> findIsoSaltsBySaltFormAndType(SaltForm saltForm, String type) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
-        if (type == null || type.length() == 0) throw new IllegalArgumentException("The type argument is required");
+    public static TypedQuery<IsoSalt> findIsoSaltsBySaltFormAndType(SaltForm saltForm, String type) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        if (type == null || type.length() == 0)
+            throw new IllegalArgumentException("The type argument is required");
         EntityManager em = IsoSalt.entityManager();
-        TypedQuery<IsoSalt> q = em.createQuery("SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm AND o.type = :type", IsoSalt.class);
+        TypedQuery<IsoSalt> q = em.createQuery(
+                "SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm AND o.type = :type", IsoSalt.class);
         q.setParameter("saltForm", saltForm);
         q.setParameter("type", type);
         return q;
     }
 
-	public static TypedQuery<IsoSalt> findIsoSaltsBySaltFormAndType(SaltForm saltForm, String type, String sortFieldName, String sortOrder) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
-        if (type == null || type.length() == 0) throw new IllegalArgumentException("The type argument is required");
+    public static TypedQuery<IsoSalt> findIsoSaltsBySaltFormAndType(SaltForm saltForm, String type,
+            String sortFieldName, String sortOrder) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        if (type == null || type.length() == 0)
+            throw new IllegalArgumentException("The type argument is required");
         EntityManager em = IsoSalt.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm AND o.type = :type");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM IsoSalt AS o WHERE o.saltForm = :saltForm AND o.type = :type");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

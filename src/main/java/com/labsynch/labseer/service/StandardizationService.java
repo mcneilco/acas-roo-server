@@ -19,15 +19,18 @@ public interface StandardizationService {
 
 	String getStandardizationDryRunReportFiles(String sdfFileName) throws IOException, CmpdRegMolFormatException;
 
-	String getStandardizationDryRunReportFiles(StandardizationDryRunSearchDTO searchCriteria) throws IOException, CmpdRegMolFormatException;
+	String getStandardizationDryRunReportFiles(StandardizationDryRunSearchDTO searchCriteria)
+			throws IOException, CmpdRegMolFormatException;
 
 	String getStandardizationDryRunReport() throws IOException, CmpdRegMolFormatException, StandardizerException;
 
 	String getDryRunStats() throws StandardizerException;
 
-	String executeStandardization(String username, String reason) throws IOException, CmpdRegMolFormatException, StandardizerException;
+	String executeStandardization(String username, String reason)
+			throws IOException, CmpdRegMolFormatException, StandardizerException;
 
-	int restandardizeParentStructures(List<Long> parentIds) throws CmpdRegMolFormatException, IOException, StandardizerException;
+	int restandardizeParentStructures(List<Long> parentIds)
+			throws CmpdRegMolFormatException, IOException, StandardizerException;
 
 	String standardizeSingleMol(String mol) throws CmpdRegMolFormatException, StandardizerException, IOException;
 

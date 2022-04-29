@@ -31,70 +31,71 @@ public class SolutionUnit {
     private String name;
 
     @Size(max = 255)
-    private String code; 
-    
+    private String code;
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String getName() {
+    public String getName() {
         return this.name;
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-	public String getCode() {
+    public String getCode() {
         return this.code;
     }
 
-	public void setCode(String code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "code");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "code");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new SolutionUnit().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countSolutionUnits() {
+    public static long countSolutionUnits() {
         return entityManager().createQuery("SELECT COUNT(o) FROM SolutionUnit o", Long.class).getSingleResult();
     }
 
-	public static List<SolutionUnit> findAllSolutionUnits() {
+    public static List<SolutionUnit> findAllSolutionUnits() {
         return entityManager().createQuery("SELECT o FROM SolutionUnit o", SolutionUnit.class).getResultList();
     }
 
-	public static List<SolutionUnit> findAllSolutionUnits(String sortFieldName, String sortOrder) {
+    public static List<SolutionUnit> findAllSolutionUnits(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM SolutionUnit o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -105,16 +106,19 @@ public class SolutionUnit {
         return entityManager().createQuery(jpaQuery, SolutionUnit.class).getResultList();
     }
 
-	public static SolutionUnit findSolutionUnit(Long id) {
-        if (id == null) return null;
+    public static SolutionUnit findSolutionUnit(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(SolutionUnit.class, id);
     }
 
-	public static List<SolutionUnit> findSolutionUnitEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM SolutionUnit o", SolutionUnit.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<SolutionUnit> findSolutionUnitEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM SolutionUnit o", SolutionUnit.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<SolutionUnit> findSolutionUnitEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<SolutionUnit> findSolutionUnitEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM SolutionUnit o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -122,18 +126,21 @@ public class SolutionUnit {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, SolutionUnit.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, SolutionUnit.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -142,40 +149,45 @@ public class SolutionUnit {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public SolutionUnit merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         SolutionUnit merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static Long countFindSolutionUnitsByCodeEquals(String code) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static Long countFindSolutionUnitsByCodeEquals(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         EntityManager em = SolutionUnit.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SolutionUnit AS o WHERE o.code = :code", Long.class);
         q.setParameter("code", code);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindSolutionUnitsByCodeLike(String code) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static Long countFindSolutionUnitsByCodeLike(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         code = code.replace('*', '%');
         if (code.charAt(0) != '%') {
             code = "%" + code;
@@ -184,29 +196,35 @@ public class SolutionUnit {
             code = code + "%";
         }
         EntityManager em = SolutionUnit.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SolutionUnit AS o WHERE LOWER(o.code) LIKE LOWER(:code)", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SolutionUnit AS o WHERE LOWER(o.code) LIKE LOWER(:code)",
+                Long.class);
         q.setParameter("code", code);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindSolutionUnitsByNameEquals(String name) {
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static Long countFindSolutionUnitsByNameEquals(String name) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = SolutionUnit.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SolutionUnit AS o WHERE o.name = :name", Long.class);
         q.setParameter("name", name);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeEquals(String code) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeEquals(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         EntityManager em = SolutionUnit.entityManager();
-        TypedQuery<SolutionUnit> q = em.createQuery("SELECT o FROM SolutionUnit AS o WHERE o.code = :code", SolutionUnit.class);
+        TypedQuery<SolutionUnit> q = em.createQuery("SELECT o FROM SolutionUnit AS o WHERE o.code = :code",
+                SolutionUnit.class);
         q.setParameter("code", code);
         return q;
     }
 
-	public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeEquals(String code, String sortFieldName, String sortOrder) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeEquals(String code, String sortFieldName,
+            String sortOrder) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         EntityManager em = SolutionUnit.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SolutionUnit AS o WHERE o.code = :code");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -220,8 +238,9 @@ public class SolutionUnit {
         return q;
     }
 
-	public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeLike(String code) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeLike(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         code = code.replace('*', '%');
         if (code.charAt(0) != '%') {
             code = "%" + code;
@@ -230,13 +249,16 @@ public class SolutionUnit {
             code = code + "%";
         }
         EntityManager em = SolutionUnit.entityManager();
-        TypedQuery<SolutionUnit> q = em.createQuery("SELECT o FROM SolutionUnit AS o WHERE LOWER(o.code) LIKE LOWER(:code)", SolutionUnit.class);
+        TypedQuery<SolutionUnit> q = em.createQuery(
+                "SELECT o FROM SolutionUnit AS o WHERE LOWER(o.code) LIKE LOWER(:code)", SolutionUnit.class);
         q.setParameter("code", code);
         return q;
     }
 
-	public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeLike(String code, String sortFieldName, String sortOrder) {
-        if (code == null || code.length() == 0) throw new IllegalArgumentException("The code argument is required");
+    public static TypedQuery<SolutionUnit> findSolutionUnitsByCodeLike(String code, String sortFieldName,
+            String sortOrder) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
         code = code.replace('*', '%');
         if (code.charAt(0) != '%') {
             code = "%" + code;
@@ -245,7 +267,8 @@ public class SolutionUnit {
             code = code + "%";
         }
         EntityManager em = SolutionUnit.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SolutionUnit AS o WHERE LOWER(o.code) LIKE LOWER(:code)");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM SolutionUnit AS o WHERE LOWER(o.code) LIKE LOWER(:code)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -257,16 +280,20 @@ public class SolutionUnit {
         return q;
     }
 
-	public static TypedQuery<SolutionUnit> findSolutionUnitsByNameEquals(String name) {
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static TypedQuery<SolutionUnit> findSolutionUnitsByNameEquals(String name) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = SolutionUnit.entityManager();
-        TypedQuery<SolutionUnit> q = em.createQuery("SELECT o FROM SolutionUnit AS o WHERE o.name = :name", SolutionUnit.class);
+        TypedQuery<SolutionUnit> q = em.createQuery("SELECT o FROM SolutionUnit AS o WHERE o.name = :name",
+                SolutionUnit.class);
         q.setParameter("name", name);
         return q;
     }
 
-	public static TypedQuery<SolutionUnit> findSolutionUnitsByNameEquals(String name, String sortFieldName, String sortOrder) {
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static TypedQuery<SolutionUnit> findSolutionUnitsByNameEquals(String name, String sortFieldName,
+            String sortOrder) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = SolutionUnit.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SolutionUnit AS o WHERE o.name = :name");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -280,33 +307,33 @@ public class SolutionUnit {
         return q;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static SolutionUnit fromJsonToSolutionUnit(String json) {
+    public static SolutionUnit fromJsonToSolutionUnit(String json) {
         return new JSONDeserializer<SolutionUnit>()
-        .use(null, SolutionUnit.class).deserialize(json);
+                .use(null, SolutionUnit.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<SolutionUnit> collection) {
+    public static String toJsonArray(Collection<SolutionUnit> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<SolutionUnit> collection, String[] fields) {
+    public static String toJsonArray(Collection<SolutionUnit> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<SolutionUnit> fromJsonArrayToSolutionUnits(String json) {
+    public static Collection<SolutionUnit> fromJsonArrayToSolutionUnits(String json) {
         return new JSONDeserializer<List<SolutionUnit>>()
-        .use("values", SolutionUnit.class).deserialize(json);
+                .use("values", SolutionUnit.class).deserialize(json);
     }
 }

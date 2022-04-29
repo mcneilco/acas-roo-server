@@ -38,6 +38,4 @@ public interface TreatmentGroupStateService {
 	Collection<TreatmentGroupStatePathDTO> getTreatmentGroupStates(
 			Collection<GenericStatePathRequest> genericRequests);
 
-	
-	
 }

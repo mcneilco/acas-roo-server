@@ -33,13 +33,13 @@ import flexjson.JSONSerializer;
 
 public class Salt {
 
-	@Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String molStructure;
 
     @Size(max = 255)
     private String name;
 
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String originalStructure;
 
     @Size(max = 100)
@@ -53,26 +53,29 @@ public class Salt {
     private int cdId;
 
     private Boolean ignore;
-    
+
     private int charge;
-    
 
     public static TypedQuery<Salt> findSaltsByAbbrevEquals(String abbrev) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
         EntityManager em = Salt.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Salt> criteria = criteriaBuilder.createQuery(Salt.class);
         Root<Salt> saltRoot = criteria.from(Salt.class);
         criteria.select(saltRoot);
-        Predicate predicate = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("abbrev")), abbrev.toUpperCase().trim());
+        Predicate predicate = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("abbrev")),
+                abbrev.toUpperCase().trim());
         criteria.where(criteriaBuilder.and(predicate));
         TypedQuery<Salt> q = em.createQuery(criteria);
         return q;
     }
 
     public static TypedQuery<Salt> findSaltsByAbbrevEqualsAndNameEquals(String abbrev, String name) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = Salt.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Salt> criteria = criteriaBuilder.createQuery(Salt.class);
@@ -80,8 +83,10 @@ public class Salt {
         criteria.select(saltRoot);
         Predicate[] predicates = new Predicate[0];
         List<Predicate> predicateList = new ArrayList<Predicate>();
-        Predicate predicate1 = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("abbrev")), abbrev.toUpperCase().trim());
-        Predicate predicate2 = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("name")), name.toUpperCase().trim());
+        Predicate predicate1 = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("abbrev")),
+                abbrev.toUpperCase().trim());
+        Predicate predicate2 = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("name")),
+                name.toUpperCase().trim());
         predicateList.add(predicate1);
         predicateList.add(predicate2);
         predicates = predicateList.toArray(predicates);
@@ -91,7 +96,8 @@ public class Salt {
     }
 
     public static TypedQuery<Salt> findSaltsByAbbrevLike(String abbrev) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
         abbrev = abbrev.replace('*', '%');
         if (abbrev.charAt(0) != '%') {
             abbrev = "%" + abbrev;
@@ -100,7 +106,8 @@ public class Salt {
             abbrev = abbrev + "%";
         }
         EntityManager em = Salt.entityManager();
-        TypedQuery<Salt> q = em.createQuery("SELECT o FROM Salt AS o WHERE LOWER(o.abbrev) LIKE LOWER(:abbrev)", Salt.class);
+        TypedQuery<Salt> q = em.createQuery("SELECT o FROM Salt AS o WHERE LOWER(o.abbrev) LIKE LOWER(:abbrev)",
+                Salt.class);
         q.setParameter("abbrev", abbrev);
         return q;
     }
@@ -112,64 +119,71 @@ public class Salt {
         return q;
     }
 
-	public static TypedQuery<Salt> findSaltsByNameEquals(String name) {
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static TypedQuery<Salt> findSaltsByNameEquals(String name) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = Salt.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Salt> criteria = criteriaBuilder.createQuery(Salt.class);
         Root<Salt> saltRoot = criteria.from(Salt.class);
         criteria.select(saltRoot);
-        Predicate predicate = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("name")), name.toUpperCase().trim());
+        Predicate predicate = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("name")),
+                name.toUpperCase().trim());
         criteria.where(criteriaBuilder.and(predicate));
         TypedQuery<Salt> q = em.createQuery(criteria);
         return q;
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public static Long countFindSaltsByAbbrevEquals(String abbrev) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
+    public static Long countFindSaltsByAbbrevEquals(String abbrev) {
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
         EntityManager em = Salt.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE o.abbrev = :abbrev", Long.class);
         q.setParameter("abbrev", abbrev);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindSaltsByAbbrevEqualsAndNameEquals(String abbrev, String name) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static Long countFindSaltsByAbbrevEqualsAndNameEquals(String abbrev, String name) {
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = Salt.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE o.abbrev = :abbrev  AND o.name = :name", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE o.abbrev = :abbrev  AND o.name = :name",
+                Long.class);
         q.setParameter("abbrev", abbrev);
         q.setParameter("name", name);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindSaltsByAbbrevLike(String abbrev) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
+    public static Long countFindSaltsByAbbrevLike(String abbrev) {
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
         abbrev = abbrev.replace('*', '%');
         if (abbrev.charAt(0) != '%') {
             abbrev = "%" + abbrev;
@@ -178,28 +192,31 @@ public class Salt {
             abbrev = abbrev + "%";
         }
         EntityManager em = Salt.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE LOWER(o.abbrev) LIKE LOWER(:abbrev)", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE LOWER(o.abbrev) LIKE LOWER(:abbrev)",
+                Long.class);
         q.setParameter("abbrev", abbrev);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindSaltsByCdId(int cdId) {
+    public static Long countFindSaltsByCdId(int cdId) {
         EntityManager em = Salt.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE o.cdId = :cdId", Long.class);
         q.setParameter("cdId", cdId);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindSaltsByNameEquals(String name) {
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static Long countFindSaltsByNameEquals(String name) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = Salt.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Salt AS o WHERE o.name = :name", Long.class);
         q.setParameter("name", name);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<Salt> findSaltsByAbbrevEquals(String abbrev, String sortFieldName, String sortOrder) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
+    public static TypedQuery<Salt> findSaltsByAbbrevEquals(String abbrev, String sortFieldName, String sortOrder) {
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
         EntityManager em = Salt.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Salt AS o WHERE o.abbrev = :abbrev");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -213,11 +230,15 @@ public class Salt {
         return q;
     }
 
-	public static TypedQuery<Salt> findSaltsByAbbrevEqualsAndNameEquals(String abbrev, String name, String sortFieldName, String sortOrder) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static TypedQuery<Salt> findSaltsByAbbrevEqualsAndNameEquals(String abbrev, String name,
+            String sortFieldName, String sortOrder) {
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = Salt.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Salt AS o WHERE o.abbrev = :abbrev  AND o.name = :name");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Salt AS o WHERE o.abbrev = :abbrev  AND o.name = :name");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -230,8 +251,9 @@ public class Salt {
         return q;
     }
 
-	public static TypedQuery<Salt> findSaltsByAbbrevLike(String abbrev, String sortFieldName, String sortOrder) {
-        if (abbrev == null || abbrev.length() == 0) throw new IllegalArgumentException("The abbrev argument is required");
+    public static TypedQuery<Salt> findSaltsByAbbrevLike(String abbrev, String sortFieldName, String sortOrder) {
+        if (abbrev == null || abbrev.length() == 0)
+            throw new IllegalArgumentException("The abbrev argument is required");
         abbrev = abbrev.replace('*', '%');
         if (abbrev.charAt(0) != '%') {
             abbrev = "%" + abbrev;
@@ -240,7 +262,8 @@ public class Salt {
             abbrev = abbrev + "%";
         }
         EntityManager em = Salt.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Salt AS o WHERE LOWER(o.abbrev) LIKE LOWER(:abbrev)");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Salt AS o WHERE LOWER(o.abbrev) LIKE LOWER(:abbrev)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -252,7 +275,7 @@ public class Salt {
         return q;
     }
 
-	public static TypedQuery<Salt> findSaltsByCdId(int cdId, String sortFieldName, String sortOrder) {
+    public static TypedQuery<Salt> findSaltsByCdId(int cdId, String sortFieldName, String sortOrder) {
         EntityManager em = Salt.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Salt AS o WHERE o.cdId = :cdId");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -266,8 +289,9 @@ public class Salt {
         return q;
     }
 
-	public static TypedQuery<Salt> findSaltsByNameEquals(String name, String sortFieldName, String sortOrder) {
-        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+    public static TypedQuery<Salt> findSaltsByNameEquals(String name, String sortFieldName, String sortOrder) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
         EntityManager em = Salt.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Salt AS o WHERE o.name = :name");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -281,30 +305,33 @@ public class Salt {
         return q;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("molStructure", "name", "originalStructure", "abbrev", "molWeight", "formula", "cdId", "ignore", "charge");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("molStructure", "name",
+            "originalStructure", "abbrev", "molWeight", "formula", "cdId", "ignore", "charge");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new Salt().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countSalts() {
+    public static long countSalts() {
         return entityManager().createQuery("SELECT COUNT(o) FROM Salt o", Long.class).getSingleResult();
     }
 
-	public static List<Salt> findAllSalts() {
+    public static List<Salt> findAllSalts() {
         return entityManager().createQuery("SELECT o FROM Salt o", Salt.class).getResultList();
     }
 
-	public static List<Salt> findAllSalts(String sortFieldName, String sortOrder) {
+    public static List<Salt> findAllSalts(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM Salt o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -315,16 +342,18 @@ public class Salt {
         return entityManager().createQuery(jpaQuery, Salt.class).getResultList();
     }
 
-	public static Salt findSalt(Long id) {
-        if (id == null) return null;
+    public static Salt findSalt(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(Salt.class, id);
     }
 
-	public static List<Salt> findSaltEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM Salt o", Salt.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<Salt> findSaltEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM Salt o", Salt.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	public static List<Salt> findSaltEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<Salt> findSaltEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM Salt o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -332,18 +361,21 @@ public class Salt {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, Salt.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, Salt.class).setFirstResult(firstResult).setMaxResults(maxResults)
+                .getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -352,125 +384,128 @@ public class Salt {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public Salt merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         Salt merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String getMolStructure() {
+    public String getMolStructure() {
         return this.molStructure;
     }
 
-	public void setMolStructure(String molStructure) {
+    public void setMolStructure(String molStructure) {
         this.molStructure = molStructure;
     }
 
-	public String getName() {
+    public String getName() {
         return this.name;
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-	public String getOriginalStructure() {
+    public String getOriginalStructure() {
         return this.originalStructure;
     }
 
-	public void setOriginalStructure(String originalStructure) {
+    public void setOriginalStructure(String originalStructure) {
         this.originalStructure = originalStructure;
     }
 
-	public String getAbbrev() {
+    public String getAbbrev() {
         return this.abbrev;
     }
 
-	public void setAbbrev(String abbrev) {
+    public void setAbbrev(String abbrev) {
         this.abbrev = abbrev;
     }
 
-	public Double getMolWeight() {
+    public Double getMolWeight() {
         return this.molWeight;
     }
 
-	public void setMolWeight(Double molWeight) {
+    public void setMolWeight(Double molWeight) {
         this.molWeight = molWeight;
     }
 
-	public String getFormula() {
+    public String getFormula() {
         return this.formula;
     }
 
-	public void setFormula(String formula) {
+    public void setFormula(String formula) {
         this.formula = formula;
     }
 
-	public int getCdId() {
+    public int getCdId() {
         return this.cdId;
     }
 
-	public void setCdId(int cdId) {
+    public void setCdId(int cdId) {
         this.cdId = cdId;
     }
 
-	public Boolean getIgnore() {
+    public Boolean getIgnore() {
         return this.ignore;
     }
 
-	public void setIgnore(Boolean ignore) {
+    public void setIgnore(Boolean ignore) {
         this.ignore = ignore;
     }
 
-	public int getCharge() {
+    public int getCharge() {
         return this.charge;
     }
 
-	public void setCharge(int charge) {
+    public void setCharge(int charge) {
         this.charge = charge;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static Salt fromJsonToSalt(String json) {
+    public static Salt fromJsonToSalt(String json) {
         return new JSONDeserializer<Salt>()
-        .use(null, Salt.class).deserialize(json);
+                .use(null, Salt.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<Salt> collection) {
+    public static String toJsonArray(Collection<Salt> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<Salt> collection, String[] fields) {
+    public static String toJsonArray(Collection<Salt> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<Salt> fromJsonArrayToSalts(String json) {
+    public static Collection<Salt> fromJsonArrayToSalts(String json) {
         return new JSONDeserializer<List<Salt>>()
-        .use("values", Salt.class).deserialize(json);
+                .use("values", Salt.class).deserialize(json);
     }
 }

@@ -34,52 +34,55 @@ public class ProtocolType {
     @Size(max = 128)
     private String typeName;
 
-	@Id
+    @Id
     @SequenceGenerator(name = "protocolTypeGen", sequenceName = "PROTOCOL_TYPE_PKSEQ")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "protocolTypeGen")
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName", "id", "version");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName", "id",
+            "version");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new ProtocolType().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countProtocolTypes() {
+    public static long countProtocolTypes() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ProtocolType o", Long.class).getSingleResult();
     }
 
-	public static List<ProtocolType> findAllProtocolTypes() {
+    public static List<ProtocolType> findAllProtocolTypes() {
         return entityManager().createQuery("SELECT o FROM ProtocolType o", ProtocolType.class).getResultList();
     }
 
-	public static List<ProtocolType> findAllProtocolTypes(String sortFieldName, String sortOrder) {
+    public static List<ProtocolType> findAllProtocolTypes(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ProtocolType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -90,16 +93,19 @@ public class ProtocolType {
         return entityManager().createQuery(jpaQuery, ProtocolType.class).getResultList();
     }
 
-	public static ProtocolType findProtocolType(Long id) {
-        if (id == null) return null;
+    public static ProtocolType findProtocolType(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(ProtocolType.class, id);
     }
 
-	public static List<ProtocolType> findProtocolTypeEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM ProtocolType o", ProtocolType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<ProtocolType> findProtocolTypeEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ProtocolType o", ProtocolType.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<ProtocolType> findProtocolTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<ProtocolType> findProtocolTypeEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM ProtocolType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -107,18 +113,21 @@ public class ProtocolType {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, ProtocolType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, ProtocolType.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -127,48 +136,57 @@ public class ProtocolType {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public ProtocolType merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         ProtocolType merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static Long countFindProtocolTypesByTypeNameEquals(String typeName) {
-        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+    public static Long countFindProtocolTypesByTypeNameEquals(String typeName) {
+        if (typeName == null || typeName.length() == 0)
+            throw new IllegalArgumentException("The typeName argument is required");
         EntityManager em = ProtocolType.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolType AS o WHERE o.typeName = :typeName", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolType AS o WHERE o.typeName = :typeName",
+                Long.class);
         q.setParameter("typeName", typeName);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<ProtocolType> findProtocolTypesByTypeNameEquals(String typeName) {
-        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+    public static TypedQuery<ProtocolType> findProtocolTypesByTypeNameEquals(String typeName) {
+        if (typeName == null || typeName.length() == 0)
+            throw new IllegalArgumentException("The typeName argument is required");
         EntityManager em = ProtocolType.entityManager();
-        TypedQuery<ProtocolType> q = em.createQuery("SELECT o FROM ProtocolType AS o WHERE o.typeName = :typeName", ProtocolType.class);
+        TypedQuery<ProtocolType> q = em.createQuery("SELECT o FROM ProtocolType AS o WHERE o.typeName = :typeName",
+                ProtocolType.class);
         q.setParameter("typeName", typeName);
         return q;
     }
 
-	public static TypedQuery<ProtocolType> findProtocolTypesByTypeNameEquals(String typeName, String sortFieldName, String sortOrder) {
-        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+    public static TypedQuery<ProtocolType> findProtocolTypesByTypeNameEquals(String typeName, String sortFieldName,
+            String sortOrder) {
+        if (typeName == null || typeName.length() == 0)
+            throw new IllegalArgumentException("The typeName argument is required");
         EntityManager em = ProtocolType.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ProtocolType AS o WHERE o.typeName = :typeName");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -182,41 +200,41 @@ public class ProtocolType {
         return q;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static ProtocolType fromJsonToProtocolType(String json) {
+    public static ProtocolType fromJsonToProtocolType(String json) {
         return new JSONDeserializer<ProtocolType>()
-        .use(null, ProtocolType.class).deserialize(json);
+                .use(null, ProtocolType.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<ProtocolType> collection) {
+    public static String toJsonArray(Collection<ProtocolType> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<ProtocolType> collection, String[] fields) {
+    public static String toJsonArray(Collection<ProtocolType> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<ProtocolType> fromJsonArrayToProtocolTypes(String json) {
+    public static Collection<ProtocolType> fromJsonArrayToProtocolTypes(String json) {
         return new JSONDeserializer<List<ProtocolType>>()
-        .use("values", ProtocolType.class).deserialize(json);
+                .use("values", ProtocolType.class).deserialize(json);
     }
 
-	public String getTypeName() {
+    public String getTypeName() {
         return this.typeName;
     }
 
-	public void setTypeName(String typeName) {
+    public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
 }

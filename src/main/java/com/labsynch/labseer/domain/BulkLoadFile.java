@@ -33,58 +33,67 @@ public class BulkLoadFile {
     private String fileName;
 
     private int numberOfMols;
-    
-    private int fileSize;
-    
-	@Column(columnDefinition="text")
-    private String jsonTemplate;
-	
-	@NotNull
-	private String recordedBy;
-	
-	private Date fileDate;
-	
-	@NotNull
-	private Date recordedDate;
-    
-	public BulkLoadFile(){
-	}
-	
-	public BulkLoadFile(String fileName, int numberOfMols, int fileSize, String jsonTemplate, String recordedBy, Date recordedDate){
-		this.fileName = fileName;
-		this.numberOfMols = numberOfMols;
-		this.fileSize = fileSize;
-		this.jsonTemplate = jsonTemplate;
-		this.recordedBy = recordedBy;
-		this.recordedDate = recordedDate;
-	}
 
-	public static Long countFindBulkLoadFilesByFileNameEquals(String fileName) {
-        if (fileName == null || fileName.length() == 0) throw new IllegalArgumentException("The fileName argument is required");
+    private int fileSize;
+
+    @Column(columnDefinition = "text")
+    private String jsonTemplate;
+
+    @NotNull
+    private String recordedBy;
+
+    private Date fileDate;
+
+    @NotNull
+    private Date recordedDate;
+
+    public BulkLoadFile() {
+    }
+
+    public BulkLoadFile(String fileName, int numberOfMols, int fileSize, String jsonTemplate, String recordedBy,
+            Date recordedDate) {
+        this.fileName = fileName;
+        this.numberOfMols = numberOfMols;
+        this.fileSize = fileSize;
+        this.jsonTemplate = jsonTemplate;
+        this.recordedBy = recordedBy;
+        this.recordedDate = recordedDate;
+    }
+
+    public static Long countFindBulkLoadFilesByFileNameEquals(String fileName) {
+        if (fileName == null || fileName.length() == 0)
+            throw new IllegalArgumentException("The fileName argument is required");
         EntityManager em = BulkLoadFile.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM BulkLoadFile AS o WHERE o.fileName = :fileName", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM BulkLoadFile AS o WHERE o.fileName = :fileName",
+                Long.class);
         q.setParameter("fileName", fileName);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindBulkLoadFilesByRecordedByEquals(String recordedBy) {
-        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+    public static Long countFindBulkLoadFilesByRecordedByEquals(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0)
+            throw new IllegalArgumentException("The recordedBy argument is required");
         EntityManager em = BulkLoadFile.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM BulkLoadFile AS o WHERE o.recordedBy = :recordedBy", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM BulkLoadFile AS o WHERE o.recordedBy = :recordedBy",
+                Long.class);
         q.setParameter("recordedBy", recordedBy);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<BulkLoadFile> findBulkLoadFilesByFileNameEquals(String fileName) {
-        if (fileName == null || fileName.length() == 0) throw new IllegalArgumentException("The fileName argument is required");
+    public static TypedQuery<BulkLoadFile> findBulkLoadFilesByFileNameEquals(String fileName) {
+        if (fileName == null || fileName.length() == 0)
+            throw new IllegalArgumentException("The fileName argument is required");
         EntityManager em = BulkLoadFile.entityManager();
-        TypedQuery<BulkLoadFile> q = em.createQuery("SELECT o FROM BulkLoadFile AS o WHERE o.fileName = :fileName", BulkLoadFile.class);
+        TypedQuery<BulkLoadFile> q = em.createQuery("SELECT o FROM BulkLoadFile AS o WHERE o.fileName = :fileName",
+                BulkLoadFile.class);
         q.setParameter("fileName", fileName);
         return q;
     }
 
-	public static TypedQuery<BulkLoadFile> findBulkLoadFilesByFileNameEquals(String fileName, String sortFieldName, String sortOrder) {
-        if (fileName == null || fileName.length() == 0) throw new IllegalArgumentException("The fileName argument is required");
+    public static TypedQuery<BulkLoadFile> findBulkLoadFilesByFileNameEquals(String fileName, String sortFieldName,
+            String sortOrder) {
+        if (fileName == null || fileName.length() == 0)
+            throw new IllegalArgumentException("The fileName argument is required");
         EntityManager em = BulkLoadFile.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM BulkLoadFile AS o WHERE o.fileName = :fileName");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -98,18 +107,23 @@ public class BulkLoadFile {
         return q;
     }
 
-	public static TypedQuery<BulkLoadFile> findBulkLoadFilesByRecordedByEquals(String recordedBy) {
-        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+    public static TypedQuery<BulkLoadFile> findBulkLoadFilesByRecordedByEquals(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0)
+            throw new IllegalArgumentException("The recordedBy argument is required");
         EntityManager em = BulkLoadFile.entityManager();
-        TypedQuery<BulkLoadFile> q = em.createQuery("SELECT o FROM BulkLoadFile AS o WHERE o.recordedBy = :recordedBy", BulkLoadFile.class);
+        TypedQuery<BulkLoadFile> q = em.createQuery("SELECT o FROM BulkLoadFile AS o WHERE o.recordedBy = :recordedBy",
+                BulkLoadFile.class);
         q.setParameter("recordedBy", recordedBy);
         return q;
     }
 
-	public static TypedQuery<BulkLoadFile> findBulkLoadFilesByRecordedByEquals(String recordedBy, String sortFieldName, String sortOrder) {
-        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+    public static TypedQuery<BulkLoadFile> findBulkLoadFilesByRecordedByEquals(String recordedBy, String sortFieldName,
+            String sortOrder) {
+        if (recordedBy == null || recordedBy.length() == 0)
+            throw new IllegalArgumentException("The recordedBy argument is required");
         EntityManager em = BulkLoadFile.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM BulkLoadFile AS o WHERE o.recordedBy = :recordedBy");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM BulkLoadFile AS o WHERE o.recordedBy = :recordedBy");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -121,26 +135,29 @@ public class BulkLoadFile {
         return q;
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("fileName", "numberOfMols", "fileSize", "jsonTemplate", "recordedBy", "fileDate", "recordedDate");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("fileName", "numberOfMols",
+            "fileSize", "jsonTemplate", "recordedBy", "fileDate", "recordedDate");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new BulkLoadFile().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countBulkLoadFiles() {
+    public static long countBulkLoadFiles() {
         return entityManager().createQuery("SELECT COUNT(o) FROM BulkLoadFile o", Long.class).getSingleResult();
     }
 
-	public static List<BulkLoadFile> findAllBulkLoadFiles() {
+    public static List<BulkLoadFile> findAllBulkLoadFiles() {
         return entityManager().createQuery("SELECT o FROM BulkLoadFile o", BulkLoadFile.class).getResultList();
     }
 
-	public static List<BulkLoadFile> findAllBulkLoadFiles(String sortFieldName, String sortOrder) {
+    public static List<BulkLoadFile> findAllBulkLoadFiles(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM BulkLoadFile o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -151,16 +168,19 @@ public class BulkLoadFile {
         return entityManager().createQuery(jpaQuery, BulkLoadFile.class).getResultList();
     }
 
-	public static BulkLoadFile findBulkLoadFile(Long id) {
-        if (id == null) return null;
+    public static BulkLoadFile findBulkLoadFile(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(BulkLoadFile.class, id);
     }
 
-	public static List<BulkLoadFile> findBulkLoadFileEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM BulkLoadFile o", BulkLoadFile.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<BulkLoadFile> findBulkLoadFileEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM BulkLoadFile o", BulkLoadFile.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<BulkLoadFile> findBulkLoadFileEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<BulkLoadFile> findBulkLoadFileEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM BulkLoadFile o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -168,18 +188,21 @@ public class BulkLoadFile {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, BulkLoadFile.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, BulkLoadFile.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -188,138 +211,141 @@ public class BulkLoadFile {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public BulkLoadFile merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         BulkLoadFile merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static BulkLoadFile fromJsonToBulkLoadFile(String json) {
+    public static BulkLoadFile fromJsonToBulkLoadFile(String json) {
         return new JSONDeserializer<BulkLoadFile>()
-        .use(null, BulkLoadFile.class).deserialize(json);
+                .use(null, BulkLoadFile.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<BulkLoadFile> collection) {
+    public static String toJsonArray(Collection<BulkLoadFile> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<BulkLoadFile> collection, String[] fields) {
+    public static String toJsonArray(Collection<BulkLoadFile> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<BulkLoadFile> fromJsonArrayToBulkLoadFiles(String json) {
+    public static Collection<BulkLoadFile> fromJsonArrayToBulkLoadFiles(String json) {
         return new JSONDeserializer<List<BulkLoadFile>>()
-        .use("values", BulkLoadFile.class).deserialize(json);
+                .use("values", BulkLoadFile.class).deserialize(json);
     }
 
-	public String getFileName() {
+    public String getFileName() {
         return this.fileName;
     }
 
-	public void setFileName(String fileName) {
+    public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-	public int getNumberOfMols() {
+    public int getNumberOfMols() {
         return this.numberOfMols;
     }
 
-	public void setNumberOfMols(int numberOfMols) {
+    public void setNumberOfMols(int numberOfMols) {
         this.numberOfMols = numberOfMols;
     }
 
-	public int getFileSize() {
+    public int getFileSize() {
         return this.fileSize;
     }
 
-	public void setFileSize(int fileSize) {
+    public void setFileSize(int fileSize) {
         this.fileSize = fileSize;
     }
 
-	public String getJsonTemplate() {
+    public String getJsonTemplate() {
         return this.jsonTemplate;
     }
 
-	public void setJsonTemplate(String jsonTemplate) {
+    public void setJsonTemplate(String jsonTemplate) {
         this.jsonTemplate = jsonTemplate;
     }
 
-	public String getRecordedBy() {
+    public String getRecordedBy() {
         return this.recordedBy;
     }
 
-	public void setRecordedBy(String recordedBy) {
+    public void setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
     }
 
-	public Date getFileDate() {
+    public Date getFileDate() {
         return this.fileDate;
     }
 
-	public void setFileDate(Date fileDate) {
+    public void setFileDate(Date fileDate) {
         this.fileDate = fileDate;
     }
 
-	public Date getRecordedDate() {
+    public Date getRecordedDate() {
         return this.recordedDate;
     }
 
-	public void setRecordedDate(Date recordedDate) {
+    public void setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

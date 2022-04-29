@@ -21,10 +21,10 @@ public interface ProtocolService {
 
 	Protocol updateProtocol(Protocol protocol) throws UniqueNameException;
 
-//	Collection<Protocol> findProtocolsByMetadataJson(String json);
+	// Collection<Protocol> findProtocolsByMetadataJson(String json);
 
 	Collection<Protocol> findProtocolsByGenericMetaDataSearch(String query);
-	
+
 	Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy);
 
 	Set<Protocol> findProtocolsByRequestMetadata(
@@ -34,12 +34,12 @@ public interface ProtocolService {
 			String queryString, String userName);
 
 	Collection<Protocol> findProtocolsByGenericMetaDataSearch(
-		String queryString, List<String> projects);
-		
+			String queryString, List<String> projects);
+
 	Collection<ProtocolErrorMessageDTO> findProtocolsByCodeNames(
 			List<String> codeNames);
-	
+
 	Collection<String> getProtocolCodesByDateValueComparison(
 			DateValueComparisonRequest requestDTO) throws Exception;
-	
+
 }

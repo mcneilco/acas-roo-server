@@ -28,58 +28,59 @@ public class LotAliasType {
 
     @Size(max = 255)
     private String typeName;
-        
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static LotAliasType fromJsonToLotAliasType(String json) {
+    public static LotAliasType fromJsonToLotAliasType(String json) {
         return new JSONDeserializer<LotAliasType>()
-        .use(null, LotAliasType.class).deserialize(json);
+                .use(null, LotAliasType.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<LotAliasType> collection) {
+    public static String toJsonArray(Collection<LotAliasType> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<LotAliasType> collection, String[] fields) {
+    public static String toJsonArray(Collection<LotAliasType> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<LotAliasType> fromJsonArrayToLotAliasTypes(String json) {
+    public static Collection<LotAliasType> fromJsonArrayToLotAliasTypes(String json) {
         return new JSONDeserializer<List<LotAliasType>>()
-        .use("values", LotAliasType.class).deserialize(json);
+                .use("values", LotAliasType.class).deserialize(json);
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new LotAliasType().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countLotAliasTypes() {
+    public static long countLotAliasTypes() {
         return entityManager().createQuery("SELECT COUNT(o) FROM LotAliasType o", Long.class).getSingleResult();
     }
 
-	public static List<LotAliasType> findAllLotAliasTypes() {
+    public static List<LotAliasType> findAllLotAliasTypes() {
         return entityManager().createQuery("SELECT o FROM LotAliasType o", LotAliasType.class).getResultList();
     }
 
-	public static List<LotAliasType> findAllLotAliasTypes(String sortFieldName, String sortOrder) {
+    public static List<LotAliasType> findAllLotAliasTypes(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM LotAliasType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -90,16 +91,19 @@ public class LotAliasType {
         return entityManager().createQuery(jpaQuery, LotAliasType.class).getResultList();
     }
 
-	public static LotAliasType findLotAliasType(Long id) {
-        if (id == null) return null;
+    public static LotAliasType findLotAliasType(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(LotAliasType.class, id);
     }
 
-	public static List<LotAliasType> findLotAliasTypeEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM LotAliasType o", LotAliasType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<LotAliasType> findLotAliasTypeEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM LotAliasType o", LotAliasType.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<LotAliasType> findLotAliasTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<LotAliasType> findLotAliasTypeEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM LotAliasType o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -107,18 +111,21 @@ public class LotAliasType {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, LotAliasType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, LotAliasType.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -127,60 +134,63 @@ public class LotAliasType {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public LotAliasType merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         LotAliasType merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String getTypeName() {
+    public String getTypeName() {
         return this.typeName;
     }
 
-	public void setTypeName(String typeName) {
+    public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

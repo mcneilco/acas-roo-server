@@ -18,55 +18,55 @@ import org.springframework.transaction.annotation.Transactional;
 @Entity
 @Configurable
 public class LsSeqProtocol {
-	
-	
 
-	@Id
+    @Id
     @SequenceGenerator(name = "lsSeqProtocolGen", sequenceName = "LSSEQ_PROT_PKSEQ")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqProtocolGen")
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new LsSeqProtocol().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countLsSeqProtocols() {
+    public static long countLsSeqProtocols() {
         return entityManager().createQuery("SELECT COUNT(o) FROM LsSeqProtocol o", Long.class).getSingleResult();
     }
 
-	public static List<LsSeqProtocol> findAllLsSeqProtocols() {
+    public static List<LsSeqProtocol> findAllLsSeqProtocols() {
         return entityManager().createQuery("SELECT o FROM LsSeqProtocol o", LsSeqProtocol.class).getResultList();
     }
 
-	public static List<LsSeqProtocol> findAllLsSeqProtocols(String sortFieldName, String sortOrder) {
+    public static List<LsSeqProtocol> findAllLsSeqProtocols(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM LsSeqProtocol o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -77,16 +77,19 @@ public class LsSeqProtocol {
         return entityManager().createQuery(jpaQuery, LsSeqProtocol.class).getResultList();
     }
 
-	public static LsSeqProtocol findLsSeqProtocol(Long id) {
-        if (id == null) return null;
+    public static LsSeqProtocol findLsSeqProtocol(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(LsSeqProtocol.class, id);
     }
 
-	public static List<LsSeqProtocol> findLsSeqProtocolEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM LsSeqProtocol o", LsSeqProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<LsSeqProtocol> findLsSeqProtocolEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM LsSeqProtocol o", LsSeqProtocol.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<LsSeqProtocol> findLsSeqProtocolEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<LsSeqProtocol> findLsSeqProtocolEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM LsSeqProtocol o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -94,18 +97,21 @@ public class LsSeqProtocol {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, LsSeqProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, LsSeqProtocol.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -114,21 +120,24 @@ public class LsSeqProtocol {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public LsSeqProtocol merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         LsSeqProtocol merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;

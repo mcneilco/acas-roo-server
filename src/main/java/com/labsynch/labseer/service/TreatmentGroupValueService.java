@@ -12,15 +12,18 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TreatmentGroupValueService {
 
-	public List<TreatmentGroupValue> getTreatmentGroupValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, 
+	public List<TreatmentGroupValue> getTreatmentGroupValuesByExperimentIdAndStateTypeKind(Long experimentId,
+			String stateType,
 			String stateKind);
-	
-	public List<TreatmentGroupValue> getTreatmentGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+
+	public List<TreatmentGroupValue> getTreatmentGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(
+			Long experimentId, String stateType,
 			String stateKind, String valueType, String valueKind);
 
 	public String getCsvList(List<TreatmentGroupValue> treatmentGroupValues);
-	
-	public List<TreatmentGroupValue> getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
+
+	public List<TreatmentGroupValue> getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId,
+			String stateType, String stateKind);
 
 	public TreatmentGroupValue updateTreatmentGroupValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
@@ -44,5 +47,5 @@ public interface TreatmentGroupValueService {
 
 	public Collection<TreatmentGroupValuePathDTO> getTreatmentGroupValues(
 			Collection<GenericValuePathRequest> genericRequests);
-	
+
 }

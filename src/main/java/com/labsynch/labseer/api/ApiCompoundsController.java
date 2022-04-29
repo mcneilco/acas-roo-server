@@ -1,6 +1,5 @@
 package com.labsynch.labseer.api;
 
-
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 
 import org.slf4j.Logger;
@@ -18,17 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("api/v1/compounds")
 @Transactional
 public class ApiCompoundsController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ApiCompoundsController.class);
-	
+
 	@Transactional
-    @RequestMapping(value = "/checkBatchDependencies", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> checkBatchDependencies(@RequestBody CmpdRegBatchCodeDTO batchDTO) {
+	@RequestMapping(value = "/checkBatchDependencies", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> checkBatchDependencies(@RequestBody CmpdRegBatchCodeDTO batchDTO) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		batchDTO.checkForDependentData();
 		return new ResponseEntity<String>(batchDTO.toJson(), headers, HttpStatus.OK);
 	}
-	
-	
+
 }

@@ -25,13 +25,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("api/v1/authorroles")
 public class ApiAuthorRoleController {
-	
-	@Autowired
-    private AuthorRoleService authorRoleService;
-	
-	private static final Logger logger = LoggerFactory.getLogger(ApiAuthorRoleController.class);
 
-	
+    @Autowired
+    private AuthorRoleService authorRoleService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiAuthorRoleController.class);
+
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
@@ -52,7 +51,7 @@ public class ApiAuthorRoleController {
         List<AuthorRole> result = AuthorRole.findAllAuthorRoles();
         return new ResponseEntity<String>(AuthorRole.toJsonArray(result), headers, HttpStatus.OK);
     }
-    
+
     @RequestMapping(value = "/saveRoles", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromDTOs(@RequestBody String json) {
         Collection<AuthorRoleDTO> authorRoleDTOs = AuthorRoleDTO.fromJsonArrayToAuthorRoes(json);
@@ -101,7 +100,7 @@ public class ApiAuthorRoleController {
         }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    
+
     @RequestMapping(value = "/deleteRoles", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> deleteFromDTOs(@RequestBody String json) {
         Collection<AuthorRoleDTO> authorRoleDTOs = AuthorRoleDTO.fromJsonArrayToAuthorRoes(json);
@@ -125,9 +124,12 @@ public class ApiAuthorRoleController {
 
     @RequestMapping(params = "find=ByUserEntry", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> jsonFindAuthorRolesByUserEntry(@RequestParam("userEntry") Author userEntry) {
+    public ResponseEntity<java.lang.String> jsonFindAuthorRolesByUserEntry(
+            @RequestParam("userEntry") Author userEntry) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(AuthorRole.toJsonArray(AuthorRole.findAuthorRolesByUserEntry(userEntry).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                AuthorRole.toJsonArray(AuthorRole.findAuthorRolesByUserEntry(userEntry).getResultList()), headers,
+                HttpStatus.OK);
     }
 }

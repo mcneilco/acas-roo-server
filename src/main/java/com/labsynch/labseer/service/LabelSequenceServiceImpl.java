@@ -1,6 +1,5 @@
 package com.labsynch.labseer.service;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @Transactional
 public class LabelSequenceServiceImpl implements LabelSequenceService {
@@ -29,16 +27,20 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 	public Collection<LabelSequence> saveLabelSequenceArray(
 			Collection<LabelSequence> labelSequences) {
 		Collection<LabelSequence> savedLabelSequences = new HashSet<LabelSequence>();
-		for(LabelSequence labelSequence : labelSequences){
+		for (LabelSequence labelSequence : labelSequences) {
 			LabelSequence savedLabelSequence;
-			try{
-				savedLabelSequence = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind()).getSingleResult();
-			}catch(NoResultException e){
+			try {
+				savedLabelSequence = LabelSequence
+						.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(
+								labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind())
+						.getSingleResult();
+			} catch (NoResultException e) {
 				savedLabelSequence = labelSequence;
 				savedLabelSequence.save();
 			}
-			if (!savedLabelSequence.getLabelPrefix().equals(labelSequence.getLabelPrefix())){
-				logger.info("Changing LabelSequence labelPrefix from: " + savedLabelSequence.getLabelPrefix() + " to: "+ labelSequence.getLabelPrefix());
+			if (!savedLabelSequence.getLabelPrefix().equals(labelSequence.getLabelPrefix())) {
+				logger.info("Changing LabelSequence labelPrefix from: " + savedLabelSequence.getLabelPrefix() + " to: "
+						+ labelSequence.getLabelPrefix());
 				savedLabelSequence.setLabelPrefix(labelSequence.getLabelPrefix());
 				savedLabelSequence.merge();
 			}
@@ -53,12 +55,15 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 		List<LabelSequence> allLabelSequences;
 		List<LabelSequence> authorizedLabelSequences = new ArrayList<LabelSequence>();
 		if (thingTypeAndKind != null && labelTypeAndKind != null) {
-			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
-		}else if (thingTypeAndKind != null) {
-			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEquals(thingTypeAndKind).getResultList();
-		}else if (labelTypeAndKind != null) {
-			allLabelSequences = LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(labelTypeAndKind).getResultList();
-		}else {
+			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(
+					thingTypeAndKind, labelTypeAndKind).getResultList();
+		} else if (thingTypeAndKind != null) {
+			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEquals(thingTypeAndKind)
+					.getResultList();
+		} else if (labelTypeAndKind != null) {
+			allLabelSequences = LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(labelTypeAndKind)
+					.getResultList();
+		} else {
 			allLabelSequences = LabelSequence.findAllLabelSequences();
 		}
 		List<LsRole> authorLsRoles = new ArrayList<LsRole>();
@@ -72,31 +77,33 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 				for (LabelSequenceRole labelSeqRole : labelSequence.getLabelSequenceRoles()) {
 					labelSeqRoles.add(labelSeqRole.getRoleEntry());
 				}
-				if (anyRolesMatch(authorLsRoles, labelSeqRoles)){
+				if (anyRolesMatch(authorLsRoles, labelSeqRoles)) {
 					authorizedLabelSequences.add(labelSequence);
 				}
-			}else {
+			} else {
 				authorizedLabelSequences.add(labelSequence);
 			}
 		}
-		
+
 		return authorizedLabelSequences;
 	}
-	
+
 	public static boolean containsLsRole(Collection<LsRole> list, LsRole queryRole) {
 		for (LsRole role : list) {
-			if (role != null && queryRole != null && role.getLsType().equals(queryRole.getLsType()) && role.getLsKind().equals(queryRole.getLsKind()) && role.getRoleName().equals(queryRole.getRoleName())) return true;
-		}
-		return false;
-	}
-	
-	public static boolean anyRolesMatch(Collection<LsRole> roleList, Collection<LsRole> queryRoleList) {
-		for (LsRole role : queryRoleList) {
-			if (containsLsRole(roleList, role)) return true;
+			if (role != null && queryRole != null && role.getLsType().equals(queryRole.getLsType())
+					&& role.getLsKind().equals(queryRole.getLsKind())
+					&& role.getRoleName().equals(queryRole.getRoleName()))
+				return true;
 		}
 		return false;
 	}
 
-	
+	public static boolean anyRolesMatch(Collection<LsRole> roleList, Collection<LsRole> queryRoleList) {
+		for (LsRole role : queryRoleList) {
+			if (containsLsRole(roleList, role))
+				return true;
+		}
+		return false;
+	}
 
 }

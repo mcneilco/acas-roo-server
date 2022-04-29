@@ -25,83 +25,103 @@ public class ItxSubjectContainerValueIntegrationTest {
     public void testMarkerMethod() {
     }
 
-	@Autowired
+    @Autowired
     ItxSubjectContainerValueDataOnDemand dod;
 
-	@Test
+    @Test
     public void testCountItxSubjectContainerValues() {
-        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", dod.getRandomItxSubjectContainerValue());
+        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly",
+                dod.getRandomItxSubjectContainerValue());
         long count = ItxSubjectContainerValue.countItxSubjectContainerValues();
-        Assert.assertTrue("Counter for 'ItxSubjectContainerValue' incorrectly reported there were no entries", count > 0);
+        Assert.assertTrue("Counter for 'ItxSubjectContainerValue' incorrectly reported there were no entries",
+                count > 0);
     }
 
-	@Test
+    @Test
     public void testFindItxSubjectContainerValue() {
         ItxSubjectContainerValue obj = dod.getRandomItxSubjectContainerValue();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to provide an identifier", id);
         obj = ItxSubjectContainerValue.findItxSubjectContainerValue(id);
-        Assert.assertNotNull("Find method for 'ItxSubjectContainerValue' illegally returned null for id '" + id + "'", obj);
-        Assert.assertEquals("Find method for 'ItxSubjectContainerValue' returned the incorrect identifier", id, obj.getId());
+        Assert.assertNotNull("Find method for 'ItxSubjectContainerValue' illegally returned null for id '" + id + "'",
+                obj);
+        Assert.assertEquals("Find method for 'ItxSubjectContainerValue' returned the incorrect identifier", id,
+                obj.getId());
     }
 
-	@Test
+    @Test
     public void testFindAllItxSubjectContainerValues() {
-        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", dod.getRandomItxSubjectContainerValue());
+        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly",
+                dod.getRandomItxSubjectContainerValue());
         long count = ItxSubjectContainerValue.countItxSubjectContainerValues();
-        Assert.assertTrue("Too expensive to perform a find all test for 'ItxSubjectContainerValue', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
+        Assert.assertTrue("Too expensive to perform a find all test for 'ItxSubjectContainerValue', as there are "
+                + count
+                + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test",
+                count < 250);
         List<ItxSubjectContainerValue> result = ItxSubjectContainerValue.findAllItxSubjectContainerValues();
         Assert.assertNotNull("Find all method for 'ItxSubjectContainerValue' illegally returned null", result);
-        Assert.assertTrue("Find all method for 'ItxSubjectContainerValue' failed to return any data", result.size() > 0);
+        Assert.assertTrue("Find all method for 'ItxSubjectContainerValue' failed to return any data",
+                result.size() > 0);
     }
 
-	@Test
+    @Test
     public void testFindItxSubjectContainerValueEntries() {
-        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", dod.getRandomItxSubjectContainerValue());
+        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly",
+                dod.getRandomItxSubjectContainerValue());
         long count = ItxSubjectContainerValue.countItxSubjectContainerValues();
-        if (count > 20) count = 20;
+        if (count > 20)
+            count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
-        List<ItxSubjectContainerValue> result = ItxSubjectContainerValue.findItxSubjectContainerValueEntries(firstResult, maxResults);
+        List<ItxSubjectContainerValue> result = ItxSubjectContainerValue
+                .findItxSubjectContainerValueEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'ItxSubjectContainerValue' illegally returned null", result);
-        Assert.assertEquals("Find entries method for 'ItxSubjectContainerValue' returned an incorrect number of entries", count, result.size());
+        Assert.assertEquals(
+                "Find entries method for 'ItxSubjectContainerValue' returned an incorrect number of entries", count,
+                result.size());
     }
 
-	@Test
+    @Test
     public void testFlush() {
         ItxSubjectContainerValue obj = dod.getRandomItxSubjectContainerValue();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to provide an identifier", id);
         obj = ItxSubjectContainerValue.findItxSubjectContainerValue(id);
-        Assert.assertNotNull("Find method for 'ItxSubjectContainerValue' illegally returned null for id '" + id + "'", obj);
-        boolean modified =  dod.modifyItxSubjectContainerValue(obj);
+        Assert.assertNotNull("Find method for 'ItxSubjectContainerValue' illegally returned null for id '" + id + "'",
+                obj);
+        boolean modified = dod.modifyItxSubjectContainerValue(obj);
         Integer currentVersion = obj.getVersion();
         obj.flush();
-        Assert.assertTrue("Version for 'ItxSubjectContainerValue' failed to increment on flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
+        Assert.assertTrue("Version for 'ItxSubjectContainerValue' failed to increment on flush directive",
+                (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
 
-	@Test
+    @Test
     public void testMergeUpdate() {
         ItxSubjectContainerValue obj = dod.getRandomItxSubjectContainerValue();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to provide an identifier", id);
         obj = ItxSubjectContainerValue.findItxSubjectContainerValue(id);
-        boolean modified =  dod.modifyItxSubjectContainerValue(obj);
+        boolean modified = dod.modifyItxSubjectContainerValue(obj);
         Integer currentVersion = obj.getVersion();
-        ItxSubjectContainerValue merged = (ItxSubjectContainerValue)obj.merge();
+        ItxSubjectContainerValue merged = (ItxSubjectContainerValue) obj.merge();
         obj.flush();
-        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
-        Assert.assertTrue("Version for 'ItxSubjectContainerValue' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
+        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(),
+                id);
+        Assert.assertTrue("Version for 'ItxSubjectContainerValue' failed to increment on merge and flush directive",
+                (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
 
-	@Test
+    @Test
     public void testPersist() {
-        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", dod.getRandomItxSubjectContainerValue());
+        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly",
+                dod.getRandomItxSubjectContainerValue());
         ItxSubjectContainerValue obj = dod.getNewTransientItxSubjectContainerValue(Integer.MAX_VALUE);
-        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to provide a new transient entity", obj);
+        Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to provide a new transient entity",
+                obj);
         Assert.assertNull("Expected 'ItxSubjectContainerValue' identifier to be null", obj.getId());
         try {
             obj.persist();
@@ -109,7 +129,9 @@ public class ItxSubjectContainerValueIntegrationTest {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                 final ConstraintViolation<?> cv = iter.next();
-                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath())
+                        .append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue())
+                        .append(")").append("]");
             }
             throw new IllegalStateException(msg.toString(), e);
         }
@@ -117,7 +139,7 @@ public class ItxSubjectContainerValueIntegrationTest {
         Assert.assertNotNull("Expected 'ItxSubjectContainerValue' identifier to no longer be null", obj.getId());
     }
 
-	@Test
+    @Test
     public void testRemove() {
         ItxSubjectContainerValue obj = dod.getRandomItxSubjectContainerValue();
         Assert.assertNotNull("Data on demand for 'ItxSubjectContainerValue' failed to initialize correctly", obj);
@@ -126,6 +148,7 @@ public class ItxSubjectContainerValueIntegrationTest {
         obj = ItxSubjectContainerValue.findItxSubjectContainerValue(id);
         obj.remove();
         obj.flush();
-        Assert.assertNull("Failed to remove 'ItxSubjectContainerValue' with identifier '" + id + "'", ItxSubjectContainerValue.findItxSubjectContainerValue(id));
+        Assert.assertNull("Failed to remove 'ItxSubjectContainerValue' with identifier '" + id + "'",
+                ItxSubjectContainerValue.findItxSubjectContainerValue(id));
     }
 }

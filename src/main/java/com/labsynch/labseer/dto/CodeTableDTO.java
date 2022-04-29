@@ -16,13 +16,11 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class CodeTableDTO {
 
 	public CodeTableDTO() {
 	}
 
-	
 	public CodeTableDTO(DDictValue dDictVal) {
 		this.setId(dDictVal.getId());
 		this.setCode(dDictVal.getShortName());
@@ -34,14 +32,15 @@ public class CodeTableDTO {
 		this.setCodeKind(dDictVal.getLsKind());
 		this.setCodeType(dDictVal.getLsType());
 	}
-	
+
 	public CodeTableDTO(Experiment experiment) {
 		this.setId(experiment.getId());
 		this.setCode(experiment.getCodeName());
-		try{
-			ExperimentLabel experimentLabel = ExperimentLabel.findExperimentPreferredName(experiment.getId()).getSingleResult();
+		try {
+			ExperimentLabel experimentLabel = ExperimentLabel.findExperimentPreferredName(experiment.getId())
+					.getSingleResult();
 			this.setName(experimentLabel.getLabelText());
-		}catch (IncorrectResultSizeDataAccessException e){
+		} catch (IncorrectResultSizeDataAccessException e) {
 			this.setName(experiment.getCodeName());
 		}
 		this.setIgnored(experiment.isIgnored());
@@ -49,193 +48,200 @@ public class CodeTableDTO {
 
 	private String code;
 
-//	private String codeName;  //code and codeName should be the same. Prefer to use codeName but older client code may be using code.
-//	//some classes use code, some use codeName
+	// private String codeName; //code and codeName should be the same. Prefer to
+	// use codeName but older client code may be using code.
+	// //some classes use code, some use codeName
 
 	private String name;
-	
+
 	private boolean ignored;
-	
+
 	private Integer displayOrder;
-	
+
 	private Long id;
-	
+
 	private String description;
 
 	private String comments;
-	
+
 	private String codeType;
-	
+
 	private String codeKind;
-	
+
 	private String codeOrigin;
 
-
-	
-	public static List<CodeTableDTO> sortCodeTables(List<CodeTableDTO> list){
+	public static List<CodeTableDTO> sortCodeTables(List<CodeTableDTO> list) {
 		List<CodeTableDTO> byDisplayOrder = new ArrayList<CodeTableDTO>();
 		List<CodeTableDTO> byName = new ArrayList<CodeTableDTO>();
 		for (CodeTableDTO e : list) {
-			if (e.displayOrder!=null) byDisplayOrder.add(e);
-			else byName.add(e);
+			if (e.displayOrder != null)
+				byDisplayOrder.add(e);
+			else
+				byName.add(e);
 		}
 		byDisplayOrder = mergesort(byDisplayOrder, "displayOrder");
 		byName = mergesort(byName, "name");
 		byDisplayOrder.addAll(byName);
 		return byDisplayOrder;
 	}
-	
-	private static List<CodeTableDTO> mergesort(List<CodeTableDTO> list, String sortBy){
-		if (list.size()<=1) return list;
-		
+
+	private static List<CodeTableDTO> mergesort(List<CodeTableDTO> list, String sortBy) {
+		if (list.size() <= 1)
+			return list;
+
 		List<CodeTableDTO> left = new ArrayList<CodeTableDTO>();
 		List<CodeTableDTO> right = new ArrayList<CodeTableDTO>();
-		int middle = list.size()/2;
-		for (int i=0; i<list.size(); i++) {
-			if (i<middle) left.add(list.get(i));
-			else right.add(list.get(i));
+		int middle = list.size() / 2;
+		for (int i = 0; i < list.size(); i++) {
+			if (i < middle)
+				left.add(list.get(i));
+			else
+				right.add(list.get(i));
 		}
 		left = mergesort(left, sortBy);
 		right = mergesort(right, sortBy);
 		return merge(left, right, sortBy);
 	}
-	
-	private static List<CodeTableDTO> merge(List<CodeTableDTO> left, List<CodeTableDTO> right, String sortBy){
+
+	private static List<CodeTableDTO> merge(List<CodeTableDTO> left, List<CodeTableDTO> right, String sortBy) {
 		List<CodeTableDTO> result = new ArrayList<CodeTableDTO>();
-		//loop through until both left and right are empty
-		while (left.size()>0 || right.size()>0){
-			if (left.size() > 0 && right.size() > 0) {			//if neither is empty, we must compare
-				int comp = 0;									//initialize our comparison result
-				if (sortBy.equals("displayOrder")) comp = left.get(0).compareByDisplayOrder(right.get(0));
-				if (sortBy.equals("name")) comp = left.get(0).compareByName(right.get(0));
-				
-				if (comp<=0) {									//if the first of the left comes before (or equal) the first of the right, add first(left)
+		// loop through until both left and right are empty
+		while (left.size() > 0 || right.size() > 0) {
+			if (left.size() > 0 && right.size() > 0) { // if neither is empty, we must compare
+				int comp = 0; // initialize our comparison result
+				if (sortBy.equals("displayOrder"))
+					comp = left.get(0).compareByDisplayOrder(right.get(0));
+				if (sortBy.equals("name"))
+					comp = left.get(0).compareByName(right.get(0));
+
+				if (comp <= 0) { // if the first of the left comes before (or equal) the first of the right, add
+									// first(left)
 					result.add(left.remove(0));
-				}else {
-					result.add(right.remove(0));				//else use the first from the right
+				} else {
+					result.add(right.remove(0)); // else use the first from the right
 				}
-				
-			} else if (left.size() > 0){ 						//if right is empty and left isn't, add first(left)
+
+			} else if (left.size() > 0) { // if right is empty and left isn't, add first(left)
 				result.add(left.remove(0));
-			}
-			else if (right.size() > 0){							//if left is empty and right isn't, add first(right)
+			} else if (right.size() > 0) { // if left is empty and right isn't, add first(right)
 				result.add(right.remove(0));
 			}
 		}
 		return result;
 	}
-	
+
 	private int compareByDisplayOrder(CodeTableDTO that) {
-		if (this.displayOrder < that.displayOrder) return -1;
-		if (this.displayOrder > that.displayOrder) return 1;
-		else return 0;
+		if (this.displayOrder < that.displayOrder)
+			return -1;
+		if (this.displayOrder > that.displayOrder)
+			return 1;
+		else
+			return 0;
 	}
-	
+
 	private int compareByName(CodeTableDTO that) {
 		return this.name.compareTo(that.name);
 	}
-	
+
 	public String toJson() {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
-	
+		return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+	}
+
 	public static String toJsonArray(Collection<CodeTableDTO> collection) {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
-    }
+		return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
 	public static CodeTableDTO fromJsonToCodeTableDTO(String json) {
-        return new JSONDeserializer<CodeTableDTO>()
-        .use(null, CodeTableDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<CodeTableDTO>()
+				.use(null, CodeTableDTO.class).deserialize(json);
+	}
 
 	public static Collection<CodeTableDTO> fromJsonArrayToCoes(String json) {
-        return new JSONDeserializer<List<CodeTableDTO>>()
-        .use("values", CodeTableDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<CodeTableDTO>>()
+				.use("values", CodeTableDTO.class).deserialize(json);
+	}
 
 	public String getCode() {
-        return this.code;
-    }
+		return this.code;
+	}
 
 	public void setCode(String code) {
-        this.code = code;
-    }
+		this.code = code;
+	}
 
 	public String getName() {
-        return this.name;
-    }
+		return this.name;
+	}
 
 	public void setName(String name) {
-        this.name = name;
-    }
+		this.name = name;
+	}
 
 	public boolean isIgnored() {
-        return this.ignored;
-    }
+		return this.ignored;
+	}
 
 	public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+		this.ignored = ignored;
+	}
 
 	public Integer getDisplayOrder() {
-        return this.displayOrder;
-    }
+		return this.displayOrder;
+	}
 
 	public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
-    }
+		this.displayOrder = displayOrder;
+	}
 
 	public Long getId() {
-        return this.id;
-    }
+		return this.id;
+	}
 
 	public void setId(Long id) {
-        this.id = id;
-    }
+		this.id = id;
+	}
 
 	public String getDescription() {
-        return this.description;
-    }
+		return this.description;
+	}
 
 	public void setDescription(String description) {
-        this.description = description;
-    }
+		this.description = description;
+	}
 
 	public String getComments() {
-        return this.comments;
-    }
+		return this.comments;
+	}
 
 	public void setComments(String comments) {
-        this.comments = comments;
-    }
+		this.comments = comments;
+	}
 
 	public String getCodeType() {
-        return this.codeType;
-    }
+		return this.codeType;
+	}
 
 	public void setCodeType(String codeType) {
-        this.codeType = codeType;
-    }
+		this.codeType = codeType;
+	}
 
 	public String getCodeKind() {
-        return this.codeKind;
-    }
+		return this.codeKind;
+	}
 
 	public void setCodeKind(String codeKind) {
-        this.codeKind = codeKind;
-    }
+		this.codeKind = codeKind;
+	}
 
 	public String getCodeOrigin() {
-        return this.codeOrigin;
-    }
+		return this.codeOrigin;
+	}
 
 	public void setCodeOrigin(String codeOrigin) {
-        this.codeOrigin = codeOrigin;
-    }
+		this.codeOrigin = codeOrigin;
+	}
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 }
-
-

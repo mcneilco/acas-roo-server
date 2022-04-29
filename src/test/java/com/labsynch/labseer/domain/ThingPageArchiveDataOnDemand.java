@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ThingPageArchiveDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<ThingPageArchive> data;
+    private List<ThingPageArchive> data;
 
-	public ThingPageArchive getNewTransientThingPageArchive(int index) {
+    public ThingPageArchive getNewTransientThingPageArchive(int index) {
         ThingPageArchive obj = new ThingPageArchive();
         setArchived(obj, index);
         setCurrentEditor(obj, index);
@@ -40,12 +40,12 @@ public class ThingPageArchiveDataOnDemand {
         return obj;
     }
 
-	public void setArchived(ThingPageArchive obj, int index) {
+    public void setArchived(ThingPageArchive obj, int index) {
         Boolean archived = true;
         obj.setArchived(archived);
     }
 
-	public void setCurrentEditor(ThingPageArchive obj, int index) {
+    public void setCurrentEditor(ThingPageArchive obj, int index) {
         String currentEditor = "currentEditor_" + index;
         if (currentEditor.length() > 255) {
             currentEditor = currentEditor.substring(0, 255);
@@ -53,17 +53,17 @@ public class ThingPageArchiveDataOnDemand {
         obj.setCurrentEditor(currentEditor);
     }
 
-	public void setIgnored(ThingPageArchive obj, int index) {
+    public void setIgnored(ThingPageArchive obj, int index) {
         Boolean ignored = true;
         obj.setIgnored(ignored);
     }
 
-	public void setLsTransaction(ThingPageArchive obj, int index) {
+    public void setLsTransaction(ThingPageArchive obj, int index) {
         Long lsTransaction = new Integer(index).longValue();
         obj.setLsTransaction(lsTransaction);
     }
 
-	public void setModifiedBy(ThingPageArchive obj, int index) {
+    public void setModifiedBy(ThingPageArchive obj, int index) {
         String modifiedBy = "modifiedBy_" + index;
         if (modifiedBy.length() > 255) {
             modifiedBy = modifiedBy.substring(0, 255);
@@ -71,17 +71,20 @@ public class ThingPageArchiveDataOnDemand {
         obj.setModifiedBy(modifiedBy);
     }
 
-	public void setModifiedDate(ThingPageArchive obj, int index) {
-        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setModifiedDate(ThingPageArchive obj, int index) {
+        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
     }
 
-	public void setPageContent(ThingPageArchive obj, int index) {
+    public void setPageContent(ThingPageArchive obj, int index) {
         String pageContent = "pageContent_" + index;
         obj.setPageContent(pageContent);
     }
 
-	public void setPageName(ThingPageArchive obj, int index) {
+    public void setPageName(ThingPageArchive obj, int index) {
         String pageName = "pageName_" + index;
         if (pageName.length() > 255) {
             pageName = pageName.substring(0, 255);
@@ -89,12 +92,12 @@ public class ThingPageArchiveDataOnDemand {
         obj.setPageName(pageName);
     }
 
-	public void setPageVersion(ThingPageArchive obj, int index) {
+    public void setPageVersion(ThingPageArchive obj, int index) {
         Integer pageVersion = new Integer(index);
         obj.setPageVersion(pageVersion);
     }
 
-	public void setRecordedBy(ThingPageArchive obj, int index) {
+    public void setRecordedBy(ThingPageArchive obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -102,17 +105,20 @@ public class ThingPageArchiveDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(ThingPageArchive obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(ThingPageArchive obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public void setThing(ThingPageArchive obj, int index) {
+    public void setThing(ThingPageArchive obj, int index) {
         Long thing = new Integer(index).longValue();
         obj.setThing(thing);
     }
 
-	public ThingPageArchive getSpecificThingPageArchive(int index) {
+    public ThingPageArchive getSpecificThingPageArchive(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -125,28 +131,29 @@ public class ThingPageArchiveDataOnDemand {
         return ThingPageArchive.findThingPageArchive(id);
     }
 
-	public ThingPageArchive getRandomThingPageArchive() {
+    public ThingPageArchive getRandomThingPageArchive() {
         init();
         ThingPageArchive obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return ThingPageArchive.findThingPageArchive(id);
     }
 
-	public boolean modifyThingPageArchive(ThingPageArchive obj) {
+    public boolean modifyThingPageArchive(ThingPageArchive obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = ThingPageArchive.findThingPageArchiveEntries(from, to);
         if (data == null) {
-            throw new IllegalStateException("Find entries implementation for 'ThingPageArchive' illegally returned null");
+            throw new IllegalStateException(
+                    "Find entries implementation for 'ThingPageArchive' illegally returned null");
         }
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<ThingPageArchive>();
         for (int i = 0; i < 10; i++) {
             ThingPageArchive obj = getNewTransientThingPageArchive(i);
@@ -156,7 +163,9 @@ public class ThingPageArchiveDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

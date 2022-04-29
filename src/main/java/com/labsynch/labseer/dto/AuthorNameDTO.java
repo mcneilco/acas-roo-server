@@ -9,53 +9,49 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class AuthorNameDTO {
-	
-	private String name;
 
+    private String name;
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static AuthorNameDTO fromJsonToAuthorNameDTO(String json) {
+    public static AuthorNameDTO fromJsonToAuthorNameDTO(String json) {
         return new JSONDeserializer<AuthorNameDTO>()
-        .use(null, AuthorNameDTO.class).deserialize(json);
+                .use(null, AuthorNameDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<AuthorNameDTO> collection) {
+    public static String toJsonArray(Collection<AuthorNameDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<AuthorNameDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<AuthorNameDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<AuthorNameDTO> fromJsonArrayToAuthoes(String json) {
+    public static Collection<AuthorNameDTO> fromJsonArrayToAuthoes(String json) {
         return new JSONDeserializer<List<AuthorNameDTO>>()
-        .use("values", AuthorNameDTO.class).deserialize(json);
+                .use("values", AuthorNameDTO.class).deserialize(json);
     }
 
-	public String getName() {
+    public String getName() {
         return this.name;
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 }
-
-

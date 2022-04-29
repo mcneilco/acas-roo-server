@@ -31,7 +31,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 @Configurable
 @Entity
 public class SubjectValue extends AbstractValue {
@@ -46,116 +45,117 @@ public class SubjectValue extends AbstractValue {
 	public SubjectValue() {
 	}
 
-	
 	public SubjectValue(FlatThingCsvDTO subjectDTO) {
-    	this.setCodeValue(subjectDTO.getCodeValue());
-    	this.setCodeOrigin(subjectDTO.getCodeOrigin());
-    	this.setCodeType(subjectDTO.getCodeType());
-    	this.setCodeKind(subjectDTO.getCodeKind());
-    	this.setLsType(subjectDTO.getValueType());
-    	this.setLsKind(subjectDTO.getValueKind());
-    	this.setStringValue(subjectDTO.getStringValue());
-    	this.setClobValue(subjectDTO.getClobValue());
-    	this.setFileValue(subjectDTO.getFileValue());
-    	this.setUrlValue(subjectDTO.getUrlValue());
-    	this.setDateValue(subjectDTO.getDateValue());
-    	this.setOperatorKind(subjectDTO.getOperatorKind());
-    	this.setNumericValue(subjectDTO.getNumericValue());
-    	this.setFileValue(subjectDTO.getFileValue());
-    	this.setUncertainty(subjectDTO.getUncertainty());
-    	this.setUncertaintyType(subjectDTO.getUncertaintyType());
-    	this.setUnitKind(subjectDTO.getUnitKind());
-    	this.setConcentration(subjectDTO.getConcentration());
-    	this.setConcUnit(subjectDTO.getConcUnit());
-    	this.setNumberOfReplicates(subjectDTO.getNumberOfReplicates());
-        this.setRecordedBy(subjectDTO.getRecordedBy());
-        this.setRecordedDate(subjectDTO.getRecordedDate());
-        this.setLsTransaction(subjectDTO.getLsTransaction());
-        this.setModifiedBy(subjectDTO.getModifiedBy());
-        this.setModifiedDate(subjectDTO.getModifiedDate());
-        this.setComments(subjectDTO.getComments());
-        this.setIgnored(subjectDTO.isIgnored());
-        this.setPublicData(subjectDTO.isPublicData());
-        this.setSigFigs(subjectDTO.getSigFigs());	
-    }
-	
+		this.setCodeValue(subjectDTO.getCodeValue());
+		this.setCodeOrigin(subjectDTO.getCodeOrigin());
+		this.setCodeType(subjectDTO.getCodeType());
+		this.setCodeKind(subjectDTO.getCodeKind());
+		this.setLsType(subjectDTO.getValueType());
+		this.setLsKind(subjectDTO.getValueKind());
+		this.setStringValue(subjectDTO.getStringValue());
+		this.setClobValue(subjectDTO.getClobValue());
+		this.setFileValue(subjectDTO.getFileValue());
+		this.setUrlValue(subjectDTO.getUrlValue());
+		this.setDateValue(subjectDTO.getDateValue());
+		this.setOperatorKind(subjectDTO.getOperatorKind());
+		this.setNumericValue(subjectDTO.getNumericValue());
+		this.setFileValue(subjectDTO.getFileValue());
+		this.setUncertainty(subjectDTO.getUncertainty());
+		this.setUncertaintyType(subjectDTO.getUncertaintyType());
+		this.setUnitKind(subjectDTO.getUnitKind());
+		this.setConcentration(subjectDTO.getConcentration());
+		this.setConcUnit(subjectDTO.getConcUnit());
+		this.setNumberOfReplicates(subjectDTO.getNumberOfReplicates());
+		this.setRecordedBy(subjectDTO.getRecordedBy());
+		this.setRecordedDate(subjectDTO.getRecordedDate());
+		this.setLsTransaction(subjectDTO.getLsTransaction());
+		this.setModifiedBy(subjectDTO.getModifiedBy());
+		this.setModifiedDate(subjectDTO.getModifiedDate());
+		this.setComments(subjectDTO.getComments());
+		this.setIgnored(subjectDTO.isIgnored());
+		this.setPublicData(subjectDTO.isPublicData());
+		this.setSigFigs(subjectDTO.getSigFigs());
+	}
+
 	public SubjectValue(SubjectValue subjectValue) {
-        super.setBlobValue(subjectValue.getBlobValue());
-        super.setClobValue(subjectValue.getClobValue());
-        super.setCodeKind(subjectValue.getCodeKind());
-        super.setCodeOrigin(subjectValue.getCodeOrigin());
-        super.setCodeType(subjectValue.getCodeType());
-        super.setCodeTypeAndKind(subjectValue.getCodeTypeAndKind());
-        super.setCodeValue(subjectValue.getCodeValue());
-        super.setComments(subjectValue.getComments());
-        super.setConcentration(subjectValue.getConcentration());
-        super.setConcUnit(subjectValue.getConcUnit());
-        super.setDateValue(subjectValue.getDateValue());
-        super.setDeleted(subjectValue.isDeleted());
-        super.setFileValue(subjectValue.getFileValue());
-        super.setIgnored(subjectValue.isIgnored());
-        super.setLsKind(subjectValue.getLsKind());
-        super.setLsTransaction(subjectValue.getLsTransaction());
-        super.setLsType(subjectValue.getLsType());
-        super.setLsTypeAndKind(subjectValue.getLsTypeAndKind());
-        super.setModifiedBy(subjectValue.getModifiedBy());
-        super.setModifiedDate(subjectValue.getModifiedDate());
-        super.setNumberOfReplicates(subjectValue.getNumberOfReplicates());
-        super.setNumericValue(subjectValue.getNumericValue());
-        super.setOperatorKind(subjectValue.getOperatorKind());
-        super.setOperatorType(subjectValue.getOperatorType());
-        super.setOperatorTypeAndKind(subjectValue.getOperatorTypeAndKind());
-        super.setPublicData(subjectValue.isPublicData());
-        super.setRecordedBy(subjectValue.getRecordedBy());
-        super.setRecordedDate(subjectValue.getRecordedDate());
-        super.setSigFigs(subjectValue.getSigFigs());
-        super.setStringValue(subjectValue.getStringValue());
-        super.setUncertainty(subjectValue.getUncertainty());
-        super.setUncertaintyType(subjectValue.getUncertaintyType());
-        super.setUnitKind(subjectValue.getUnitKind());
-        super.setUnitType(subjectValue.getUnitType());
-        super.setUnitTypeAndKind(subjectValue.getUnitTypeAndKind());
-        super.setUrlValue(subjectValue.getUrlValue());
+		super.setBlobValue(subjectValue.getBlobValue());
+		super.setClobValue(subjectValue.getClobValue());
+		super.setCodeKind(subjectValue.getCodeKind());
+		super.setCodeOrigin(subjectValue.getCodeOrigin());
+		super.setCodeType(subjectValue.getCodeType());
+		super.setCodeTypeAndKind(subjectValue.getCodeTypeAndKind());
+		super.setCodeValue(subjectValue.getCodeValue());
+		super.setComments(subjectValue.getComments());
+		super.setConcentration(subjectValue.getConcentration());
+		super.setConcUnit(subjectValue.getConcUnit());
+		super.setDateValue(subjectValue.getDateValue());
+		super.setDeleted(subjectValue.isDeleted());
+		super.setFileValue(subjectValue.getFileValue());
+		super.setIgnored(subjectValue.isIgnored());
+		super.setLsKind(subjectValue.getLsKind());
+		super.setLsTransaction(subjectValue.getLsTransaction());
+		super.setLsType(subjectValue.getLsType());
+		super.setLsTypeAndKind(subjectValue.getLsTypeAndKind());
+		super.setModifiedBy(subjectValue.getModifiedBy());
+		super.setModifiedDate(subjectValue.getModifiedDate());
+		super.setNumberOfReplicates(subjectValue.getNumberOfReplicates());
+		super.setNumericValue(subjectValue.getNumericValue());
+		super.setOperatorKind(subjectValue.getOperatorKind());
+		super.setOperatorType(subjectValue.getOperatorType());
+		super.setOperatorTypeAndKind(subjectValue.getOperatorTypeAndKind());
+		super.setPublicData(subjectValue.isPublicData());
+		super.setRecordedBy(subjectValue.getRecordedBy());
+		super.setRecordedDate(subjectValue.getRecordedDate());
+		super.setSigFigs(subjectValue.getSigFigs());
+		super.setStringValue(subjectValue.getStringValue());
+		super.setUncertainty(subjectValue.getUncertainty());
+		super.setUncertaintyType(subjectValue.getUncertaintyType());
+		super.setUnitKind(subjectValue.getUnitKind());
+		super.setUnitType(subjectValue.getUnitType());
+		super.setUnitTypeAndKind(subjectValue.getUnitTypeAndKind());
+		super.setUrlValue(subjectValue.getUrlValue());
 	}
 
 	public Long getStateId() {
 		return this.lsState.getId();
 	}
-	
+
 	public String getStateType() {
 		return this.lsState.getLsType();
 	}
-	
+
 	public String getStateKind() {
 		return this.lsState.getLsKind();
 	}
 
-	//TODO: work out a different strategy with the many to many
-//	public Long getTreatmentGroupId() {
-//		return 0L;
-//	}
-//	
+	// TODO: work out a different strategy with the many to many
+	// public Long getTreatmentGroupId() {
+	// return 0L;
+	// }
+	//
 	public Long getSubjectId() {
 		return this.lsState.getSubject().getId();
 	}
-	
-	
-	public static com.labsynch.labseer.domain.SubjectValue create(com.labsynch.labseer.domain.SubjectValue subjectValue) {
-		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserializeInto(subjectValue.toJson(), new SubjectValue());
+
+	public static com.labsynch.labseer.domain.SubjectValue create(
+			com.labsynch.labseer.domain.SubjectValue subjectValue) {
+		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class)
+				.deserializeInto(subjectValue.toJson(), new SubjectValue());
 		return newsubjectValue;
 	}
 
 	@Transactional
 	public String toJson() {
 		return new JSONSerializer()
-			.include("lsState.subject.treatmentGroups")
-			.exclude("*.class", "lsState.subject.treatmentGroups.analysisGroups")
-			.transform(new ExcludeNulls(), void.class).serialize(this);
+				.include("lsState.subject.treatmentGroups")
+				.exclude("*.class", "lsState.subject.treatmentGroups.analysisGroups")
+				.transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
 	@Transactional
 	public String toJsonStub() {
-		return new JSONSerializer().include().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer().include().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	public static com.labsynch.labseer.domain.SubjectValue fromJsonToSubjectValue(String json) {
@@ -165,22 +165,25 @@ public class SubjectValue extends AbstractValue {
 	@Transactional
 	public static String toJsonArray(Collection<com.labsynch.labseer.domain.SubjectValue> collection) {
 		return new JSONSerializer()
-			.include("lsState.subject.treatmentGroups")
-			.exclude("*.class", "lsState.subject.treatmentGroups.analysisGroups")
-			.transform(new ExcludeNulls(), void.class).serialize(collection);
+				.include("lsState.subject.treatmentGroups")
+				.exclude("*.class", "lsState.subject.treatmentGroups.analysisGroups")
+				.transform(new ExcludeNulls(), void.class).serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.SubjectValue> collection) {
-		return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	public static Collection<com.labsynch.labseer.domain.SubjectValue> fromJsonArrayToSubjectValues(Reader json) {
-		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("lsState", SubjectState.class).use("values", SubjectValue.class).deserialize(json);
+		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("lsState", SubjectState.class)
+				.use("values", SubjectValue.class).deserialize(json);
 	}
 
 	public static Collection<com.labsynch.labseer.domain.SubjectValue> fromJsonArrayToSubjectValues(String json) {
-		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("values", SubjectValue.class).deserialize(json);
+		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("values", SubjectValue.class)
+				.deserialize(json);
 	}
 
 	public static long countSubjectValues() {
@@ -194,17 +197,21 @@ public class SubjectValue extends AbstractValue {
 
 	@Transactional
 	public static com.labsynch.labseer.domain.SubjectValue findSubjectValue(Long id) {
-		if (id == null) return null;
+		if (id == null)
+			return null;
 		return entityManager().find(SubjectValue.class, id);
 	}
 
-	public static List<com.labsynch.labseer.domain.SubjectValue> findSubjectValueEntries(int firstResult, int maxResults) {
-		return entityManager().createQuery("SELECT o FROM SubjectValue o", SubjectValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+	public static List<com.labsynch.labseer.domain.SubjectValue> findSubjectValueEntries(int firstResult,
+			int maxResults) {
+		return entityManager().createQuery("SELECT o FROM SubjectValue o", SubjectValue.class)
+				.setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
 	}
 
 	@Transactional
 	public com.labsynch.labseer.domain.SubjectValue merge() {
-		if (this.entityManager == null) this.entityManager = entityManager();
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
 		SubjectValue merged = this.entityManager.merge(this);
 		this.entityManager.flush();
 		return merged;
@@ -247,14 +254,16 @@ public class SubjectValue extends AbstractValue {
 		Collection<SubjectValue> subjectValues = new HashSet<SubjectValue>();
 		for (Long id : idList) {
 			SubjectValue query = SubjectValue.findSubjectValue(id);
-			if (query != null) subjectValues.add(query);
+			if (query != null)
+				subjectValues.add(query);
 		}
 		return SubjectValue.toJsonArray(subjectValues);
 	}
 
 	@Transactional
 	public static int deleteByExperimentID(Long experimentId) {
-		if (experimentId == null) return 0;
+		if (experimentId == null)
+			return 0;
 		EntityManager em = SubjectValue.entityManager();
 		String deleteSQL = "DELETE FROM SubjectValue oo WHERE id in (select o.id from SubjectValue o where o.lsState.subject.treatmentGroups.analysisGroups.experiments.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
@@ -263,21 +272,26 @@ public class SubjectValue extends AbstractValue {
 		return numberOfDeletedEntities;
 	}
 
-	public static com.labsynch.labseer.domain.SubjectValue update(com.labsynch.labseer.domain.SubjectValue subjectValue) {
-		SubjectValue updatedSubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserializeInto(subjectValue.toJson(), SubjectValue.findSubjectValue(subjectValue.getId()));
+	public static com.labsynch.labseer.domain.SubjectValue update(
+			com.labsynch.labseer.domain.SubjectValue subjectValue) {
+		SubjectValue updatedSubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class)
+				.deserializeInto(subjectValue.toJson(), SubjectValue.findSubjectValue(subjectValue.getId()));
 		updatedSubjectValue.setModifiedDate(new Date());
 		updatedSubjectValue.merge();
 		return updatedSubjectValue;
 	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByExptIDAndStateTypeKind(Long experimentId, String stateType, String stateKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+	public static TypedQuery<SubjectValue> findSubjectValuesByExptIDAndStateTypeKind(Long experimentId,
+			String stateType, String stateKind) {
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState svs " +
-				"JOIN svs.subject s " + 
+				"JOIN svs.subject s " +
 				"JOIN s.treatmentGroups tg " +
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments exp " +
@@ -295,17 +309,22 @@ public class SubjectValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+	public static TypedQuery<SubjectValue> findSubjectValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId,
+			String stateType,
 			String stateKind, String valueType, String valueKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0)
+			throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState svs " +
-				"JOIN svs.subject s " + 
+				"JOIN svs.subject s " +
 				"JOIN s.treatmentGroups tg " +
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments exp " +
@@ -324,15 +343,18 @@ public class SubjectValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
-	
-	public static TypedQuery<SubjectValue> findSubjectValuesByAnalysisGroupIDAndStateTypeKind(Long analysisGroupId, String stateType, String  stateKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByAnalysisGroupIDAndStateTypeKind(Long analysisGroupId,
+			String stateType, String stateKind) {
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState svs " +
-				"JOIN svs.subject s " + 
+				"JOIN svs.subject s " +
 				"JOIN s.treatmentGroups tg " +
 				"JOIN tg.analysisGroups ag " +
 				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
@@ -348,8 +370,8 @@ public class SubjectValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
-	
-	public static String[] getColumns(){
+
+	public static String[] getColumns() {
 		String[] headerColumns = new String[] {
 				"treatmentGroupId",
 				"subjectId",
@@ -388,16 +410,16 @@ public class SubjectValue extends AbstractValue {
 				"recordedDate",
 				"recordedBy",
 				"modifiedDate",
-				"modifiedBy",				
+				"modifiedBy",
 				"publicData"
 		};
-//35 columns
+		// 35 columns
 		return headerColumns;
 
 	}
 
 	public static CellProcessor[] getProcessors() {
-		final CellProcessor[] processors = new CellProcessor[] { 
+		final CellProcessor[] processors = new CellProcessor[] {
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -438,35 +460,36 @@ public class SubjectValue extends AbstractValue {
 				new Optional(),
 				new Optional()
 
-
 		};
 
 		return processors;
 	}
 
-
 	public Collection<SubjectValueDTO> makeDTOsByTreatmentGroupIds() {
 		Collection<SubjectValueDTO> subjectValueDTOs = new HashSet<SubjectValueDTO>();
 		Collection<TreatmentGroup> treatmentGroups = Subject.findSubject(this.getSubjectId()).getTreatmentGroups();
-		for (TreatmentGroup treatmentGroup: treatmentGroups) {
+		for (TreatmentGroup treatmentGroup : treatmentGroups) {
 			SubjectValueDTO subjectValueDTO = new SubjectValueDTO(this);
 			subjectValueDTO.setTreatmentGroupId(treatmentGroup.getId());
 			subjectValueDTOs.add(subjectValueDTO);
 		}
-		
+
 		return subjectValueDTOs;
 	}
-
 
 	public static TypedQuery<SubjectValue> findSubjectValuesBySubjectIDAndStateTypeKindAndValueTypeKind(
 			Long subjectId, String stateType, String stateKind,
 			String valueType, String valueKind) {
-		
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-		
+
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0)
+			throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
+
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState ss " +
@@ -484,16 +507,20 @@ public class SubjectValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
-	
+
 	public static TypedQuery<SubjectValue> findSubjectValuesBySubjectCodeNameAndStateTypeKindAndValueTypeKind(
 			String subjectCodeName, String stateType, String stateKind,
 			String valueType, String valueKind) {
-		
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-		
+
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0)
+			throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
+
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState ss " +
@@ -512,216 +539,268 @@ public class SubjectValue extends AbstractValue {
 		return q;
 	}
 
-
 	public SubjectState getLsState() {
-        return this.lsState;
-    }
+		return this.lsState;
+	}
 
 	public void setLsState(SubjectState lsState) {
-        this.lsState = lsState;
-    }
+		this.lsState = lsState;
+	}
 
 	public static Long countFindSubjectValuesByCodeValueEquals(String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.codeValue = :codeValue", Long.class);
-        q.setParameter("codeValue", codeValue);
-        return ((Long) q.getSingleResult());
-    }
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.codeValue = :codeValue",
+				Long.class);
+		q.setParameter("codeValue", codeValue);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", Long.class);
-        q.setParameter("ignored", ignored);
-        q.setParameter("codeValue", codeValue);
-        return ((Long) q.getSingleResult());
-    }
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				Long.class);
+		q.setParameter("ignored", ignored);
+		q.setParameter("codeValue", codeValue);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindSubjectValuesByLsState(SubjectState lsState) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsState = :lsState", Long.class);
-        q.setParameter("lsState", lsState);
-        return ((Long) q.getSingleResult());
-    }
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsState = :lsState", Long.class);
+		q.setParameter("lsState", lsState);
+		return ((Long) q.getSingleResult());
+	}
 
-	public static Long countFindSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
-        q.setParameter("lsState", lsState);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return ((Long) q.getSingleResult());
-    }
+	public static Long countFindSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState,
+			String lsType, String lsKind) {
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind",
+				Long.class);
+		q.setParameter("lsState", lsState);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return ((Long) q.getSingleResult());
-    }
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static TypedQuery<SubjectValue> findSubjectValuesByCodeValueEquals(String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.codeValue = :codeValue", SubjectValue.class);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.codeValue = :codeValue",
+				SubjectValue.class);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByCodeValueEquals(String codeValue, String sortFieldName, String sortOrder) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.codeValue = :codeValue");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByCodeValueEquals(String codeValue, String sortFieldName,
+			String sortOrder) {
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM SubjectValue AS o WHERE o.codeValue = :codeValue");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", SubjectValue.class);
-        q.setParameter("ignored", ignored);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored,
+			String codeValue) {
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<SubjectValue> q = em.createQuery(
+				"SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				SubjectValue.class);
+		q.setParameter("ignored", ignored);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue, String sortFieldName, String sortOrder) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
-        q.setParameter("ignored", ignored);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored,
+			String codeValue, String sortFieldName, String sortOrder) {
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+		q.setParameter("ignored", ignored);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
 	public static TypedQuery<SubjectValue> findSubjectValuesByLsState(SubjectState lsState) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState", SubjectValue.class);
-        q.setParameter("lsState", lsState);
-        return q;
-    }
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState",
+				SubjectValue.class);
+		q.setParameter("lsState", lsState);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByLsState(SubjectState lsState, String sortFieldName, String sortOrder) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
-        q.setParameter("lsState", lsState);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsState(SubjectState lsState, String sortFieldName,
+			String sortOrder) {
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+		q.setParameter("lsState", lsState);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
-        q.setParameter("lsState", lsState);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(
+			SubjectState lsState, String lsType, String lsKind) {
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<SubjectValue> q = em.createQuery(
+				"SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind",
+				SubjectValue.class);
+		q.setParameter("lsState", lsState);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind, String sortFieldName, String sortOrder) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
-        q.setParameter("lsState", lsState);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(
+			SubjectState lsState, String lsType, String lsKind, String sortFieldName, String sortOrder) {
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+		q.setParameter("lsState", lsState);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType,
+			String lsKind) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<SubjectValue> q = em.createQuery(
+				"SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 
-	public static TypedQuery<SubjectValue> findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = SubjectValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind,
+			String sortFieldName, String sortOrder) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = SubjectValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 
 	public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsState").toString();
-    }
+		return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsState")
+				.toString();
+	}
 
 	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsState");
 
 	public static List<SubjectValue> findAllSubjectValues(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM SubjectValue o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, SubjectValue.class).getResultList();
-    }
+		String jpaQuery = "SELECT o FROM SubjectValue o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, SubjectValue.class).getResultList();
+	}
 
-	public static List<SubjectValue> findSubjectValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM SubjectValue o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, SubjectValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
+	public static List<SubjectValue> findSubjectValueEntries(int firstResult, int maxResults, String sortFieldName,
+			String sortOrder) {
+		String jpaQuery = "SELECT o FROM SubjectValue o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, SubjectValue.class).setFirstResult(firstResult)
+				.setMaxResults(maxResults).getResultList();
+	}
 }

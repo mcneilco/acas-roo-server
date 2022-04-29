@@ -22,8 +22,10 @@ public class ItxExperimentExperimentValueServiceImpl implements ItxExperimentExp
 	private PropertiesUtilService propertiesUtilService;
 
 	@Override
-	public ItxExperimentExperimentValue updateItxExperimentExperimentValue(ItxExperimentExperimentValue itxExperimentExperimentValue) {
-		itxExperimentExperimentValue.setVersion(ItxExperimentExperimentValue.findItxExperimentExperimentValue(itxExperimentExperimentValue.getId()).getVersion());
+	public ItxExperimentExperimentValue updateItxExperimentExperimentValue(
+			ItxExperimentExperimentValue itxExperimentExperimentValue) {
+		itxExperimentExperimentValue.setVersion(ItxExperimentExperimentValue
+				.findItxExperimentExperimentValue(itxExperimentExperimentValue.getId()).getVersion());
 		itxExperimentExperimentValue.merge();
 		return itxExperimentExperimentValue;
 	}
@@ -31,15 +33,17 @@ public class ItxExperimentExperimentValueServiceImpl implements ItxExperimentExp
 	@Override
 	public Collection<ItxExperimentExperimentValue> updateItxExperimentExperimentValues(
 			Collection<ItxExperimentExperimentValue> itxExperimentExperimentValues) {
-		for (ItxExperimentExperimentValue itxExperimentExperimentValue : itxExperimentExperimentValues){
+		for (ItxExperimentExperimentValue itxExperimentExperimentValue : itxExperimentExperimentValues) {
 			itxExperimentExperimentValue = updateItxExperimentExperimentValue(itxExperimentExperimentValue);
 		}
 		return null;
 	}
 
 	@Override
-	public ItxExperimentExperimentValue saveItxExperimentExperimentValue(ItxExperimentExperimentValue itxExperimentExperimentValue) {
-		itxExperimentExperimentValue.setLsState(ItxExperimentExperimentState.findItxExperimentExperimentState(itxExperimentExperimentValue.getLsState().getId()));		
+	public ItxExperimentExperimentValue saveItxExperimentExperimentValue(
+			ItxExperimentExperimentValue itxExperimentExperimentValue) {
+		itxExperimentExperimentValue.setLsState(ItxExperimentExperimentState
+				.findItxExperimentExperimentState(itxExperimentExperimentValue.getLsState().getId()));
 		itxExperimentExperimentValue.persist();
 		return itxExperimentExperimentValue;
 	}
@@ -47,12 +51,10 @@ public class ItxExperimentExperimentValueServiceImpl implements ItxExperimentExp
 	@Override
 	public Collection<ItxExperimentExperimentValue> saveItxExperimentExperimentValues(
 			Collection<ItxExperimentExperimentValue> itxExperimentExperimentValues) {
-		for (ItxExperimentExperimentValue itxExperimentExperimentValue: itxExperimentExperimentValues) {
+		for (ItxExperimentExperimentValue itxExperimentExperimentValue : itxExperimentExperimentValues) {
 			itxExperimentExperimentValue = saveItxExperimentExperimentValue(itxExperimentExperimentValue);
 		}
 		return itxExperimentExperimentValues;
 	}
-
-
 
 }

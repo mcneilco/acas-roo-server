@@ -25,43 +25,45 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 @Transactional
 public class ApiGeneThingsControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiGeneThingsControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    @Transactional
-    @Test
-    public void getGeneExperimentDataTest() throws Exception {
-    	String json = "{\"experimentCodeList\":[\"EXPT-00000116\"],\"batchCodeList\":[],\"booleanFilter\":\"and\",\"advancedFilter\":\"\"}";
-    	logger.info("@@@@@@@@@@@@@@@@@     " + json + "        @@@@@@@@@@@@@@@@@");
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=true")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.content(json)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
+	private MockMvc mockMvc;
 
-    }
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
 
-//	  paste0(serverURL, "experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=", onlyPublicData),
-//	  customrequest='POST',
-//	  httpheader=c('Content-Type'='application/json'),
-//	  postfields=toJSON(searchParams))    
-    
-    
+	@Transactional
+	@Test
+	public void getGeneExperimentDataTest() throws Exception {
+		String json = "{\"experimentCodeList\":[\"EXPT-00000116\"],\"batchCodeList\":[],\"booleanFilter\":\"and\",\"advancedFilter\":\"\"}";
+		logger.info("@@@@@@@@@@@@@@@@@     " + json + "        @@@@@@@@@@@@@@@@@");
+		MockHttpServletResponse response = this.mockMvc.perform(
+				post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=true")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+
+	}
+
+	// paste0(serverURL,
+	// "experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=",
+	// onlyPublicData),
+	// customrequest='POST',
+	// httpheader=c('Content-Type'='application/json'),
+	// postfields=toJSON(searchParams))
+
 }

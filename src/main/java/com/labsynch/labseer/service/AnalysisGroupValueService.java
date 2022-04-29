@@ -13,17 +13,21 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AnalysisGroupValueService {
 
-	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, 
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKind(Long experimentId,
+			String stateType,
 			String stateKind);
-	
-	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(
+			Long experimentId, String stateType,
 			String stateKind, String valueType, String valueKind);
 
 	public String getCsvList(List<AnalysisGroupValue> analysisGroupValues);
-	
-	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
-	
-	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(Long analysisGroupId, String stateType, 
+
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId,
+			String stateType, String stateKind);
+
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(
+			Long analysisGroupId, String stateType,
 			String stateKind, String valueType, String valueKind);
 
 	public AnalysisGroupValue updateAnalysisGroupValue(String idOrCodeName,
@@ -39,7 +43,6 @@ public interface AnalysisGroupValueService {
 	public Collection<AnalysisGroupValue> saveAnalysisGroupValues(
 			Collection<AnalysisGroupValue> analysisGroupValues);
 
-
 	public Collection<AnalysisGroupValue> updateAnalysisGroupValues(
 			Collection<AnalysisGroupValue> analysisGroupValues);
 
@@ -54,5 +57,4 @@ public interface AnalysisGroupValueService {
 	public Collection<AnalysisGroupValuePathDTO> getAnalysisGroupValues(
 			Collection<GenericValuePathRequest> genericRequests);
 
-	
 }

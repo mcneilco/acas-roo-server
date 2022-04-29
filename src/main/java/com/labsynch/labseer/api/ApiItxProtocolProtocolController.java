@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/api/v1/itxprotocolprotocols")
 @Controller
 public class ApiItxProtocolProtocolController {
-	
+
     private static final Logger logger = LoggerFactory.getLogger(ApiItxProtocolProtocolController.class);
-	
-	@Autowired
+
+    @Autowired
     private ItxProtocolProtocolService itxProtocolProtocolService;
 
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
@@ -55,34 +55,37 @@ public class ApiItxProtocolProtocolController {
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-    	HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        try{
-        	ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
+        try {
+            ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
             itxProtocolProtocol = itxProtocolProtocolService.saveLsItxProtocol(itxProtocolProtocol);
             return new ResponseEntity<String>(itxProtocolProtocol.toJson(), headers, HttpStatus.CREATED);
-        }catch (Exception e){
-        	logger.error("Uncaught exception in createFromJson",e);
+        } catch (Exception e) {
+            logger.error("Uncaught exception in createFromJson", e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-        
+
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
-    	Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(json);
-    	HttpHeaders headers = new HttpHeaders();
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol
+                .fromJsonArrayToItxProtocolProtocols(json);
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        try{
-        	Collection<ItxProtocolProtocol> savedItxProtocolProtocols = itxProtocolProtocolService.saveLsItxProtocols(itxProtocolProtocols);
-            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(savedItxProtocolProtocols), headers, HttpStatus.CREATED);
-        }catch (Exception e){
-        	logger.error("Uncaught exception in createFromJsonArray",e);
+        try {
+            Collection<ItxProtocolProtocol> savedItxProtocolProtocols = itxProtocolProtocolService
+                    .saveLsItxProtocols(itxProtocolProtocols);
+            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(savedItxProtocolProtocols), headers,
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Uncaught exception in createFromJsonArray", e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-        
+
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -91,30 +94,33 @@ public class ApiItxProtocolProtocolController {
         headers.add("Content-Type", "application/json");
         ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
         ItxProtocolProtocol updatedItxProtocolProtocol = null;
-        try{
-			updatedItxProtocolProtocol = itxProtocolProtocolService.updateItxProtocolProtocol(itxProtocolProtocol);
-	        return new ResponseEntity<String>(updatedItxProtocolProtocol.toJson(), headers, HttpStatus.OK);
+        try {
+            updatedItxProtocolProtocol = itxProtocolProtocolService.updateItxProtocolProtocol(itxProtocolProtocol);
+            return new ResponseEntity<String>(updatedItxProtocolProtocol.toJson(), headers, HttpStatus.OK);
         } catch (Exception e) {
-			logger.error("Caught error updating ItxProtocolProtocol from JSON",e);
-			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Caught error updating ItxProtocolProtocol from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<ItxProtocolProtocol> updatedItxProtocolProtocols = new HashSet<ItxProtocolProtocol>();
-        try{
-            for (ItxProtocolProtocol itxProtocolProtocol: ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(json)) {
-            	ItxProtocolProtocol updatedItxProtocolProtocol = itxProtocolProtocolService.updateItxProtocolProtocol(itxProtocolProtocol);
-            	updatedItxProtocolProtocols.add(updatedItxProtocolProtocol);
+        try {
+            for (ItxProtocolProtocol itxProtocolProtocol : ItxProtocolProtocol
+                    .fromJsonArrayToItxProtocolProtocols(json)) {
+                ItxProtocolProtocol updatedItxProtocolProtocol = itxProtocolProtocolService
+                        .updateItxProtocolProtocol(itxProtocolProtocol);
+                updatedItxProtocolProtocols.add(updatedItxProtocolProtocol);
             }
-	        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(updatedItxProtocolProtocols), headers, HttpStatus.OK);
+            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(updatedItxProtocolProtocols), headers,
+                    HttpStatus.OK);
         } catch (Exception e) {
-        	logger.error("Caught error updating ItxProtocolProtocols from JSON",e);
-			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+            logger.error("Caught error updating ItxProtocolProtocols from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -131,39 +137,48 @@ public class ApiItxProtocolProtocolController {
 
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> jsonFindItxProtocolProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
+    public ResponseEntity<java.lang.String> jsonFindItxProtocolProtocolsByLsTransactionEquals(
+            @RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol
+                        .findItxProtocolProtocolsByLsTransactionEquals(lsTransaction).getResultList()),
+                headers, HttpStatus.OK);
     }
-    
+
     @Transactional
     @RequestMapping(value = "/findByFirstProtocol/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> findItxProtocolProtocolsByFirstProtocol(@PathVariable("id") Long firstProtocolId) {
-    	HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        try{
-        	Collection<ItxProtocolProtocol> itxProtocolProtocols = itxProtocolProtocolService.findItxProtocolProtocolsByFirstProtocol( firstProtocolId);
-            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
-        }catch (Exception e){
-        	logger.error("Caught exception in findByFirstProtocol",e);
-        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            Collection<ItxProtocolProtocol> itxProtocolProtocols = itxProtocolProtocolService
+                    .findItxProtocolProtocolsByFirstProtocol(firstProtocolId);
+            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers,
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Caught exception in findByFirstProtocol", e);
+            return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @Transactional
     @RequestMapping(value = "/findBySecondProtocol/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> findItxProtocolProtocolsBySecondProtocol(@PathVariable("id") Long secondProtocolId) {
-    	HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Protocol secondProtocol;
-        try{
-    		secondProtocol = Protocol.findProtocol(secondProtocolId);
-    	} catch(Exception e){
-    		logger.error("Error in findItxProtocolProtocolsBySecondProtocol: secondProtocol "+ secondProtocolId.toString()+" not found");
-    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-    	}
-        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol).getResultList();
-        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
+        try {
+            secondProtocol = Protocol.findProtocol(secondProtocolId);
+        } catch (Exception e) {
+            logger.error("Error in findItxProtocolProtocolsBySecondProtocol: secondProtocol "
+                    + secondProtocolId.toString() + " not found");
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol
+                .findItxProtocolProtocolsBySecondProtocol(secondProtocol).getResultList();
+        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers,
+                HttpStatus.OK);
     }
 }

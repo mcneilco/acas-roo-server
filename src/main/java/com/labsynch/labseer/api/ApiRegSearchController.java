@@ -19,25 +19,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(value ={"/api/v1/regsearches", "/api/v1/regSearches"})
+@RequestMapping(value = { "/api/v1/regsearches", "/api/v1/regSearches" })
 @Controller
 public class ApiRegSearchController {
-	
+
 	@Autowired
 	private RegSearchService regSearchService;
-	
+
 	Logger logger = LoggerFactory.getLogger(ApiRegSearchController.class);
 
 	@RequestMapping(value = "/parent", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getParentsbyParamsPost(@RequestBody String searchParams) {
-		logger.debug("using the /regsearches/parent controller" );
-		
-		HttpHeaders headers= new HttpHeaders();
+		logger.debug("using the /regsearches/parent controller");
+
+		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_HTML);
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
-		
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+
 		RegSearchDTO regSearchDTO = null;
 		try {
 			regSearchDTO = regSearchService.getParentsbyParams(searchParams);
@@ -50,17 +50,17 @@ public class ApiRegSearchController {
 
 		return new ResponseEntity<String>(regSearchDTO.toJson(), headers, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/parent", method = RequestMethod.GET, headers = "Accept=application/json")
 	public ResponseEntity<String> getParentsbyParams(@RequestParam String searchParams) {
-		logger.debug("using the /regsearches/parent controller" );
-		
-		HttpHeaders headers= new HttpHeaders();
+		logger.debug("using the /regsearches/parent controller");
+
+		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_HTML);
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
-		
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+
 		RegSearchDTO regSearchDTO = null;
 		try {
 			regSearchDTO = regSearchService.getParentsbyParams(searchParams);

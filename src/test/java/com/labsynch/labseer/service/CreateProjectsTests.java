@@ -1,5 +1,4 @@
 
-
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
@@ -40,9 +39,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class CreateProjectsTests {
 
@@ -52,15 +51,15 @@ public class CreateProjectsTests {
 	private AutoLabelService autoLabelService;
 
 	@Test
-	//@Transactional
-	public void SaveProject_Test1() throws IOException{
+	// @Transactional
+	public void SaveProject_Test1() throws IOException {
 
 		LsTransaction lsTransaction = new LsTransaction();
 		lsTransaction.setComments("saving new project info");
 		lsTransaction.setRecordedDate(new Date());
 		lsTransaction.persist();
 
-		//set up project type and kinds (check if already exists)
+		// set up project type and kinds (check if already exists)
 		String thingTypeString = "project";
 		String thingKindString = "project";
 		ThingType geneType = ThingType.getOrCreate(thingTypeString);
@@ -83,18 +82,20 @@ public class CreateProjectsTests {
 
 		ValueType valueTypeString = ValueType.getOrCreate("stringValue");
 		ValueKind.getOrCreate(valueTypeString, "short description");
-		
+
 		TypeDTO roleType = new TypeDTO("Project");
 		List<TypeDTO> roleTypes = new ArrayList<TypeDTO>();
 		roleTypes.add(roleType);
 		TypeDTO.getOrCreateRoleTypes(roleTypes);
-		
+
 		List<TypeKindDTO> roleKinds = new ArrayList<TypeKindDTO>();
 
 		String thingTypeAndKind = "project_project";
 		String labelTypeAndKind = "name_project name";
-		List<LabelSequence> labelSeqs = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
-		if (labelSeqs.size() == 0){
+		List<LabelSequence> labelSeqs = LabelSequence
+				.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind)
+				.getResultList();
+		if (labelSeqs.size() == 0) {
 			LabelSequence newLabelSeq = new LabelSequence();
 			newLabelSeq.setDigits(4);
 			newLabelSeq.setLabelPrefix("PROJ");
@@ -103,13 +104,13 @@ public class CreateProjectsTests {
 			newLabelSeq.setLabelTypeAndKind(labelTypeAndKind);
 			newLabelSeq.setThingTypeAndKind(thingTypeAndKind);
 			newLabelSeq.persist();
-		} 
+		}
 
-		
 		////////////////////////////////
 
 		Long numberOfLabels = 1L;
-		List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);			
+		List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind,
+				numberOfLabels);
 
 		LsThing lsThing = new LsThing();
 		lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
@@ -131,24 +132,26 @@ public class CreateProjectsTests {
 		lsThingState.persist();
 		logger.info("thing state: " + lsThingState.toJson());
 
-		LsThingValue val1 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "project status", "active");
+		LsThingValue val1 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "project status",
+				"active");
 		val1.setRecordedBy("acas admin");
 		val1.persist();
-		LsThingValue val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
+		LsThingValue val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date",
+				new Date());
 		val2.setRecordedBy("acas admin");
 		val2.persist();
-		LsThingValue val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
+		LsThingValue val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue",
+				"short description", "project short description");
 		val3.setRecordedBy("acas admin");
 		val3.persist();
-		
+
 		TypeKindDTO roleKind = new TypeKindDTO("Project", lsThing.getCodeName());
 		roleKinds.add(roleKind);
-		
+
 		////////////////////////////////
 
-
 		numberOfLabels = 1L;
-		thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);	
+		thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);
 
 		lsThing = new LsThing();
 		lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
@@ -176,17 +179,18 @@ public class CreateProjectsTests {
 		val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
 		val2.setRecordedBy("acas admin");
 		val2.persist();
-		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
+		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description",
+				"project short description");
 		val3.setRecordedBy("acas admin");
-		val3.persist();		
-		
+		val3.persist();
+
 		roleKind = new TypeKindDTO("Project", lsThing.getCodeName());
 		roleKinds.add(roleKind);
-		
+
 		////////////////////////////////
 
 		numberOfLabels = 1L;
-		thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);	
+		thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);
 
 		lsThing = new LsThing();
 		lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
@@ -214,63 +218,69 @@ public class CreateProjectsTests {
 		val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
 		val2.setRecordedBy("acas admin");
 		val2.persist();
-		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
+		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description",
+				"project short description");
 		val3.setRecordedBy("acas admin");
 		val3.persist();
-		
+
 		roleKind = new TypeKindDTO("Project", lsThing.getCodeName());
 		roleKinds.add(roleKind);
-		
+
 		//////////////////////////////////
 		TypeKindDTO.getOrCreateRoleKinds(roleKinds);
 	}
 
-	//@Test
+	// @Test
 	@Transactional
-	public void GetProject_Test5() throws IOException{
+	public void GetProject_Test5() throws IOException {
 
 		LsThing lsThing = LsThing.findLsThingsByCodeNameEquals("PROJ-000003").getSingleResult();
 		logger.info(lsThing.toPrettyJsonStub());
 
 	}
-	
+
 	@Test
-//	@Transactional
+	// @Transactional
 	public void createProjectRoles() {
-		//create users
+		// create users
 		Author jappleseed = null;
-		try{
+		try {
 			jappleseed = Author.findAuthorsByUserName("jappleseed").getSingleResult();
-		}catch (NoResultException e){
+		} catch (NoResultException e) {
 			jappleseed = new Author();
 			jappleseed.setFirstName("Johnny");
 			jappleseed.setLastName("Appleseed");
 			jappleseed.setUserName("jappleseed");
 			jappleseed.setEmailAddress("jappleseed@mcneilco.com");
 			jappleseed.setEnabled(true);
-			jappleseed.setPassword("0L4txCG+T80BcuWvzuo5cOLz2UA="); //apple
+			jappleseed.setPassword("0L4txCG+T80BcuWvzuo5cOLz2UA="); // apple
 			jappleseed.persist();
 		}
 		Author bsplit = null;
-		try{
+		try {
 			bsplit = Author.findAuthorsByUserName("bsplit").getSingleResult();
-		}catch (NoResultException e){
+		} catch (NoResultException e) {
 			bsplit = new Author();
 			bsplit.setFirstName("Banana");
 			bsplit.setLastName("Split");
 			bsplit.setUserName("bsplit");
 			bsplit.setEmailAddress("bsplit@mcneilco.com");
 			bsplit.setEnabled(true);
-			bsplit.setPassword("JQ538SpatpcqCJXSkMR5Lwoybqg="); //banana
+			bsplit.setPassword("JQ538SpatpcqCJXSkMR5Lwoybqg="); // banana
 			bsplit.persist();
 		}
-		//create roles based on existing projects
-		String appleCodeName = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("Apple", true).getSingleResult().getLsThing().getCodeName();
-		String bananaCodeName = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("Banana", true).getSingleResult().getLsThing().getCodeName();;
+		// create roles based on existing projects
+		String appleCodeName = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("Apple", true)
+				.getSingleResult().getLsThing().getCodeName();
+		String bananaCodeName = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("Banana", true)
+				.getSingleResult().getLsThing().getCodeName();
+		;
 		LsRole appleUser = null;
-		try{
-			appleUser = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "User").getSingleResult();
-		}catch(NoResultException e){
+		try {
+			appleUser = LsRole
+					.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "User")
+					.getSingleResult();
+		} catch (NoResultException e) {
 			appleUser = new LsRole();
 			appleUser.setLsType("Project");
 			appleUser.setLsKind(appleCodeName);
@@ -278,9 +288,10 @@ public class CreateProjectsTests {
 			appleUser.persist();
 		}
 		LsRole appleAdministrator = null;
-		try{
-			appleAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "Administrator").getSingleResult();
-		}catch(NoResultException e){
+		try {
+			appleAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project",
+					appleCodeName, "Administrator").getSingleResult();
+		} catch (NoResultException e) {
 			appleAdministrator = new LsRole();
 			appleAdministrator.setLsType("Project");
 			appleAdministrator.setLsKind(appleCodeName);
@@ -288,9 +299,11 @@ public class CreateProjectsTests {
 			appleAdministrator.persist();
 		}
 		LsRole bananaUser = null;
-		try{
-			bananaUser = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "User").getSingleResult();
-		}catch(NoResultException e){
+		try {
+			bananaUser = LsRole
+					.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "User")
+					.getSingleResult();
+		} catch (NoResultException e) {
 			bananaUser = new LsRole();
 			bananaUser.setLsType("Project");
 			bananaUser.setLsKind(bananaCodeName);
@@ -298,44 +311,45 @@ public class CreateProjectsTests {
 			bananaUser.persist();
 		}
 		LsRole bananaAdministrator = null;
-		try{
-			bananaAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "Administrator").getSingleResult();
-		}catch(NoResultException e){
+		try {
+			bananaAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project",
+					bananaCodeName, "Administrator").getSingleResult();
+		} catch (NoResultException e) {
 			bananaAdministrator = new LsRole();
 			bananaAdministrator.setLsType("Project");
 			bananaAdministrator.setLsKind(bananaCodeName);
 			bananaAdministrator.setRoleName("Administrator");
 			bananaAdministrator.persist();
 		}
-		//create author roles
+		// create author roles
 		AuthorRole appleUserRole = null;
-		try{
+		try {
 			appleUserRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleUser, jappleseed).getSingleResult();
-		}catch (NoResultException e){
+		} catch (NoResultException e) {
 			appleUserRole = new AuthorRole();
 			appleUserRole.setRoleEntry(appleUser);
 			appleUserRole.setUserEntry(jappleseed);
 			appleUserRole.persist();
 		}
 		AuthorRole appleAdministratorRole = null;
-		try{
-			appleAdministratorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleAdministrator, jappleseed).getSingleResult();
-		}catch (NoResultException e){
+		try {
+			appleAdministratorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleAdministrator, jappleseed)
+					.getSingleResult();
+		} catch (NoResultException e) {
 			appleAdministratorRole = new AuthorRole();
 			appleAdministratorRole.setRoleEntry(appleAdministrator);
 			appleAdministratorRole.setUserEntry(jappleseed);
 			appleAdministratorRole.persist();
 		}
 		AuthorRole bananaUserRole = null;
-		try{
+		try {
 			bananaUserRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(bananaUser, bsplit).getSingleResult();
-		}catch (NoResultException e){
+		} catch (NoResultException e) {
 			bananaUserRole = new AuthorRole();
 			bananaUserRole.setRoleEntry(bananaUser);
 			bananaUserRole.setUserEntry(bsplit);
 			bananaUserRole.persist();
 		}
 	}
-
 
 }

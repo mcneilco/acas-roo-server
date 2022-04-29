@@ -14,7 +14,7 @@ public class V1_0_4_6__copy_blob_values implements SpringJdbcMigration {
 	public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
 
 		migrateBlobValue("analysis_group_value", jdbcTemplate);
-//		migrateBlobValue("author_value", jdbcTemplate);
+		// migrateBlobValue("author_value", jdbcTemplate);
 		migrateBlobValue("container_value", jdbcTemplate);
 		migrateBlobValue("experiment_value", jdbcTemplate);
 		migrateBlobValue("itx_container_container_value", jdbcTemplate);
@@ -28,56 +28,56 @@ public class V1_0_4_6__copy_blob_values implements SpringJdbcMigration {
 		migrateBlobValue("treatment_group_value", jdbcTemplate);
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void migrateBlobValue(String table_name, JdbcTemplate jdbcTemplate){
-		String selectIds = "SELECT id FROM "+table_name+" WHERE id IS NOT null AND blob_value IS NOT NULL";
-		String selectBlobValueById = "SELECT id, blob_value FROM "+table_name+" WHERE id = ?";
-		String updateBlobValue = "UPDATE "+table_name+" SET blob_value_temp = ? WHERE id = ?";
-		
+	public void migrateBlobValue(String table_name, JdbcTemplate jdbcTemplate) {
+		String selectIds = "SELECT id FROM " + table_name + " WHERE id IS NOT null AND blob_value IS NOT NULL";
+		String selectBlobValueById = "SELECT id, blob_value FROM " + table_name + " WHERE id = ?";
+		String updateBlobValue = "UPDATE " + table_name + " SET blob_value_temp = ? WHERE id = ?";
+
 		List<Long> ids = jdbcTemplate.queryForList(selectIds, Long.class);
-		
-		for (Long id : ids){
-			BlobValueObject blobValue = (BlobValueObject) jdbcTemplate.queryForObject(selectBlobValueById, new Object[] { id }, new BlobValueRowMapper());
-			int rs2 = jdbcTemplate.update(updateBlobValue, new Object[] {blobValue.getBlobValue(), id});
+
+		for (Long id : ids) {
+			BlobValueObject blobValue = (BlobValueObject) jdbcTemplate.queryForObject(selectBlobValueById,
+					new Object[] { id }, new BlobValueRowMapper());
+			int rs2 = jdbcTemplate.update(updateBlobValue, new Object[] { blobValue.getBlobValue(), id });
 		}
 	}
-	
-	private class BlobValueObject{
+
+	private class BlobValueObject {
 		private long id;
 		private byte[] blobValue;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public byte[] getBlobValue(){
+
+		public byte[] getBlobValue() {
 			return this.blobValue;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setBlobValue(byte[] blobValue){
+
+		public void setBlobValue(byte[] blobValue) {
 			this.blobValue = blobValue;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class BlobValueRowMapper implements RowMapper
-	{
+	public class BlobValueRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			BlobValueObject blobValue = new BlobValueObject();
 			blobValue.setId(rs.getLong("id"));
-			//Additional code to deal with the blob data
+			// Additional code to deal with the blob data
 			Blob blob = rs.getBlob("blob_value");
-			int blobLength = (int) blob.length();  
+			int blobLength = (int) blob.length();
 			byte[] blobAsBytes = blob.getBytes(1, blobLength);
 			blobValue.setBlobValue(blobAsBytes);
 			return blobValue;
 		}
-	}	
-	
+	}
+
 }

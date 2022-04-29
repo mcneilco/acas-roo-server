@@ -15,26 +15,28 @@ import chemaxon.struc.Molecule;
 public class CmpdRegSDFReaderJChemImpl implements CmpdRegSDFReader {
 
 	private MolImporter molImporter;
-	
-	public CmpdRegSDFReaderJChemImpl(String fileName) throws CmpdRegMolFormatException, FileNotFoundException, IOException{
+
+	public CmpdRegSDFReaderJChemImpl(String fileName)
+			throws CmpdRegMolFormatException, FileNotFoundException, IOException {
 		FileInputStream fis;
-		fis = new FileInputStream (fileName);
-		try{
+		fis = new FileInputStream(fileName);
+		try {
 			this.molImporter = new MolImporter(fis);
-		}catch (MolFormatException e) {
+		} catch (MolFormatException e) {
 			throw new CmpdRegMolFormatException(e);
 		}
 	};
-	
+
 	@Override
-	public void close() throws IOException{
+	public void close() throws IOException {
 		this.molImporter.close();
 	}
-	
+
 	@Override
 	public CmpdRegMolecule readNextMol() throws IOException, CmpdRegMolFormatException {
 		Molecule mol = this.molImporter.read();
-		if (mol == null) return null;
+		if (mol == null)
+			return null;
 		CmpdRegMoleculeJChemImpl molecule = new CmpdRegMoleculeJChemImpl(mol);
 		return molecule;
 	}

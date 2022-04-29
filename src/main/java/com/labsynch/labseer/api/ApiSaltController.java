@@ -27,11 +27,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RequestMapping(value = {"/api/v1/salts"})
+@RequestMapping(value = { "/api/v1/salts" })
 @Transactional
 @Controller
 public class ApiSaltController {
-	
+
 	Logger logger = LoggerFactory.getLogger(ApiSaltController.class);
 
 	@Autowired
@@ -42,26 +42,26 @@ public class ApiSaltController {
 
 	@Autowired
 	private ChemStructureService chemStructureService;
-		
+
 	@RequestMapping(value = "/load", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> loadSalts(
-			@RequestParam (value = "saltSD_fileName", required = true) String saltSD_fileName
-			) {
-		
-		logger.debug("hit the controller to register the salts: " + saltSD_fileName);
-		
-        HttpHeaders headers= new HttpHeaders();
-        headers.add("Content-Type", "application/text");
-        headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Access-Control-Allow-Headers", "Content-Type");
-		
-        int saltsSaved = saltService.loadSalts(saltSD_fileName);
-		logger.debug("number of salts saved: " + saltsSaved);
-		
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			@RequestParam(value = "saltSD_fileName", required = true) String saltSD_fileName) {
 
-//        example curl to call the method
-//        curl -i -X POST -H "Accept: application/json" 'http://localhost:8080/cmpdreg/api/v1/salts/load?saltSD_fileName=/tmp/Initial_Salts.sdf'
+		logger.debug("hit the controller to register the salts: " + saltSD_fileName);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/text");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+
+		int saltsSaved = saltService.loadSalts(saltSD_fileName);
+		logger.debug("number of salts saved: " + saltsSaved);
+
+		return new ResponseEntity<String>(headers, HttpStatus.OK);
+
+		// example curl to call the method
+		// curl -i -X POST -H "Accept: application/json"
+		// 'http://localhost:8080/cmpdreg/api/v1/salts/load?saltSD_fileName=/tmp/Initial_Salts.sdf'
 
 	}
 
@@ -73,8 +73,8 @@ public class ApiSaltController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Origin", "*");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		if (salt == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -89,8 +89,8 @@ public class ApiSaltController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Origin", "*");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(Salt.toJsonArray(Salt.findAllSalts()), headers, HttpStatus.OK);
 	}
@@ -125,7 +125,7 @@ public class ApiSaltController {
 			errors.add(error);
 		}
 		if (validSalt) {
-			try{
+			try {
 				salt = saltStructureService.saveStructure(salt);
 			} catch (CmpdRegMolFormatException e) {
 				logger.error("Error saving salt: " + e.getMessage());
@@ -157,12 +157,12 @@ public class ApiSaltController {
 
 	// @RequestMapping(method = RequestMethod.OPTIONS)
 	// public ResponseEntity<String> getSaltOptions() {
-	// 	HttpHeaders headers = new HttpHeaders();
-	// 	headers.add("Content-Type", "application/text, text/html");
-	// 	headers.add("Access-Control-Allow-Headers", "Content-Type");
-	// 	headers.add("Access-Control-Allow-Origin", "*");
-	// 	headers.add("Access-Control-Max-Age", "86400");
-	// 	return new ResponseEntity<String>(headers, HttpStatus.OK);
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.add("Content-Type", "application/text, text/html");
+	// headers.add("Access-Control-Allow-Headers", "Content-Type");
+	// headers.add("Access-Control-Allow-Origin", "*");
+	// headers.add("Access-Control-Max-Age", "86400");
+	// return new ResponseEntity<String>(headers, HttpStatus.OK);
 	// }
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -177,8 +177,9 @@ public class ApiSaltController {
 			} else {
 				return new ResponseEntity<String>(updatedSalt.toJson(), headers, HttpStatus.OK);
 			}
-		}catch (CmpdRegMolFormatException e) {
-			return new ResponseEntity<String>("ERROR: Bad molfile:"+e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (CmpdRegMolFormatException e) {
+			return new ResponseEntity<String>("ERROR: Bad molfile:" + e.getMessage(), headers,
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -188,14 +189,15 @@ public class ApiSaltController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Origin", "*");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		try {
 			Collection<Salt> missingSaltStructures = saltStructureService.saveMissingStructures();
 			return new ResponseEntity<String>(Salt.toJsonArray(missingSaltStructures), headers, HttpStatus.OK);
-		}catch (StructureSaveException e) {
-			return new ResponseEntity<String>("ERROR: Saving missing structures:"+e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (StructureSaveException e) {
+			return new ResponseEntity<String>("ERROR: Saving missing structures:" + e.getMessage(), headers,
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

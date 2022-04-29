@@ -30,39 +30,37 @@ import junit.framework.Assert;
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
-		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml" })
 public class ApiLabelSequenceControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiLabelSequenceControllerTest.class);
-	
-    @Autowired
-    private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
-    
-    @Test
-    public void getAllLabelSequences() throws Exception {
-    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/labelsequences")
-    			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json;charset=utf-8"))
-    			.andReturn().getResponse();
-    	String responseJson = response.getContentAsString();
-    	logger.info(responseJson);
-    	Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(responseJson);
-    	Assert.assertEquals(false, labelSequences.isEmpty());
-    	LabelSequence firstLabelSequence = labelSequences.iterator().next();
-    	Assert.assertNotNull(firstLabelSequence.getLabelPrefix());
-    	Assert.assertNotNull(firstLabelSequence.getThingTypeAndKind());
-    	Assert.assertNotNull(firstLabelSequence.getLabelTypeAndKind());
-    }
-    
-    
+	private MockMvc mockMvc;
+
+	@Before
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	@Test
+	public void getAllLabelSequences() throws Exception {
+		MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/labelsequences")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=utf-8"))
+				.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+		logger.info(responseJson);
+		Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(responseJson);
+		Assert.assertEquals(false, labelSequences.isEmpty());
+		LabelSequence firstLabelSequence = labelSequences.iterator().next();
+		Assert.assertNotNull(firstLabelSequence.getLabelPrefix());
+		Assert.assertNotNull(firstLabelSequence.getThingTypeAndKind());
+		Assert.assertNotNull(firstLabelSequence.getLabelTypeAndKind());
+	}
 
 }

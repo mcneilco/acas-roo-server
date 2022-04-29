@@ -17,17 +17,20 @@ public interface SubjectValueService {
 	public void deleteSubjectValue(SubjectValue subjectValue);
 
 	public SubjectValue updateSubjectValue(SubjectValue subjectValue);
-	
+
 	public List<SubjectValue> getSubjectValuesBySubjectId(Long id);
-	
-	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, String stateKind);
-	
-	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+
+	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType,
+			String stateKind);
+
+	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId,
+			String stateType,
 			String stateKind, String valueType, String valueKind);
-	
+
 	public String getCsvList(List<SubjectValue> subjectValues);
-	
-	public List<SubjectValue> getSubjectValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
+
+	public List<SubjectValue> getSubjectValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType,
+			String stateKind);
 
 	public SubjectValue updateSubjectValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
@@ -48,5 +51,5 @@ public interface SubjectValueService {
 
 	public Collection<SubjectValuePathDTO> getSubjectValues(
 			Collection<GenericValuePathRequest> genericRequests);
-	
+
 }

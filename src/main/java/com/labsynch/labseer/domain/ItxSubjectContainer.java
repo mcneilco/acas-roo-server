@@ -37,8 +37,8 @@ import flexjson.JSONSerializer;
 @Entity
 
 public class ItxSubjectContainer extends AbstractThing {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ItxSubjectContainer.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(ItxSubjectContainer.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -55,7 +55,7 @@ public class ItxSubjectContainer extends AbstractThing {
 
     public ItxSubjectContainer() {
     }
-    
+
     public ItxSubjectContainer(com.labsynch.labseer.domain.ItxSubjectContainer itxSubjectContainer) {
         super.setRecordedBy(itxSubjectContainer.getRecordedBy());
         super.setRecordedDate(itxSubjectContainer.getRecordedDate());
@@ -69,185 +69,205 @@ public class ItxSubjectContainer extends AbstractThing {
         this.subject = itxSubjectContainer.getSubject();
         this.container = itxSubjectContainer.getContainer();
     }
-    
+
     public static ItxSubjectContainer update(ItxSubjectContainer object) {
-    	ItxSubjectContainer updatedObject = new JSONDeserializer<ItxSubjectContainer>().use(null, ItxSubjectContainer.class).
-        		deserializeInto(object.toJson(), 
-        				ItxSubjectContainer.findItxSubjectContainer(object.getId()));
-    	updatedObject.setModifiedDate(new Date());
-    	updatedObject.merge();
+        ItxSubjectContainer updatedObject = new JSONDeserializer<ItxSubjectContainer>()
+                .use(null, ItxSubjectContainer.class).deserializeInto(object.toJson(),
+                        ItxSubjectContainer.findItxSubjectContainer(object.getId()));
+        updatedObject.setModifiedDate(new Date());
+        updatedObject.merge();
         return updatedObject;
     }
-  
 
-	public static long countItxSubjectContainers() {
+    public static long countItxSubjectContainers() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxSubjectContainer o", Long.class).getSingleResult();
     }
 
-	public static List<ItxSubjectContainer> findAllItxSubjectContainers() {
-        return entityManager().createQuery("SELECT o FROM ItxSubjectContainer o", ItxSubjectContainer.class).getResultList();
+    public static List<ItxSubjectContainer> findAllItxSubjectContainers() {
+        return entityManager().createQuery("SELECT o FROM ItxSubjectContainer o", ItxSubjectContainer.class)
+                .getResultList();
     }
 
-	public static ItxSubjectContainer findItxSubjectContainer(Long id) {
-        if (id == null) return null;
+    public static ItxSubjectContainer findItxSubjectContainer(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(ItxSubjectContainer.class, id);
     }
-	
-	public static List<ItxSubjectContainer> findItxSubjectContainerByExperimentID(Long experimentId) {
-        if (experimentId == null) return null;
-		String selectSQL = "SELECT oo FROM ItxSubjectContainer oo WHERE oo.id in (select o.id from ItxSubjectContainer o where o.subject.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
-		EntityManager em = ItxSubjectContainer.entityManager();
-		TypedQuery<ItxSubjectContainer> q = em.createQuery(selectSQL, ItxSubjectContainer.class);
-		q.setParameter("experimentId", experimentId);
-		return q.getResultList();
+
+    public static List<ItxSubjectContainer> findItxSubjectContainerByExperimentID(Long experimentId) {
+        if (experimentId == null)
+            return null;
+        String selectSQL = "SELECT oo FROM ItxSubjectContainer oo WHERE oo.id in (select o.id from ItxSubjectContainer o where o.subject.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(selectSQL, ItxSubjectContainer.class);
+        q.setParameter("experimentId", experimentId);
+        return q.getResultList();
     }
 
-	public static List<ItxSubjectContainer> findItxSubjectContainerEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM ItxSubjectContainer o", ItxSubjectContainer.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<ItxSubjectContainer> findItxSubjectContainerEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxSubjectContainer o", ItxSubjectContainer.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public ItxSubjectContainer merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         ItxSubjectContainer merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
-	
-	@Transactional
-	public static int deleteByExperimentID(Long experimentId) {
-		if (experimentId == null) return 0;
-		EntityManager em = ItxSubjectContainer.entityManager();
-		String deleteSQL = "DELETE FROM ItxSubjectContainer oo WHERE id in (select o.id from ItxSubjectContainer o where o.subject.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
-		Query q = em.createQuery(deleteSQL);
-		q.setParameter("experimentId", experimentId);
-		int numberOfDeletedEntities = q.executeUpdate();
-		return numberOfDeletedEntities;
-	}
-	
+
+    @Transactional
+    public static int deleteByExperimentID(Long experimentId) {
+        if (experimentId == null)
+            return 0;
+        EntityManager em = ItxSubjectContainer.entityManager();
+        String deleteSQL = "DELETE FROM ItxSubjectContainer oo WHERE id in (select o.id from ItxSubjectContainer o where o.subject.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
+        Query q = em.createQuery(deleteSQL);
+        q.setParameter("experimentId", experimentId);
+        int numberOfDeletedEntities = q.executeUpdate();
+        return numberOfDeletedEntities;
+    }
+
     public String toJson() {
         return new JSONSerializer().exclude("*.class")
-            	.transform(new ExcludeNulls(), void.class)
-            	.serialize(this);
+                .transform(new ExcludeNulls(), void.class)
+                .serialize(this);
     }
-    
+
     public static ItxSubjectContainer fromJsonToItxSubjectContainer(String json) {
         return new JSONDeserializer<ItxSubjectContainer>().use(null, ItxSubjectContainer.class)
-        		.use(BigDecimal.class, new CustomBigDecimalFactory())
-        		.deserialize(json);
+                .use(BigDecimal.class, new CustomBigDecimalFactory())
+                .deserialize(json);
     }
-    
+
     public static String toJsonArray(Collection<ItxSubjectContainer> collection) {
-        return new JSONSerializer().exclude("*.class")            	
-        		.transform(new ExcludeNulls(), void.class)
-        		.serialize(collection);
+        return new JSONSerializer().exclude("*.class")
+                .transform(new ExcludeNulls(), void.class)
+                .serialize(collection);
     }
-    
-    
+
     public static Collection<ItxSubjectContainer> fromJsonArrayToItxSubjectContainers(String json) {
-        return new JSONDeserializer<List<ItxSubjectContainer>>().use(null, ArrayList.class).use("values", ItxSubjectContainer.class)
-        		.use(BigDecimal.class, new CustomBigDecimalFactory())
-        		.deserialize(json);
+        return new JSONDeserializer<List<ItxSubjectContainer>>().use(null, ArrayList.class)
+                .use("values", ItxSubjectContainer.class)
+                .use(BigDecimal.class, new CustomBigDecimalFactory())
+                .deserialize(json);
     }
 
     public static Collection<ItxSubjectContainer> fromJsonArrayToItxSubjectContainers(Reader json) {
-        return new JSONDeserializer<List<ItxSubjectContainer>>().use(null, ArrayList.class).use("values", ItxSubjectContainer.class)
-        		.use(BigDecimal.class, new CustomBigDecimalFactory())
-        		.deserialize(json);
+        return new JSONDeserializer<List<ItxSubjectContainer>>().use(null, ArrayList.class)
+                .use("values", ItxSubjectContainer.class)
+                .use(BigDecimal.class, new CustomBigDecimalFactory())
+                .deserialize(json);
     }
 
     public static ItxSubjectContainer updateNoStates(ItxSubjectContainer itxSubjectContainer) {
-    	ItxSubjectContainer updatedItxSubjectContainer = ItxSubjectContainer.findItxSubjectContainer(itxSubjectContainer.getId());
-    	updatedItxSubjectContainer.setRecordedBy(itxSubjectContainer.getRecordedBy());
-    	updatedItxSubjectContainer.setRecordedDate(itxSubjectContainer.getRecordedDate());
-    	updatedItxSubjectContainer.setIgnored(itxSubjectContainer.isIgnored());
-    	updatedItxSubjectContainer.setDeleted(itxSubjectContainer.isDeleted());
-    	updatedItxSubjectContainer.setLsTransaction(itxSubjectContainer.getLsTransaction());
-    	updatedItxSubjectContainer.setModifiedBy(itxSubjectContainer.getModifiedBy());
-    	updatedItxSubjectContainer.setCodeName(itxSubjectContainer.getCodeName());
-    	updatedItxSubjectContainer.setLsType(itxSubjectContainer.getLsType());
-    	updatedItxSubjectContainer.setLsKind(itxSubjectContainer.getLsKind());
-    	updatedItxSubjectContainer.setLsTypeAndKind(itxSubjectContainer.getLsTypeAndKind());
-    	updatedItxSubjectContainer.subject = Subject.findSubject(itxSubjectContainer.getSubject().getId());
-    	updatedItxSubjectContainer.container = Container.findContainer(itxSubjectContainer.getContainer().getId());    	
-    	updatedItxSubjectContainer.setModifiedDate(new Date());
-    	updatedItxSubjectContainer.merge();
-    	
-    	logger.debug("------------ Just updated the itxSubjectContainer: ");
-    	if(logger.isDebugEnabled()) logger.debug(updatedItxSubjectContainer.toJson());
-    	
+        ItxSubjectContainer updatedItxSubjectContainer = ItxSubjectContainer
+                .findItxSubjectContainer(itxSubjectContainer.getId());
+        updatedItxSubjectContainer.setRecordedBy(itxSubjectContainer.getRecordedBy());
+        updatedItxSubjectContainer.setRecordedDate(itxSubjectContainer.getRecordedDate());
+        updatedItxSubjectContainer.setIgnored(itxSubjectContainer.isIgnored());
+        updatedItxSubjectContainer.setDeleted(itxSubjectContainer.isDeleted());
+        updatedItxSubjectContainer.setLsTransaction(itxSubjectContainer.getLsTransaction());
+        updatedItxSubjectContainer.setModifiedBy(itxSubjectContainer.getModifiedBy());
+        updatedItxSubjectContainer.setCodeName(itxSubjectContainer.getCodeName());
+        updatedItxSubjectContainer.setLsType(itxSubjectContainer.getLsType());
+        updatedItxSubjectContainer.setLsKind(itxSubjectContainer.getLsKind());
+        updatedItxSubjectContainer.setLsTypeAndKind(itxSubjectContainer.getLsTypeAndKind());
+        updatedItxSubjectContainer.subject = Subject.findSubject(itxSubjectContainer.getSubject().getId());
+        updatedItxSubjectContainer.container = Container.findContainer(itxSubjectContainer.getContainer().getId());
+        updatedItxSubjectContainer.setModifiedDate(new Date());
+        updatedItxSubjectContainer.merge();
+
+        logger.debug("------------ Just updated the itxSubjectContainer: ");
+        if (logger.isDebugEnabled())
+            logger.debug(updatedItxSubjectContainer.toJson());
+
         return updatedItxSubjectContainer;
     }
 
-
-	public Subject getSubject() {
+    public Subject getSubject() {
         return this.subject;
     }
 
-	public void setSubject(Subject subject) {
+    public void setSubject(Subject subject) {
         this.subject = subject;
     }
 
-	public Container getContainer() {
+    public Container getContainer() {
         return this.container;
     }
 
-	public void setContainer(Container container) {
+    public void setContainer(Container container) {
         this.container = container;
     }
 
-	public Set<ItxSubjectContainerState> getLsStates() {
+    public Set<ItxSubjectContainerState> getLsStates() {
         return this.lsStates;
     }
 
-	public void setLsStates(Set<ItxSubjectContainerState> lsStates) {
+    public void setLsStates(Set<ItxSubjectContainerState> lsStates) {
         this.lsStates = lsStates;
     }
 
-	public static Long countFindItxSubjectContainersByCodeNameEquals(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static Long countFindItxSubjectContainersByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName",
+                Long.class);
         q.setParameter("codeName", codeName);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindItxSubjectContainersByContainer(Container container) {
-        if (container == null) throw new IllegalArgumentException("The container argument is required");
+    public static Long countFindItxSubjectContainersByContainer(Container container) {
+        if (container == null)
+            throw new IllegalArgumentException("The container argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.container = :container", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.container = :container",
+                Long.class);
         q.setParameter("container", container);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindItxSubjectContainersByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static Long countFindItxSubjectContainersByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
         q.setParameter("lsTransaction", lsTransaction);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindItxSubjectContainersBySubject(Subject subject) {
-        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+    public static Long countFindItxSubjectContainersBySubject(Subject subject) {
+        if (subject == null)
+            throw new IllegalArgumentException("The subject argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.subject = :subject", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.subject = :subject",
+                Long.class);
         q.setParameter("subject", subject);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByCodeNameEquals(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName", ItxSubjectContainer.class);
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName", ItxSubjectContainer.class);
         q.setParameter("codeName", codeName);
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByCodeNameEquals(String codeName,
+            String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -259,18 +279,23 @@ public class ItxSubjectContainer extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByContainer(Container container) {
-        if (container == null) throw new IllegalArgumentException("The container argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByContainer(Container container) {
+        if (container == null)
+            throw new IllegalArgumentException("The container argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.container = :container", ItxSubjectContainer.class);
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.container = :container", ItxSubjectContainer.class);
         q.setParameter("container", container);
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByContainer(Container container, String sortFieldName, String sortOrder) {
-        if (container == null) throw new IllegalArgumentException("The container argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByContainer(Container container,
+            String sortFieldName, String sortOrder) {
+        if (container == null)
+            throw new IllegalArgumentException("The container argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.container = :container");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.container = :container");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -282,18 +307,24 @@ public class ItxSubjectContainer extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction", ItxSubjectContainer.class);
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction",
+                ItxSubjectContainer.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByLsTransactionEquals(Long lsTransaction,
+            String sortFieldName, String sortOrder) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -305,18 +336,23 @@ public class ItxSubjectContainer extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersBySubject(Subject subject) {
-        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersBySubject(Subject subject) {
+        if (subject == null)
+            throw new IllegalArgumentException("The subject argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.subject = :subject", ItxSubjectContainer.class);
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.subject = :subject", ItxSubjectContainer.class);
         q.setParameter("subject", subject);
         return q;
     }
 
-	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersBySubject(Subject subject, String sortFieldName, String sortOrder) {
-        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+    public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersBySubject(Subject subject,
+            String sortFieldName, String sortOrder) {
+        if (subject == null)
+            throw new IllegalArgumentException("The subject argument is required");
         EntityManager em = ItxSubjectContainer.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.subject = :subject");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM ItxSubjectContainer AS o WHERE o.subject = :subject");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -328,13 +364,14 @@ public class ItxSubjectContainer extends AbstractThing {
         return q;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "subject", "container", "lsStates");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "subject",
+            "container", "lsStates");
 
-	public static List<ItxSubjectContainer> findAllItxSubjectContainers(String sortFieldName, String sortOrder) {
+    public static List<ItxSubjectContainer> findAllItxSubjectContainers(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ItxSubjectContainer o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -345,7 +382,8 @@ public class ItxSubjectContainer extends AbstractThing {
         return entityManager().createQuery(jpaQuery, ItxSubjectContainer.class).getResultList();
     }
 
-	public static List<ItxSubjectContainer> findItxSubjectContainerEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<ItxSubjectContainer> findItxSubjectContainerEntries(int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ItxSubjectContainer o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -353,6 +391,7 @@ public class ItxSubjectContainer extends AbstractThing {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, ItxSubjectContainer.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainer.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 }

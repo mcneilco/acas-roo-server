@@ -18,12 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class CurveFitDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CurveFitDTOTest.class);
-	
+
 	@Test
 	@Transactional
 	public void getFitDataTest() {
@@ -33,7 +34,7 @@ public class CurveFitDTOTest {
 		logger.debug(curveFitDTO.toJson());
 		Assert.assertNotNull(curveFitDTO.getRenderingHint());
 	}
-	
+
 	@Test
 	@Transactional
 	public void getFitDataThenSaveTest() {
@@ -51,12 +52,12 @@ public class CurveFitDTOTest {
 		Collection<CurveFitDTO> curveFitDTOCollection = new ArrayList<CurveFitDTO>();
 		curveFitDTOCollection.add(curveFitDTO);
 		CurveFitDTO.updateFitData(curveFitDTOCollection);
-//		CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId);
-//		curveFitDTO2 = CurveFitDTO.getFitData(curveFitDTO2);
-//		Assert.assertEquals(curveFitDTO.toJson(), curveFitDTO2.toJson());
-		
+		// CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId);
+		// curveFitDTO2 = CurveFitDTO.getFitData(curveFitDTO2);
+		// Assert.assertEquals(curveFitDTO.toJson(), curveFitDTO2.toJson());
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void getFitDataArrayTest() {
@@ -68,7 +69,7 @@ public class CurveFitDTOTest {
 		Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.getFitData(curveIds);
 		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs));
 	}
-	
+
 	@Test
 	@Transactional
 	public void getFitDataFromCurveIdListTimingTest() {
@@ -92,7 +93,7 @@ public class CurveFitDTOTest {
 		logger.debug("total number of curves: " + curveFitDTOs2.size());
 		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs2));
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAllCurveIdsByExperimentTest() {
@@ -106,12 +107,12 @@ public class CurveFitDTOTest {
 		logger.debug(results.toString());
 		Assert.assertTrue(!results.isEmpty());
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAllCurveFitDataByExperimentTest() {
-//		String experimentCodeName = "EXPT-00001298"; //17 curves
-		String experimentCodeName = "EXPT-00000078"; //1000 curves
+		// String experimentCodeName = "EXPT-00001298"; //17 curves
+		String experimentCodeName = "EXPT-00000078"; // 1000 curves
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
 		Collection<CurveFitDTO> results = CurveFitDTO.getFitData(curveIds);
@@ -121,14 +122,14 @@ public class CurveFitDTOTest {
 		logger.debug("total number of curves: " + results.size());
 		logger.debug(CurveFitDTO.toJsonArray(results));
 		Assert.assertTrue(!results.isEmpty());
-		for (CurveFitDTO curveFitDTO: results){
+		for (CurveFitDTO curveFitDTO : results) {
 			Assert.assertNotNull(curveFitDTO.getAnalysisGroupCode());
 			Assert.assertNotNull(curveFitDTO.getRecordedBy());
 			Assert.assertNotNull(curveFitDTO.getRecordedDate());
 			Assert.assertNotNull(curveFitDTO.getLsTransaction());
 		}
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAllKiCurveFitDataByExperimentTest() {
@@ -142,7 +143,7 @@ public class CurveFitDTOTest {
 		logger.debug("total number of curves: " + results.size());
 		logger.debug(KiCurveFitDTO.toJsonArray(results));
 		Assert.assertTrue(!results.isEmpty());
-		for (KiCurveFitDTO kiCurveFitDTO: results){
+		for (KiCurveFitDTO kiCurveFitDTO : results) {
 			Assert.assertNotNull(kiCurveFitDTO.getAnalysisGroupCode());
 			Assert.assertNotNull(kiCurveFitDTO.getRecordedBy());
 			Assert.assertNotNull(kiCurveFitDTO.getRecordedDate());
@@ -150,7 +151,7 @@ public class CurveFitDTOTest {
 		}
 
 	}
-	
+
 	@Test
 	@Transactional
 	public void getDisplayMinMaxByCurveIdTest() {

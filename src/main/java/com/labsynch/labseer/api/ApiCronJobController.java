@@ -26,14 +26,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("api/v1/cronjobs")
 @Controller
 
-
 public class ApiCronJobController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiCronJobController.class);
 
 	@Autowired
 	private CronJobService cronJobService;
-
 
 	@Transactional
 	@RequestMapping(method = RequestMethod.GET, value = "/{idOrCodeName}", headers = "Accept=application/json")
@@ -42,14 +40,14 @@ public class ApiCronJobController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		CronJob cronJob = null;
-		if (SimpleUtil.isNumeric(idOrCodeName)){
+		if (SimpleUtil.isNumeric(idOrCodeName)) {
 			cronJob = CronJob.findCronJob(Long.valueOf(idOrCodeName));
 		} else {
-			try{
+			try {
 				cronJob = CronJob.findCronJobsByCodeNameEquals(idOrCodeName).getSingleResult();
-			}catch (Exception e){
+			} catch (Exception e) {
 				cronJob = null;
 			}
 		}
@@ -59,7 +57,7 @@ public class ApiCronJobController {
 		}
 		return new ResponseEntity<String>(cronJob.toJson(), headers, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> listJson() {
@@ -74,10 +72,10 @@ public class ApiCronJobController {
 	public ResponseEntity<String> createFromJson(@RequestBody CronJob cronJob) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			CronJob savedCronJob = cronJobService.saveCronJob(cronJob);
 			return new ResponseEntity<String>(savedCronJob.toJson(), headers, HttpStatus.CREATED);
-		}catch (Exception e){
+		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -88,26 +86,25 @@ public class ApiCronJobController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		List<CronJob> savedCronJobs = new ArrayList<CronJob>();
-		try{
-			for (CronJob cronJob : cronJobs){
+		try {
+			for (CronJob cronJob : cronJobs) {
 				CronJob savedCronJob = cronJobService.saveCronJob(cronJob);
 				savedCronJobs.add(savedCronJob);
 			}
 			return new ResponseEntity<String>(CronJob.toJsonArray(savedCronJobs), headers, HttpStatus.CREATED);
-		}catch (Exception e){
+		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody CronJob cronJob) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			CronJob updatedCronJob = cronJobService.updateCronJob(cronJob);
 			return new ResponseEntity<String>(updatedCronJob.toJson(), headers, HttpStatus.OK);
-		}catch (Exception e){
+		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -117,18 +114,15 @@ public class ApiCronJobController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		Collection<CronJob> updatedCronJobs = new ArrayList<CronJob>();
-		try{
-			for (CronJob cronJob : cronJobs){
+		try {
+			for (CronJob cronJob : cronJobs) {
 				CronJob updatedCronJob = cronJobService.updateCronJob(cronJob);
 				updatedCronJobs.add(updatedCronJob);
 			}
 			return new ResponseEntity<String>(CronJob.toJsonArray(updatedCronJobs), headers, HttpStatus.OK);
-		}catch (Exception e){
+		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-
 }
-
-

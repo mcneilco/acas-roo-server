@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 @Configurable
 public class LsInteractionDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<LsInteraction> data;
+    private List<LsInteraction> data;
 
-	public LsInteraction getNewTransientLsInteraction(int index) {
+    public LsInteraction getNewTransientLsInteraction(int index) {
         LsInteraction obj = new LsInteraction();
         setCodeName(obj, index);
         setDeleted(obj, index);
@@ -41,7 +41,7 @@ public class LsInteractionDataOnDemand {
         return obj;
     }
 
-	public void setCodeName(LsInteraction obj, int index) {
+    public void setCodeName(LsInteraction obj, int index) {
         String codeName = "codeName_" + index;
         if (codeName.length() > 255) {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
@@ -49,22 +49,22 @@ public class LsInteractionDataOnDemand {
         obj.setCodeName(codeName);
     }
 
-	public void setDeleted(LsInteraction obj, int index) {
+    public void setDeleted(LsInteraction obj, int index) {
         Boolean deleted = true;
         obj.setDeleted(deleted);
     }
 
-	public void setFirstThing(LsInteraction obj, int index) {
+    public void setFirstThing(LsInteraction obj, int index) {
         Long firstThing = new Integer(index).longValue();
         obj.setFirstThing(firstThing);
     }
 
-	public void setIgnored(LsInteraction obj, int index) {
+    public void setIgnored(LsInteraction obj, int index) {
         Boolean ignored = true;
         obj.setIgnored(ignored);
     }
 
-	public void setLsKind(LsInteraction obj, int index) {
+    public void setLsKind(LsInteraction obj, int index) {
         String lsKind = "lsKind_" + index;
         if (lsKind.length() > 255) {
             lsKind = lsKind.substring(0, 255);
@@ -72,12 +72,12 @@ public class LsInteractionDataOnDemand {
         obj.setLsKind(lsKind);
     }
 
-	public void setLsTransaction(LsInteraction obj, int index) {
+    public void setLsTransaction(LsInteraction obj, int index) {
         Long lsTransaction = new Integer(index).longValue();
         obj.setLsTransaction(lsTransaction);
     }
 
-	public void setLsType(LsInteraction obj, int index) {
+    public void setLsType(LsInteraction obj, int index) {
         String lsType = "lsType_" + index;
         if (lsType.length() > 255) {
             lsType = lsType.substring(0, 255);
@@ -85,7 +85,7 @@ public class LsInteractionDataOnDemand {
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(LsInteraction obj, int index) {
+    public void setLsTypeAndKind(LsInteraction obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = lsTypeAndKind.substring(0, 255);
@@ -93,7 +93,7 @@ public class LsInteractionDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public void setModifiedBy(LsInteraction obj, int index) {
+    public void setModifiedBy(LsInteraction obj, int index) {
         String modifiedBy = "modifiedBy_" + index;
         if (modifiedBy.length() > 255) {
             modifiedBy = modifiedBy.substring(0, 255);
@@ -101,12 +101,15 @@ public class LsInteractionDataOnDemand {
         obj.setModifiedBy(modifiedBy);
     }
 
-	public void setModifiedDate(LsInteraction obj, int index) {
-        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setModifiedDate(LsInteraction obj, int index) {
+        Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
     }
 
-	public void setRecordedBy(LsInteraction obj, int index) {
+    public void setRecordedBy(LsInteraction obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -114,17 +117,20 @@ public class LsInteractionDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(LsInteraction obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(LsInteraction obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public void setSecondThing(LsInteraction obj, int index) {
+    public void setSecondThing(LsInteraction obj, int index) {
         Long secondThing = new Integer(index).longValue();
         obj.setSecondThing(secondThing);
     }
 
-	public LsInteraction getSpecificLsInteraction(int index) {
+    public LsInteraction getSpecificLsInteraction(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -137,18 +143,18 @@ public class LsInteractionDataOnDemand {
         return LsInteraction.findLsInteraction(id);
     }
 
-	public LsInteraction getRandomLsInteraction() {
+    public LsInteraction getRandomLsInteraction() {
         init();
         LsInteraction obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return LsInteraction.findLsInteraction(id);
     }
 
-	public boolean modifyLsInteraction(LsInteraction obj) {
+    public boolean modifyLsInteraction(LsInteraction obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = LsInteraction.findLsInteractionEntries(from, to);
@@ -158,7 +164,7 @@ public class LsInteractionDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<LsInteraction>();
         for (int i = 0; i < 10; i++) {
             LsInteraction obj = getNewTransientLsInteraction(i);
@@ -168,7 +174,9 @@ public class LsInteractionDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

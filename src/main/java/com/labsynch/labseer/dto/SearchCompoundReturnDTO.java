@@ -12,105 +12,104 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 import flexjson.transformer.DateTransformer;
 
-
-public class SearchCompoundReturnDTO{
+public class SearchCompoundReturnDTO {
 
     private String corpName;
-    
+
     private String corpNameType;
-    
+
     private List<ParentAliasDTO> parentAliases;
 
-	private String stereoCategoryName;
+    private String stereoCategoryName;
 
-	private String stereoComment;
+    private String stereoComment;
 
-	private List<SearchLotDTO> lotIDs = new ArrayList<SearchLotDTO>();
+    private List<SearchLotDTO> lotIDs = new ArrayList<SearchLotDTO>();
 
-	private String molStructure;
+    private String molStructure;
 
-
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer().exclude("*.class")
-        		.transform( new DateTransformer( "MM/dd/yyyy"), Date.class)
-        		.serialize(this);
+                .transform(new DateTransformer("MM/dd/yyyy"), Date.class)
+                .serialize(this);
     }
 
-	public static SearchCompoundReturnDTO fromJsonToSearchCompoundReturnDTO(String json) {
+    public static SearchCompoundReturnDTO fromJsonToSearchCompoundReturnDTO(String json) {
         return new JSONDeserializer<SearchCompoundReturnDTO>().use(null, SearchCompoundReturnDTO.class)
-        		.use( Date.class, new DateTransformer( "MM/dd/yyyy"))
-        		.deserialize(json);
+                .use(Date.class, new DateTransformer("MM/dd/yyyy"))
+                .deserialize(json);
     }
 
-	public static String toJsonArray(Collection<SearchCompoundReturnDTO> collection) {
+    public static String toJsonArray(Collection<SearchCompoundReturnDTO> collection) {
         return new JSONSerializer().exclude("*.class").include("lotIDs", "parentAliases")
-        		.transform( new DateTransformer( "MM/dd/yyyy"), Date.class)
-        		.serialize(collection);
+                .transform(new DateTransformer("MM/dd/yyyy"), Date.class)
+                .serialize(collection);
     }
 
-	public static Collection<SearchCompoundReturnDTO> fromJsonArrayToSearchCompoes(String json) {
-        return new JSONDeserializer<List<SearchCompoundReturnDTO>>().use(null, ArrayList.class).use("values", SearchCompoundReturnDTO.class)
-        		.use( Date.class, new DateTransformer( "MM/dd/yyyy"))
-        		.deserialize(json);
+    public static Collection<SearchCompoundReturnDTO> fromJsonArrayToSearchCompoes(String json) {
+        return new JSONDeserializer<List<SearchCompoundReturnDTO>>().use(null, ArrayList.class)
+                .use("values", SearchCompoundReturnDTO.class)
+                .use(Date.class, new DateTransformer("MM/dd/yyyy"))
+                .deserialize(json);
     }
 
-	public String getCorpName() {
+    public String getCorpName() {
         return this.corpName;
     }
 
-	public void setCorpName(String corpName) {
+    public void setCorpName(String corpName) {
         this.corpName = corpName;
     }
 
-	public String getCorpNameType() {
+    public String getCorpNameType() {
         return this.corpNameType;
     }
 
-	public void setCorpNameType(String corpNameType) {
+    public void setCorpNameType(String corpNameType) {
         this.corpNameType = corpNameType;
     }
 
-	public List<ParentAliasDTO> getParentAliases() {
+    public List<ParentAliasDTO> getParentAliases() {
         return this.parentAliases;
     }
 
-	public void setParentAliases(List<ParentAliasDTO> parentAliases) {
+    public void setParentAliases(List<ParentAliasDTO> parentAliases) {
         this.parentAliases = parentAliases;
     }
 
-	public String getStereoCategoryName() {
+    public String getStereoCategoryName() {
         return this.stereoCategoryName;
     }
 
-	public void setStereoCategoryName(String stereoCategoryName) {
+    public void setStereoCategoryName(String stereoCategoryName) {
         this.stereoCategoryName = stereoCategoryName;
     }
 
-	public String getStereoComment() {
+    public String getStereoComment() {
         return this.stereoComment;
     }
 
-	public void setStereoComment(String stereoComment) {
+    public void setStereoComment(String stereoComment) {
         this.stereoComment = stereoComment;
     }
 
-	public List<SearchLotDTO> getLotIDs() {
+    public List<SearchLotDTO> getLotIDs() {
         return this.lotIDs;
     }
 
-	public void setLotIDs(List<SearchLotDTO> lotIDs) {
+    public void setLotIDs(List<SearchLotDTO> lotIDs) {
         this.lotIDs = lotIDs;
     }
 
-	public String getMolStructure() {
+    public String getMolStructure() {
         return this.molStructure;
     }
 
-	public void setMolStructure(String molStructure) {
+    public void setMolStructure(String molStructure) {
         this.molStructure = molStructure;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

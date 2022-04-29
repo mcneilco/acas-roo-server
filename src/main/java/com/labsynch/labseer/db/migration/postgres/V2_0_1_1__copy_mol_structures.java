@@ -29,9 +29,9 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 		migrateSaltFormStructures(jdbcTemplate);
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void migrateParentStructures(JdbcTemplate jdbcTemplate){
+	public void migrateParentStructures(JdbcTemplate jdbcTemplate) {
 		logger.info("attempting to pull out parent mol structure");
 
 		String selectParentIds = "SELECT id FROM parent WHERE id IS NOT null";
@@ -40,18 +40,19 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 
 		List<Integer> ids = jdbcTemplate.queryForList(selectParentIds, Integer.class);
 
-		for (Integer id : ids){
-			ParentStructureObject parent = (ParentStructureObject)jdbcTemplate.queryForObject(selectParentByIdSQL, new Object[] { id }, new ParentRowMapper());
+		for (Integer id : ids) {
+			ParentStructureObject parent = (ParentStructureObject) jdbcTemplate.queryForObject(selectParentByIdSQL,
+					new Object[] { id }, new ParentRowMapper());
 			logger.info("here is the mol_structure in the migration: " + parent.getMolStructure());
-			
-			int rs2 = jdbcTemplate.update(updateParentStructure,  new Object[] { parent.getMolStructure(), id });
+
+			int rs2 = jdbcTemplate.update(updateParentStructure, new Object[] { parent.getMolStructure(), id });
 			logger.info("number mol_structure updated: " + rs2);
 
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void migrateLotStructures(JdbcTemplate jdbcTemplate){
+	public void migrateLotStructures(JdbcTemplate jdbcTemplate) {
 		logger.info("attempting to pull out lot as_drawn_struct");
 
 		String selectLotIds = "SELECT id FROM lot";
@@ -60,18 +61,19 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 
 		List<Integer> ids = jdbcTemplate.queryForList(selectLotIds, Integer.class);
 
-		for (Integer id : ids){
-			LotStructureObject lot = (LotStructureObject)jdbcTemplate.queryForObject(selectLotByIdSQL, new Object[] { id }, new LotRowMapper());
+		for (Integer id : ids) {
+			LotStructureObject lot = (LotStructureObject) jdbcTemplate.queryForObject(selectLotByIdSQL,
+					new Object[] { id }, new LotRowMapper());
 			logger.info("here is the as_drawn_struct in the migration: " + lot.getAsDrawnStruct());
-			
-			int rs2 = jdbcTemplate.update(updateLotStructure,  new Object[] { lot.getAsDrawnStruct(), id });
+
+			int rs2 = jdbcTemplate.update(updateLotStructure, new Object[] { lot.getAsDrawnStruct(), id });
 			logger.info("number as_drawn_struct updated: " + rs2);
 
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void migrateSaltStructures(JdbcTemplate jdbcTemplate){
+	public void migrateSaltStructures(JdbcTemplate jdbcTemplate) {
 		logger.info("attempting to pull out salt mol structure");
 
 		String selectSaltIds = "SELECT id FROM salt";
@@ -81,22 +83,24 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 
 		List<Integer> ids = jdbcTemplate.queryForList(selectSaltIds, Integer.class);
 
-		for (Integer id : ids){
-			SaltStructureObject salt = (SaltStructureObject)jdbcTemplate.queryForObject(selectSaltByIdSQL, new Object[] { id }, new SaltRowMapper());
+		for (Integer id : ids) {
+			SaltStructureObject salt = (SaltStructureObject) jdbcTemplate.queryForObject(selectSaltByIdSQL,
+					new Object[] { id }, new SaltRowMapper());
 			logger.info("here is the mol_structure in the migration: " + salt.getMolStructure());
-			
-			int rs2 = jdbcTemplate.update(updateSaltMolStructure,  new Object[] { salt.getMolStructure(), id });
+
+			int rs2 = jdbcTemplate.update(updateSaltMolStructure, new Object[] { salt.getMolStructure(), id });
 			logger.info("number mol_structure updated: " + rs2);
-			
+
 			logger.info("here is the original_structure in the migration: " + salt.getOriginalStructure());
-			int rs3 = jdbcTemplate.update(updateSaltOriginalStructure,  new Object[] { salt.getOriginalStructure(), id });
+			int rs3 = jdbcTemplate.update(updateSaltOriginalStructure,
+					new Object[] { salt.getOriginalStructure(), id });
 			logger.info("number original_structure updated: " + rs3);
 
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void migrateSaltFormStructures(JdbcTemplate jdbcTemplate){
+	public void migrateSaltFormStructures(JdbcTemplate jdbcTemplate) {
 		logger.info("attempting to pull out saltForm mol structure");
 
 		String selectSaltFormIds = "SELECT id FROM salt_form";
@@ -105,117 +109,117 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 
 		List<Integer> ids = jdbcTemplate.queryForList(selectSaltFormIds, Integer.class);
 
-		for (Integer id : ids){
-			SaltFormStructureObject saltForm = (SaltFormStructureObject)jdbcTemplate.queryForObject(selectSaltFormByIdSQL, new Object[] { id }, new SaltFormRowMapper());
+		for (Integer id : ids) {
+			SaltFormStructureObject saltForm = (SaltFormStructureObject) jdbcTemplate
+					.queryForObject(selectSaltFormByIdSQL, new Object[] { id }, new SaltFormRowMapper());
 			logger.info("here is the mol_structure in the migration: " + saltForm.getMolStructure());
-			
-			int rs2 = jdbcTemplate.update(updateSaltFormStructure,  new Object[] { saltForm.getMolStructure(), id });
+
+			int rs2 = jdbcTemplate.update(updateSaltFormStructure, new Object[] { saltForm.getMolStructure(), id });
 			logger.info("number mol_structure updated: " + rs2);
 
 		}
 	}
 
-	private class ParentStructureObject{
+	private class ParentStructureObject {
 		private long id;
 		private String molStructure;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getMolStructure(){
+
+		public String getMolStructure() {
 			return this.molStructure;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setMolStructure(String molStructure){
+
+		public void setMolStructure(String molStructure) {
 			this.molStructure = molStructure;
 		}
 	}
-	
-	private class LotStructureObject{
+
+	private class LotStructureObject {
 		private long id;
 		private String asDrawnStruct;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getAsDrawnStruct(){
+
+		public String getAsDrawnStruct() {
 			return this.asDrawnStruct;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setAsDrawnStruct(String asDrawnStruct){
+
+		public void setAsDrawnStruct(String asDrawnStruct) {
 			this.asDrawnStruct = asDrawnStruct;
 		}
 	}
-	
-	private class SaltStructureObject{
+
+	private class SaltStructureObject {
 		private long id;
 		private String molStructure;
 		private String originalStructure;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getMolStructure(){
+
+		public String getMolStructure() {
 			return this.molStructure;
 		}
-		
-		public String getOriginalStructure(){
+
+		public String getOriginalStructure() {
 			return this.originalStructure;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setMolStructure(String molStructure){
+
+		public void setMolStructure(String molStructure) {
 			this.molStructure = molStructure;
 		}
-		
-		public void setOriginalStructure(String originalStructure){
+
+		public void setOriginalStructure(String originalStructure) {
 			this.originalStructure = originalStructure;
 		}
 	}
-	
-	private class SaltFormStructureObject{
+
+	private class SaltFormStructureObject {
 		private long id;
 		private String molStructure;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getMolStructure(){
+
+		public String getMolStructure() {
 			return this.molStructure;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setMolStructure(String molStructure){
+
+		public void setMolStructure(String molStructure) {
 			this.molStructure = molStructure;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class ParentRowMapper implements RowMapper
-	{
+	public class ParentRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			ParentStructureObject parent = new ParentStructureObject();
 			parent.setId(rs.getLong("id"));
-			//Additional code to deal with the clob data
+			// Additional code to deal with the clob data
 			Clob molClob = rs.getClob("mol_structure");
 			InputStream in = molClob.getAsciiStream();
 			StringWriter w = new StringWriter();
@@ -230,15 +234,14 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 			return parent;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class LotRowMapper implements RowMapper
-	{
+	public class LotRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			LotStructureObject lot = new LotStructureObject();
 			Clob molClob = rs.getClob("as_drawn_struct");
-			if (molClob!= null){
+			if (molClob != null) {
 				InputStream in = molClob.getAsciiStream();
 				StringWriter w = new StringWriter();
 				try {
@@ -253,10 +256,9 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 			return lot;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class SaltRowMapper implements RowMapper
-	{
+	public class SaltRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			SaltStructureObject salt = new SaltStructureObject();
@@ -270,7 +272,7 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 			}
 			String clobAsString = w.toString();
 			salt.setMolStructure(clobAsString);
-			
+
 			Clob molClob2 = rs.getClob("original_structure");
 			InputStream in2 = molClob2.getAsciiStream();
 			StringWriter w2 = new StringWriter();
@@ -281,15 +283,14 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 			}
 			String clobAsString2 = w2.toString();
 			salt.setOriginalStructure(clobAsString2);
-			
+
 			salt.setId(rs.getLong("id"));
 			return salt;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class SaltFormRowMapper implements RowMapper
-	{
+	public class SaltFormRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			SaltFormStructureObject saltForm = new SaltFormStructureObject();
@@ -308,4 +309,3 @@ public class V2_0_1_1__copy_mol_structures implements SpringJdbcMigration {
 		}
 	}
 }
-

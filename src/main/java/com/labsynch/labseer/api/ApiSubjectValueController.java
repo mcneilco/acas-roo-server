@@ -23,13 +23,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ApiSubjectValueController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiSubjectValueController.class);
-    
+
     @RequestMapping(value = "/updatevalue/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> updateSubjectValue(
             @RequestParam("lsType") String lsType,
             @RequestParam("lsValue") String lsValue,
-            @PathVariable("id") Long id
-            ) {
+            @PathVariable("id") Long id) {
         logger.info("in updateSubjectValue");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -58,15 +57,22 @@ public class ApiSubjectValueController {
     public ResponseEntity<String> jsonFindSubjectValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByCodeValueEquals(codeValue).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByCodeValueEquals(codeValue).getResultList()),
+                headers, HttpStatus.OK);
     }
 
     @RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindSubjectValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue) {
+    public ResponseEntity<String> jsonFindSubjectValuesByIgnoredNotAndCodeValueEquals(
+            @RequestParam(value = "ignored", required = false) boolean ignored,
+            @RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                SubjectValue.toJsonArray(SubjectValue
+                        .findSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList()),
+                headers, HttpStatus.OK);
     }
 
     @RequestMapping(params = "find=ByLsState", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -74,22 +80,32 @@ public class ApiSubjectValueController {
     public ResponseEntity<String> jsonFindSubjectValuesByLsState(@RequestParam("lsState") SubjectState lsState) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByLsState(lsState).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByLsState(lsState).getResultList()), headers,
+                HttpStatus.OK);
     }
 
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindSubjectValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
+    public ResponseEntity<String> jsonFindSubjectValuesByLsTypeEqualsAndLsKindEquals(
+            @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                SubjectValue.toJsonArray(
+                        SubjectValue.findSubjectValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()),
+                headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsStateAndLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsStateAndLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(@RequestParam("lsState") SubjectState lsState, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
+    public ResponseEntity<String> jsonFindSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(
+            @RequestParam("lsState") SubjectState lsState, @RequestParam("lsType") String lsType,
+            @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue
+                .findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind).getResultList()),
+                headers, HttpStatus.OK);
     }
 }

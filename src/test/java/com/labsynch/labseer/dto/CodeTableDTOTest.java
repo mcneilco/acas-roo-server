@@ -13,12 +13,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import junit.framework.Assert;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class CodeTableDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CodeTableDTOTest.class);
 
 	@Test
@@ -40,7 +40,7 @@ public class CodeTableDTOTest {
 		b.setName("b");
 		CodeTableDTO c = new CodeTableDTO();
 		c.setName("c");
-		
+
 		unsorted.add(c);
 		unsorted.add(three);
 		unsorted.add(a);
@@ -48,20 +48,19 @@ public class CodeTableDTOTest {
 		unsorted.add(two);
 		unsorted.add(b);
 		logger.info(unsorted.toString());
-		
+
 		sortedCheck.add(one);
 		sortedCheck.add(two);
 		sortedCheck.add(three);
 		sortedCheck.add(a);
 		sortedCheck.add(b);
 		sortedCheck.add(c);
-		
+
 		List<CodeTableDTO> mergeSorted = CodeTableDTO.sortCodeTables(unsorted);
 		logger.info(mergeSorted.toString());
-		for (int i=0; i<sortedCheck.size(); i++){
+		for (int i = 0; i < sortedCheck.size(); i++) {
 			Assert.assertEquals(sortedCheck.get(i), mergeSorted.get(i));
 		}
-		
-		
+
 	}
 }

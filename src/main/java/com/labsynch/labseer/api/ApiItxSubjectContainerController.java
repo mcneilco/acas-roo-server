@@ -48,15 +48,16 @@ public class ApiItxSubjectContainerController {
         }
         return new ResponseEntity<String>(itxSubjectContainer.toJson(), headers, HttpStatus.OK);
     }
-    
+
     @RequestMapping(value = "/getBySubjectIdOrCodeName/{subjectIdOrCodeName}", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> getBySubjectIdOrCodeName(@PathVariable("subjectIdOrCodeName") String subjectIdOrCodeName) {
+    public ResponseEntity<java.lang.String> getBySubjectIdOrCodeName(
+            @PathVariable("subjectIdOrCodeName") String subjectIdOrCodeName) {
         Subject subject = null;
-    	if (SimpleUtil.isNumeric(subjectIdOrCodeName)){
-        	subject = Subject.findSubject(Long.valueOf(subjectIdOrCodeName));
-        }else{
-        	subject = Subject.findSubjectByCodeNameEquals(subjectIdOrCodeName);
+        if (SimpleUtil.isNumeric(subjectIdOrCodeName)) {
+            subject = Subject.findSubject(Long.valueOf(subjectIdOrCodeName));
+        } else {
+            subject = Subject.findSubjectByCodeNameEquals(subjectIdOrCodeName);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
@@ -64,7 +65,8 @@ public class ApiItxSubjectContainerController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         Collection<ItxSubjectContainer> itxSubjectContainers = subject.getContainers();
-        return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(itxSubjectContainers), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(itxSubjectContainers), headers,
+                HttpStatus.OK);
     }
 
     @RequestMapping(headers = "Accept=application/json")
@@ -78,67 +80,73 @@ public class ApiItxSubjectContainerController {
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody ItxSubjectContainer itxSubjectContainer) {
-        logger.debug("Incoming itxSubjectContainer JSON: "+itxSubjectContainer.toJson());
+        logger.debug("Incoming itxSubjectContainer JSON: " + itxSubjectContainer.toJson());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        try{
-        	ItxSubjectContainer savedItx = itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer);
+        try {
+            ItxSubjectContainer savedItx = itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer);
             return new ResponseEntity<String>(savedItx.toJson(), headers, HttpStatus.CREATED);
-        }catch(Exception e){
-        	logger.error("Caught error creating itxSubjectContainerContainer from JSON", e);
-        	return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            logger.error("Caught error creating itxSubjectContainerContainer from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<ItxSubjectContainer> itxSubjectContainers) {
-    	HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> createFromJsonArray(
+            @RequestBody List<ItxSubjectContainer> itxSubjectContainers) {
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        try{
-        	Collection<ItxSubjectContainer> savedItxSubjectContainers = new ArrayList<ItxSubjectContainer>();
+        try {
+            Collection<ItxSubjectContainer> savedItxSubjectContainers = new ArrayList<ItxSubjectContainer>();
             for (ItxSubjectContainer itxSubjectContainer : itxSubjectContainers) {
-                savedItxSubjectContainers.add(itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer));
+                savedItxSubjectContainers
+                        .add(itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer));
             }
-            return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(savedItxSubjectContainers), headers, HttpStatus.CREATED);
-        }catch(Exception e){
-        	logger.error("Caught error creating itxSubjectContainerContainer from JSON Array", e);
-        	return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(savedItxSubjectContainers), headers,
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Caught error creating itxSubjectContainerContainer from JSON Array", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    	
+
     }
 
     @Transactional
-    @RequestMapping(value = { "","/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(value = { "", "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ItxSubjectContainer itxSubjectContainer = ItxSubjectContainer.fromJsonToItxSubjectContainer(json);
         ItxSubjectContainer updatedItxSubjectContainer = null;
-        try{
-			updatedItxSubjectContainer = itxSubjectContainerService.updateItxSubjectContainer(itxSubjectContainer);
-	        return new ResponseEntity<String>(updatedItxSubjectContainer.toJson(), headers, HttpStatus.OK);
+        try {
+            updatedItxSubjectContainer = itxSubjectContainerService.updateItxSubjectContainer(itxSubjectContainer);
+            return new ResponseEntity<String>(updatedItxSubjectContainer.toJson(), headers, HttpStatus.OK);
         } catch (Exception e) {
-			logger.error("Caught error updating ItxSubjectContainer from JSON",e);
-			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Caught error updating ItxSubjectContainer from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<ItxSubjectContainer> updatedItxSubjectContainers = new HashSet<ItxSubjectContainer>();
-        try{
-            for (ItxSubjectContainer itxSubjectContainer: ItxSubjectContainer.fromJsonArrayToItxSubjectContainers(json)) {
-            	ItxSubjectContainer updatedItxSubjectContainer = itxSubjectContainerService.updateItxSubjectContainer(itxSubjectContainer);
-            	updatedItxSubjectContainers.add(updatedItxSubjectContainer);
+        try {
+            for (ItxSubjectContainer itxSubjectContainer : ItxSubjectContainer
+                    .fromJsonArrayToItxSubjectContainers(json)) {
+                ItxSubjectContainer updatedItxSubjectContainer = itxSubjectContainerService
+                        .updateItxSubjectContainer(itxSubjectContainer);
+                updatedItxSubjectContainers.add(updatedItxSubjectContainer);
             }
-	        return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(updatedItxSubjectContainers), headers, HttpStatus.OK);
+            return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(updatedItxSubjectContainers), headers,
+                    HttpStatus.OK);
         } catch (Exception e) {
-			logger.error("Caught error updating ItxSubjectContainers from JSON",e);
-			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+            logger.error("Caught error updating ItxSubjectContainers from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")

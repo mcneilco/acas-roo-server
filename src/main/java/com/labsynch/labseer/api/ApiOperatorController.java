@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RequestMapping(value = {"/api/v1/operators"})
+@RequestMapping(value = { "/api/v1/operators" })
 @Transactional
 @Controller
 public class ApiOperatorController {
@@ -26,8 +26,8 @@ public class ApiOperatorController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         if (operator == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -42,8 +42,8 @@ public class ApiOperatorController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(Operator.toJsonArray(Operator.findAllOperators()), headers, HttpStatus.OK);
     }
@@ -116,8 +116,8 @@ public class ApiOperatorController {
         headers.add("Content-Type", "application/text");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }

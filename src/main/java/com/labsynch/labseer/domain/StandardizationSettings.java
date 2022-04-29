@@ -1,4 +1,5 @@
 package com.labsynch.labseer.domain;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -39,61 +40,66 @@ public class StandardizationSettings {
      */
     private Boolean needsStandardization;
 
-
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static StandardizationSettings fromJsonToStandardizationSettings(String json) {
+    public static StandardizationSettings fromJsonToStandardizationSettings(String json) {
         return new JSONDeserializer<StandardizationSettings>()
-        .use(null, StandardizationSettings.class).deserialize(json);
+                .use(null, StandardizationSettings.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<StandardizationSettings> collection) {
+    public static String toJsonArray(Collection<StandardizationSettings> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<StandardizationSettings> collection, String[] fields) {
+    public static String toJsonArray(Collection<StandardizationSettings> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<StandardizationSettings> fromJsonArrayToStandardizationSettingses(String json) {
+    public static Collection<StandardizationSettings> fromJsonArrayToStandardizationSettingses(String json) {
         return new JSONDeserializer<List<StandardizationSettings>>()
-        .use("values", StandardizationSettings.class).deserialize(json);
+                .use("values", StandardizationSettings.class).deserialize(json);
     }
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("modifiedDate", "needsStandardization");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("modifiedDate",
+            "needsStandardization");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new StandardizationSettings().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countStandardizationSettingses() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM StandardizationSettings o", Long.class).getSingleResult();
+    public static long countStandardizationSettingses() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM StandardizationSettings o", Long.class)
+                .getSingleResult();
     }
 
-	public static List<StandardizationSettings> findAllStandardizationSettingses() {
-        return entityManager().createQuery("SELECT o FROM StandardizationSettings o", StandardizationSettings.class).getResultList();
+    public static List<StandardizationSettings> findAllStandardizationSettingses() {
+        return entityManager().createQuery("SELECT o FROM StandardizationSettings o", StandardizationSettings.class)
+                .getResultList();
     }
 
-	public static List<StandardizationSettings> findAllStandardizationSettingses(String sortFieldName, String sortOrder) {
+    public static List<StandardizationSettings> findAllStandardizationSettingses(String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM StandardizationSettings o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -104,16 +110,19 @@ public class StandardizationSettings {
         return entityManager().createQuery(jpaQuery, StandardizationSettings.class).getResultList();
     }
 
-	public static StandardizationSettings findStandardizationSettings(Long id) {
-        if (id == null) return null;
+    public static StandardizationSettings findStandardizationSettings(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(StandardizationSettings.class, id);
     }
 
-	public static List<StandardizationSettings> findStandardizationSettingsEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM StandardizationSettings o", StandardizationSettings.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<StandardizationSettings> findStandardizationSettingsEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM StandardizationSettings o", StandardizationSettings.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<StandardizationSettings> findStandardizationSettingsEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<StandardizationSettings> findStandardizationSettingsEntries(int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM StandardizationSettings o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -121,18 +130,21 @@ public class StandardizationSettings {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, StandardizationSettings.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, StandardizationSettings.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -141,46 +153,59 @@ public class StandardizationSettings {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public StandardizationSettings merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         StandardizationSettings merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public static Long countFindStandardizationSettingsesByNeedsStandardization(Boolean needsStandardization) {
-        if (needsStandardization == null) throw new IllegalArgumentException("The needsStandardization argument is required");
+    public static Long countFindStandardizationSettingsesByNeedsStandardization(Boolean needsStandardization) {
+        if (needsStandardization == null)
+            throw new IllegalArgumentException("The needsStandardization argument is required");
         EntityManager em = StandardizationSettings.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM StandardizationSettings AS o WHERE o.needsStandardization = :needsStandardization", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM StandardizationSettings AS o WHERE o.needsStandardization = :needsStandardization",
+                Long.class);
         q.setParameter("needsStandardization", needsStandardization);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<StandardizationSettings> findStandardizationSettingsesByNeedsStandardization(Boolean needsStandardization) {
-        if (needsStandardization == null) throw new IllegalArgumentException("The needsStandardization argument is required");
+    public static TypedQuery<StandardizationSettings> findStandardizationSettingsesByNeedsStandardization(
+            Boolean needsStandardization) {
+        if (needsStandardization == null)
+            throw new IllegalArgumentException("The needsStandardization argument is required");
         EntityManager em = StandardizationSettings.entityManager();
-        TypedQuery<StandardizationSettings> q = em.createQuery("SELECT o FROM StandardizationSettings AS o WHERE o.needsStandardization = :needsStandardization", StandardizationSettings.class);
+        TypedQuery<StandardizationSettings> q = em.createQuery(
+                "SELECT o FROM StandardizationSettings AS o WHERE o.needsStandardization = :needsStandardization",
+                StandardizationSettings.class);
         q.setParameter("needsStandardization", needsStandardization);
         return q;
     }
 
-	public static TypedQuery<StandardizationSettings> findStandardizationSettingsesByNeedsStandardization(Boolean needsStandardization, String sortFieldName, String sortOrder) {
-        if (needsStandardization == null) throw new IllegalArgumentException("The needsStandardization argument is required");
+    public static TypedQuery<StandardizationSettings> findStandardizationSettingsesByNeedsStandardization(
+            Boolean needsStandardization, String sortFieldName, String sortOrder) {
+        if (needsStandardization == null)
+            throw new IllegalArgumentException("The needsStandardization argument is required");
         EntityManager em = StandardizationSettings.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM StandardizationSettings AS o WHERE o.needsStandardization = :needsStandardization");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM StandardizationSettings AS o WHERE o.needsStandardization = :needsStandardization");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -192,44 +217,44 @@ public class StandardizationSettings {
         return q;
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public Date getModifiedDate() {
+    public Date getModifiedDate() {
         return this.modifiedDate;
     }
 
-	public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 
-	public Boolean getNeedsStandardization() {
+    public Boolean getNeedsStandardization() {
         return this.needsStandardization;
     }
 
-	public void setNeedsStandardization(Boolean needsStandardization) {
+    public void setNeedsStandardization(Boolean needsStandardization) {
         this.needsStandardization = needsStandardization;
     }
 }

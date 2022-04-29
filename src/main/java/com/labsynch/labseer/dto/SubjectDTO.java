@@ -18,207 +18,200 @@ import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class SubjectDTO {
-	
+
     public SubjectDTO(Subject subject) {
-    	this.setId(subject.getId());
-    	this.setVersion(subject.getVersion());
-    	this.setRecordedBy(subject.getRecordedBy());
-		this.setRecordedDate(subject.getRecordedDate());
-		this.setLsTransaction(subject.getLsTransaction());
-		this.setModifiedBy(subject.getModifiedBy());
-		this.setModifiedDate(subject.getModifiedDate());
-		this.setIgnored(subject.isIgnored());
-		this.setCodeName(subject.getCodeName());
-		this.setLsKind(subject.getLsKind());
-		Set<TreatmentGroupMiniDTO> treatmentGroups = new HashSet<TreatmentGroupMiniDTO>();
-		for (TreatmentGroup treatmentGroup : subject.getTreatmentGroups()){
-			treatmentGroups.add(new TreatmentGroupMiniDTO(treatmentGroup));
-		}
-		this.setTreatmentGroups(treatmentGroups);
+        this.setId(subject.getId());
+        this.setVersion(subject.getVersion());
+        this.setRecordedBy(subject.getRecordedBy());
+        this.setRecordedDate(subject.getRecordedDate());
+        this.setLsTransaction(subject.getLsTransaction());
+        this.setModifiedBy(subject.getModifiedBy());
+        this.setModifiedDate(subject.getModifiedDate());
+        this.setIgnored(subject.isIgnored());
+        this.setCodeName(subject.getCodeName());
+        this.setLsKind(subject.getLsKind());
+        Set<TreatmentGroupMiniDTO> treatmentGroups = new HashSet<TreatmentGroupMiniDTO>();
+        for (TreatmentGroup treatmentGroup : subject.getTreatmentGroups()) {
+            treatmentGroups.add(new TreatmentGroupMiniDTO(treatmentGroup));
+        }
+        this.setTreatmentGroups(treatmentGroups);
     }
 
-    
-	private Long id;
-	
-	private Integer version;
-    
-	private String lsType;
+    private Long id;
 
-	private String lsKind;
-	
-	private String codeName;
+    private Integer version;
 
-	private String recordedBy;
+    private String lsType;
 
-	private Date recordedDate;
+    private String lsKind;
 
-	private String modifiedBy;
+    private String codeName;
 
-	private Date modifiedDate;
+    private String recordedBy;
 
-	private boolean ignored;
+    private Date recordedDate;
 
-	private Long lsTransaction;
+    private String modifiedBy;
 
-	
+    private Date modifiedDate;
+
+    private boolean ignored;
+
+    private Long lsTransaction;
+
     private Set<TreatmentGroupMiniDTO> treatmentGroups = new HashSet<TreatmentGroupMiniDTO>();
 
     private Set<SubjectLabelDTO> lsLabels = new HashSet<SubjectLabelDTO>();
 
     private Set<SubjectStateDTO> lsStates = new HashSet<SubjectStateDTO>();
-    
-	private Set<ThingPage> thingPage = new HashSet<ThingPage>();
 
+    private Set<ThingPage> thingPage = new HashSet<ThingPage>();
 
-
-
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .include("lsLabels", "lsStates.lsValues")
-        .exclude("*.class", "lsStates.subject", "lsStates.lsValues.lsState", "treatmentGroup.analysisGroup")
-        .serialize(this);
+                .include("lsLabels", "lsStates.lsValues")
+                .exclude("*.class", "lsStates.subject", "lsStates.lsValues.lsState", "treatmentGroup.analysisGroup")
+                .serialize(this);
     }
 
-	public static SubjectDTO fromJsonToSubjectDTO(String json) {
+    public static SubjectDTO fromJsonToSubjectDTO(String json) {
         return new JSONDeserializer<SubjectDTO>().use(null, SubjectDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<SubjectDTO> collection) {
+    public static String toJsonArray(Collection<SubjectDTO> collection) {
         return new JSONSerializer()
-        .include("lsLabels", "lsStates.lsValues")
-        .exclude("*.class", "lsStates.subject", "lsStates.lsValues.lsState", "treatmentGroup.analysisGroup")
-        .serialize(collection);
+                .include("lsLabels", "lsStates.lsValues")
+                .exclude("*.class", "lsStates.subject", "lsStates.lsValues.lsState", "treatmentGroup.analysisGroup")
+                .serialize(collection);
     }
 
-	public static Collection<SubjectDTO> fromJsonArrayToSubjectDTO(String json) {
-        return new JSONDeserializer<List<SubjectDTO>>().use(null, ArrayList.class).use("values", SubjectDTO.class).deserialize(json);
+    public static Collection<SubjectDTO> fromJsonArrayToSubjectDTO(String json) {
+        return new JSONDeserializer<List<SubjectDTO>>().use(null, ArrayList.class).use("values", SubjectDTO.class)
+                .deserialize(json);
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String getLsType() {
+    public String getLsType() {
         return this.lsType;
     }
 
-	public void setLsType(String lsType) {
+    public void setLsType(String lsType) {
         this.lsType = lsType;
     }
 
-	public String getLsKind() {
+    public String getLsKind() {
         return this.lsKind;
     }
 
-	public void setLsKind(String lsKind) {
+    public void setLsKind(String lsKind) {
         this.lsKind = lsKind;
     }
 
-	public String getCodeName() {
+    public String getCodeName() {
         return this.codeName;
     }
 
-	public void setCodeName(String codeName) {
+    public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
 
-	public String getRecordedBy() {
+    public String getRecordedBy() {
         return this.recordedBy;
     }
 
-	public void setRecordedBy(String recordedBy) {
+    public void setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
     }
 
-	public Date getRecordedDate() {
+    public Date getRecordedDate() {
         return this.recordedDate;
     }
 
-	public void setRecordedDate(Date recordedDate) {
+    public void setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
     }
 
-	public String getModifiedBy() {
+    public String getModifiedBy() {
         return this.modifiedBy;
     }
 
-	public void setModifiedBy(String modifiedBy) {
+    public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
-	public Date getModifiedDate() {
+    public Date getModifiedDate() {
         return this.modifiedDate;
     }
 
-	public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 
-	public boolean isIgnored() {
+    public boolean isIgnored() {
         return this.ignored;
     }
 
-	public void setIgnored(boolean ignored) {
+    public void setIgnored(boolean ignored) {
         this.ignored = ignored;
     }
 
-	public Long getLsTransaction() {
+    public Long getLsTransaction() {
         return this.lsTransaction;
     }
 
-	public void setLsTransaction(Long lsTransaction) {
+    public void setLsTransaction(Long lsTransaction) {
         this.lsTransaction = lsTransaction;
     }
 
-	public Set<TreatmentGroupMiniDTO> getTreatmentGroups() {
+    public Set<TreatmentGroupMiniDTO> getTreatmentGroups() {
         return this.treatmentGroups;
     }
 
-	public void setTreatmentGroups(Set<TreatmentGroupMiniDTO> treatmentGroups) {
+    public void setTreatmentGroups(Set<TreatmentGroupMiniDTO> treatmentGroups) {
         this.treatmentGroups = treatmentGroups;
     }
 
-	public Set<SubjectLabelDTO> getLsLabels() {
+    public Set<SubjectLabelDTO> getLsLabels() {
         return this.lsLabels;
     }
 
-	public void setLsLabels(Set<SubjectLabelDTO> lsLabels) {
+    public void setLsLabels(Set<SubjectLabelDTO> lsLabels) {
         this.lsLabels = lsLabels;
     }
 
-	public Set<SubjectStateDTO> getLsStates() {
+    public Set<SubjectStateDTO> getLsStates() {
         return this.lsStates;
     }
 
-	public void setLsStates(Set<SubjectStateDTO> lsStates) {
+    public void setLsStates(Set<SubjectStateDTO> lsStates) {
         this.lsStates = lsStates;
     }
 
-	public Set<ThingPage> getThingPage() {
+    public Set<ThingPage> getThingPage() {
         return this.thingPage;
     }
 
-	public void setThingPage(Set<ThingPage> thingPage) {
+    public void setThingPage(Set<ThingPage> thingPage) {
         this.thingPage = thingPage;
     }
 }
-
-

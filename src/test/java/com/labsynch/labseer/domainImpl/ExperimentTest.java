@@ -15,19 +15,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class ExperimentTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentTest.class);
-	
+
 	@Test
 	@Transactional
-	public void QueryExperimentByProtocolTypeKindAndExperimentTypeKind() {			
+	public void QueryExperimentByProtocolTypeKindAndExperimentTypeKind() {
 		Protocol protocol = Protocol.findProtocol(13l);
-		List<Experiment> results = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocol.getLsType(), protocol.getLsKind(), "default", "default").getResultList();
+		List<Experiment> results = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(
+				protocol.getLsType(), protocol.getLsKind(), "default", "default").getResultList();
 		logger.info(Experiment.toJsonArray(results));
-		assert(results.size() == 1);
+		assert (results.size() == 1);
 	}
 
 }

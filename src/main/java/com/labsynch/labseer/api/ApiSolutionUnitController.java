@@ -1,4 +1,5 @@
 package com.labsynch.labseer.api;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RequestMapping(value = {"/api/v1/solutionUnits"})
+@RequestMapping(value = { "/api/v1/solutionUnits" })
 @Transactional
 @Controller
 public class ApiSolutionUnitController {
@@ -40,8 +41,8 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         if (solutionunit == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -56,10 +57,11 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
-        return new ResponseEntity<String>(SolutionUnit.toJsonArray(SolutionUnit.findAllSolutionUnits()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(SolutionUnit.toJsonArray(SolutionUnit.findAllSolutionUnits()), headers,
+                HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
@@ -69,8 +71,8 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
@@ -84,8 +86,8 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
@@ -96,8 +98,8 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         if (SolutionUnit.fromJsonToSolutionUnit(json).merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -111,8 +113,8 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         for (SolutionUnit solutionUnit : SolutionUnit.fromJsonArrayToSolutionUnits(json)) {
             if (solutionUnit.merge() == null) {
@@ -129,8 +131,8 @@ public class ApiSolutionUnitController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         if (solutionunit == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -139,19 +141,18 @@ public class ApiSolutionUnitController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	public BeanWrapper beanWrapper;
+    public BeanWrapper beanWrapper;
 
-
-	public Map<String, String> populateParametersMap(HttpServletRequest request) {
+    public Map<String, String> populateParametersMap(HttpServletRequest request) {
         Map<String, Object> params;
         if (request == null) {
             params = Collections.emptyMap();
         } else {
             params = new HashMap<String, Object>(request.getParameterMap());
         }
-        
+
         Map<String, String> allParams = new HashMap<String, String>(params.size());
-        
+
         String value;
         Object objValue;
         for (String key : params.keySet()) {
@@ -166,22 +167,23 @@ public class ApiSolutionUnitController {
         return allParams;
     }
 
-	public Map<String, Object> getPropertyMap(SolutionUnit SolutionUnit, Enumeration<Map<String, String>> propertyNames) {
+    public Map<String, Object> getPropertyMap(SolutionUnit SolutionUnit,
+            Enumeration<Map<String, String>> propertyNames) {
         Map<String, Object> propertyValuesMap = new HashMap<String, Object>();
-        
+
         // If no entity or properties given, return empty Map
-        if(SolutionUnit == null || propertyNames == null) {
+        if (SolutionUnit == null || propertyNames == null) {
             return propertyValuesMap;
         }
-        
+
         List<String> properties = new ArrayList<String>();
         CollectionUtils.addAll(properties, propertyNames);
-        
+
         // There must be at least one property name, otherwise return empty Map
         if (properties.isEmpty()) {
             return propertyValuesMap;
         }
-        
+
         // Iterate over given properties to get each property value
         BeanWrapper entityBean = new BeanWrapperImpl(SolutionUnit);
         for (String propertyName : properties) {
@@ -189,7 +191,7 @@ public class ApiSolutionUnitController {
                 Object propertyValue = null;
                 try {
                     propertyValue = entityBean.getPropertyValue(propertyName);
-                } catch (Exception e){
+                } catch (Exception e) {
                     // TODO log warning
                     continue;
                 }
@@ -199,32 +201,33 @@ public class ApiSolutionUnitController {
         return propertyValuesMap;
     }
 
-	public List<SolutionUnit> findSolutionUnitsByParameters(SolutionUnit SolutionUnit, Enumeration<Map<String, String>> propertyNames) {
+    public List<SolutionUnit> findSolutionUnitsByParameters(SolutionUnit SolutionUnit,
+            Enumeration<Map<String, String>> propertyNames) {
         // Gets propertyMap
         Map<String, Object> propertyMap = getPropertyMap(SolutionUnit, propertyNames);
-        
+
         // if there is a filter
         if (!propertyMap.isEmpty()) {
             // Prepare a predicate
             BooleanBuilder baseFilterPredicate = new BooleanBuilder();
-            
+
             // Base filter. Using BooleanBuilder, a cascading builder for
             // Predicate expressions
             PathBuilder<SolutionUnit> entity = new PathBuilder<SolutionUnit>(SolutionUnit.class, "entity");
-            
+
             // Build base filter
             for (String key : propertyMap.keySet()) {
                 baseFilterPredicate.and(entity.get(key).eq(propertyMap.get(key)));
             }
-            
+
             // Create a query with filter
             JPAQuery query = new JPAQuery(SolutionUnit.entityManager());
             query = query.from(entity);
-            
+
             // execute query
             return query.where(baseFilterPredicate).list(entity);
         }
-        
+
         // no filter: return all elements
         return SolutionUnit.findAllSolutionUnits();
     }

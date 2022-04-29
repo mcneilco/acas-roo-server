@@ -29,14 +29,11 @@ public class LicenseCheckTest {
 	@Autowired
 	private LicenseService licenseService;
 
-
 	@Test
-	public void licenseCheckServiceTest() throws IOException, PGPException, URISyntaxException{
+	public void licenseCheckServiceTest() throws IOException, PGPException, URISyntaxException {
 		LicenseDTO results = licenseService.getLicenseInfo();
 		logger.info(results.toJson());
 
 	}
-
-
 
 }
