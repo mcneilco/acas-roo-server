@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByCodeValueEquals" id="ff_com_labsynch_labseer_domain_SubjectValue" path="/subjectvalues" z="4rzC55DfSI3VThb23jOnOHfXzo4=">
-        <field:input disableFormBinding="true" field="codeValue" id="f_com_labsynch_labseer_domain_SubjectValue_codeValue" max="255" required="true" z="Kf5YtHxZa81prp/r04NeRfZAPqM="/>
-    </form:find>
-</div>

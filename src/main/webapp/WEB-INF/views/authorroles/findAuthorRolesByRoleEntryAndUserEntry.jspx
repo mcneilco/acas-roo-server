@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByRoleEntryAndUserEntry" id="ff_com_labsynch_labseer_domain_AuthorRole" path="/authorroles" z="VM38XoVxYeR5Hxlri3EOvHRRfVc=">
-        <field:select disableFormBinding="true" field="roleEntry" id="f_com_labsynch_labseer_domain_AuthorRole_roleEntry" itemValue="id" items="${lsroles}" path="/lsroles" required="true" z="Dr+3je18+C+Mk146UU1JX4pr+uM="/>
-        <field:select disableFormBinding="true" field="userEntry" id="f_com_labsynch_labseer_domain_AuthorRole_userEntry" itemValue="id" items="${authors}" path="/authors" required="true" z="KhMPlRBE6JD3bMaxJadGwpTABbs="/>
-    </form:find>
-</div>

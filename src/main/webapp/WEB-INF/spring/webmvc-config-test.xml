@@ -61,17 +61,6 @@
 
     <!-- Enable this for integration of file upload functionality -->
     <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
-<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" id="tilesViewResolver">
-    <property name="viewClass" value="org.springframework.web.servlet.view.tiles.TilesView"/>
-  </bean>
-     <bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer" id="tilesConfigurer">
-    <property name="definitions">
-      <list>
-        <value>/WEB-INF/layouts/layouts.xml</value>
-        <!-- Scan views directory for Tiles configurations -->
-        <value>/WEB-INF/views/**/views.xml</value>
-      </list>
-    </property>
-  </bean>
-<bean class="com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
+
+    <bean class="com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
 </beans>
