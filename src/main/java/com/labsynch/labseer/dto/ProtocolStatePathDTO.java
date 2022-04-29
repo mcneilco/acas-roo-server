@@ -10,73 +10,72 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ProtocolStatePathDTO {
 
-	public ProtocolStatePathDTO() {
-	}
-
-	private String idOrCodeName;
-
-	private String stateType;
-	
-	private String stateKind;
-	
-	private Collection<ProtocolState> states;
-	
-	public String toJson() {
-        return new JSONSerializer().include("states.lsValues").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
-	
-	public static String toJsonArray(Collection<ProtocolStatePathDTO> collection) {
-        return new JSONSerializer().include("states.lsValues").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+    public ProtocolStatePathDTO() {
     }
 
-	public String toString() {
+    private String idOrCodeName;
+
+    private String stateType;
+
+    private String stateKind;
+
+    private Collection<ProtocolState> states;
+
+    public String toJson() {
+        return new JSONSerializer().include("states.lsValues").exclude("*.class")
+                .transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+
+    public static String toJsonArray(Collection<ProtocolStatePathDTO> collection) {
+        return new JSONSerializer().include("states.lsValues").exclude("*.class")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static ProtocolStatePathDTO fromJsonToProtocolStatePathDTO(String json) {
+    public static ProtocolStatePathDTO fromJsonToProtocolStatePathDTO(String json) {
         return new JSONDeserializer<ProtocolStatePathDTO>()
-        .use(null, ProtocolStatePathDTO.class).deserialize(json);
+                .use(null, ProtocolStatePathDTO.class).deserialize(json);
     }
 
-	public static Collection<ProtocolStatePathDTO> fromJsonArrayToProtocoes(String json) {
+    public static Collection<ProtocolStatePathDTO> fromJsonArrayToProtocoes(String json) {
         return new JSONDeserializer<List<ProtocolStatePathDTO>>()
-        .use("values", ProtocolStatePathDTO.class).deserialize(json);
+                .use("values", ProtocolStatePathDTO.class).deserialize(json);
     }
 
-	public String getIdOrCodeName() {
+    public String getIdOrCodeName() {
         return this.idOrCodeName;
     }
 
-	public void setIdOrCodeName(String idOrCodeName) {
+    public void setIdOrCodeName(String idOrCodeName) {
         this.idOrCodeName = idOrCodeName;
     }
 
-	public String getStateType() {
+    public String getStateType() {
         return this.stateType;
     }
 
-	public void setStateType(String stateType) {
+    public void setStateType(String stateType) {
         this.stateType = stateType;
     }
 
-	public String getStateKind() {
+    public String getStateKind() {
         return this.stateKind;
     }
 
-	public void setStateKind(String stateKind) {
+    public void setStateKind(String stateKind) {
         this.stateKind = stateKind;
     }
 
-	public Collection<ProtocolState> getStates() {
+    public Collection<ProtocolState> getStates() {
         return this.states;
     }
 
-	public void setStates(Collection<ProtocolState> states) {
+    public void setStates(Collection<ProtocolState> states) {
         this.states = states;
     }
 }
-
-

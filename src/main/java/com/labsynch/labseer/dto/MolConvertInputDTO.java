@@ -1,77 +1,77 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class MolConvertInputDTO {
-	
-	private String structure;
-	
-	private String inputFormat;
-	
-	private String parameters;
 
+    private String structure;
 
-	public String toString() {
+    private String inputFormat;
+
+    private String parameters;
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String getStructure() {
+    public String getStructure() {
         return this.structure;
     }
 
-	public void setStructure(String structure) {
+    public void setStructure(String structure) {
         this.structure = structure;
     }
 
-	public String getInputFormat() {
+    public String getInputFormat() {
         return this.inputFormat;
     }
 
-	public void setInputFormat(String inputFormat) {
+    public void setInputFormat(String inputFormat) {
         this.inputFormat = inputFormat;
     }
 
-	public String getParameters() {
+    public String getParameters() {
         return this.parameters;
     }
 
-	public void setParameters(String parameters) {
+    public void setParameters(String parameters) {
         this.parameters = parameters;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static MolConvertInputDTO fromJsonToMolConvertInputDTO(String json) {
+    public static MolConvertInputDTO fromJsonToMolConvertInputDTO(String json) {
         return new JSONDeserializer<MolConvertInputDTO>()
-        .use(null, MolConvertInputDTO.class).deserialize(json);
+                .use(null, MolConvertInputDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<MolConvertInputDTO> collection) {
+    public static String toJsonArray(Collection<MolConvertInputDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<MolConvertInputDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<MolConvertInputDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<MolConvertInputDTO> fromJsonArrayToMolCoes(String json) {
+    public static Collection<MolConvertInputDTO> fromJsonArrayToMolCoes(String json) {
         return new JSONDeserializer<List<MolConvertInputDTO>>()
-        .use("values", MolConvertInputDTO.class).deserialize(json);
+                .use("values", MolConvertInputDTO.class).deserialize(json);
     }
 }

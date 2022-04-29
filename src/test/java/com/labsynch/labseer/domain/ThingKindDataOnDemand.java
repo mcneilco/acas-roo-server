@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
@@ -15,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ThingKindDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<ThingKind> data;
+    private List<ThingKind> data;
 
-	@Autowired
+    @Autowired
     ThingTypeDataOnDemand thingTypeDataOnDemand;
 
-	public ThingKind getNewTransientThingKind(int index) {
+    public ThingKind getNewTransientThingKind(int index) {
         ThingKind obj = new ThingKind();
         setKindName(obj, index);
         setLsType(obj, index);
@@ -30,7 +32,7 @@ public class ThingKindDataOnDemand {
         return obj;
     }
 
-	public void setKindName(ThingKind obj, int index) {
+    public void setKindName(ThingKind obj, int index) {
         String kindName = "kindName_" + index;
         if (kindName.length() > 255) {
             kindName = kindName.substring(0, 255);
@@ -38,12 +40,12 @@ public class ThingKindDataOnDemand {
         obj.setKindName(kindName);
     }
 
-	public void setLsType(ThingKind obj, int index) {
+    public void setLsType(ThingKind obj, int index) {
         ThingType lsType = thingTypeDataOnDemand.getRandomThingType();
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(ThingKind obj, int index) {
+    public void setLsTypeAndKind(ThingKind obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = new Random().nextInt(10) + lsTypeAndKind.substring(1, 255);
@@ -51,7 +53,7 @@ public class ThingKindDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public ThingKind getSpecificThingKind(int index) {
+    public ThingKind getSpecificThingKind(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -64,18 +66,18 @@ public class ThingKindDataOnDemand {
         return ThingKind.findThingKind(id);
     }
 
-	public ThingKind getRandomThingKind() {
+    public ThingKind getRandomThingKind() {
         init();
         ThingKind obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return ThingKind.findThingKind(id);
     }
 
-	public boolean modifyThingKind(ThingKind obj) {
+    public boolean modifyThingKind(ThingKind obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = ThingKind.findThingKindEntries(from, to);
@@ -85,7 +87,7 @@ public class ThingKindDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<ThingKind>();
         for (int i = 0; i < 10; i++) {
             ThingKind obj = getNewTransientThingKind(i);
@@ -95,7 +97,9 @@ public class ThingKindDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

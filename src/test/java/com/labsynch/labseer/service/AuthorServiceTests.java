@@ -2,6 +2,11 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -11,11 +16,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -29,8 +29,7 @@ public class AuthorServiceTests {
 
 	@Autowired
 	private AuthorService authorService;
-	
-	
+
 	@Test
 	@Transactional
 	public void getAuthorsByRoleTest() {
@@ -41,7 +40,7 @@ public class AuthorServiceTests {
 		logger.info(Author.toJsonArray(authors));
 
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAuthorProjectsTest() {
@@ -51,13 +50,12 @@ public class AuthorServiceTests {
 		logger.info("------- Results from getAuthorProjectsTest ----------");
 
 		logger.info(LsThing.toJsonArrayStub(projects));
-		
+
 		Collection<CodeTableDTO> codeTableProjects = authorService.convertProjectsToCodeTables(projects);
 		logger.info(CodeTableDTO.toJsonArray(codeTableProjects));
-		
+
 	}
 
-	
 	@Test
 	@Transactional
 	public void getAuthorizeGroupsAndProjectTest() {

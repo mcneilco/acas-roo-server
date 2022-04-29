@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.service.ItxContainerContainerService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.ItxContainerContainer;
-import com.labsynch.labseer.service.ItxContainerContainerService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
 @RequestMapping("/api/v1/itxcontainercontainers")
@@ -68,44 +68,51 @@ public class ApiItxContainerContainerController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromLsJsonArray(@RequestBody List<ItxContainerContainer> itxContainerContainers) {
-        Collection<ItxContainerContainer> savedItxContainerContainers = itxContainerContainerService.saveLsItxContainers(itxContainerContainers);
+    public ResponseEntity<java.lang.String> createFromLsJsonArray(
+            @RequestBody List<ItxContainerContainer> itxContainerContainers) {
+        Collection<ItxContainerContainer> savedItxContainerContainers = itxContainerContainerService
+                .saveLsItxContainers(itxContainerContainers);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(savedItxContainerContainers), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(savedItxContainerContainers), headers,
+                HttpStatus.CREATED);
     }
 
     @Transactional
-    @RequestMapping(value = { "","/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(value = { "", "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ItxContainerContainer itxContainerContainer = ItxContainerContainer.fromJsonToItxContainerContainer(json);
         ItxContainerContainer updatedItxContainerContainer = null;
-        try{
-			updatedItxContainerContainer = itxContainerContainerService.updateItxContainerContainer(itxContainerContainer);
-	        return new ResponseEntity<String>(updatedItxContainerContainer.toJson(), headers, HttpStatus.OK);
+        try {
+            updatedItxContainerContainer = itxContainerContainerService
+                    .updateItxContainerContainer(itxContainerContainer);
+            return new ResponseEntity<String>(updatedItxContainerContainer.toJson(), headers, HttpStatus.OK);
         } catch (Exception e) {
-			logger.error("Caught error updating ItxContainerContainer from JSON",e);
-			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Caught error updating ItxContainerContainer from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<ItxContainerContainer> updatedItxContainerContainers = new HashSet<ItxContainerContainer>();
-        try{
-            for (ItxContainerContainer itxContainerContainer: ItxContainerContainer.fromJsonArrayToItxContainerContainers(json)) {
-            	ItxContainerContainer updatedItxContainerContainer = itxContainerContainerService.updateItxContainerContainer(itxContainerContainer);
-            	updatedItxContainerContainers.add(updatedItxContainerContainer);
+        try {
+            for (ItxContainerContainer itxContainerContainer : ItxContainerContainer
+                    .fromJsonArrayToItxContainerContainers(json)) {
+                ItxContainerContainer updatedItxContainerContainer = itxContainerContainerService
+                        .updateItxContainerContainer(itxContainerContainer);
+                updatedItxContainerContainers.add(updatedItxContainerContainer);
             }
-	        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(updatedItxContainerContainers), headers, HttpStatus.OK);
+            return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(updatedItxContainerContainers), headers,
+                    HttpStatus.OK);
         } catch (Exception e) {
-			logger.error("Caught error updating ItxContainerContainers from JSON",e);
-			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+            logger.error("Caught error updating ItxContainerContainers from JSON", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Transactional

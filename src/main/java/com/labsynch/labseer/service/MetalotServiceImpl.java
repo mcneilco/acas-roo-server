@@ -56,7 +56,6 @@ import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-
 @Service
 public class MetalotServiceImpl implements MetalotService {
 
@@ -68,7 +67,7 @@ public class MetalotServiceImpl implements MetalotService {
 
 	@Autowired
 	private CorpNameService corpNameService;
-    
+
 	@Autowired
 	private ParentStructureServiceImpl parentStructureServiceImpl;
 
@@ -84,15 +83,14 @@ public class MetalotServiceImpl implements MetalotService {
 	@Autowired
 	private LotAliasService lotAliasService;
 
-
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(MetalotServiceImpl.class);
 
-	//	@Transactional
+	// @Transactional
 	@Override
-	public MetalotReturn save(Metalot metaLot){
+	public MetalotReturn save(Metalot metaLot) {
 
 		MetalotReturn mr = new MetalotReturn();
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
@@ -103,23 +101,23 @@ public class MetalotServiceImpl implements MetalotService {
 			ErrorMessage parentError = new ErrorMessage();
 			parentError.setLevel("error");
 			parentError.setMessage("Bad molformat. Please fix the molfile: ");
-			errors.add(parentError);			
+			errors.add(parentError);
 		} catch (UniqueNotebookException e) {
 			ErrorMessage lotError = new ErrorMessage();
 			lotError.setLevel("error");
 			lotError.setMessage("lot notebook is not unique");
-			errors.add(lotError);			
+			errors.add(lotError);
 		} catch (DupeParentException e) {
 			ErrorMessage parentError = new ErrorMessage();
 			parentError.setLevel("error");
 			parentError.setMessage("Parent with matching structure and stereo category exists.");
 			errors.add(parentError);
-		}  catch (SaltedCompoundException e) {
+		} catch (SaltedCompoundException e) {
 			ErrorMessage parentError = new ErrorMessage();
 			parentError.setLevel("error");
 			parentError.setMessage("Parent appears to be salted.");
 			errors.add(parentError);
-		}  catch (JsonParseException e) {
+		} catch (JsonParseException e) {
 			ErrorMessage parentError = new ErrorMessage();
 			parentError.setLevel("error");
 			parentError.setMessage("Unable to parse the parent JSON structure.");
@@ -128,7 +126,7 @@ public class MetalotServiceImpl implements MetalotService {
 			ErrorMessage saltFormError = new ErrorMessage();
 			saltFormError.setLevel("warning");
 			saltFormError.setMessage("Duplicate saltForm found by corpName. Please select existing saltForm.");
-			errors.add(saltFormError);	
+			errors.add(saltFormError);
 		} catch (SaltFormMolFormatException e) {
 			ErrorMessage saltFormError = new ErrorMessage();
 			saltFormError.setLevel("error");
@@ -138,7 +136,8 @@ public class MetalotServiceImpl implements MetalotService {
 		} catch (NoResultException e) {
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
-			error.setMessage("Could not find a definition container to create vials with. Please see your system administrator.");
+			error.setMessage(
+					"Could not find a definition container to create vials with. Please see your system administrator.");
 			logger.error(error.getMessage());
 			errors.add(error);
 		} catch (NonUniqueResultException e) {
@@ -153,11 +152,11 @@ public class MetalotServiceImpl implements MetalotService {
 			standardizerError.setMessage("Standardizer Error: " + e.getMessage());
 			logger.error(standardizerError.getMessage());
 			errors.add(standardizerError);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
 			genericError.setMessage("Internal error encountered. Please contact your administrator.");
-			logger.error("Uncaught error in metalot save.",e);
+			logger.error("Uncaught error in metalot save.", e);
 			errors.add(genericError);
 		}
 
@@ -167,109 +166,123 @@ public class MetalotServiceImpl implements MetalotService {
 	}
 
 	@Transactional
-	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors) 
-			throws UniqueNotebookException, DupeParentException, JsonParseException, 
-			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException, 
+	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors)
+			throws UniqueNotebookException, DupeParentException, JsonParseException,
+			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException,
 			SaltedCompoundException, IOException, CmpdRegMolFormatException, StandardizerException {
 
 		logger.info("attempting to save the metaLot. ");
 
-		//		Metalot metaLot = null;		
+		// Metalot metaLot = null;
 		boolean dupeParent = false;
 		boolean metalotError = false;
 
-		//		try {
-		//			metaLot = Metalot.fromJsonToMetalot(metaLotJson);				
-		//		} catch (Exception e){
-		//			logger.error("Unable to parse metaLot JSON. " + e);
-		//			throw new JsonParseException("Unable to parse metaLot JSON");
-		//		}
-		//		
+		// try {
+		// metaLot = Metalot.fromJsonToMetalot(metaLotJson);
+		// } catch (Exception e){
+		// logger.error("Unable to parse metaLot JSON. " + e);
+		// throw new JsonParseException("Unable to parse metaLot JSON");
+		// }
+		//
 		Lot lot = metaLot.getLot();
-		if (logger.isDebugEnabled()) logger.debug("attempting to save the lot. " + lot.toJson());
+		if (logger.isDebugEnabled())
+			logger.debug("attempting to save the lot. " + lot.toJson());
 		logger.debug("is it a virtual lot: " + lot.getIsVirtual());
 
-
-
-		if (lot.getId() == null ){
-			if (propertiesUtilService.getUniqueNotebook() && lot.getNotebookPage() != null){
+		if (lot.getId() == null) {
+			if (propertiesUtilService.getUniqueNotebook() && lot.getNotebookPage() != null) {
 				boolean duplicateNotebook = false;
 				try {
 					duplicateNotebook = checkUniqueNotebook(lot);
-				} catch (IllegalArgumentException e){
+				} catch (IllegalArgumentException e) {
 					throw new UniqueNotebookException("notebook page is required");
 				}
-				logger.info("unique Notebook. " + lot.getNotebookPage() + "  "+ duplicateNotebook);
-				if (!duplicateNotebook){
+				logger.info("unique Notebook. " + lot.getNotebookPage() + "  " + duplicateNotebook);
+				if (!duplicateNotebook) {
 					metalotError = true;
 					throw new UniqueNotebookException("lot notebook is not unique");
 				}
 			}
 		}
 
-
 		Parent parent = metaLot.getLot().getSaltForm().getParent();
 		if (parent == null) {
 			parent = metaLot.getLot().getParent();
 		}
-		if (logger.isDebugEnabled()) logger.debug("parent: " + parent.toJson());
-
+		if (logger.isDebugEnabled())
+			logger.debug("parent: " + parent.toJson());
 
 		Set<ParentAlias> parentAliases = parent.getParentAliases();
 		int numberOfParentAliases = parentAliases.size();
 		logger.info("number of parent aliases: " + numberOfParentAliases);
 
 		String dupeParentNames = "";
-		if (parent.getId() == null){
+		if (parent.getId() == null) {
 			logger.debug("this is a new parent");
 			String molStructure;
-			if (propertiesUtilService.getUseExternalStandardizerConfig()){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()) {
 				molStructure = chemService.standardizeStructure(parent.getMolStructure());
 				parent.setMolStructure(molStructure);
 			}
-			int dupeParentCount = 0;			
-			if (!metaLot.isSkipParentDupeCheck()){
+			int dupeParentCount = 0;
+			if (!metaLot.isSkipParentDupeCheck()) {
 				int[] dupeParentList = {};
-				if(propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
-					//if true then we are no checking this one for hits
-					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
+				if (propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents()
+						&& chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
+					// if true then we are no checking this one for hits
+					logger.warn(
+							"mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 				} else {
 					dupeParentList = chemService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
 				}
-				if(dupeParentList.length > 0 && !metaLot.isSkipParentDupeCheck()){
-					for (int parentCdId : dupeParentList){
+				if (dupeParentList.length > 0 && !metaLot.isSkipParentDupeCheck()) {
+					for (int parentCdId : dupeParentList) {
 						List<Parent> queryParents = Parent.findParentsByCdId(parentCdId).getResultList();
-						for (Parent queryParent : queryParents){
-							if (parent.getStereoCategory() != null && queryParent.getStereoCategory() != null){
-								if (parent.getStereoCategory().getCode().equalsIgnoreCase(queryParent.getStereoCategory().getCode())){
-									//parent structure and stereo category matches
-									//determine if Stereo Comment is different
-									boolean parentHasStereoComment = (parent.getStereoComment() != null && parent.getStereoComment().length() > 0);
-									boolean queryParentHasStereoComment = (queryParent.getStereoComment() != null && queryParent.getStereoComment().length() > 0);
-									if (!parentHasStereoComment & !queryParentHasStereoComment){
-										//both stereo comments are null => dupes
+						for (Parent queryParent : queryParents) {
+							if (parent.getStereoCategory() != null && queryParent.getStereoCategory() != null) {
+								if (parent.getStereoCategory().getCode()
+										.equalsIgnoreCase(queryParent.getStereoCategory().getCode())) {
+									// parent structure and stereo category matches
+									// determine if Stereo Comment is different
+									boolean parentHasStereoComment = (parent.getStereoComment() != null
+											&& parent.getStereoComment().length() > 0);
+									boolean queryParentHasStereoComment = (queryParent.getStereoComment() != null
+											&& queryParent.getStereoComment().length() > 0);
+									if (!parentHasStereoComment & !queryParentHasStereoComment) {
+										// both stereo comments are null => dupes
 										dupeParentCount++;
 										dupeParent = true;
 										logger.error("dupe parent is: " + queryParent.getCorpName());
-										if (queryParent.getCorpName() != null) dupeParentNames = dupeParentNames.concat(queryParent.getCorpName()).concat(" ");
-										if (queryParent.getCommonName() != null) dupeParentNames = dupeParentNames.concat(queryParent.getCommonName().concat(" "));
-									}else if (!parentHasStereoComment || !queryParentHasStereoComment){
-										//stereo comments are different - one is null and the other isn't - parents are not dupes
-									}else if (parent.getStereoComment().equalsIgnoreCase(queryParent.getStereoComment())){
-										//both stereo comments non-null
+										if (queryParent.getCorpName() != null)
+											dupeParentNames = dupeParentNames.concat(queryParent.getCorpName())
+													.concat(" ");
+										if (queryParent.getCommonName() != null)
+											dupeParentNames = dupeParentNames
+													.concat(queryParent.getCommonName().concat(" "));
+									} else if (!parentHasStereoComment || !queryParentHasStereoComment) {
+										// stereo comments are different - one is null and the other isn't - parents are
+										// not dupes
+									} else if (parent.getStereoComment()
+											.equalsIgnoreCase(queryParent.getStereoComment())) {
+										// both stereo comments non-null
 										dupeParentCount++;
 										dupeParent = true;
 										logger.error("dupe parent is: " + queryParent.getCorpName());
-										if (queryParent.getCorpName() != null) dupeParentNames = dupeParentNames.concat(queryParent.getCorpName()).concat(" ");
-										if (queryParent.getCommonName() != null) dupeParentNames = dupeParentNames.concat(queryParent.getCommonName().concat(" "));
-									}else{
-										//stereo category is same but comments are unique, so parents are not dupes
+										if (queryParent.getCorpName() != null)
+											dupeParentNames = dupeParentNames.concat(queryParent.getCorpName())
+													.concat(" ");
+										if (queryParent.getCommonName() != null)
+											dupeParentNames = dupeParentNames
+													.concat(queryParent.getCommonName().concat(" "));
+									} else {
+										// stereo category is same but comments are unique, so parents are not dupes
 									}
 								}
-								//else stereo category is different
+								// else stereo category is different
 							} else {
 								logger.error("the stereo category code is null -- parent: " + parent.getCorpName());
-								logger.error("the stereo category code is null -- queryParent: " + queryParent.getCorpName());
+								logger.error("the stereo category code is null -- queryParent: "
+										+ queryParent.getCorpName());
 								// assume it is a dupe. (an error case). The stereo category should not be null
 								dupeParentCount++;
 								dupeParent = true;
@@ -277,43 +290,44 @@ public class MetalotServiceImpl implements MetalotService {
 
 						}
 
-					}				
-				}				
+					}
+				}
 			}
 
 			int cdId = 0;
 			logger.debug("dupe parent count: " + dupeParentCount + "  " + dupeParent);
 
-			if (dupeParent){
-				//just stop and return an error
+			if (dupeParent) {
+				// just stop and return an error
 				ErrorMessage dupeParentError = new ErrorMessage();
 				dupeParentError.setLevel("error");
-				dupeParentError.setMessage("Duplicate parent found. Please register a new lot for " + dupeParentNames );
+				dupeParentError.setMessage("Duplicate parent found. Please register a new lot for " + dupeParentNames);
 				logger.error(dupeParentError.getMessage());
 				errors.add(dupeParentError);
 				metalotError = true;
 				throw new DupeParentException("Duplicate parent structure");
 
-			}	else if (chemService.checkForSalt(parent.getMolStructure())){
-				//multiple fragments
-				if (parent.getIsMixture() != null){
-					if (!parent.getIsMixture()){
+			} else if (chemService.checkForSalt(parent.getMolStructure())) {
+				// multiple fragments
+				if (parent.getIsMixture() != null) {
+					if (!parent.getIsMixture()) {
 						ErrorMessage multifragmentError = new ErrorMessage();
 						multifragmentError.setLevel("error");
-						multifragmentError.setMessage("Multiple fragments found. Please register the neutral base parent " );
+						multifragmentError
+								.setMessage("Multiple fragments found. Please register the neutral base parent ");
 						logger.error(multifragmentError.getMessage());
 						errors.add(multifragmentError);
 						metalotError = true;
 						logger.error("found a compound with multiple fragments -- mark as an error.");
 						logger.error("Salted molfile: " + parent.getMolStructure());
 						throw new SaltedCompoundException("Salted parent structure");
-					}else{
-						//continue to save - structure is appropriately marked as a mixture
+					} else {
+						// continue to save - structure is appropriately marked as a mixture
 					}
-				}else{
+				} else {
 					ErrorMessage multifragmentError = new ErrorMessage();
 					multifragmentError.setLevel("error");
-					multifragmentError.setMessage("Multiple fragments found. Please register the neutral base parent " );
+					multifragmentError.setMessage("Multiple fragments found. Please register the neutral base parent ");
 					logger.error(multifragmentError.getMessage());
 					errors.add(multifragmentError);
 					metalotError = true;
@@ -325,155 +339,163 @@ public class MetalotServiceImpl implements MetalotService {
 			if (!dupeParent) {
 				boolean checkForDupe = false;
 				cdId = chemService.saveStructure(parent.getMolStructure(), StructureType.PARENT, checkForDupe);
-				if (cdId == -1){
+				if (cdId == -1) {
 					logger.error("Bad molformat. Please fix the molfile: " + parent.getMolStructure());
 					throw new CmpdRegMolFormatException();
 				} else {
 					parent.setCdId(cdId);
-					if (parent.getCorpName() == null || parent.getCorpName().isEmpty() || parent.getCorpName().trim().equalsIgnoreCase("")){
+					if (parent.getCorpName() == null || parent.getCorpName().isEmpty()
+							|| parent.getCorpName().trim().equalsIgnoreCase("")) {
 						generateAndSetCorpName(parent);
-					} 
-					if (parent.getRegistrationDate() == null){
-						parent.setRegistrationDate(new Date());				
+					}
+					if (parent.getRegistrationDate() == null) {
+						parent.setRegistrationDate(new Date());
 					}
 					DecimalFormat dExactMass = new DecimalFormat("#.######");
-					parent.setExactMass(Double.valueOf(dExactMass.format(chemService.getExactMass(parent.getMolStructure()))));
-					DecimalFormat dMolWeight = new DecimalFormat("#.###"); 
-					parent.setMolWeight(Double.valueOf(dMolWeight.format(chemService.getMolWeight(parent.getMolStructure()))));
+					parent.setExactMass(
+							Double.valueOf(dExactMass.format(chemService.getExactMass(parent.getMolStructure()))));
+					DecimalFormat dMolWeight = new DecimalFormat("#.###");
+					parent.setMolWeight(
+							Double.valueOf(dMolWeight.format(chemService.getMolWeight(parent.getMolStructure()))));
 
 					parent.setMolFormula(chemService.getMolFormula(parent.getMolStructure()));
-					//add unique constraint to parent corp name as well (parent and lot)
+					// add unique constraint to parent corp name as well (parent and lot)
 					boolean corpNameAlreadyExists = checkCorpNameAlreadyExists(parent.getCorpName());
 					while (corpNameAlreadyExists) {
 						generateAndSetCorpName(parent);
 						corpNameAlreadyExists = checkCorpNameAlreadyExists(parent.getCorpName());
 					}
-					//try to set the parentNumber if it is not set already
-					if (parent.getParentNumber() < 1){
+					// try to set the parentNumber if it is not set already
+					if (parent.getParentNumber() < 1) {
 						parent.setParentNumber(corpNameService.parseParentNumber(parent.getCorpName()));
 					}
-					logger.debug("Saving new parent with corp name "+parent.getCorpName()+" and parent number "+parent.getParentNumber());
+					logger.debug("Saving new parent with corp name " + parent.getCorpName() + " and parent number "
+							+ parent.getParentNumber());
 					parent.persist();
-				} 
+				}
 			}
 
 		} else {
 			logger.debug("this is an old parent");
-			parent = Parent.findParent(parent.getId()); //get the full parent object
-			//				parent.merge();
+			parent = Parent.findParent(parent.getId()); // get the full parent object
+			// parent.merge();
 		}
 
-		if (!dupeParent){
+		if (!dupeParent) {
 
 			logger.info("not a dupe parent");
 
-			//save parent aliases
+			// save parent aliases
 			logger.info("--------- Number of parentAliases to save: " + parentAliases.size());
 			parent = parentAliasService.updateParentAliases(parent, parentAliases);
-			if (logger.isDebugEnabled()) logger.debug("Parent aliases after save: "+ ParentAlias.toJsonArray(parent.getParentAliases()));
+			if (logger.isDebugEnabled())
+				logger.debug("Parent aliases after save: " + ParentAlias.toJsonArray(parent.getParentAliases()));
 
 			double totalSaltWeight = 0d;
 
-			//save saltForm
+			// save saltForm
 			SaltForm saltForm = metaLot.getLot().getSaltForm();
 			ErrorMessage saltFormError = new ErrorMessage();
 			boolean newSaltForm = false;
-			if (saltForm.getId() == null){
+			if (saltForm.getId() == null) {
 				newSaltForm = true;
 				int cdId = 0;
 				System.out.println("this is a new saltForm");
 
-				String saltFormCorpName = corpNameService.generateSaltFormCorpName(parent.getCorpName(), metaLot.getIsosalts());
+				String saltFormCorpName = corpNameService.generateSaltFormCorpName(parent.getCorpName(),
+						metaLot.getIsosalts());
 				saltForm.setCorpName(saltFormCorpName);
 				logger.debug("saltForm corpName:= " + saltForm.getCorpName());
 				long saltFormCount = SaltForm.countSaltFormsByCorpNameEquals(saltFormCorpName);
 				logger.debug("number of saltForms found by corpName: " + saltFormCount);
-				if (saltFormCount > 0){
-					if(propertiesUtilService.getSaltBeforeLot()){
+				if (saltFormCount > 0) {
+					if (propertiesUtilService.getSaltBeforeLot()) {
 						saltFormError.setLevel("warning");
-						saltFormError.setMessage("Duplicate saltForm found by corpName. Please select existing saltForm.");
-						errors.add(saltFormError);	
+						saltFormError
+								.setMessage("Duplicate saltForm found by corpName. Please select existing saltForm.");
+						errors.add(saltFormError);
 						metalotError = true;
 						logger.error(saltFormError.getMessage());
 						throw new DupeSaltFormCorpNameException("Duplicate saltForm found by corpName.");
 					}
 				} else {
-					if (saltForm.getMolStructure() == null || saltForm.getMolStructure().trim().equalsIgnoreCase("")){
+					if (saltForm.getMolStructure() == null || saltForm.getMolStructure().trim().equalsIgnoreCase("")) {
 						logger.debug("no salt form structure");
 
 					} else {
 						cdId = chemService.saveStructure(saltForm.getMolStructure(), StructureType.SALT_FORM, true);
-						if (cdId == -1){
+						if (cdId == -1) {
 							saltFormError.setLevel("error");
-							saltFormError.setMessage("Bad molformat. Please fix the molfile: " + saltForm.getMolStructure());
+							saltFormError
+									.setMessage("Bad molformat. Please fix the molfile: " + saltForm.getMolStructure());
 							logger.error(saltFormError.getMessage());
 							errors.add(saltFormError);
 							throw new SaltFormMolFormatException();
-						} else if (cdId == 0){
+						} else if (cdId == 0) {
 							saltFormError.setLevel("warning");
 							saltFormError.setMessage("Duplicate saltForm found. Please select existing saltForm.");
 							logger.error(saltFormError.getMessage());
 							errors.add(saltFormError);
 							metalotError = true;
-						}        						
-					}					
+						}
+					}
 				}
 
-				if (saltForm.getRegistrationDate() == null){
-					saltForm.setRegistrationDate(new Date());				
+				if (saltForm.getRegistrationDate() == null) {
+					saltForm.setRegistrationDate(new Date());
 				}
-				if (!metalotError){
+				if (!metalotError) {
 					saltForm.setCdId(cdId);
 					saltForm.setParent(parent);
-					if (logger.isDebugEnabled()) logger.debug("persisted the new saltForm: " + saltForm.toJson());
+					if (logger.isDebugEnabled())
+						logger.debug("persisted the new saltForm: " + saltForm.toJson());
 					saltForm.persist();
-					//				saltForm.flush();					
+					// saltForm.flush();
 				}
 
 			} else {
 				logger.debug("this is an old saltForm");
-				//				saltForm.merge();
-			}  
-
+				// saltForm.merge();
+			}
 
 			Set<IsoSalt> isoSalts = metaLot.getIsosalts();
-			if (!newSaltForm && !metalotError) { 
-				//			} else if (isoSalts.size() > 0 && newSaltForm && !metalotError){
+			if (!newSaltForm && !metalotError) {
+				// } else if (isoSalts.size() > 0 && newSaltForm && !metalotError){
 				logger.debug("Checking if SaltForm needs to be updated");
 				saltForm = saltFormService.updateSaltForm(parent, saltForm, isoSalts, lot, totalSaltWeight, errors);
 				lot.setSaltForm(saltForm);
 				totalSaltWeight = saltFormService.calculateSaltWeight(saltForm);
 				logger.debug("calculate saltWeight: " + totalSaltWeight);
-			} else if (newSaltForm && !metalotError){
+			} else if (newSaltForm && !metalotError) {
 				logger.debug("saving new set of isoSalts. Number of salts: " + isoSalts.size());
-				for (IsoSalt isoSalt : isoSalts ){
+				for (IsoSalt isoSalt : isoSalts) {
 					isoSalt.setSaltForm(saltForm);
 					isoSalt.persist();
 					double saltWeight = isoSaltService.calculateSaltWeight(isoSalt);
 					totalSaltWeight = totalSaltWeight + saltWeight;
-					logger.debug("current totalSaltWeigth: " + totalSaltWeight);	
+					logger.debug("current totalSaltWeigth: " + totalSaltWeight);
 				}
 				saltForm.setSaltWeight(totalSaltWeight);
 				saltForm.merge();
 			}
 
-			if (lot.getId() == null ){
+			if (lot.getId() == null) {
 
 				logger.info("do we have an error: " + metalotError);
 
-				if (!metalotError){
+				if (!metalotError) {
 					Set<LotAlias> lotAliases = lot.getLotAliases();
 					int numberOfLotAliases = lotAliases.size();
 					logger.info("number of lot aliases: " + numberOfLotAliases);
 
 					logger.debug("this is a new lot");
 					lot.setSaltForm(saltForm);
-					//lot.setParent(parent);
-					if(lot.getCorpName() == null || lot.getCorpName().trim().equalsIgnoreCase("")){
+					// lot.setParent(parent);
+					if (lot.getCorpName() == null || lot.getCorpName().trim().equalsIgnoreCase("")) {
 						lot.setCorpName(lotService.generateCorpName(lot));
 					}
-					if (lot.getRegistrationDate() == null){
-						lot.setRegistrationDate(new Date());				
+					if (lot.getRegistrationDate() == null) {
+						lot.setRegistrationDate(new Date());
 					}
 
 					Double parentWeight = parent.getMolWeight();
@@ -481,35 +503,35 @@ public class MetalotServiceImpl implements MetalotService {
 					logger.debug("Here is the parent totalSaltWeigth " + totalSaltWeight);
 
 					Double lotWeight = parent.getMolWeight() + totalSaltWeight;
-					logger.debug("lotWeight: " + lotWeight);	
+					logger.debug("lotWeight: " + lotWeight);
 
 					lot.setLotMolWeight(lotWeight);
 					logger.info("Here are the lot comments: " + lot.getComments());
 
-					if(lot.getBuid() == null) {
+					if (lot.getBuid() == null) {
 						lot.setBuid(0L);
 					}
 					try {
 						lot.persist();
 						logger.debug("lot buid = " + lot.getBuid());
-						if (!lot.getIsVirtual()){
-							if (lot.getBuid() == 0){
+						if (!lot.getIsVirtual()) {
+							if (lot.getBuid() == 0) {
 								lot.setBuid(lot.getId());
 								lot.merge();
-							}						
+							}
 						}
 
 						lot.flush();
-					} catch (Exception e){
+					} catch (Exception e) {
 						logger.error("Caught an exception saving the lot: " + e);
-						//get a new corp name and try saving again
-						lot.setCorpName(lotService.generateCorpName(lot));	
+						// get a new corp name and try saving again
+						lot.setCorpName(lotService.generateCorpName(lot));
 						lot.persist();
-						if (!lot.getIsVirtual()){
-							if (lot.getBuid() == 0){
+						if (!lot.getIsVirtual()) {
+							if (lot.getBuid() == 0) {
 								lot.setBuid(lot.getId());
 								lot.merge();
-							}						
+							}
 						}
 						lot.flush();
 					}
@@ -517,30 +539,30 @@ public class MetalotServiceImpl implements MetalotService {
 					logger.debug("just persisted the lot");
 					logger.debug("lot weight: " + lot.getLotMolWeight());
 					logger.debug("lot synthesis date: " + lot.getSynthesisDate());
-					logger.debug("lot registered date: " + lot.getRegistrationDate());					
+					logger.debug("lot registered date: " + lot.getRegistrationDate());
 					Set<FileList> fileLists = metaLot.getFileList();
-					if (fileLists.size() > 0){
+					if (fileLists.size() > 0) {
 						Lot fileLot = Lot.findLot(lot.getId());
 						System.out.println("save new set of fileLists");
-						for (FileList fileList : fileLists){
+						for (FileList fileList : fileLists) {
 							fileList.setLot(fileLot);
 							fileList.persist();
 						}
 					} else {
-						logger.debug("no fileLists to save");        	
+						logger.debug("no fileLists to save");
 					}
 
 					logger.info("--------- Number of lotAliases to save: " + lotAliases.size());
 					lot = lotAliasService.updateLotAliases(lot, lotAliases);
-					if (logger.isDebugEnabled()) logger.debug("Lot aliases after save: "+ LotAlias.toJsonArray(lot.getLotAliases()));
-					
+					if (logger.isDebugEnabled())
+						logger.debug("Lot aliases after save: " + LotAlias.toJsonArray(lot.getLotAliases()));
+
 					if (propertiesUtilService.getCompoundInventory()) {
 						boolean hasBarcode = (lot.getBarcode() != null && lot.getBarcode().length() > 0);
-						if (hasBarcode || !propertiesUtilService.getDisableTubeCreationIfNoBarcode() ) {
+						if (hasBarcode || !propertiesUtilService.getDisableTubeCreationIfNoBarcode()) {
 							createNewTube(lot);
 						}
 					}
-
 
 					lot.clear();
 				}
@@ -552,7 +574,7 @@ public class MetalotServiceImpl implements MetalotService {
 				int numberOfLotAliases = lotAliases.size();
 				logger.info("number of lot aliases: " + numberOfLotAliases);
 
-				if (!metaLot.isSkipParentDupeCheck()){
+				if (!metaLot.isSkipParentDupeCheck()) {
 					Lot oldLot = Lot.findLot(lot.getId());
 					oldLot.setComments(lot.getComments());
 					oldLot.setColor(lot.getColor());
@@ -595,8 +617,8 @@ public class MetalotServiceImpl implements MetalotService {
 					oldLot.setProject(lot.getProject());
 					//
 					oldLot.setSolutionAmount(lot.getSolutionAmount());
-					if (lot.getSolutionAmountUnits() != null && lot.getSolutionAmountUnits().getId() != null){
-						oldLot.setSolutionAmountUnits(lot.getSolutionAmountUnits());						
+					if (lot.getSolutionAmountUnits() != null && lot.getSolutionAmountUnits().getId() != null) {
+						oldLot.setSolutionAmountUnits(lot.getSolutionAmountUnits());
 					} else {
 						logger.warn("WARN: solutionAmountUnits not defined! ");
 						lot.setSolutionAmountUnits(null);
@@ -604,28 +626,31 @@ public class MetalotServiceImpl implements MetalotService {
 
 					logger.info("--------- Number of lotAliases to save: " + lotAliases.size());
 					oldLot = lotAliasService.updateLotAliases(oldLot, lotAliases);
-					if (logger.isDebugEnabled()) logger.debug("Lot aliases after save: "+ LotAlias.toJsonArray(lot.getLotAliases()));
+					if (logger.isDebugEnabled())
+						logger.debug("Lot aliases after save: " + LotAlias.toJsonArray(lot.getLotAliases()));
 
 					oldLot.setVendor(lot.getVendor());
 					oldLot.persist();
 					oldLot.flush();
 
-					//update cas-number
+					// update cas-number
 					SaltForm oldSaltForm = SaltForm.findSaltForm(lot.getSaltForm().getId());
-					if (logger.isDebugEnabled()) logger.debug("found the saltForm: " + oldSaltForm.toJson());
-					if (lot.getSaltForm().getCasNumber() != null){
+					if (logger.isDebugEnabled())
+						logger.debug("found the saltForm: " + oldSaltForm.toJson());
+					if (lot.getSaltForm().getCasNumber() != null) {
 						oldSaltForm.setCasNumber(lot.getSaltForm().getCasNumber());
 						oldSaltForm.merge();
 						logger.debug("the CAS number is updated.");
 					}
-					if (lot.getSaltForm().getMolStructure() != null){
+					if (lot.getSaltForm().getMolStructure() != null) {
 						oldSaltForm.setMolStructure(lot.getSaltForm().getMolStructure());
 						oldSaltForm.merge();
 						logger.debug("the SaltForm structure is updated.");
 					}
 
 					logger.debug("the lot is updated ");
-					if (logger.isDebugEnabled()) logger.debug(Lot.findLot(oldLot.getId()).toJson());
+					if (logger.isDebugEnabled())
+						logger.debug(Lot.findLot(oldLot.getId()).toJson());
 
 				} else {
 					logger.error("found an old lot while saving the bulk load compounds");
@@ -640,30 +665,30 @@ public class MetalotServiceImpl implements MetalotService {
 				Set<FileList> fileLists = metaLot.getFileList();
 				logger.debug("save new set of fileLists");
 				List<Long> fileIds = new ArrayList<Long>();
-				if (fileLists.size() > 0){
+				if (fileLists.size() > 0) {
 					Lot fileLot = Lot.findLot(lot.getId());
-					for (FileList fileList : fileLists){
-						if (fileList.getId() == null){
+					for (FileList fileList : fileLists) {
+						if (fileList.getId() == null) {
 							fileList.setLot(fileLot);
-							fileList.persist();						
-						} 
+							fileList.persist();
+						}
 						fileIds.add(fileList.getId());
 					}
-				} 
+				}
 
 				logger.debug("file list is updated.");
 
-				List<FileList> dbFileLists = FileList.findFileListsByLot(lot).getResultList();				
-				for (FileList dbFileList : dbFileLists){
-					if(!fileIds.contains(dbFileList.getId())){
+				List<FileList> dbFileLists = FileList.findFileListsByLot(lot).getResultList();
+				for (FileList dbFileList : dbFileLists) {
+					if (!fileIds.contains(dbFileList.getId())) {
 						Long oldId = dbFileList.getId();
 						logger.debug("removing old fileList: " + oldId);
 						FileList oldFileList = FileList.findFileList(oldId);
-						if (oldFileList != null){
+						if (oldFileList != null) {
 							try {
 								oldFileList.remove();
 								logger.debug("removed old fileList: " + oldId);
-							} catch (Exception e){
+							} catch (Exception e) {
 								logger.error("unable to remove the file. Error = " + e);
 							}
 
@@ -695,25 +720,29 @@ public class MetalotServiceImpl implements MetalotService {
 	}
 
 	@Transactional
-	private void createNewTube(Lot lot) throws MalformedURLException, IOException, NoResultException, NonUniqueResultException {
+	private void createNewTube(Lot lot)
+			throws MalformedURLException, IOException, NoResultException, NonUniqueResultException {
 		String baseurl = propertiesUtilService.getAcasURL();
 		String url = baseurl + "containers?";
 		Map<String, String> queryParams = new HashMap<String, String>();
-		queryParams.put("lsType","definition container");
-		queryParams.put("lsKind","tube");
-		queryParams.put("format","codetable");
+		queryParams.put("lsType", "definition container");
+		queryParams.put("lsKind", "tube");
+		queryParams.put("format", "codetable");
 		String definitionContainerCodeTable = SimpleUtil.getFromExternalServer(url, queryParams, logger);
-		Collection<CodeTableDTO> definitionContainerResults = CodeTableDTO.fromJsonArrayToCoes(definitionContainerCodeTable);
-		if (definitionContainerResults.size() == 0){
+		Collection<CodeTableDTO> definitionContainerResults = CodeTableDTO
+				.fromJsonArrayToCoes(definitionContainerCodeTable);
+		if (definitionContainerResults.size() == 0) {
 			logger.error("Could not find definition container for tube");
 			throw new NoResultException("Could not find definition container for tube");
 		}
-		CodeTableDTO definitionContainer = CodeTableDTO.fromJsonArrayToCoes(definitionContainerCodeTable).iterator().next();
+		CodeTableDTO definitionContainer = CodeTableDTO.fromJsonArrayToCoes(definitionContainerCodeTable).iterator()
+				.next();
 		String wellName = "A001";
 		Date recordedDate = new Date();
 		CreatePlateRequestDTO tubeRequest = new CreatePlateRequestDTO();
 		tubeRequest.setBarcode(lot.getBarcode());
-		if (tubeRequest.getBarcode() == null || tubeRequest.getBarcode().length() < 1) tubeRequest.setBarcode(lot.getCorpName());
+		if (tubeRequest.getBarcode() == null || tubeRequest.getBarcode().length() < 1)
+			tubeRequest.setBarcode(lot.getCorpName());
 		tubeRequest.setCreatedDate(recordedDate);
 		tubeRequest.setCreatedUser(lot.getRegisteredBy());
 		tubeRequest.setDefinition(definitionContainer.getCode());
@@ -721,30 +750,32 @@ public class MetalotServiceImpl implements MetalotService {
 		Collection<WellContentDTO> wells = new ArrayList<WellContentDTO>();
 		WellContentDTO well = new WellContentDTO();
 		well.setWellName(wellName);
-		if (lot.getAmount() != null) well.setAmount(new BigDecimal(lot.getAmount()));
-		if (lot.getAmountUnits() != null) well.setAmountUnits(lot.getAmountUnits().getCode());
+		if (lot.getAmount() != null)
+			well.setAmount(new BigDecimal(lot.getAmount()));
+		if (lot.getAmountUnits() != null)
+			well.setAmountUnits(lot.getAmountUnits().getCode());
 		well.setPhysicalState("solid");
 		well.setBatchCode(lot.getCorpName());
 		well.setRecordedBy(lot.getRegisteredBy());
 		well.setRecordedDate(recordedDate);
 		wells.add(well);
 		tubeRequest.setWells(wells);
-				
+
 		url = baseurl + "containers/createTube";
 		try {
 			String createTubeResponse = SimpleUtil.postRequestToExternalServer(url, tubeRequest.toJson(), logger);
 			logger.debug("Created tube: ");
 			logger.debug(createTubeResponse);
-		}catch (IOException e) {
+		} catch (IOException e) {
 			if (e.getMessage().contains("400")) {
-				logger.error("Barcode "+tubeRequest.getBarcode()+" already exists!");
-				throw new NonUniqueResultException("Barcode "+tubeRequest.getBarcode()+" already exists!");
-			}else {
+				logger.error("Barcode " + tubeRequest.getBarcode() + " already exists!");
+				throw new NonUniqueResultException("Barcode " + tubeRequest.getBarcode() + " already exists!");
+			} else {
 				throw e;
 			}
 		}
-		
-		if(lot.getStorageLocation() != null && lot.getStorageLocation().length() > 0) {
+
+		if (lot.getStorageLocation() != null && lot.getStorageLocation().length() > 0) {
 			SetTubeLocationDTO moveDTO = new SetTubeLocationDTO();
 			moveDTO.setBarcode(tubeRequest.getBarcode());
 			moveDTO.setLocationBreadCrumb(lot.getStorageLocation());
@@ -754,17 +785,18 @@ public class MetalotServiceImpl implements MetalotService {
 				String rootLabel = lot.getStorageLocation().split(">")[0];
 				moveDTO.setRootLabel(rootLabel);
 			} catch (Exception e) {
-				//do nothing
+				// do nothing
 			}
 			Collection<SetTubeLocationDTO> moveDTOs = new ArrayList<SetTubeLocationDTO>();
 			moveDTOs.add(moveDTO);
 			url = propertiesUtilService.getAcasAppURL() + "setLocationByBreadCrumb";
 			try {
-				String setLocationResponse = SimpleUtil.postRequestToExternalServer(url, SetTubeLocationDTO.toJsonArray(moveDTOs), logger);
+				String setLocationResponse = SimpleUtil.postRequestToExternalServer(url,
+						SetTubeLocationDTO.toJsonArray(moveDTOs), logger);
 				logger.debug("Successfully set location: ");
 				logger.debug(setLocationResponse);
-			}catch (IOException e) {
-				logger.error("Hit error trying to set location of new tube",e);
+			} catch (IOException e) {
+				logger.error("Hit error trying to set location of new tube", e);
 				logger.error(e.getMessage());
 				throw e;
 			}
@@ -774,7 +806,7 @@ public class MetalotServiceImpl implements MetalotService {
 	private boolean checkUniqueNotebook(Lot lot) {
 		List<Lot> lots = Lot.findLotsByNotebookPageEquals(lot.getNotebookPage()).getResultList();
 		logger.debug("number of lots found by notebook entry" + lots.size());
-		if (lots.size() > 0){
+		if (lots.size() > 0) {
 			return false;
 		} else {
 			return true;
@@ -787,10 +819,10 @@ public class MetalotServiceImpl implements MetalotService {
 		return (matcher.replaceFirst("\"synthesisDate\":null"));
 	}
 
-	public Metalot saveParentAliases(Metalot metalot){
+	public Metalot saveParentAliases(Metalot metalot) {
 		Parent parent = metalot.getLot().getParent();
-		for (ParentAlias parentAlias : parent.getParentAliases()){
-			if (parentAlias.getId() == null){
+		for (ParentAlias parentAlias : parent.getParentAliases()) {
+			if (parentAlias.getId() == null) {
 				parentAlias.setParent(parent);
 				parentAlias.persist();
 			}
@@ -799,10 +831,10 @@ public class MetalotServiceImpl implements MetalotService {
 
 	}
 
-	public Metalot saveLotAliases(Metalot metalot){
+	public Metalot saveLotAliases(Metalot metalot) {
 		Lot lot = metalot.getLot();
-		for (LotAlias lotAlias : lot.getLotAliases()){
-			if (lotAlias.getId() == null){
+		for (LotAlias lotAlias : lot.getLotAliases()) {
+			if (lotAlias.getId() == null) {
 				lotAlias.setLot(lot);
 				lotAlias.persist();
 			}
@@ -810,22 +842,22 @@ public class MetalotServiceImpl implements MetalotService {
 		return metalot;
 
 	}
-	
+
 	private void generateAndSetCorpName(Parent parent) throws MalformedURLException, IOException {
-		if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("license_plate_format")){
+		if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("license_plate_format")) {
 			parent.setCorpName(corpNameService.generateCorpLicensePlate());
-			//TODO: set parent number if required
-		} else if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("pre_defined_format")){
+			// TODO: set parent number if required
+		} else if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("pre_defined_format")) {
 			PreDef_CorpName preDef_CorpName = PreDef_CorpName.findNextCorpName();
 			parent.setCorpName(preDef_CorpName.getCorpName());
 			preDef_CorpName.setUsed(true);
 			preDef_CorpName.persist();
-			parent.setParentNumber(preDef_CorpName.getCorpNumber());							
+			parent.setParentNumber(preDef_CorpName.getCorpNumber());
 		} else if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("ACASLabelSequence")) {
 			LabelPrefixDTO labelPrefixDTO = parent.getLabelPrefix();
 			labelPrefixDTO.setNumberOfLabels(1L);
 			labelPrefixDTO.setLabelPrefix(labelPrefixDTO.getName());
-			String url = propertiesUtilService.getAcasURL()+"labelsequences/getLabels";
+			String url = propertiesUtilService.getAcasURL() + "labelsequences/getLabels";
 			String jsonContent = labelPrefixDTO.toSafeJson();
 			String responseJson = SimpleUtil.postRequestToExternalServer(url, jsonContent, logger);
 			AutoLabelDTO autoLabel = AutoLabelDTO.fromJsonArrayToAutoes(responseJson).iterator().next();
@@ -837,14 +869,13 @@ public class MetalotServiceImpl implements MetalotService {
 			parent.setParentNumber(corpName.getCorpNumber());
 		}
 	}
-	
+
 	private boolean checkCorpNameAlreadyExists(String corpName) {
-		if (Parent.countFindParentsByCorpNameEquals(corpName) > 0L){
+		if (Parent.countFindParentsByCorpNameEquals(corpName) > 0L) {
 			return true;
-		}else {
+		} else {
 			return false;
 		}
 	}
-
 
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
@@ -21,6 +22,15 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+
+import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
+import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.ValueTypeKindDTO;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -29,15 +39,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-
-import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
-import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
-import com.labsynch.labseer.dto.FlatThingCsvDTO;
-import com.labsynch.labseer.dto.ValueTypeKindDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -51,75 +52,74 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	private static final int PARAMETER_LIMIT = 999;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "analysis_state_id")
-    private AnalysisGroupState lsState;
-    
-    public AnalysisGroupValue(AnalysisGroupCsvDTO analysisGroupDTO) {
-    	this.setCodeValue(analysisGroupDTO.getCodeValue());
-    	this.setCodeOrigin(analysisGroupDTO.getCodeOrigin());
-    	this.setCodeType(analysisGroupDTO.getCodeType());
-    	this.setCodeKind(analysisGroupDTO.getCodeKind());
-    	this.setLsType(analysisGroupDTO.getValueType());
-    	this.setLsKind(analysisGroupDTO.getValueKind());
-    	this.setClobValue(analysisGroupDTO.getClobValue());
-    	this.setStringValue(analysisGroupDTO.getStringValue());
-    	this.setFileValue(analysisGroupDTO.getFileValue());
-    	this.setUrlValue(analysisGroupDTO.getUrlValue());
-    	this.setDateValue(analysisGroupDTO.getDateValue());
-    	this.setOperatorKind(analysisGroupDTO.getValueOperator());
-    	this.setNumericValue(analysisGroupDTO.getNumericValue());
-    	this.setFileValue(analysisGroupDTO.getFileValue());
-    	this.setUncertainty(analysisGroupDTO.getUncertainty());
-    	this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
-    	this.setUnitKind(analysisGroupDTO.getValueUnit());
-    	this.setConcentration(analysisGroupDTO.getConcentration());
-    	this.setConcUnit(analysisGroupDTO.getConcUnit());
-    	this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
-        this.setRecordedBy(analysisGroupDTO.getRecordedBy());
-        this.setRecordedDate(analysisGroupDTO.getRecordedDate());
-        this.setLsTransaction(analysisGroupDTO.getLsTransaction());
-        this.setModifiedBy(analysisGroupDTO.getModifiedBy());
-        this.setModifiedDate(analysisGroupDTO.getModifiedDate());
-        this.setComments(analysisGroupDTO.getComments());
-        this.setIgnored(analysisGroupDTO.isIgnored());
-        this.setPublicData(analysisGroupDTO.isPublicData());
-        this.setSigFigs(analysisGroupDTO.getSigFigs());
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "analysis_state_id")
+	private AnalysisGroupState lsState;
+
+	public AnalysisGroupValue(AnalysisGroupCsvDTO analysisGroupDTO) {
+		this.setCodeValue(analysisGroupDTO.getCodeValue());
+		this.setCodeOrigin(analysisGroupDTO.getCodeOrigin());
+		this.setCodeType(analysisGroupDTO.getCodeType());
+		this.setCodeKind(analysisGroupDTO.getCodeKind());
+		this.setLsType(analysisGroupDTO.getValueType());
+		this.setLsKind(analysisGroupDTO.getValueKind());
+		this.setClobValue(analysisGroupDTO.getClobValue());
+		this.setStringValue(analysisGroupDTO.getStringValue());
+		this.setFileValue(analysisGroupDTO.getFileValue());
+		this.setUrlValue(analysisGroupDTO.getUrlValue());
+		this.setDateValue(analysisGroupDTO.getDateValue());
+		this.setOperatorKind(analysisGroupDTO.getValueOperator());
+		this.setNumericValue(analysisGroupDTO.getNumericValue());
+		this.setFileValue(analysisGroupDTO.getFileValue());
+		this.setUncertainty(analysisGroupDTO.getUncertainty());
+		this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
+		this.setUnitKind(analysisGroupDTO.getValueUnit());
+		this.setConcentration(analysisGroupDTO.getConcentration());
+		this.setConcUnit(analysisGroupDTO.getConcUnit());
+		this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setComments(analysisGroupDTO.getComments());
+		this.setIgnored(analysisGroupDTO.isIgnored());
+		this.setPublicData(analysisGroupDTO.isPublicData());
+		this.setSigFigs(analysisGroupDTO.getSigFigs());
 	}
 
 	public AnalysisGroupValue(FlatThingCsvDTO analysisGroupDTO) {
-    	this.setCodeValue(analysisGroupDTO.getCodeValue());
-    	this.setCodeOrigin(analysisGroupDTO.getCodeOrigin());
-    	this.setCodeType(analysisGroupDTO.getCodeType());
-    	this.setCodeKind(analysisGroupDTO.getCodeKind());
-    	this.setLsType(analysisGroupDTO.getValueType());
-    	this.setLsKind(analysisGroupDTO.getValueKind());
-    	this.setStringValue(analysisGroupDTO.getStringValue());
-    	this.setClobValue(analysisGroupDTO.getClobValue());
-    	this.setFileValue(analysisGroupDTO.getFileValue());
-    	this.setUrlValue(analysisGroupDTO.getUrlValue());
-    	this.setDateValue(analysisGroupDTO.getDateValue());
-    	this.setOperatorKind(analysisGroupDTO.getOperatorKind());
-    	this.setNumericValue(analysisGroupDTO.getNumericValue());
-    	this.setFileValue(analysisGroupDTO.getFileValue());
-    	this.setUncertainty(analysisGroupDTO.getUncertainty());
-    	this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
-    	this.setUnitKind(analysisGroupDTO.getUnitKind());
-    	this.setConcentration(analysisGroupDTO.getConcentration());
-    	this.setConcUnit(analysisGroupDTO.getConcUnit());
-    	this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
-        this.setRecordedBy(analysisGroupDTO.getRecordedBy());
-        this.setRecordedDate(analysisGroupDTO.getRecordedDate());
-        this.setLsTransaction(analysisGroupDTO.getLsTransaction());
-        this.setModifiedBy(analysisGroupDTO.getModifiedBy());
-        this.setModifiedDate(analysisGroupDTO.getModifiedDate());
-        this.setComments(analysisGroupDTO.getComments());
-        this.setIgnored(analysisGroupDTO.isIgnored());
-        this.setPublicData(analysisGroupDTO.isPublicData());
-        this.setSigFigs(analysisGroupDTO.getSigFigs());
-   }
-
+		this.setCodeValue(analysisGroupDTO.getCodeValue());
+		this.setCodeOrigin(analysisGroupDTO.getCodeOrigin());
+		this.setCodeType(analysisGroupDTO.getCodeType());
+		this.setCodeKind(analysisGroupDTO.getCodeKind());
+		this.setLsType(analysisGroupDTO.getValueType());
+		this.setLsKind(analysisGroupDTO.getValueKind());
+		this.setStringValue(analysisGroupDTO.getStringValue());
+		this.setClobValue(analysisGroupDTO.getClobValue());
+		this.setFileValue(analysisGroupDTO.getFileValue());
+		this.setUrlValue(analysisGroupDTO.getUrlValue());
+		this.setDateValue(analysisGroupDTO.getDateValue());
+		this.setOperatorKind(analysisGroupDTO.getOperatorKind());
+		this.setNumericValue(analysisGroupDTO.getNumericValue());
+		this.setFileValue(analysisGroupDTO.getFileValue());
+		this.setUncertainty(analysisGroupDTO.getUncertainty());
+		this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
+		this.setUnitKind(analysisGroupDTO.getUnitKind());
+		this.setConcentration(analysisGroupDTO.getConcentration());
+		this.setConcUnit(analysisGroupDTO.getConcUnit());
+		this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setComments(analysisGroupDTO.getComments());
+		this.setIgnored(analysisGroupDTO.isIgnored());
+		this.setPublicData(analysisGroupDTO.isPublicData());
+		this.setSigFigs(analysisGroupDTO.getSigFigs());
+	}
 
 	public Long getStateId() {
 		return this.lsState.getId();
@@ -153,8 +153,11 @@ public class AnalysisGroupValue extends AbstractValue {
 		return this.lsState.getAnalysisGroup().getCodeName();
 	}
 
-	public static com.labsynch.labseer.domain.AnalysisGroupValue create(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
-		AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
+	public static com.labsynch.labseer.domain.AnalysisGroupValue create(
+			com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
+		AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>()
+				.use(null, AnalysisGroupValue.class)
+				.deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
 		return newAnalysisGroupValue;
 	}
 
@@ -170,16 +173,19 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO> findAnalysisGroupValueExptCodeAndStateTypeKindAndValueTypeKind(String experimentCode, String stateType, String stateKind, String valueType, String valueKind) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( " 
-				+ "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " 
-				+ "agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, " 
-				+ "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " 
-				+ "agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, " 
-				+ "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + "agv.lsTransaction, agv.publicData) " 
-				+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false " 
-				+ "join ags.analysisGroup ag with ag.ignored = false " + "join ag.experiments exp with exp.ignored = false " 
-				+ "where ags.lsType = :stateType AND ags.lsKind = :stateKind " + "and agv.lsType = :valueType AND agv.lsKind = :valueKind and agv.ignored = false " 
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO> findAnalysisGroupValueExptCodeAndStateTypeKindAndValueTypeKind(
+			String experimentCode, String stateType, String stateKind, String valueType, String valueKind) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( "
+				+ "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, "
+				+ "agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, "
+				+ "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, "
+				+ "agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, "
+				+ "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + "agv.lsTransaction, agv.publicData) "
+				+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false "
+				+ "join ags.analysisGroup ag with ag.ignored = false "
+				+ "join ag.experiments exp with exp.ignored = false "
+				+ "where ags.lsType = :stateType AND ags.lsKind = :stateKind "
+				+ "and agv.lsType = :valueType AND agv.lsKind = :valueKind and agv.ignored = false "
 				+ "and exp.codeName = :experimentCode";
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueBaseDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueBaseDTO.class);
@@ -191,16 +197,18 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO> findAnalysisGroupValueByLsTypeKindAndExptCode(String lsType, String lsKind, String experimentCode) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( " 
-				+ "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " 
-				+ "agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, " 
-				+ "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " 
-				+ "agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, " 
-				+ "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + "agv.lsTransaction, agv.publicData) " 
-				+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false " 
-				+ "join ags.analysisGroup ag with ag.ignored = false " + "join ag.experiments exp with exp.ignored = false " 
-				+ "where ags.lsType = :lsType AND ags.lsKind = :lsKind and agv.ignored = false " 
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO> findAnalysisGroupValueByLsTypeKindAndExptCode(
+			String lsType, String lsKind, String experimentCode) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( "
+				+ "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, "
+				+ "agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, "
+				+ "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, "
+				+ "agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, "
+				+ "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + "agv.lsTransaction, agv.publicData) "
+				+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false "
+				+ "join ags.analysisGroup ag with ag.ignored = false "
+				+ "join ag.experiments exp with exp.ignored = false "
+				+ "where ags.lsType = :lsType AND ags.lsKind = :lsKind and agv.ignored = false "
 				+ "and exp.codeName = :experimentCode";
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueBaseDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueBaseDTO.class);
@@ -210,13 +218,17 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO> findAnalysisGroupValueByLsTypeKindAndExptCodeAll(String lsType, String lsKind, String experimentCode) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( " + "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " +
-				"agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, " + "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " +
-				"agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, " + "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + 
-				"agv.lsTransaction, agv.publicData) " + 
-				"FROM AnalysisGroupValue agv " + "join agv.lsState ags " + "join ags.analysisGroup ag " + 
-				"join ag.experiments exp " + "where ags.lsType = :lsType AND ags.lsKind = :lsKind " + 
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO> findAnalysisGroupValueByLsTypeKindAndExptCodeAll(
+			String lsType, String lsKind, String experimentCode) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( "
+				+ "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " +
+				"agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, "
+				+ "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " +
+				"agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, "
+				+ "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " +
+				"agv.lsTransaction, agv.publicData) " +
+				"FROM AnalysisGroupValue agv " + "join agv.lsState ags " + "join ags.analysisGroup ag " +
+				"join ag.experiments exp " + "where ags.lsType = :lsType AND ags.lsKind = :lsKind " +
 				"and exp.codeName = :experimentCode";
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueBaseDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueBaseDTO.class);
@@ -226,56 +238,58 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(String batchCode, boolean showOnlyPublicData) {
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(String batchCode,
+			boolean showOnlyPublicData) {
 		String sqlQuery;
-		if (showOnlyPublicData){
-			sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, " 
-					+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-					+ "agv2.codeValue AS testedLot, tl.labelText as geneId  " 
-					+ " ) FROM AnalysisGroup ag, LsThing thing " 
-					+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
-					+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
-					+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-					+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true " 
+		if (showOnlyPublicData) {
+			sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, "
+					+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+					+ "agv.stringValue as stringValue, agv.numericValue as numericValue, "
+					+ "agv2.codeValue AS testedLot, tl.labelText as geneId  "
+					+ " ) FROM AnalysisGroup ag, LsThing thing "
+					+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false "
+					+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false "
+					+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+					+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true "
 					+ "JOIN ag.experiments expt with expt.ignored = false "
 					+ "JOIN expt.protocol prot "
-					+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+					+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 					+ "WHERE ag.ignored = false AND thing.codeName = agv2.codeValue AND agv2.codeValue = :batchCode "
-					+ "AND agv.publicData = :showOnlyPublicData " 
-					;
+					+ "AND agv.publicData = :showOnlyPublicData ";
 		} else {
-			sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, " 
-					+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-					+ "agv2.codeValue AS testedLot, tl.labelText as geneId  " 
-					+ " ) FROM AnalysisGroup ag, LsThing thing " 
-					+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
-					+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
-					+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-					+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true " 
+			sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, "
+					+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+					+ "agv.stringValue as stringValue, agv.numericValue as numericValue, "
+					+ "agv2.codeValue AS testedLot, tl.labelText as geneId  "
+					+ " ) FROM AnalysisGroup ag, LsThing thing "
+					+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false "
+					+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false "
+					+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+					+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true "
 					+ "JOIN ag.experiments expt with expt.ignored = false "
 					+ "JOIN expt.protocol prot "
-					+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+					+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 					+ "WHERE ag.ignored = false AND thing.codeName = agv2.codeValue AND agv2.codeValue = :batchCode ";
 		}
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
 		q.setParameter("batchCode", batchCode);
-		if (showOnlyPublicData) q.setParameter("showOnlyPublicData", showOnlyPublicData);
+		if (showOnlyPublicData)
+			q.setParameter("showOnlyPublicData", showOnlyPublicData);
 		return q;
 	}
 
-
-
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOCmpds(Set<java.lang.String> batchCodeList) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, " 
-				+ "agv.lsType as lsType, agv.lsKind as lsKind, " 
-				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-				+ "agv2.codeValue AS testedLot, agv2.codeValue AS geneId " + " ) FROM AnalysisGroup ag " 
-				+ "JOIN ag.lsStates ags with ags.lsType = 'data' " 
-				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' " 
-				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' " 
-				+ "JOIN ag.experiments expt with expt.ignored = false " 
-				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOCmpds(
+			Set<java.lang.String> batchCodeList) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, "
+				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, "
+				+ "agv2.codeValue AS testedLot, agv2.codeValue AS geneId " + " ) FROM AnalysisGroup ag "
+				+ "JOIN ag.lsStates ags with ags.lsType = 'data' "
+				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' "
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' "
+				+ "JOIN ag.experiments expt with expt.ignored = false "
+				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 				+ "JOIN expt.protocol prot "
 				+ "WHERE ag.ignored = false and agv2.codeValue IN (:batchCodeList) ";
 		EntityManager em = entityManager();
@@ -285,18 +299,21 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, " 
-				+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(
+			Set<java.lang.String> batchCodeList) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, "
+				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, "
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  "
 				+ " ) FROM AnalysisGroup ag"
-//				+ ", LsThing thing " 
-				+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
-				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
-				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-//				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true " 
-				+ "JOIN ag.experiments expt with expt.ignored = false " 
-				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+				// + ", LsThing thing "
+				+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false "
+				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false "
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+				// + "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and
+				// tl.ignored = false and tl.preferred = true "
+				+ "JOIN ag.experiments expt with expt.ignored = false "
+				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 				+ "WHERE ag.ignored = false AND thing.codeName = agv2.codeValue AND agv2.codeValue IN (:batchCodeList) ";
 
 		EntityManager em = entityManager();
@@ -306,18 +323,21 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<String> batchCodeList, boolean publicData) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, " 
-				+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
-				+ " ) FROM AnalysisGroup ag " 
-				+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
-				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
-				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-//				+ "LEFT OUTER JOIN LsThing thing with thing.codeName = agv2.codeValue "
-//				+ "LEFT OUTER JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true  " 
-				+ "JOIN ag.experiments expt with expt.ignored = false " 
-				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+	public static TypedQuery<AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<String> batchCodeList,
+			boolean publicData) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, ags.id as stateId, expt.id as experimentId, prot.id as protocolId, expt.codeName, el.labelText as prefName, "
+				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, "
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  "
+				+ " ) FROM AnalysisGroup ag "
+				+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false "
+				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false "
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+				// + "LEFT OUTER JOIN LsThing thing with thing.codeName = agv2.codeValue "
+				// + "LEFT OUTER JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType =
+				// 'name' and tl.ignored = false and tl.preferred = true "
+				+ "JOIN ag.experiments expt with expt.ignored = false "
+				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 				+ "WHERE ag.ignored = false AND agv2.codeValue IN (:batchCodeList) AND agv.publicData = :publicData  ";
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
@@ -327,15 +347,15 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList) {
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(
+			Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList) {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
-		+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, "
-				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, " 
+				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, "
 				+ "agv2.codeValue AS testedLot "
-				+ ", agv2.codeValue as geneId  " 
+				+ ", agv2.codeValue as geneId  "
 				+ ", agv.unitKind as resultUnit "
 				+ ", agv.operatorKind as operator "
 				+ ", agv.uncertainty as uncertainty "
@@ -345,48 +365,51 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
 				+ " ) FROM AnalysisGroup ag "
-		+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') " 
-		+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
-		+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-		+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
-		+ "JOIN ag.experiments expt with expt.ignored = false " 
-		+ "JOIN expt.protocol prot with prot.ignored = false "
-        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
-		+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+				+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') "
+				+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
+				+ "JOIN ag.experiments expt with expt.ignored = false "
+				+ "JOIN expt.protocol prot with prot.ignored = false "
+				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
+				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 				+ "WHERE ag.ignored = false  "
-				+ "AND agv2.codeValue IN (:batchCodeList) " + "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
-		
-		logger.debug("Query: "  + sqlQuery);
+				+ "AND agv2.codeValue IN (:batchCodeList) "
+				+ "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
+
+		logger.debug("Query: " + sqlQuery);
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
 		q.setParameter("batchCodeList", batchCodeList);
 		q.setParameter("experimentCodeList", experimentCodeList);
 		return q;
 	}
-	
-	public static List<AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, boolean publicData) {
+
+	public static List<AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList, boolean publicData) {
 		logger.debug("size of batchCodeList: " + batchCodeList.size());
 		logger.debug("size of experimentCodeList: " + experimentCodeList.size());
-		
+
 		List<AnalysisGroupValueDTO> results;
-		
-		if (batchCodeList.size() > 500 || experimentCodeList.size() > 500){
+
+		if (batchCodeList.size() > 500 || experimentCodeList.size() > 500) {
 			results = findAnalysisGroupValueDTOByTempTables(batchCodeList, experimentCodeList, publicData);
 		} else {
 			results = findAnalysisGroupValueDTOByInClause(batchCodeList, experimentCodeList, publicData);
 		}
-		
+
 		return results;
 	}
 
-	public static List<AnalysisGroupValueDTO> findAnalysisGroupValueDTOByInClause(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, boolean publicData) {
-			
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO( agv.id, prot.id as protocolId, protLabel.labelText as protocolName, " 
+	public static List<AnalysisGroupValueDTO> findAnalysisGroupValueDTOByInClause(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList, boolean publicData) {
+
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO( agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
 				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, "
 				+ "ag.id as agId, ags.id as agStateId, "
-				+ "agv.lsType as lsType, agv.lsKind as lsKind, " 
-				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, " 
-				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
+				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, "
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  "
 				+ ", agv.unitKind as resultUnit "
 				+ ", agv.operatorKind as operator "
 				+ ", agv.uncertainty as uncertainty "
@@ -395,17 +418,17 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv2.concUnit as testedConcentrationUnit "
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
-		+ " ) FROM AnalysisGroup ag  "
-		+ "JOIN ag.lsStates ags with ags.lsType IN ('data', 'metadata') and ags.ignored = false " 
-		+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false " 
-		+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
-		+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
-		+ "JOIN ag.experiments expt with expt.ignored = false " 
-		+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
-		+ "JOIN expt.protocol prot with prot.ignored = false "
-        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
-		+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
-		+ "WHERE ag.ignored = false AND agv.publicData = :publicData ";
+				+ " ) FROM AnalysisGroup ag  "
+				+ "JOIN ag.lsStates ags with ags.lsType IN ('data', 'metadata') and ags.ignored = false "
+				+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
+				+ "JOIN ag.experiments expt with expt.ignored = false "
+				+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
+				+ "JOIN expt.protocol prot with prot.ignored = false "
+				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
+				+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
+				+ "WHERE ag.ignored = false AND agv.publicData = :publicData ";
 		if (!batchCodeList.isEmpty()) {
 			sqlQuery += "AND agv2.codeValue IN (:batchCodeList) ";
 
@@ -413,33 +436,36 @@ public class AnalysisGroupValue extends AbstractValue {
 		if (!experimentCodeList.isEmpty()) {
 			sqlQuery += "AND expt.codeName IN (:experimentCodeList) ";
 		}
-		
+
 		logger.debug("query sql: " + sqlQuery);
 
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
-		if (!batchCodeList.isEmpty()) q.setParameter("batchCodeList", batchCodeList);
-		if (!experimentCodeList.isEmpty()) q.setParameter("experimentCodeList", experimentCodeList);
+		if (!batchCodeList.isEmpty())
+			q.setParameter("batchCodeList", batchCodeList);
+		if (!experimentCodeList.isEmpty())
+			q.setParameter("experimentCodeList", experimentCodeList);
 		q.setParameter("publicData", publicData);
-		
+
 		List<AnalysisGroupValueDTO> results = q.getResultList();
-		
+
 		return results;
 	}
-	
-	public static List<AnalysisGroupValueDTO> findAnalysisGroupValueDTOByTempTables(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, boolean publicData) {
-		
+
+	public static List<AnalysisGroupValueDTO> findAnalysisGroupValueDTOByTempTables(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList, boolean publicData) {
+
 		Date recordedDate = new Date();
 		String recordedBy = "system";
-		long batchTransactionId = TempSelectTable.saveStrings(batchCodeList,  recordedBy, recordedDate);
-		long expTransactionId = TempSelectTable.saveStrings(experimentCodeList,  recordedBy, recordedDate);
+		long batchTransactionId = TempSelectTable.saveStrings(batchCodeList, recordedBy, recordedDate);
+		long expTransactionId = TempSelectTable.saveStrings(experimentCodeList, recordedBy, recordedDate);
 
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO( agv.id, prot.id as protocolId, protLabel.labelText as protocolName, " 
-				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO( agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
+				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, "
 				+ "ag.id as agId, ags.id as agStateId, "
-				+ "agv.lsType as lsType, agv.lsKind as lsKind, " 
-				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, " 
-				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
+				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, "
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  "
 				+ ", agv.unitKind as resultUnit "
 				+ ", agv.operatorKind as operator "
 				+ ", agv.uncertainty as uncertainty "
@@ -448,24 +474,23 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv2.concUnit as testedConcentrationUnit "
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
-		+ " ) FROM AnalysisGroup ag, TempSelectTable tst, TempSelectTable tst2 "
-		+ "JOIN ag.lsStates ags with ags.lsType IN ('data', 'metadata') and ags.ignored = false " 
-		+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false " 
-		+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
-		+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
-		+ "JOIN ag.experiments expt with expt.ignored = false " 
-		+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
-		+ "JOIN expt.protocol prot with prot.ignored = false "
-        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
-		+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
-//        + "JOIN TempSelectTable tst with tst.lsTransaction = :transactionId "
-		+ "WHERE ag.ignored = false "
-		+ "AND tst.lsTransaction = :batchTransactionId "
-		+ "AND tst2.lsTransaction = :expTransactionId "
-		+ "AND agv2.codeValue = tst.stringVar AND agv.publicData = :publicData " 
-		+ "AND expt.codeName = tst2.stringVar and expt.ignored = false";
-		
-		
+				+ " ) FROM AnalysisGroup ag, TempSelectTable tst, TempSelectTable tst2 "
+				+ "JOIN ag.lsStates ags with ags.lsType IN ('data', 'metadata') and ags.ignored = false "
+				+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
+				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
+				+ "JOIN ag.experiments expt with expt.ignored = false "
+				+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
+				+ "JOIN expt.protocol prot with prot.ignored = false "
+				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
+				+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
+				// + "JOIN TempSelectTable tst with tst.lsTransaction = :transactionId "
+				+ "WHERE ag.ignored = false "
+				+ "AND tst.lsTransaction = :batchTransactionId "
+				+ "AND tst2.lsTransaction = :expTransactionId "
+				+ "AND agv2.codeValue = tst.stringVar AND agv.publicData = :publicData "
+				+ "AND expt.codeName = tst2.stringVar and expt.ignored = false";
+
 		logger.debug("query sql: " + sqlQuery);
 
 		EntityManager em = entityManager();
@@ -473,25 +498,26 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("batchTransactionId", batchTransactionId);
 		q.setParameter("expTransactionId", expTransactionId);
 		q.setParameter("publicData", publicData);
-		
+
 		List<AnalysisGroupValueDTO> results = q.getResultList();
-		
+
 		int numberOfEntries = TempSelectTable.deleteTempSelectTableEntries(expTransactionId);
 		int numberOfBatchEntries = TempSelectTable.deleteTempSelectTableEntries(batchTransactionId);
 		logger.info("Deleted number of batch entries: " + numberOfBatchEntries);
 		logger.info("Deleted number of experiemnt entries: " + numberOfEntries);
-		
+
 		return results;
 	}
-	
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(Set<java.lang.String> experimentCodeList) {
+
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(
+			Set<java.lang.String> experimentCodeList) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
 				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, "
-				+ "ag.id as agId, ags.id as agStateId, "				
+				+ "ag.id as agId, ags.id as agStateId, "
 				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
-				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, " 
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, "
 				+ "agv2.codeValue AS testedLot "
-				+ ", agv2.codeValue as geneId  " 
+				+ ", agv2.codeValue as geneId  "
 				+ ", agv.unitKind as resultUnit "
 				+ ", agv.operatorKind as operator "
 				+ ", agv.uncertainty as uncertainty "
@@ -501,18 +527,18 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
 				+ " ) FROM AnalysisGroup ag "
-				+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') " 
+				+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') "
 				+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
-				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
 				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
-				+ "JOIN ag.experiments expt with expt.ignored = false " 
+				+ "JOIN ag.experiments expt with expt.ignored = false "
 				+ "JOIN expt.protocol prot with prot.ignored = false "
 				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
-				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 				+ "WHERE ag.ignored = false  "
-				+ "AND agv2.codeValue IN (:batchCodeList) " + "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
+				+ "AND agv2.codeValue IN (:batchCodeList) "
+				+ "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
 
-	
 		logger.debug("query sql: " + sqlQuery);
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
@@ -520,14 +546,15 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(Set<java.lang.String> experimentCodeList, boolean publicData) {
+	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(
+			Set<java.lang.String> experimentCodeList, boolean publicData) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
 				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, "
-				+ "ag.id as agId, ags.id as agStateId, "				
+				+ "ag.id as agId, ags.id as agStateId, "
 				+ "agv.lsType as lsType, agv.lsKind as lsKind, "
-				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, " 
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, "
 				+ "agv2.codeValue AS testedLot "
-				+ ", agv2.codeValue as geneId  " 
+				+ ", agv2.codeValue as geneId  "
 				+ ", agv.unitKind as resultUnit "
 				+ ", agv.operatorKind as operator "
 				+ ", agv.uncertainty as uncertainty "
@@ -537,17 +564,17 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
 				+ " ) FROM AnalysisGroup ag "
-				+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') " 
+				+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') "
 				+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
-				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
+				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
 				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
-				+ "JOIN ag.experiments expt with expt.ignored = false " 
+				+ "JOIN ag.experiments expt with expt.ignored = false "
 				+ "JOIN expt.protocol prot with prot.ignored = false "
 				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
-				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
+				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false "
 				+ "WHERE ag.ignored = false AND agv.publicData = :publicData "
 				+ "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
-		
+
 		logger.debug("query sql: " + sqlQuery);
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
@@ -556,14 +583,15 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(Collection<java.lang.String> exptCodeList) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) " 
-				+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags " 
-				+ "join ags.analysisGroup ag " 
-				+ "join ag.experiments exp " 
-				+ "where exp.codeName in (:exptCodeList) " 
-				+ "AND agv.lsType IN ('stringValue', 'numericValue') " 
-				+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
+	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(
+			Collection<java.lang.String> exptCodeList) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) "
+				+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags "
+				+ "join ags.analysisGroup ag "
+				+ "join ag.experiments exp "
+				+ "where exp.codeName in (:exptCodeList) "
+				+ "AND agv.lsType IN ('stringValue', 'numericValue') "
+				+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false "
 				+ "group by agv.lsType, agv.lsKind";
 		EntityManager em = entityManager();
 		TypedQuery<ValueTypeKindDTO> q = em.createQuery(sqlQuery, ValueTypeKindDTO.class);
@@ -572,15 +600,16 @@ public class AnalysisGroupValue extends AbstractValue {
 	}
 
 	@Transactional
-	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(String exptCode) {
-		String sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) " 
-				+ "FROM AnalysisGroupValue agv " 
-				+ "JOIN agv.lsState ags " 
-				+ "JOIN ags.analysisGroup ag " 
-				+ "JOIN ag.experiments exp " 
-				+ "where exp.codeName = :exptCode " 
-				+ "AND agv.lsType IN ('stringValue', 'numericValue', 'dateValue', 'fileValue', 'urlValue') " 
-				+ "AND ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
+	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(
+			String exptCode) {
+		String sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) "
+				+ "FROM AnalysisGroupValue agv "
+				+ "JOIN agv.lsState ags "
+				+ "JOIN ags.analysisGroup ag "
+				+ "JOIN ag.experiments exp "
+				+ "where exp.codeName = :exptCode "
+				+ "AND agv.lsType IN ('stringValue', 'numericValue', 'dateValue', 'fileValue', 'urlValue') "
+				+ "AND ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false "
 				+ "group by agv.lsType, agv.lsKind";
 		EntityManager em = entityManager();
 		TypedQuery<ValueTypeKindDTO> q = em.createQuery(sqlQuery, ValueTypeKindDTO.class);
@@ -589,79 +618,92 @@ public class AnalysisGroupValue extends AbstractValue {
 	}
 
 	@Transactional
-	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(String exptCode, boolean showOnlyPublicData) {
+	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(
+			String exptCode, boolean showOnlyPublicData) {
 		String sqlQuery;
-		if (showOnlyPublicData){
-			sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) " 
-					+ "FROM AnalysisGroupValue agv " 
-					+ "join agv.lsState ags " 
-					+ "join ags.analysisGroup ag " 
-					+ "join ag.experiments exp " 
-					+ "where exp.codeName = :exptCode " 
-					+ "AND agv.publicData = :showOnlyPublicData " 
-					+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
+		if (showOnlyPublicData) {
+			sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) "
+					+ "FROM AnalysisGroupValue agv "
+					+ "join agv.lsState ags "
+					+ "join ags.analysisGroup ag "
+					+ "join ag.experiments exp "
+					+ "where exp.codeName = :exptCode "
+					+ "AND agv.publicData = :showOnlyPublicData "
+					+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false "
 					+ "group by agv.lsType, agv.lsKind ORDER by agv.lsKind";
 
 		} else {
-			sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) " 
-					+ "FROM AnalysisGroupValue agv " 
-					+ "join agv.lsState ags " 
-					+ "join ags.analysisGroup ag " 
-					+ "join ag.experiments exp " 
-					+ "where exp.codeName = :exptCode " 
-					+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
-					+ "group by agv.lsType, agv.lsKind ORDER by agv.lsKind";			
+			sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) "
+					+ "FROM AnalysisGroupValue agv "
+					+ "join agv.lsState ags "
+					+ "join ags.analysisGroup ag "
+					+ "join ag.experiments exp "
+					+ "where exp.codeName = :exptCode "
+					+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false "
+					+ "group by agv.lsType, agv.lsKind ORDER by agv.lsKind";
 		}
 
 		EntityManager em = entityManager();
 		TypedQuery<ValueTypeKindDTO> q = em.createQuery(sqlQuery, ValueTypeKindDTO.class);
 		q.setParameter("exptCode", exptCode);
-		if (showOnlyPublicData) q.setParameter("showOnlyPublicData", showOnlyPublicData);
+		if (showOnlyPublicData)
+			q.setParameter("showOnlyPublicData", showOnlyPublicData);
 		return q;
 	}
 
 	@Transactional
 	public static List<com.labsynch.labseer.domain.AnalysisGroupValue> findAllAnalysisGroupValues() {
-		return entityManager().createQuery("SELECT o FROM AnalysisGroupValue o", AnalysisGroupValue.class).getResultList();
+		return entityManager().createQuery("SELECT o FROM AnalysisGroupValue o", AnalysisGroupValue.class)
+				.getResultList();
 	}
 
 	@Transactional
 	public static com.labsynch.labseer.domain.AnalysisGroupValue findAnalysisGroupValue(Long id) {
-		if (id == null) return null;
+		if (id == null)
+			return null;
 		return entityManager().find(AnalysisGroupValue.class, id);
 	}
 
 	@Transactional
-	public static List<com.labsynch.labseer.domain.AnalysisGroupValue> findAnalysisGroupValueEntries(int firstResult, int maxResults) {
-		return entityManager().createQuery("SELECT o FROM AnalysisGroupValue o", AnalysisGroupValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+	public static List<com.labsynch.labseer.domain.AnalysisGroupValue> findAnalysisGroupValueEntries(int firstResult,
+			int maxResults) {
+		return entityManager().createQuery("SELECT o FROM AnalysisGroupValue o", AnalysisGroupValue.class)
+				.setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
 	}
 
 	@Transactional
 	public static com.labsynch.labseer.domain.AnalysisGroupValue fromJsonToAnalysisGroupValue(String json) {
-		AnalysisGroupValue analysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserialize(json, AnalysisGroupValue.class);
+		AnalysisGroupValue analysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserialize(json,
+				AnalysisGroupValue.class);
 		return analysisGroupValue;
 	}
 
 	@Transactional
-	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(String json) {
-		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).deserialize(json);
+	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(
+			String json) {
+		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class)
+				.use("values", AnalysisGroupValue.class).deserialize(json);
 	}
 
 	@Transactional
-	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(Reader json) {
-		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).deserialize(json);
+	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(
+			Reader json) {
+		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class)
+				.use("values", AnalysisGroupValue.class).deserialize(json);
 	}
 
 	@Transactional
 	public String toPrettyJson() {
-		return new JSONSerializer().exclude("*.class").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer().exclude("*.class").prettyPrint(true).transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
 	public String toJson() {
 		return new JSONSerializer()
 				.include("lsState.analysisGroup")
-				.exclude("*.class", "lsState.analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
+				.exclude("*.class", "lsState.analysisGroup.experiment").transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
@@ -675,17 +717,20 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	@Transactional
 	public static String toPrettyJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupValue> collection) {
-		return new JSONSerializer().exclude("*.class", "lsState.analysisGroup.experiment").transform(new ExcludeNulls(), void.class).prettyPrint(true).serialize(collection);
+		return new JSONSerializer().exclude("*.class", "lsState.analysisGroup.experiment")
+				.transform(new ExcludeNulls(), void.class).prettyPrint(true).serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.AnalysisGroupValue> collection) {
-		return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	@Transactional
 	public com.labsynch.labseer.domain.AnalysisGroupValue merge() {
-		if (this.entityManager == null) this.entityManager = entityManager();
+		if (this.entityManager == null)
+			this.entityManager = entityManager();
 		AnalysisGroupValue merged = this.entityManager.merge(this);
 		this.entityManager.flush();
 		return merged;
@@ -713,14 +758,16 @@ public class AnalysisGroupValue extends AbstractValue {
 		Collection<AnalysisGroupValue> analysisGroupValues = new HashSet<AnalysisGroupValue>();
 		for (Long id : idList) {
 			AnalysisGroupValue query = AnalysisGroupValue.findAnalysisGroupValue(id);
-			if (query != null) analysisGroupValues.add(query);
+			if (query != null)
+				analysisGroupValues.add(query);
 		}
 		return AnalysisGroupValue.toJsonArray(analysisGroupValues);
 	}
 
 	@Transactional
 	public static int deleteByExperimentID(Long experimentId) {
-		if (experimentId == null) return 0;
+		if (experimentId == null)
+			return 0;
 		EntityManager em = TreatmentGroupValue.entityManager();
 		String deleteSQL = "DELETE FROM AnalysisGroupValue oo WHERE id in (select o.id from AnalysisGroupValue o where o.lsState.analysisGroup.experiment.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
@@ -729,14 +776,17 @@ public class AnalysisGroupValue extends AbstractValue {
 		return numberOfDeletedEntities;
 	}
 
-	public static com.labsynch.labseer.domain.AnalysisGroupValue update(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
-		AnalysisGroupValue updatedAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserializeInto(analysisGroupValue.toJson(), analysisGroupValue);
+	public static com.labsynch.labseer.domain.AnalysisGroupValue update(
+			com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
+		AnalysisGroupValue updatedAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>()
+				.deserializeInto(analysisGroupValue.toJson(), analysisGroupValue);
 		updatedAnalysisGroupValue.setModifiedDate(new Date());
 		updatedAnalysisGroupValue.merge();
 		return updatedAnalysisGroupValue;
 	}
 
-	public static TypedQuery<java.lang.String> findBatchCodedBySearchFilter(Collection<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters) {
+	public static TypedQuery<java.lang.String> findBatchCodedBySearchFilter(
+			Collection<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters) {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
@@ -746,7 +796,8 @@ public class AnalysisGroupValue extends AbstractValue {
 		criteria.select(agvRoot2.<String>get("codeValue"));
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
-		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
+		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"),
+				agvRoot2.<Long>get("lsState").get("id"));
 		predicateList.add(predicate00);
 		Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
 		predicateList.add(predicate01);
@@ -757,20 +808,27 @@ public class AnalysisGroupValue extends AbstractValue {
 			predicateList.add(predicate1);
 			Predicate predicate2 = criteriaBuilder.equal(agvRoot.<String>get("lsKind"), searchFilter.getLsKind());
 			predicateList.add(predicate2);
-			Predicate predicate3 = criteriaBuilder.equal(agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"), searchFilter.getCodeName());
+			Predicate predicate3 = criteriaBuilder.equal(
+					agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"),
+					searchFilter.getCodeName());
 			predicateList.add(predicate3);
 			if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
 				Predicate predicate4 = null;
 				if (searchFilter.getOperator().equalsIgnoreCase(">")) {
-					predicate4 = criteriaBuilder.gt(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+					predicate4 = criteriaBuilder.gt(agvRoot.<BigDecimal>get("numericValue"),
+							new BigDecimal(searchFilter.getFilterValue()));
 				} else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
-					predicate4 = criteriaBuilder.lt(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+					predicate4 = criteriaBuilder.lt(agvRoot.<BigDecimal>get("numericValue"),
+							new BigDecimal(searchFilter.getFilterValue()));
 				} else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
-					predicate4 = criteriaBuilder.equal(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+					predicate4 = criteriaBuilder.equal(agvRoot.<BigDecimal>get("numericValue"),
+							new BigDecimal(searchFilter.getFilterValue()));
 				} else if (searchFilter.getOperator().equalsIgnoreCase("!=")) {
-					predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+					predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+							new BigDecimal(searchFilter.getFilterValue()));
 				} else {
-					predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+					predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+							new BigDecimal(searchFilter.getFilterValue()));
 				}
 				Predicate predicate5 = criteriaBuilder.isNull(agvRoot.<BigDecimal>get("numericValue"));
 				if (predicate4 != null) {
@@ -783,9 +841,11 @@ public class AnalysisGroupValue extends AbstractValue {
 			} else if (searchFilter.getLsType().equalsIgnoreCase("stringValue")) {
 				Predicate predicate4 = null;
 				if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
-					predicate4 = criteriaBuilder.equal(agvRoot.<String>get("stringValue"), searchFilter.getFilterValue());
+					predicate4 = criteriaBuilder.equal(agvRoot.<String>get("stringValue"),
+							searchFilter.getFilterValue());
 				} else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
-					predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"), "%" + searchFilter.getFilterValue() + "%");
+					predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"),
+							"%" + searchFilter.getFilterValue() + "%");
 				}
 				Predicate predicate5 = criteriaBuilder.isNull(agvRoot.<String>get("stringValue"));
 				if (predicate4 != null) {
@@ -802,19 +862,20 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-
-	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, 
+	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList,
 			Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters,
 			boolean includeHiddenData) {
 
-		if (includeHiddenData){
+		if (includeHiddenData) {
 			return findBatchCodeBySearchFilters(batchCodeList, experimentCodeList, searchFilters, false);
 		} else {
 			return findBatchCodeBySearchFilters(batchCodeList, experimentCodeList, searchFilters, true);
 		}
 	}
 
-	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, 
+	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList,
 			Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters, Boolean excludeHiddenData) {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -825,7 +886,8 @@ public class AnalysisGroupValue extends AbstractValue {
 		criteria.select(agvRoot2.<String>get("codeValue"));
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
-		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
+		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"),
+				agvRoot2.<Long>get("lsState").get("id"));
 		predicateList.add(predicate00);
 
 		if (excludeHiddenData != null && excludeHiddenData == true) {
@@ -845,11 +907,13 @@ public class AnalysisGroupValue extends AbstractValue {
 			logger.debug("no batchCodeList present");
 		}
 		if (experimentCodeList != null && experimentCodeList.size() > 0) {
-			Expression<String> exp04 = agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName");
+			Expression<String> exp04 = agvRoot.<String>get("lsState").get("analysisGroup").get("experiment")
+					.get("codeName");
 			Predicate predicate04 = exp04.in(experimentCodeList);
 			predicateList.add(predicate04);
 		} else {
-			Predicate predicate04b = criteriaBuilder.equal(agvRoot.<Boolean>get("lsState").get("analysisGroup").get("experiment").get("ignored"), false);
+			Predicate predicate04b = criteriaBuilder.equal(
+					agvRoot.<Boolean>get("lsState").get("analysisGroup").get("experiment").get("ignored"), false);
 			predicateList.add(predicate04b);
 		}
 		logger.debug("number of search filters: " + searchFilters.size());
@@ -857,7 +921,8 @@ public class AnalysisGroupValue extends AbstractValue {
 			for (ExperimentFilterSearchDTO searchFilter : searchFilters) {
 				logger.debug(searchFilter.toJson());
 				Root<AnalysisGroupValue> agvRootNew = criteria.from(AnalysisGroupValue.class);
-				Predicate predicateNew = criteriaBuilder.equal(agvRoot2.<Long>get("lsState").get("id"), agvRootNew.<Long>get("lsState").get("id"));
+				Predicate predicateNew = criteriaBuilder.equal(agvRoot2.<Long>get("lsState").get("id"),
+						agvRootNew.<Long>get("lsState").get("id"));
 				predicateList.add(predicateNew);
 
 				if (excludeHiddenData != null && excludeHiddenData == true) {
@@ -869,24 +934,33 @@ public class AnalysisGroupValue extends AbstractValue {
 				predicateList.add(predicate11);
 				Predicate predicate12 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"), "batch code");
 				predicateList.add(predicate12);
-				Predicate predicate1 = criteriaBuilder.equal(agvRootNew.<String>get("lsType"), searchFilter.getLsType());
+				Predicate predicate1 = criteriaBuilder.equal(agvRootNew.<String>get("lsType"),
+						searchFilter.getLsType());
 				predicateList.add(predicate1);
-				Predicate predicate2 = criteriaBuilder.equal(agvRootNew.<String>get("lsKind"), searchFilter.getLsKind());
+				Predicate predicate2 = criteriaBuilder.equal(agvRootNew.<String>get("lsKind"),
+						searchFilter.getLsKind());
 				predicateList.add(predicate2);
-				Predicate predicate3 = criteriaBuilder.equal(agvRootNew.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"), searchFilter.getExperimentCode());
+				Predicate predicate3 = criteriaBuilder.equal(
+						agvRootNew.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"),
+						searchFilter.getExperimentCode());
 				predicateList.add(predicate3);
 				if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
 					Predicate predicate4 = null;
 					if (searchFilter.getOperator().equalsIgnoreCase(">")) {
-						predicate4 = criteriaBuilder.gt(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.gt(agvRootNew.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
-						predicate4 = criteriaBuilder.lt(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.lt(agvRootNew.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
-						predicate4 = criteriaBuilder.equal(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.equal(agvRootNew.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("!=")) {
-						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else {
-						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					}
 					Predicate predicate5 = criteriaBuilder.isNull(agvRootNew.<BigDecimal>get("numericValue"));
 					if (predicate4 != null) {
@@ -900,9 +974,11 @@ public class AnalysisGroupValue extends AbstractValue {
 					logger.debug("stringValue search filter " + searchFilter.getFilterValue());
 					Predicate predicate7 = null;
 					if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
-						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), searchFilter.getFilterValue());
+						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"),
+								searchFilter.getFilterValue());
 					} else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
-						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), "%" + searchFilter.getFilterValue() + "%");
+						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"),
+								"%" + searchFilter.getFilterValue() + "%");
 					}
 					Predicate predicate8 = criteriaBuilder.isNull(agvRootNew.<String>get("stringValue"));
 					if (predicate7 != null) {
@@ -923,99 +999,130 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	//	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters) {
-	//		EntityManager em = AnalysisGroupValue.entityManager();
-	//		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-	//		CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
-	//		Root<AnalysisGroupValue> agvRoot = criteria.from(AnalysisGroupValue.class);
-	//		Root<AnalysisGroupValue> agvRoot2 = criteria.from(AnalysisGroupValue.class);
-	//		criteria.distinct(true);
-	//		criteria.select(agvRoot2.<String>get("codeValue"));
-	//		Predicate[] predicates = new Predicate[0];
-	//		List<Predicate> predicateList = new ArrayList<Predicate>();
-	//		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
-	//		predicateList.add(predicate00);
-	//		if (batchCodeList != null && batchCodeList.size() > 0) {
-	//			Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
-	//			predicateList.add(predicate01);
-	//			Predicate predicate02 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"), "batch code");
-	//			predicateList.add(predicate02);
-	//			Expression<String> exp03 = agvRoot2.get("codeValue");
-	//			Predicate predicate03 = exp03.in(batchCodeList);
-	//			predicateList.add(predicate03);
-	//		} else {
-	//			logger.debug("no batchCodeList present");
-	//		}
-	//		if (experimentCodeList != null && experimentCodeList.size() > 0) {
-	//			Expression<String> exp04 = agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName");
-	//			Predicate predicate04 = exp04.in(experimentCodeList);
-	//			predicateList.add(predicate04);
-	//		} else {
-	//			Predicate predicate04b = criteriaBuilder.equal(agvRoot.<Boolean>get("lsState").get("analysisGroup").get("experiment").get("ignored"), false);
-	//			predicateList.add(predicate04b);
-	//		}
-	//		logger.debug("number of search filters: " + searchFilters.size());
-	//		if (searchFilters != null && searchFilters.size() > 0) {
-	//			for (ExperimentFilterSearchDTO searchFilter : searchFilters) {
-	//				logger.debug(searchFilter.toJson());
-	//				Root<AnalysisGroupValue> agvRootNew = criteria.from(AnalysisGroupValue.class);
-	//				Predicate predicateNew = criteriaBuilder.equal(agvRoot2.<Long>get("lsState").get("id"), agvRootNew.<Long>get("lsState").get("id"));
-	//				predicateList.add(predicateNew);
-	//				Predicate predicate11 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
-	//				predicateList.add(predicate11);
-	//				Predicate predicate12 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"), "batch code");
-	//				predicateList.add(predicate12);
-	//				Predicate predicate1 = criteriaBuilder.equal(agvRootNew.<String>get("lsType"), searchFilter.getLsType());
-	//				predicateList.add(predicate1);
-	//				Predicate predicate2 = criteriaBuilder.equal(agvRootNew.<String>get("lsKind"), searchFilter.getLsKind());
-	//				predicateList.add(predicate2);
-	//				Predicate predicate3 = criteriaBuilder.equal(agvRootNew.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"), searchFilter.getExperimentCode());
-	//				predicateList.add(predicate3);
-	//				if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
-	//					Predicate predicate4 = null;
-	//					if (searchFilter.getOperator().equalsIgnoreCase(">")) {
-	//						predicate4 = criteriaBuilder.gt(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
-	//					} else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
-	//						predicate4 = criteriaBuilder.lt(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
-	//					} else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
-	//						predicate4 = criteriaBuilder.equal(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
-	//					}
-	//					Predicate predicate5 = criteriaBuilder.isNull(agvRootNew.<BigDecimal>get("numericValue"));
-	//					if (predicate4 != null) {
-	//						Predicate predicate6 = criteriaBuilder.or(predicate5, predicate4);
-	//						predicateList.add(predicate6);
-	//					} else {
-	//						Predicate predicate6 = criteriaBuilder.or(predicate5);
-	//						predicateList.add(predicate6);
-	//					}
-	//				} else if (searchFilter.getLsType().equalsIgnoreCase("stringValue")) {
-	//					logger.debug("stringValue search filter " + searchFilter.getFilterValue());
-	//					Predicate predicate7 = null;
-	//					if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
-	//						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), searchFilter.getFilterValue());
-	//					} else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
-	//						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), "%" + searchFilter.getFilterValue() + "%");
-	//					}
-	//					Predicate predicate8 = criteriaBuilder.isNull(agvRootNew.<String>get("stringValue"));
-	//					if (predicate7 != null) {
-	//						Predicate predicate9 = criteriaBuilder.or(predicate8, predicate7);
-	//						predicateList.add(predicate9);
-	//					} else {
-	//						Predicate predicate9 = criteriaBuilder.or(predicate8);
-	//						predicateList.add(predicate9);
-	//					}
-	//				}
-	//			}
-	//		}
-	//		for (Predicate p : predicateList) {
-	//			logger.debug("predicate: " + p.toString());
-	//		}
-	//		criteria.where(criteriaBuilder.and(predicateList.toArray(predicates)));
-	//		TypedQuery<String> q = em.createQuery(criteria);
-	//		return q;
-	//	}
+	// public static TypedQuery<java.lang.String>
+	// findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList,
+	// Set<java.lang.String> experimentCodeList,
+	// Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters) {
+	// EntityManager em = AnalysisGroupValue.entityManager();
+	// CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+	// CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
+	// Root<AnalysisGroupValue> agvRoot = criteria.from(AnalysisGroupValue.class);
+	// Root<AnalysisGroupValue> agvRoot2 = criteria.from(AnalysisGroupValue.class);
+	// criteria.distinct(true);
+	// criteria.select(agvRoot2.<String>get("codeValue"));
+	// Predicate[] predicates = new Predicate[0];
+	// List<Predicate> predicateList = new ArrayList<Predicate>();
+	// Predicate predicate00 =
+	// criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"),
+	// agvRoot2.<Long>get("lsState").get("id"));
+	// predicateList.add(predicate00);
+	// if (batchCodeList != null && batchCodeList.size() > 0) {
+	// Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"),
+	// "codeValue");
+	// predicateList.add(predicate01);
+	// Predicate predicate02 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"),
+	// "batch code");
+	// predicateList.add(predicate02);
+	// Expression<String> exp03 = agvRoot2.get("codeValue");
+	// Predicate predicate03 = exp03.in(batchCodeList);
+	// predicateList.add(predicate03);
+	// } else {
+	// logger.debug("no batchCodeList present");
+	// }
+	// if (experimentCodeList != null && experimentCodeList.size() > 0) {
+	// Expression<String> exp04 =
+	// agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName");
+	// Predicate predicate04 = exp04.in(experimentCodeList);
+	// predicateList.add(predicate04);
+	// } else {
+	// Predicate predicate04b =
+	// criteriaBuilder.equal(agvRoot.<Boolean>get("lsState").get("analysisGroup").get("experiment").get("ignored"),
+	// false);
+	// predicateList.add(predicate04b);
+	// }
+	// logger.debug("number of search filters: " + searchFilters.size());
+	// if (searchFilters != null && searchFilters.size() > 0) {
+	// for (ExperimentFilterSearchDTO searchFilter : searchFilters) {
+	// logger.debug(searchFilter.toJson());
+	// Root<AnalysisGroupValue> agvRootNew =
+	// criteria.from(AnalysisGroupValue.class);
+	// Predicate predicateNew =
+	// criteriaBuilder.equal(agvRoot2.<Long>get("lsState").get("id"),
+	// agvRootNew.<Long>get("lsState").get("id"));
+	// predicateList.add(predicateNew);
+	// Predicate predicate11 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"),
+	// "codeValue");
+	// predicateList.add(predicate11);
+	// Predicate predicate12 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"),
+	// "batch code");
+	// predicateList.add(predicate12);
+	// Predicate predicate1 =
+	// criteriaBuilder.equal(agvRootNew.<String>get("lsType"),
+	// searchFilter.getLsType());
+	// predicateList.add(predicate1);
+	// Predicate predicate2 =
+	// criteriaBuilder.equal(agvRootNew.<String>get("lsKind"),
+	// searchFilter.getLsKind());
+	// predicateList.add(predicate2);
+	// Predicate predicate3 =
+	// criteriaBuilder.equal(agvRootNew.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"),
+	// searchFilter.getExperimentCode());
+	// predicateList.add(predicate3);
+	// if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
+	// Predicate predicate4 = null;
+	// if (searchFilter.getOperator().equalsIgnoreCase(">")) {
+	// predicate4 = criteriaBuilder.gt(agvRootNew.<BigDecimal>get("numericValue"),
+	// new BigDecimal(searchFilter.getFilterValue()));
+	// } else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
+	// predicate4 = criteriaBuilder.lt(agvRootNew.<BigDecimal>get("numericValue"),
+	// new BigDecimal(searchFilter.getFilterValue()));
+	// } else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
+	// predicate4 =
+	// criteriaBuilder.equal(agvRootNew.<BigDecimal>get("numericValue"), new
+	// BigDecimal(searchFilter.getFilterValue()));
+	// }
+	// Predicate predicate5 =
+	// criteriaBuilder.isNull(agvRootNew.<BigDecimal>get("numericValue"));
+	// if (predicate4 != null) {
+	// Predicate predicate6 = criteriaBuilder.or(predicate5, predicate4);
+	// predicateList.add(predicate6);
+	// } else {
+	// Predicate predicate6 = criteriaBuilder.or(predicate5);
+	// predicateList.add(predicate6);
+	// }
+	// } else if (searchFilter.getLsType().equalsIgnoreCase("stringValue")) {
+	// logger.debug("stringValue search filter " + searchFilter.getFilterValue());
+	// Predicate predicate7 = null;
+	// if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
+	// predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"),
+	// searchFilter.getFilterValue());
+	// } else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
+	// predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), "%"
+	// + searchFilter.getFilterValue() + "%");
+	// }
+	// Predicate predicate8 =
+	// criteriaBuilder.isNull(agvRootNew.<String>get("stringValue"));
+	// if (predicate7 != null) {
+	// Predicate predicate9 = criteriaBuilder.or(predicate8, predicate7);
+	// predicateList.add(predicate9);
+	// } else {
+	// Predicate predicate9 = criteriaBuilder.or(predicate8);
+	// predicateList.add(predicate9);
+	// }
+	// }
+	// }
+	// }
+	// for (Predicate p : predicateList) {
+	// logger.debug("predicate: " + p.toString());
+	// }
+	// criteria.where(criteriaBuilder.and(predicateList.toArray(predicates)));
+	// TypedQuery<String> q = em.createQuery(criteria);
+	// return q;
+	// }
 
-	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilter(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, ExperimentFilterSearchDTO searchFilter, Boolean excludeHiddenData) {
+	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilter(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList, ExperimentFilterSearchDTO searchFilter,
+			Boolean excludeHiddenData) {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
@@ -1030,14 +1137,14 @@ public class AnalysisGroupValue extends AbstractValue {
 
 		Predicate[] globalPredicates = new Predicate[0];
 		List<Predicate> globalPredicateList = new ArrayList<Predicate>();
-		
+
 		List<String> batchCodes = new ArrayList<String>();
 		batchCodes.addAll(batchCodeList);
 		int batchCodeListSize = batchCodes.size();
 		logger.debug("in findBatchCodeBySearchFilter --- size of batch code list: " + batchCodeListSize);
 		logger.debug("incoming search filter" + searchFilter.toJson());
 
-		for (int i = 0; i <= batchCodeListSize; i += PARAMETER_LIMIT){
+		for (int i = 0; i <= batchCodeListSize; i += PARAMETER_LIMIT) {
 			List<String> batchCodeSubList;
 			if (batchCodeListSize > i + PARAMETER_LIMIT) {
 				batchCodeSubList = batchCodes.subList(i, (i + PARAMETER_LIMIT));
@@ -1053,7 +1160,8 @@ public class AnalysisGroupValue extends AbstractValue {
 				predicateList.add(predicateHidden);
 			}
 
-			Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
+			Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"),
+					agvRoot2.<Long>get("lsState").get("id"));
 			predicateList.add(predicate00);
 			Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
 			predicateList.add(predicate01);
@@ -1074,23 +1182,29 @@ public class AnalysisGroupValue extends AbstractValue {
 				predicateList.add(predicate1);
 				Predicate predicate2 = criteriaBuilder.equal(agvRoot.<String>get("lsKind"), searchFilter.getLsKind());
 				predicateList.add(predicate2);
-				Predicate predicate3 = criteriaBuilder.equal(experiments.<String>get("codeName"), searchFilter.getExperimentCode());
+				Predicate predicate3 = criteriaBuilder.equal(experiments.<String>get("codeName"),
+						searchFilter.getExperimentCode());
 				predicateList.add(predicate3);
 				if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
 					logger.debug("setting lsType to " + searchFilter.getLsType());
 
 					Predicate predicate4 = null;
 					if (searchFilter.getOperator().equalsIgnoreCase(">")) {
-						predicate4 = criteriaBuilder.gt(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.gt(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
-						predicate4 = criteriaBuilder.lt(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.lt(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
-						predicate4 = criteriaBuilder.equal(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.equal(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("!=")) {
 						logger.debug("setting filter != " + searchFilter.getFilterValue());
-						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else {
-						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					}
 					Predicate predicate5 = criteriaBuilder.isNull(agvRoot.<BigDecimal>get("numericValue"));
 					if (predicate4 != null) {
@@ -1103,9 +1217,11 @@ public class AnalysisGroupValue extends AbstractValue {
 				} else if (searchFilter.getLsType().equalsIgnoreCase("stringValue")) {
 					Predicate predicate4 = null;
 					if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
-						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"), searchFilter.getFilterValue());
+						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"),
+								searchFilter.getFilterValue());
 					} else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
-						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"), "%" + searchFilter.getFilterValue() + "%");
+						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"),
+								"%" + searchFilter.getFilterValue() + "%");
 					}
 					Predicate predicate5 = criteriaBuilder.isNull(agvRoot.<String>get("stringValue"));
 					if (predicate4 != null) {
@@ -1117,13 +1233,13 @@ public class AnalysisGroupValue extends AbstractValue {
 					}
 				}
 			}
-			//join all the predicates with AND
+			// join all the predicates with AND
 			predicates = predicateList.toArray(predicates);
 			globalPredicateList.add(criteriaBuilder.and(predicates));
-			
+
 		}
-		
-		//join all the globalPredicates with OR
+
+		// join all the globalPredicates with OR
 		globalPredicates = globalPredicateList.toArray(globalPredicates);
 		criteria.where(criteriaBuilder.or(globalPredicates));
 		TypedQuery<String> q = em.createQuery(criteria);
@@ -1132,7 +1248,9 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<AnalysisGroupValue> findAGValuesBySearchFilter(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, ExperimentFilterSearchDTO searchFilter, Boolean excludeHiddenData) {
+	public static TypedQuery<AnalysisGroupValue> findAGValuesBySearchFilter(Set<java.lang.String> batchCodeList,
+			Set<java.lang.String> experimentCodeList, ExperimentFilterSearchDTO searchFilter,
+			Boolean excludeHiddenData) {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<AnalysisGroupValue> criteria = criteriaBuilder.createQuery(AnalysisGroupValue.class);
@@ -1151,14 +1269,13 @@ public class AnalysisGroupValue extends AbstractValue {
 		batchCodes.addAll(batchCodeList);
 		int batchCodeListSize = batchCodes.size();
 
-		for (int i = 0; i <= batchCodeListSize; i += PARAMETER_LIMIT){
+		for (int i = 0; i <= batchCodeListSize; i += PARAMETER_LIMIT) {
 			List<String> batchCodeSubList;
 			if (batchCodeListSize > i + PARAMETER_LIMIT) {
 				batchCodeSubList = batchCodes.subList(i, (i + PARAMETER_LIMIT));
 			} else {
 				batchCodeSubList = batchCodes.subList(i, batchCodeListSize);
 			}
-
 
 			Predicate[] predicates = new Predicate[0];
 			List<Predicate> predicateList = new ArrayList<Predicate>();
@@ -1168,7 +1285,8 @@ public class AnalysisGroupValue extends AbstractValue {
 				predicateList.add(predicateHidden);
 			}
 
-			Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
+			Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"),
+					agvRoot2.<Long>get("lsState").get("id"));
 			predicateList.add(predicate00);
 			Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
 			predicateList.add(predicate01);
@@ -1189,20 +1307,26 @@ public class AnalysisGroupValue extends AbstractValue {
 				predicateList.add(predicate1);
 				Predicate predicate2 = criteriaBuilder.equal(agvRoot.<String>get("lsKind"), searchFilter.getLsKind());
 				predicateList.add(predicate2);
-				Predicate predicate3 = criteriaBuilder.equal(experiments.<String>get("codeName"), searchFilter.getExperimentCode());
+				Predicate predicate3 = criteriaBuilder.equal(experiments.<String>get("codeName"),
+						searchFilter.getExperimentCode());
 				predicateList.add(predicate3);
 				if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
 					Predicate predicate4 = null;
 					if (searchFilter.getOperator().equalsIgnoreCase(">")) {
-						predicate4 = criteriaBuilder.gt(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.gt(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
-						predicate4 = criteriaBuilder.lt(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.lt(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
-						predicate4 = criteriaBuilder.equal(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.equal(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else if (searchFilter.getOperator().equalsIgnoreCase("!=")) {
-						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					} else {
-						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+						predicate4 = criteriaBuilder.notEqual(agvRoot.<BigDecimal>get("numericValue"),
+								new BigDecimal(searchFilter.getFilterValue()));
 					}
 					Predicate predicate5 = criteriaBuilder.isNull(agvRoot.<BigDecimal>get("numericValue"));
 					if (predicate4 != null) {
@@ -1215,9 +1339,11 @@ public class AnalysisGroupValue extends AbstractValue {
 				} else if (searchFilter.getLsType().equalsIgnoreCase("stringValue")) {
 					Predicate predicate4 = null;
 					if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
-						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"), searchFilter.getFilterValue());
+						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"),
+								searchFilter.getFilterValue());
 					} else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
-						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"), "%" + searchFilter.getFilterValue() + "%");
+						predicate4 = criteriaBuilder.like(agvRoot.<String>get("stringValue"),
+								"%" + searchFilter.getFilterValue() + "%");
 					}
 					Predicate predicate5 = criteriaBuilder.isNull(agvRoot.<String>get("stringValue"));
 					if (predicate4 != null) {
@@ -1228,12 +1354,12 @@ public class AnalysisGroupValue extends AbstractValue {
 						predicateList.add(predicate6);
 					}
 				}
-			}						
-			//join all the predicates with AND
+			}
+			// join all the predicates with AND
 			predicates = predicateList.toArray(predicates);
-			globalPredicateList.add(criteriaBuilder.and(predicates));	
+			globalPredicateList.add(criteriaBuilder.and(predicates));
 		}
-		
+
 		criteria.where(criteriaBuilder.and(globalPredicateList.toArray(globalPredicates)));
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
@@ -1241,13 +1367,13 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-
-
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKind(Long experimentId, 
-			String stateType, 
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKind(Long experimentId,
+			String stateType,
 			String stateKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
@@ -1266,9 +1392,12 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(
+			Long analysisGroupId, String stateType, String stateKind) {
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT agv from AnalysisGroupValue AS agv " +
@@ -1287,12 +1416,17 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(
+			Long experimentId, String stateType,
 			String stateKind, String valueType, String valueKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0)
+			throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
@@ -1312,45 +1446,52 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
-	
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIdList(Set<Long> idList, Boolean onlyPublicData) {
-		if (idList == null ) throw new IllegalArgumentException("The idList argument is required");
-		if (onlyPublicData == null ) throw new IllegalArgumentException("The onlyPublicData argument is required");
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIdList(Set<Long> idList,
+			Boolean onlyPublicData) {
+		if (idList == null)
+			throw new IllegalArgumentException("The idList argument is required");
+		if (onlyPublicData == null)
+			throw new IllegalArgumentException("The onlyPublicData argument is required");
 
 		EntityManager em = entityManager();
-		
-		
+
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
 				"WHERE agv.id in (:idList) AND agv.ignored IS NOT :ignored ";
-		
+
 		String hsqlQueryPublic = "SELECT agv FROM AnalysisGroupValue AS agv " +
 				"WHERE agv.id in (:idList) AND agv.ignored IS NOT :ignored " +
 				"AND agv.publicData IS :publicData ";
 
-		if (onlyPublicData){
+		if (onlyPublicData) {
 			TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQueryPublic, AnalysisGroupValue.class);
 			q.setParameter("idList", idList);
 			q.setParameter("ignored", true);
 			q.setParameter("publicData", true);
 			logger.debug("query running: hsqlQueryPublic   " + hsqlQueryPublic);
 			return q;
-			
+
 		} else {
 			TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 			q.setParameter("idList", idList);
 			q.setParameter("ignored", true);
 			logger.debug("query running: hsqlQuery   " + hsqlQuery);
-			return q;			
+			return q;
 		}
 	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(Long analysisGroupId, String stateType,
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(
+			Long analysisGroupId, String stateType,
 			String stateKind, String valueType, String valueKind) {
 
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0)
+			throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
@@ -1368,15 +1509,20 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("valueKind", valueKind);
 		q.setParameter("ignored", true);
 		return q;
-    }
-	
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupCodeNameAndStateTypeKindAndValueTypeKind(String analysisGroupCodeName, String stateType,
+	}
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupCodeNameAndStateTypeKindAndValueTypeKind(
+			String analysisGroupCodeName, String stateType,
 			String stateKind, String valueType, String valueKind) {
 
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		if (stateType == null || stateType.length() == 0)
+			throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0)
+			throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0)
+			throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
 
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
@@ -1394,12 +1540,12 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("valueKind", valueKind);
 		q.setParameter("ignored", true);
 		return q;
-    }
-    
-	public static String[] getColumns(){
+	}
+
+	public static String[] getColumns() {
 		String[] headerColumns = new String[] {
 				"analysisGroupId",
-				"analysisGroupCode",				
+				"analysisGroupCode",
 				"stateId",
 				"stateType",
 				"stateKind",
@@ -1438,13 +1584,13 @@ public class AnalysisGroupValue extends AbstractValue {
 				"modifiedBy",
 				"publicData"
 		};
-		//35 columns
+		// 35 columns
 		return headerColumns;
 
 	}
 
 	public static CellProcessor[] getProcessors() {
-		final CellProcessor[] processors = new CellProcessor[] { 
+		final CellProcessor[] processors = new CellProcessor[] {
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -1489,275 +1635,339 @@ public class AnalysisGroupValue extends AbstractValue {
 		return processors;
 	}
 
-
 	public static Long countFindAnalysisGroupValuesByCodeValueEquals(String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue", Long.class);
-        q.setParameter("codeValue", codeValue);
-        return ((Long) q.getSingleResult());
-    }
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue",
+				Long.class);
+		q.setParameter("codeValue", codeValue);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", Long.class);
-        q.setParameter("ignored", ignored);
-        q.setParameter("codeValue", codeValue);
-        return ((Long) q.getSingleResult());
-    }
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				Long.class);
+		q.setParameter("ignored", ignored);
+		q.setParameter("codeValue", codeValue);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindAnalysisGroupValuesByLsState(AnalysisGroupState lsState) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState", Long.class);
-        q.setParameter("lsState", lsState);
-        return ((Long) q.getSingleResult());
-    }
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState",
+				Long.class);
+		q.setParameter("lsState", lsState);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
-        q.setParameter("lsTransaction", lsTransaction);
-        return ((Long) q.getSingleResult());
-    }
+		if (lsTransaction == null)
+			throw new IllegalArgumentException("The lsTransaction argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+		q.setParameter("lsTransaction", lsTransaction);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static Long countFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return ((Long) q.getSingleResult());
-    }
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind",
+				Long.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return ((Long) q.getSingleResult());
+	}
 
-	public static Long countFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
-        stringValue = stringValue.replace('*', '%');
-        if (stringValue.charAt(0) != '%') {
-            stringValue = "%" + stringValue;
-        }
-        if (stringValue.charAt(stringValue.length() - 1) != '%') {
-            stringValue = stringValue + "%";
-        }
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored", Long.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        q.setParameter("stringValue", stringValue);
-        q.setParameter("ignored", ignored);
-        return ((Long) q.getSingleResult());
-    }
+	public static Long countFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(
+			String lsType, String lsKind, String stringValue, boolean ignored) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		if (stringValue == null || stringValue.length() == 0)
+			throw new IllegalArgumentException("The stringValue argument is required");
+		stringValue = stringValue.replace('*', '%');
+		if (stringValue.charAt(0) != '%') {
+			stringValue = "%" + stringValue;
+		}
+		if (stringValue.charAt(stringValue.length() - 1) != '%') {
+			stringValue = stringValue + "%";
+		}
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery q = em.createQuery(
+				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored",
+				Long.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		q.setParameter("stringValue", stringValue);
+		q.setParameter("ignored", ignored);
+		return ((Long) q.getSingleResult());
+	}
 
 	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByCodeValueEquals(String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue", AnalysisGroupValue.class);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue", AnalysisGroupValue.class);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByCodeValueEquals(String codeValue, String sortFieldName, String sortOrder) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByCodeValueEquals(String codeValue,
+			String sortFieldName, String sortOrder) {
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", AnalysisGroupValue.class);
-        q.setParameter("ignored", ignored);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored,
+			String codeValue) {
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				AnalysisGroupValue.class);
+		q.setParameter("ignored", ignored);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue, String sortFieldName, String sortOrder) {
-        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
-        q.setParameter("ignored", ignored);
-        q.setParameter("codeValue", codeValue);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored,
+			String codeValue, String sortFieldName, String sortOrder) {
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The codeValue argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+		q.setParameter("ignored", ignored);
+		q.setParameter("codeValue", codeValue);
+		return q;
+	}
 
 	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsState(AnalysisGroupState lsState) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState", AnalysisGroupValue.class);
-        q.setParameter("lsState", lsState);
-        return q;
-    }
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState", AnalysisGroupValue.class);
+		q.setParameter("lsState", lsState);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsState(AnalysisGroupState lsState, String sortFieldName, String sortOrder) {
-        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
-        q.setParameter("lsState", lsState);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsState(AnalysisGroupState lsState,
+			String sortFieldName, String sortOrder) {
+		if (lsState == null)
+			throw new IllegalArgumentException("The lsState argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+		q.setParameter("lsState", lsState);
+		return q;
+	}
 
 	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction", AnalysisGroupValue.class);
-        q.setParameter("lsTransaction", lsTransaction);
-        return q;
-    }
+		if (lsTransaction == null)
+			throw new IllegalArgumentException("The lsTransaction argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction",
+				AnalysisGroupValue.class);
+		q.setParameter("lsTransaction", lsTransaction);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
-        q.setParameter("lsTransaction", lsTransaction);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction,
+			String sortFieldName, String sortOrder) {
+		if (lsTransaction == null)
+			throw new IllegalArgumentException("The lsTransaction argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+		q.setParameter("lsTransaction", lsTransaction);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", AnalysisGroupValue.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType,
+			String lsKind) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind",
+				AnalysisGroupValue.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = AnalysisGroupValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType,
+			String lsKind, String sortFieldName, String sortOrder) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		EntityManager em = AnalysisGroupValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
-        stringValue = stringValue.replace('*', '%');
-        if (stringValue.charAt(0) != '%') {
-            stringValue = "%" + stringValue;
-        }
-        if (stringValue.charAt(stringValue.length() - 1) != '%') {
-            stringValue = stringValue + "%";
-        }
-        EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored", AnalysisGroupValue.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        q.setParameter("stringValue", stringValue);
-        q.setParameter("ignored", ignored);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(
+			String lsType, String lsKind, String stringValue, boolean ignored) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		if (stringValue == null || stringValue.length() == 0)
+			throw new IllegalArgumentException("The stringValue argument is required");
+		stringValue = stringValue.replace('*', '%');
+		if (stringValue.charAt(0) != '%') {
+			stringValue = "%" + stringValue;
+		}
+		if (stringValue.charAt(stringValue.length() - 1) != '%') {
+			stringValue = stringValue + "%";
+		}
+		EntityManager em = AnalysisGroupValue.entityManager();
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored",
+				AnalysisGroupValue.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		q.setParameter("stringValue", stringValue);
+		q.setParameter("ignored", ignored);
+		return q;
+	}
 
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored, String sortFieldName, String sortOrder) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
-        stringValue = stringValue.replace('*', '%');
-        if (stringValue.charAt(0) != '%') {
-            stringValue = "%" + stringValue;
-        }
-        if (stringValue.charAt(stringValue.length() - 1) != '%') {
-            stringValue = stringValue + "%";
-        }
-        EntityManager em = AnalysisGroupValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
-        q.setParameter("lsType", lsType);
-        q.setParameter("lsKind", lsKind);
-        q.setParameter("stringValue", stringValue);
-        q.setParameter("ignored", ignored);
-        return q;
-    }
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(
+			String lsType, String lsKind, String stringValue, boolean ignored, String sortFieldName, String sortOrder) {
+		if (lsType == null || lsType.length() == 0)
+			throw new IllegalArgumentException("The lsType argument is required");
+		if (lsKind == null || lsKind.length() == 0)
+			throw new IllegalArgumentException("The lsKind argument is required");
+		if (stringValue == null || stringValue.length() == 0)
+			throw new IllegalArgumentException("The stringValue argument is required");
+		stringValue = stringValue.replace('*', '%');
+		if (stringValue.charAt(0) != '%') {
+			stringValue = "%" + stringValue;
+		}
+		if (stringValue.charAt(stringValue.length() - 1) != '%') {
+			stringValue = stringValue + "%";
+		}
+		EntityManager em = AnalysisGroupValue.entityManager();
+		StringBuilder queryBuilder = new StringBuilder(
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored");
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			queryBuilder.append(" ORDER BY ").append(sortFieldName);
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				queryBuilder.append(" ").append(sortOrder);
+			}
+		}
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		q.setParameter("stringValue", stringValue);
+		q.setParameter("ignored", ignored);
+		return q;
+	}
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "PARAMETER_LIMIT", "lsState");
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "PARAMETER_LIMIT",
+			"lsState");
 
 	public static List<AnalysisGroupValue> findAllAnalysisGroupValues(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM AnalysisGroupValue o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, AnalysisGroupValue.class).getResultList();
-    }
+		String jpaQuery = "SELECT o FROM AnalysisGroupValue o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, AnalysisGroupValue.class).getResultList();
+	}
 
-	public static List<AnalysisGroupValue> findAnalysisGroupValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM AnalysisGroupValue o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, AnalysisGroupValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
+	public static List<AnalysisGroupValue> findAnalysisGroupValueEntries(int firstResult, int maxResults,
+			String sortFieldName, String sortOrder) {
+		String jpaQuery = "SELECT o FROM AnalysisGroupValue o";
+		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+			jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+				jpaQuery = jpaQuery + " " + sortOrder;
+			}
+		}
+		return entityManager().createQuery(jpaQuery, AnalysisGroupValue.class).setFirstResult(firstResult)
+				.setMaxResults(maxResults).getResultList();
+	}
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	public AnalysisGroupState getLsState() {
-        return this.lsState;
-    }
+		return this.lsState;
+	}
 
 	public void setLsState(AnalysisGroupState lsState) {
-        this.lsState = lsState;
-    }
+		this.lsState = lsState;
+	}
 
 	public AnalysisGroupValue() {
-        super();
-    }
+		super();
+	}
 }

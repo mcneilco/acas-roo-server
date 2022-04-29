@@ -7,67 +7,65 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class ParentLotCodeDTO {
-	
-	private String requestName;
-	
-	private String referenceCode;
-	
-	private Collection<String> lotCodes;
-	
-	public ParentLotCodeDTO(){
-		
-	}
-	
-	public String toJson() {
-        return new JSONSerializer()
-        .include("lotCodes")
-        .exclude("*.class").serialize(this);
-    }
-	
-	public static String toJsonArray(Collection<ParentLotCodeDTO> collection) {
-        return new JSONSerializer()
-        .include("lotCodes")
-        .exclude("*.class").serialize(collection);
+
+    private String requestName;
+
+    private String referenceCode;
+
+    private Collection<String> lotCodes;
+
+    public ParentLotCodeDTO() {
+
     }
 
+    public String toJson() {
+        return new JSONSerializer()
+                .include("lotCodes")
+                .exclude("*.class").serialize(this);
+    }
 
-	public static ParentLotCodeDTO fromJsonToParentLotCodeDTO(String json) {
+    public static String toJsonArray(Collection<ParentLotCodeDTO> collection) {
+        return new JSONSerializer()
+                .include("lotCodes")
+                .exclude("*.class").serialize(collection);
+    }
+
+    public static ParentLotCodeDTO fromJsonToParentLotCodeDTO(String json) {
         return new JSONDeserializer<ParentLotCodeDTO>()
-        .use(null, ParentLotCodeDTO.class).deserialize(json);
+                .use(null, ParentLotCodeDTO.class).deserialize(json);
     }
 
-	public static Collection<ParentLotCodeDTO> fromJsonArrayToParentLotCoes(String json) {
+    public static Collection<ParentLotCodeDTO> fromJsonArrayToParentLotCoes(String json) {
         return new JSONDeserializer<List<ParentLotCodeDTO>>()
-        .use("values", ParentLotCodeDTO.class).deserialize(json);
+                .use("values", ParentLotCodeDTO.class).deserialize(json);
     }
 
-	public String getRequestName() {
+    public String getRequestName() {
         return this.requestName;
     }
 
-	public void setRequestName(String requestName) {
+    public void setRequestName(String requestName) {
         this.requestName = requestName;
     }
 
-	public String getReferenceCode() {
+    public String getReferenceCode() {
         return this.referenceCode;
     }
 
-	public void setReferenceCode(String referenceCode) {
+    public void setReferenceCode(String referenceCode) {
         this.referenceCode = referenceCode;
     }
 
-	public Collection<String> getLotCodes() {
+    public Collection<String> getLotCodes() {
         return this.lotCodes;
     }
 
-	public void setLotCodes(Collection<String> lotCodes) {
+    public void setLotCodes(Collection<String> lotCodes) {
         this.lotCodes = lotCodes;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

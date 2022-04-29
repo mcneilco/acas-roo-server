@@ -9,8 +9,8 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.chemclasses.indigo.CmpdRegSDFWriterIndigoImpl;
 
 @Component
-public class CmpdRegSDFWriterFactoryIndigoImpl implements CmpdRegSDFWriterFactory{
-	
+public class CmpdRegSDFWriterFactoryIndigoImpl implements CmpdRegSDFWriterFactory {
+
 	public CmpdRegSDFWriter getCmpdRegSDFWriter(String fileName) throws IllegalArgumentException, IOException {
 		return new CmpdRegSDFWriterIndigoImpl(fileName);
 	}

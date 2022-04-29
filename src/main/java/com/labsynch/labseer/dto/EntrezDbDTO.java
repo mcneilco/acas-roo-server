@@ -1,75 +1,75 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class EntrezDbDTO {
-	
+
     private String taxonomyId;
     private String entrezGenesFile;
     private String geneHistoryFile;
 
-
-	public String getTaxonomyId() {
+    public String getTaxonomyId() {
         return this.taxonomyId;
     }
 
-	public void setTaxonomyId(String taxonomyId) {
+    public void setTaxonomyId(String taxonomyId) {
         this.taxonomyId = taxonomyId;
     }
 
-	public String getEntrezGenesFile() {
+    public String getEntrezGenesFile() {
         return this.entrezGenesFile;
     }
 
-	public void setEntrezGenesFile(String entrezGenesFile) {
+    public void setEntrezGenesFile(String entrezGenesFile) {
         this.entrezGenesFile = entrezGenesFile;
     }
 
-	public String getGeneHistoryFile() {
+    public String getGeneHistoryFile() {
         return this.geneHistoryFile;
     }
 
-	public void setGeneHistoryFile(String geneHistoryFile) {
+    public void setGeneHistoryFile(String geneHistoryFile) {
         this.geneHistoryFile = geneHistoryFile;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static EntrezDbDTO fromJsonToEntrezDbDTO(String json) {
+    public static EntrezDbDTO fromJsonToEntrezDbDTO(String json) {
         return new JSONDeserializer<EntrezDbDTO>()
-        .use(null, EntrezDbDTO.class).deserialize(json);
+                .use(null, EntrezDbDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<EntrezDbDTO> collection) {
+    public static String toJsonArray(Collection<EntrezDbDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<EntrezDbDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<EntrezDbDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<EntrezDbDTO> fromJsonArrayToEntrezDbDTO(String json) {
+    public static Collection<EntrezDbDTO> fromJsonArrayToEntrezDbDTO(String json) {
         return new JSONDeserializer<List<EntrezDbDTO>>()
-        .use("values", EntrezDbDTO.class).deserialize(json);
+                .use("values", EntrezDbDTO.class).deserialize(json);
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

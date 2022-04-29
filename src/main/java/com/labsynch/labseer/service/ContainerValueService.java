@@ -3,12 +3,12 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.dto.ContainerValuePathDTO;
 import com.labsynch.labseer.dto.GenericValuePathRequest;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ContainerValueService {

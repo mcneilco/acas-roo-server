@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -13,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.Version;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -24,9 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Configurable
 
 public class SaltLoader {
-	
+
     private String name;
-	
+
     private String description;
 
     private long numberOfSalts;
@@ -34,36 +36,39 @@ public class SaltLoader {
     private long size;
 
     private Boolean uploaded;
-    
-    @Transient 
-    private MultipartFile file; // added 
 
-    private String fileName; // added 
-	
+    @Transient
+    private MultipartFile file; // added
+
+    private String fileName; // added
+
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
     private Date loadedDate;
 
-	@PersistenceContext
+    @PersistenceContext
     transient EntityManager entityManager;
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "description", "numberOfSalts", "size", "uploaded", "file", "fileName", "loadedDate");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "description",
+            "numberOfSalts", "size", "uploaded", "file", "fileName", "loadedDate");
 
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new SaltLoader().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countSaltLoaders() {
+    public static long countSaltLoaders() {
         return entityManager().createQuery("SELECT COUNT(o) FROM SaltLoader o", Long.class).getSingleResult();
     }
 
-	public static List<SaltLoader> findAllSaltLoaders() {
+    public static List<SaltLoader> findAllSaltLoaders() {
         return entityManager().createQuery("SELECT o FROM SaltLoader o", SaltLoader.class).getResultList();
     }
 
-	public static List<SaltLoader> findAllSaltLoaders(String sortFieldName, String sortOrder) {
+    public static List<SaltLoader> findAllSaltLoaders(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM SaltLoader o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -74,16 +79,19 @@ public class SaltLoader {
         return entityManager().createQuery(jpaQuery, SaltLoader.class).getResultList();
     }
 
-	public static SaltLoader findSaltLoader(Long id) {
-        if (id == null) return null;
+    public static SaltLoader findSaltLoader(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(SaltLoader.class, id);
     }
 
-	public static List<SaltLoader> findSaltLoaderEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM SaltLoader o", SaltLoader.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<SaltLoader> findSaltLoaderEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM SaltLoader o", SaltLoader.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	public static List<SaltLoader> findSaltLoaderEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<SaltLoader> findSaltLoaderEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM SaltLoader o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -91,18 +99,21 @@ public class SaltLoader {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, SaltLoader.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, SaltLoader.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -111,116 +122,119 @@ public class SaltLoader {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public SaltLoader merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         SaltLoader merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String getName() {
+    public String getName() {
         return this.name;
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-	public String getDescription() {
+    public String getDescription() {
         return this.description;
     }
 
-	public void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-	public long getNumberOfSalts() {
+    public long getNumberOfSalts() {
         return this.numberOfSalts;
     }
 
-	public void setNumberOfSalts(long numberOfSalts) {
+    public void setNumberOfSalts(long numberOfSalts) {
         this.numberOfSalts = numberOfSalts;
     }
 
-	public long getSize() {
+    public long getSize() {
         return this.size;
     }
 
-	public void setSize(long size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
-	public Boolean getUploaded() {
+    public Boolean getUploaded() {
         return this.uploaded;
     }
 
-	public void setUploaded(Boolean uploaded) {
+    public void setUploaded(Boolean uploaded) {
         this.uploaded = uploaded;
     }
 
-	public MultipartFile getFile() {
+    public MultipartFile getFile() {
         return this.file;
     }
 
-	public void setFile(MultipartFile file) {
+    public void setFile(MultipartFile file) {
         this.file = file;
     }
 
-	public String getFileName() {
+    public String getFileName() {
         return this.fileName;
     }
 
-	public void setFileName(String fileName) {
+    public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-	public Date getLoadedDate() {
+    public Date getLoadedDate() {
         return this.loadedDate;
     }
 
-	public void setLoadedDate(Date loadedDate) {
+    public void setLoadedDate(Date loadedDate) {
         this.loadedDate = loadedDate;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 }

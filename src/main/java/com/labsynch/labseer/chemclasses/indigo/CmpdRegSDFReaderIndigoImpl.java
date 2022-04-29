@@ -9,11 +9,11 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
 public class CmpdRegSDFReaderIndigoImpl implements CmpdRegSDFReader {
-	
+
 	private Indigo indigo = new Indigo();
-	
+
 	private IndigoObject reader;
-	
+
 	public CmpdRegSDFReaderIndigoImpl(String fileName) {
 		this.reader = indigo.iterateSDFile(fileName);
 	}
@@ -28,7 +28,7 @@ public class CmpdRegSDFReaderIndigoImpl implements CmpdRegSDFReader {
 		if (reader.hasNext()) {
 			CmpdRegMoleculeIndigoImpl molecule = new CmpdRegMoleculeIndigoImpl(reader.next());
 			return molecule;
-		}else {
+		} else {
 			return null;
 		}
 	}

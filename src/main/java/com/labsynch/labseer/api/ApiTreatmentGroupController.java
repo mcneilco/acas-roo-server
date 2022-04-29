@@ -1,12 +1,13 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.service.TreatmentGroupService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +20,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.service.SubjectValueService;
-import com.labsynch.labseer.service.TreatmentGroupService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-
-import flexjson.JSONTokener;
 
 @Controller
 @RequestMapping("api/v1/treatmentgroups")
 @Transactional
 public class ApiTreatmentGroupController {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ApiTreatmentGroupController.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiTreatmentGroupController.class);
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
@@ -67,7 +58,7 @@ public class ApiTreatmentGroupController {
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-    	TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
+        TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
         TreatmentGroup savedTreatmentGroup = treatmentGroupService.saveLsTreatmentGroup(treatmentGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -76,7 +67,7 @@ public class ApiTreatmentGroupController {
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
-    	Collection<TreatmentGroup> treatmentGroups = TreatmentGroup.fromJsonArrayToTreatmentGroups(json);
+        Collection<TreatmentGroup> treatmentGroups = TreatmentGroup.fromJsonArrayToTreatmentGroups(json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<TreatmentGroup> savedTreatmentGroups = new ArrayList<TreatmentGroup>();
@@ -89,7 +80,8 @@ public class ApiTreatmentGroupController {
             logger.error("ERROR: " + e);
             return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(savedTreatmentGroups), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(savedTreatmentGroups), headers,
+                HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")

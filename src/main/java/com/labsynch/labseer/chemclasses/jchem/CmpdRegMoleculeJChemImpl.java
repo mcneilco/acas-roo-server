@@ -15,20 +15,19 @@ import chemaxon.struc.Molecule;
 import chemaxon.util.MolHandler;
 
 public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
-	
+
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeJChemImpl.class);
 
-	
 	Molecule molecule;
-	
-	public CmpdRegMoleculeJChemImpl(String molStructure) throws MolFormatException{
+
+	public CmpdRegMoleculeJChemImpl(String molStructure) throws MolFormatException {
 		MolHandler mh = null;
 		boolean badStructureFlag = false;
 		Molecule mol = null;
 		String lineEnd = System.getProperty("line.separator");
 		try {
 			mh = new MolHandler(molStructure);
-			mol = mh.getMolecule();		
+			mol = mh.getMolecule();
 		} catch (MolFormatException e1) {
 			logger.debug("failed first attempt: bad mol structure: " + molStructure);
 			// clean up the molString and try again
@@ -41,36 +40,36 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 				badStructureFlag = true;
 				logger.error("bad mol structure: " + molStructure);
 			}
-		}	
+		}
 
-		if (!badStructureFlag){
+		if (!badStructureFlag) {
 			this.molecule = mol;
 		} else {
 			this.molecule = null;
 		}
 	}
-	
-	public CmpdRegMoleculeJChemImpl(Molecule mol){
+
+	public CmpdRegMoleculeJChemImpl(Molecule mol) {
 		this.molecule = mol;
 	}
-	
+
 	@Override
-	public String getProperty(String key){
+	public String getProperty(String key) {
 		return molecule.getProperty(key);
 	}
-	
+
 	@Override
-	public void setProperty(String key, String value){
+	public void setProperty(String key, String value) {
 		this.molecule.setProperty(key, value);
-	}; 
-	
+	};
+
 	@Override
-	public String[] getPropertyKeys(){
+	public String[] getPropertyKeys() {
 		return this.molecule.properties().getKeys();
 	};
 
 	@Override
-	public String getPropertyType(String key){
+	public String getPropertyType(String key) {
 		MProp prop = molecule.properties().get(key);
 		return prop.getPropType();
 	}
@@ -79,12 +78,12 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 	public String getMolStructure() {
 		return this.molecule.toFormat("mol");
 	}
-	
+
 	@Override
 	public String getSmiles() {
 		return this.molecule.toFormat("smiles");
 	}
-	
+
 	@Override
 	public String getMrvStructure() {
 		return this.molecule.toFormat("mrv");
@@ -126,7 +125,8 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public byte[] toBinary(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize) throws IOException {
+	public byte[] toBinary(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize)
+			throws IOException {
 		Molecule mol = ((CmpdRegMoleculeJChemImpl) molecule).molecule;
 		String format = imageFormat + ":" + "h" + hSize + ",w" + wSize + ",maxScale28";
 		return MolExporter.exportToBinFormat(mol, format);
@@ -134,7 +134,7 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public void dearomatize() {
-		this.molecule.dearomatize();	
+		this.molecule.dearomatize();
 	}
 
 	@Override

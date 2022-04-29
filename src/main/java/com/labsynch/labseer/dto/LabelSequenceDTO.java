@@ -7,9 +7,8 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-
 public class LabelSequenceDTO {
-	
+
     private Long numberOfLabels;
 
     private String thingTypeAndKind;
@@ -26,102 +25,101 @@ public class LabelSequenceDTO {
 
     private Long startingNumber;
 
-
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static LabelSequenceDTO fromJsonToLabelSequenceDTO(String json) {
+    public static LabelSequenceDTO fromJsonToLabelSequenceDTO(String json) {
         return new JSONDeserializer<LabelSequenceDTO>()
-        .use(null, LabelSequenceDTO.class).deserialize(json);
+                .use(null, LabelSequenceDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<LabelSequenceDTO> collection) {
+    public static String toJsonArray(Collection<LabelSequenceDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<LabelSequenceDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<LabelSequenceDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<LabelSequenceDTO> fromJsonArrayToLabelSequenceDTO(String json) {
+    public static Collection<LabelSequenceDTO> fromJsonArrayToLabelSequenceDTO(String json) {
         return new JSONDeserializer<List<LabelSequenceDTO>>()
-        .use("values", LabelSequenceDTO.class).deserialize(json);
+                .use("values", LabelSequenceDTO.class).deserialize(json);
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public Long getNumberOfLabels() {
+    public Long getNumberOfLabels() {
         return this.numberOfLabels;
     }
 
-	public void setNumberOfLabels(Long numberOfLabels) {
+    public void setNumberOfLabels(Long numberOfLabels) {
         this.numberOfLabels = numberOfLabels;
     }
 
-	public String getThingTypeAndKind() {
+    public String getThingTypeAndKind() {
         return this.thingTypeAndKind;
     }
 
-	public void setThingTypeAndKind(String thingTypeAndKind) {
+    public void setThingTypeAndKind(String thingTypeAndKind) {
         this.thingTypeAndKind = thingTypeAndKind;
     }
 
-	public String getLabelTypeAndKind() {
+    public String getLabelTypeAndKind() {
         return this.labelTypeAndKind;
     }
 
-	public void setLabelTypeAndKind(String labelTypeAndKind) {
+    public void setLabelTypeAndKind(String labelTypeAndKind) {
         this.labelTypeAndKind = labelTypeAndKind;
     }
 
-	public String getLabelPrefix() {
+    public String getLabelPrefix() {
         return this.labelPrefix;
     }
 
-	public void setLabelPrefix(String labelPrefix) {
+    public void setLabelPrefix(String labelPrefix) {
         this.labelPrefix = labelPrefix;
     }
 
-	public String getLabelSeparator() {
+    public String getLabelSeparator() {
         return this.labelSeparator;
     }
 
-	public void setLabelSeparator(String labelSeparator) {
+    public void setLabelSeparator(String labelSeparator) {
         this.labelSeparator = labelSeparator;
     }
 
-	public boolean isGroupDigits() {
+    public boolean isGroupDigits() {
         return this.groupDigits;
     }
 
-	public void setGroupDigits(boolean groupDigits) {
+    public void setGroupDigits(boolean groupDigits) {
         this.groupDigits = groupDigits;
     }
 
-	public Integer getDigits() {
+    public Integer getDigits() {
         return this.digits;
     }
 
-	public void setDigits(Integer digits) {
+    public void setDigits(Integer digits) {
         this.digits = digits;
     }
 
-	public Long getStartingNumber() {
+    public Long getStartingNumber() {
         return this.startingNumber;
     }
 
-	public void setStartingNumber(Long startingNumber) {
+    public void setStartingNumber(Long startingNumber) {
         this.startingNumber = startingNumber;
     }
 }

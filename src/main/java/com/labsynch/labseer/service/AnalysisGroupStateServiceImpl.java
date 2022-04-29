@@ -25,40 +25,47 @@ import com.labsynch.labseer.utils.SimpleUtil;
 public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService {
 
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupStateServiceImpl.class);
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
 	@Override
-	public List<AnalysisGroupState> getAnalysisGroupStatesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, 
-			String stateKind) {	
-		
-		List<AnalysisGroupState> analysisGroupStates = AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+	public List<AnalysisGroupState> getAnalysisGroupStatesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId,
+			String stateType,
+			String stateKind) {
+
+		List<AnalysisGroupState> analysisGroupStates = AnalysisGroupState
+				.findAnalysisGroupStatesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind)
+				.getResultList();
 
 		return analysisGroupStates;
 	}
-	
+
 	@Override
-	public Collection<AnalysisGroupState> ignoreAllAnalysisGroupStates(Collection<AnalysisGroupState> analysisGroupStates) {
-		//mark AnalysisGroupStates and values as ignore 
+	public Collection<AnalysisGroupState> ignoreAllAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates) {
+		// mark AnalysisGroupStates and values as ignore
 		Collection<AnalysisGroupState> analysisGroupStateSet = new HashSet<AnalysisGroupState>();
-		for (AnalysisGroupState queryAnalysisGroupState : analysisGroupStates){
-			AnalysisGroupState analysisGroupState = AnalysisGroupState.findAnalysisGroupState(queryAnalysisGroupState.getId());			
-				for(AnalysisGroupValue analysisGroupValue : AnalysisGroupValue.findAnalysisGroupValuesByLsState(analysisGroupState).getResultList()){
-					analysisGroupValue.setIgnored(true);
-					analysisGroupValue.merge();
-				}
-				analysisGroupState.setIgnored(true);
-				analysisGroupState.merge();
-				analysisGroupStateSet.add(AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()));
+		for (AnalysisGroupState queryAnalysisGroupState : analysisGroupStates) {
+			AnalysisGroupState analysisGroupState = AnalysisGroupState
+					.findAnalysisGroupState(queryAnalysisGroupState.getId());
+			for (AnalysisGroupValue analysisGroupValue : AnalysisGroupValue
+					.findAnalysisGroupValuesByLsState(analysisGroupState).getResultList()) {
+				analysisGroupValue.setIgnored(true);
+				analysisGroupValue.merge();
+			}
+			analysisGroupState.setIgnored(true);
+			analysisGroupState.merge();
+			analysisGroupStateSet.add(AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()));
 		}
 
-		return(analysisGroupStateSet);
+		return (analysisGroupStateSet);
 
 	}
-	
+
 	@Override
-	public AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind) {
+	public AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId,
+			String stateType, String stateKind) {
 		AnalysisGroupState analysisGroupState = new AnalysisGroupState();
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupId);
 		analysisGroupState.setAnalysisGroup(analysisGroup);
@@ -68,9 +75,10 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 		analysisGroupState.persist();
 		return analysisGroupState;
 	}
-	
+
 	@Override
-	public AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindAndRecordedBy(Long analysisGroupId, String stateType, String stateKind, String recordedBy) {
+	public AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindAndRecordedBy(
+			Long analysisGroupId, String stateType, String stateKind, String recordedBy) {
 		AnalysisGroupState analysisGroupState = new AnalysisGroupState();
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupId);
 		analysisGroupState.setAnalysisGroup(analysisGroup);
@@ -84,10 +92,11 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 	@Override
 	public AnalysisGroupState saveAnalysisGroupState(
 			AnalysisGroupState analysisGroupState) {
-		analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupState.getAnalysisGroup().getId()));		
+		analysisGroupState
+				.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupState.getAnalysisGroup().getId()));
 		analysisGroupState.persist();
 		Set<AnalysisGroupValue> savedValues = new HashSet<AnalysisGroupValue>();
-		for (AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()){
+		for (AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()) {
 			analysisGroupValue.setLsState(analysisGroupState);
 			analysisGroupValue.persist();
 			savedValues.add(analysisGroupValue);
@@ -100,7 +109,7 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 	@Override
 	public Collection<AnalysisGroupState> saveAnalysisGroupStates(
 			Collection<AnalysisGroupState> analysisGroupStates) {
-		for (AnalysisGroupState analysisGroupState: analysisGroupStates) {
+		for (AnalysisGroupState analysisGroupState : analysisGroupStates) {
 			analysisGroupState = saveAnalysisGroupState(analysisGroupState);
 		}
 		return analysisGroupStates;
@@ -109,7 +118,8 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 	@Override
 	public AnalysisGroupState updateAnalysisGroupState(
 			AnalysisGroupState analysisGroupState) {
-		analysisGroupState.setVersion(AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()).getVersion());
+		analysisGroupState
+				.setVersion(AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()).getVersion());
 		analysisGroupState.merge();
 		return analysisGroupState;
 	}
@@ -117,21 +127,21 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 	@Override
 	public Collection<AnalysisGroupState> updateAnalysisGroupStates(
 			Collection<AnalysisGroupState> analysisGroupStates) {
-		for (AnalysisGroupState analysisGroupState : analysisGroupStates){
+		for (AnalysisGroupState analysisGroupState : analysisGroupStates) {
 			analysisGroupState = updateAnalysisGroupState(analysisGroupState);
 		}
 		return null;
 	}
-	
+
 	@Override
 	public AnalysisGroupState getAnalysisGroupState(String idOrCodeName,
 			String stateType, String stateKind) {
 		AnalysisGroupState state = null;
-		try{
+		try {
 			Collection<AnalysisGroupState> states = getAnalysisGroupStates(idOrCodeName, stateType, stateKind);
 			state = states.iterator().next();
-		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+		} catch (Exception e) {
+			logger.error("Caught error " + e.toString() + " trying to find a state.", e);
 			state = null;
 		}
 		return state;
@@ -141,25 +151,29 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 	public Collection<AnalysisGroupStatePathDTO> getAnalysisGroupStates(
 			Collection<GenericStatePathRequest> genericRequests) {
 		Collection<AnalysisGroupStatePathDTO> results = new ArrayList<AnalysisGroupStatePathDTO>();
-		for (GenericStatePathRequest request : genericRequests){
+		for (GenericStatePathRequest request : genericRequests) {
 			AnalysisGroupStatePathDTO result = new AnalysisGroupStatePathDTO();
 			result.setIdOrCodeName(request.getIdOrCodeName());
 			result.setStateType(request.getStateType());
 			result.setStateKind(request.getStateKind());
-			result.setStates(getAnalysisGroupStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			result.setStates(
+					getAnalysisGroupStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
 			results.add(result);
 		}
 		return results;
 	}
-	
-	private Collection<AnalysisGroupState> getAnalysisGroupStates(String idOrCodeName, String stateType, String stateKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
+
+	private Collection<AnalysisGroupState> getAnalysisGroupStates(String idOrCodeName, String stateType,
+			String stateKind) {
+		if (SimpleUtil.isNumeric(idOrCodeName)) {
 			Long id = Long.valueOf(idOrCodeName);
-			return AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupIDAndStateTypeKind(id, stateType, stateKind).getResultList();
-		}else{
-			return AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+			return AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupIDAndStateTypeKind(id, stateType, stateKind)
+					.getResultList();
+		} else {
+			return AnalysisGroupState
+					.findAnalysisGroupStatesByAnalysisGroupCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind)
+					.getResultList();
 		}
 	}
-
 
 }

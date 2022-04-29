@@ -3,14 +3,14 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
 import com.labsynch.labseer.dto.AuthorBrowserQueryDTO;
 import com.labsynch.labseer.dto.AuthorQueryDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface AuthorService {
@@ -48,7 +48,8 @@ public interface AuthorService {
 
 	Author signupAuthor(Author author);
 
-	void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception;
+	void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain)
+			throws Exception;
 
 	void resetPassword(String emailAddress);
 

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
@@ -28,7 +26,6 @@ import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
-import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
@@ -36,11 +33,13 @@ import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
+import org.springframework.stereotype.Service;
+
 @Service
 public interface ContainerService {
 
 	Container saveLsContainer(Container container);
-	
+
 	Collection<Container> saveLsContainers(Collection<Container> containers);
 
 	Container updateContainer(Container fromJsonToContainer);
@@ -64,7 +63,8 @@ public interface ContainerService {
 			List<String> plateBarcodes);
 
 	Collection<CodeLabelDTO> getContainerCodesByLabels(
-			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind, Boolean like, Boolean likeRight);
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind,
+			Boolean like, Boolean likeRight);
 
 	ContainerDependencyCheckDTO checkDependencies(Container container);
 
@@ -85,11 +85,11 @@ public interface ContainerService {
 			Collection<ContainerRequestDTO> wellsToUpdate);
 
 	PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest, String containerKind) throws Exception;
-	
+
 	PlateStubDTO createTube(CreatePlateRequestDTO plateRequest) throws Exception;
-	
+
 	Collection<PlateStubDTO> createTubes(Collection<CreatePlateRequestDTO> plateRequests) throws Exception;
-	
+
 	PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception;
 
 	Collection<PlateStubDTO> createPlates(Collection<CreatePlateRequestDTO> plateRequests) throws Exception;
@@ -161,7 +161,8 @@ public interface ContainerService {
 	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers)
 			throws SQLException;
 
-	List<ContainerLocationTreeDTO> getLocationCodeByLabelBreadcrumbByRecursiveQuery(String rootLabel, List<String> breadcrumbList) throws SQLException;
+	List<ContainerLocationTreeDTO> getLocationCodeByLabelBreadcrumbByRecursiveQuery(String rootLabel,
+			List<String> breadcrumbList) throws SQLException;
 
 	Container getOrCreateTrash(String recordedBy) throws Exception;
 
@@ -175,5 +176,5 @@ public interface ContainerService {
 
 	List<ContainerCodeNameStateDTO> saveContainerCodeNameStateDTOArray(
 			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException;
-	
+
 }

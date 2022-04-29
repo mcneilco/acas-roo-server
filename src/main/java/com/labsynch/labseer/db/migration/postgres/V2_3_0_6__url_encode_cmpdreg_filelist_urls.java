@@ -13,10 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-
-
 public class V2_3_0_6__url_encode_cmpdreg_filelist_urls implements SpringJdbcMigration {
- 
+
 	Logger logger = LoggerFactory.getLogger(V2_3_0_6__url_encode_cmpdreg_filelist_urls.class);
 
 	@Transactional
@@ -29,39 +27,40 @@ public class V2_3_0_6__url_encode_cmpdreg_filelist_urls implements SpringJdbcMig
 
 		List<Integer> ids = jdbcTemplate.queryForList(selectFileIds, Integer.class);
 
-		for (Integer id : ids){
-			FileObject file = (FileObject)jdbcTemplate.queryForObject(selectFileByIdSQL, new Object[] { id }, new FileRowMapper());
-			if (logger.isDebugEnabled()) logger.debug(file.getUrl());
+		for (Integer id : ids) {
+			FileObject file = (FileObject) jdbcTemplate.queryForObject(selectFileByIdSQL, new Object[] { id },
+					new FileRowMapper());
+			if (logger.isDebugEnabled())
+				logger.debug(file.getUrl());
 			String url = getEncodedUrl(file.getUrl());
-			
-			int rs2 = jdbcTemplate.update(updateFileURLs,  new Object[] { url, id });
+
+			int rs2 = jdbcTemplate.update(updateFileURLs, new Object[] { url, id });
 		}
 	}
-	
-	private class FileObject{
+
+	private class FileObject {
 		private long id;
 		private String url;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getUrl(){
+
+		public String getUrl() {
 			return this.url;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setUrl(String url){
+
+		public void setUrl(String url) {
 			this.url = url;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class FileRowMapper implements RowMapper
-	{
+	public class FileRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			FileObject file = new FileObject();
@@ -70,15 +69,15 @@ public class V2_3_0_6__url_encode_cmpdreg_filelist_urls implements SpringJdbcMig
 			return file;
 		}
 	}
-	
+
 	private String getEncodedUrl(String url) {
-		try{
+		try {
 			// Split url on = and encode the second part (file path) of the url
 			String[] urlParts = url.split("=");
 			String charset = "UTF-8";
 			String encodedUrl = urlParts[0] + "=" + URLEncoder.encode(urlParts[1], charset);
 			return encodedUrl;
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.error("error encoding url: " + url);
 			// log the stacktrace
 			e.printStackTrace();
@@ -87,4 +86,3 @@ public class V2_3_0_6__url_encode_cmpdreg_filelist_urls implements SpringJdbcMig
 	}
 
 }
-

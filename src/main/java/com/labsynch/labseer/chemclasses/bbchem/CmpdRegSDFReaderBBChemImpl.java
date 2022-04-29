@@ -18,15 +18,16 @@ public class CmpdRegSDFReaderBBChemImpl implements CmpdRegSDFReader {
     public CmpdRegSDFReaderBBChemImpl(String fileName, BBChemStructureService bbChemStructureService) {
         this.bbChemStructureService = bbChemStructureService;
         Scanner scanner;
-		try {
-			scanner = new Scanner(new File(fileName));
-            // \\R was added in java 8 and it matches any combination of line endings \r, \n, \r\n, \n\r
+        try {
+            scanner = new Scanner(new File(fileName));
+            // \\R was added in java 8 and it matches any combination of line endings \r,
+            // \n, \r\n, \n\r
             scanner.useDelimiter("\\$\\$\\$\\$\\R");
             this.scanner = scanner;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -38,7 +39,8 @@ public class CmpdRegSDFReaderBBChemImpl implements CmpdRegSDFReader {
     @Override
     public CmpdRegMolecule readNextMol() throws IOException, CmpdRegMolFormatException {
         if (this.scanner.hasNext()) {
-            CmpdRegMoleculeBBChemImpl molecule = new CmpdRegMoleculeBBChemImpl(scanner.next()+"$$$$", this.bbChemStructureService);
+            CmpdRegMoleculeBBChemImpl molecule = new CmpdRegMoleculeBBChemImpl(scanner.next() + "$$$$",
+                    this.bbChemStructureService);
             return molecule;
         } else {
             return null;

@@ -3,12 +3,10 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.LabelSequence;
 
 import org.springframework.stereotype.Service;
-
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.domain.AuthorRole;
 
 @Service
 public interface LabelSequenceService {

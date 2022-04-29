@@ -1,16 +1,17 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class EntrezDbGeneDTO {
-	
+
     private String taxId;
     private String geneId;
     private String symbol;
@@ -27,158 +28,157 @@ public class EntrezDbGeneDTO {
     private String otherDesignations;
     private Date modificationDate;
 
-
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static EntrezDbGeneDTO fromJsonToEntrezDbGeneDTO(String json) {
+    public static EntrezDbGeneDTO fromJsonToEntrezDbGeneDTO(String json) {
         return new JSONDeserializer<EntrezDbGeneDTO>()
-        .use(null, EntrezDbGeneDTO.class).deserialize(json);
+                .use(null, EntrezDbGeneDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<EntrezDbGeneDTO> collection) {
+    public static String toJsonArray(Collection<EntrezDbGeneDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<EntrezDbGeneDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<EntrezDbGeneDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<EntrezDbGeneDTO> fromJsonArrayToEntrezDbGeneDTO(String json) {
+    public static Collection<EntrezDbGeneDTO> fromJsonArrayToEntrezDbGeneDTO(String json) {
         return new JSONDeserializer<List<EntrezDbGeneDTO>>()
-        .use("values", EntrezDbGeneDTO.class).deserialize(json);
+                .use("values", EntrezDbGeneDTO.class).deserialize(json);
     }
 
-	public String getTaxId() {
+    public String getTaxId() {
         return this.taxId;
     }
 
-	public void setTaxId(String taxId) {
+    public void setTaxId(String taxId) {
         this.taxId = taxId;
     }
 
-	public String getGeneId() {
+    public String getGeneId() {
         return this.geneId;
     }
 
-	public void setGeneId(String geneId) {
+    public void setGeneId(String geneId) {
         this.geneId = geneId;
     }
 
-	public String getSymbol() {
+    public String getSymbol() {
         return this.symbol;
     }
 
-	public void setSymbol(String symbol) {
+    public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
 
-	public String getLocusTag() {
+    public String getLocusTag() {
         return this.locusTag;
     }
 
-	public void setLocusTag(String locusTag) {
+    public void setLocusTag(String locusTag) {
         this.locusTag = locusTag;
     }
 
-	public String getSynonyms() {
+    public String getSynonyms() {
         return this.synonyms;
     }
 
-	public void setSynonyms(String synonyms) {
+    public void setSynonyms(String synonyms) {
         this.synonyms = synonyms;
     }
 
-	public String getDbXrefs() {
+    public String getDbXrefs() {
         return this.dbXrefs;
     }
 
-	public void setDbXrefs(String dbXrefs) {
+    public void setDbXrefs(String dbXrefs) {
         this.dbXrefs = dbXrefs;
     }
 
-	public String getChromosome() {
+    public String getChromosome() {
         return this.chromosome;
     }
 
-	public void setChromosome(String chromosome) {
+    public void setChromosome(String chromosome) {
         this.chromosome = chromosome;
     }
 
-	public String getMapLocation() {
+    public String getMapLocation() {
         return this.mapLocation;
     }
 
-	public void setMapLocation(String mapLocation) {
+    public void setMapLocation(String mapLocation) {
         this.mapLocation = mapLocation;
     }
 
-	public String getDescription() {
+    public String getDescription() {
         return this.description;
     }
 
-	public void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-	public String getTypeOfGene() {
+    public String getTypeOfGene() {
         return this.typeOfGene;
     }
 
-	public void setTypeOfGene(String typeOfGene) {
+    public void setTypeOfGene(String typeOfGene) {
         this.typeOfGene = typeOfGene;
     }
 
-	public String getSymbolFromAuthority() {
+    public String getSymbolFromAuthority() {
         return this.symbolFromAuthority;
     }
 
-	public void setSymbolFromAuthority(String symbolFromAuthority) {
+    public void setSymbolFromAuthority(String symbolFromAuthority) {
         this.symbolFromAuthority = symbolFromAuthority;
     }
 
-	public String getFullNameFromAuthority() {
+    public String getFullNameFromAuthority() {
         return this.fullNameFromAuthority;
     }
 
-	public void setFullNameFromAuthority(String fullNameFromAuthority) {
+    public void setFullNameFromAuthority(String fullNameFromAuthority) {
         this.fullNameFromAuthority = fullNameFromAuthority;
     }
 
-	public String getNomenclatureStatus() {
+    public String getNomenclatureStatus() {
         return this.nomenclatureStatus;
     }
 
-	public void setNomenclatureStatus(String nomenclatureStatus) {
+    public void setNomenclatureStatus(String nomenclatureStatus) {
         this.nomenclatureStatus = nomenclatureStatus;
     }
 
-	public String getOtherDesignations() {
+    public String getOtherDesignations() {
         return this.otherDesignations;
     }
 
-	public void setOtherDesignations(String otherDesignations) {
+    public void setOtherDesignations(String otherDesignations) {
         this.otherDesignations = otherDesignations;
     }
 
-	public Date getModificationDate() {
+    public Date getModificationDate() {
         return this.modificationDate;
     }
 
-	public void setModificationDate(Date modificationDate) {
+    public void setModificationDate(Date modificationDate) {
         this.modificationDate = modificationDate;
     }
 }

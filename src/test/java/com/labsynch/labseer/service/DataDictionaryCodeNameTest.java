@@ -6,6 +6,8 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.DDictValue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,28 +18,26 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.DDictValue;
-
 /**
  * @author fairway
  *
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class DataDictionaryCodeNameTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(DataDictionaryCodeNameTest.class);
 
-	
 	@Autowired
 	private DataDictionaryService dataDictionaryService;
 
 	/**
 	 * Test method for {@link com.labsynch.labseer.domain.DDictValue#validate()}.
 	 */
-	//@Test
+	// @Test
 	@Transactional
 	public void testValidate() {
 		DDictValue theValue = new DDictValue();
@@ -49,11 +49,11 @@ public class DataDictionaryCodeNameTest {
 		theValue.persist();
 	}
 
-//	@Test
+	// @Test
 	public void getValues() {
 		List<DDictValue> dDictValues = DDictValue.findAllDDictValues();
 		logger.info("---------------------" + DDictValue.toJsonArray(dDictValues));
-		
+
 		String output = dataDictionaryService.getCsvList(dDictValues);
 		logger.info("---------------------" + output);
 
@@ -65,11 +65,10 @@ public class DataDictionaryCodeNameTest {
 
 		Collection<DDictValue> dDictValues = DDictValue.fromJsonArrayToDDictValues(json);
 		Boolean createTypeAndKind = true;
-		 List<DDictValue> output = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeAndKind);
-		
+		List<DDictValue> output = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeAndKind);
+
 		logger.info(DDictValue.toJsonArray(output));
 
 	}
 
-	
 }

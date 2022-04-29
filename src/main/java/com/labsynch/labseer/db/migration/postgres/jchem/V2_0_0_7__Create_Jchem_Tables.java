@@ -23,29 +23,29 @@ public class V2_0_0_7__Create_Jchem_Tables implements JdbcMigration {
 		conn.setAutoCommit(true);
 		logger.info("conneciton autocommit mode: " + conn.getAutoCommit());
 		logger.info("getTransactionIsolation  " + conn.getTransactionIsolation());
-		
+
 		createJchemPropertyTable(conn);
 		createJChemTable(conn, "Salt_Structure", false);
 		createJChemTable(conn, "SaltForm_Structure", true);
-		createJChemTable(conn, "Parent_Structure", true);	
-	
+		createJChemTable(conn, "Parent_Structure", true);
+
 		conn.setAutoCommit(false);
 		logger.info("conneciton autocommit mode: " + conn.getAutoCommit());
-		
-	}	
-	
+
+	}
+
 	private boolean createJchemPropertyTable(Connection conn) throws SQLException {
 		ConnectionHandler ch = new ConnectionHandler();
 		ch.setConnection(conn);
 
 		boolean tableCreated = true;
-		try{
-			if (!DatabaseProperties.propertyTableExists(ch)){
-				DatabaseProperties.createPropertyTable(ch);				
-				logger.info("created the Jchem property table" );
+		try {
+			if (!DatabaseProperties.propertyTableExists(ch)) {
+				DatabaseProperties.createPropertyTable(ch);
+				logger.info("created the Jchem property table");
 			}
 		} catch (SQLException e) {
-			logger.error("SQL error - unable to create the Jchem property table: " + e );
+			logger.error("SQL error - unable to create the Jchem property table: " + e);
 			tableCreated = false;
 			throw new SQLException("SQL error - unable to create the Jchem property table");
 		}
@@ -56,18 +56,19 @@ public class V2_0_0_7__Create_Jchem_Tables implements JdbcMigration {
 	private boolean createJChemTable(Connection conn, String tableName, boolean tautomerDupe) throws SQLException {
 		ConnectionHandler ch = new ConnectionHandler();
 		ch.setConnection(conn);
-		StructureTableOptions options = new StructureTableOptions(tableName, StructureTableOptions.TABLE_TYPE_MOLECULES);
+		StructureTableOptions options = new StructureTableOptions(tableName,
+				StructureTableOptions.TABLE_TYPE_MOLECULES);
 		options.setTautomerDuplicateChecking(tautomerDupe);
-		
+
 		try {
 			String[] tables = UpdateHandler.getStructureTables(ch);
-			List<String> tableList = Arrays.asList(tables); 
-			if (!tableList.contains(tableName)){
-				UpdateHandler.createStructureTable(ch, options );
-				logger.info("created the Jchem structure table " + tableName );
+			List<String> tableList = Arrays.asList(tables);
+			if (!tableList.contains(tableName)) {
+				UpdateHandler.createStructureTable(ch, options);
+				logger.info("created the Jchem structure table " + tableName);
 			}
 		} catch (SQLException e) {
-			logger.error("SQL error. Unable to create the Jchem structure table " + e + "  " + tableName );
+			logger.error("SQL error. Unable to create the Jchem structure table " + e + "  " + tableName);
 			throw new SQLException("SQL error. Unable to create the Jchem structure table");
 		}
 
@@ -75,4 +76,3 @@ public class V2_0_0_7__Create_Jchem_Tables implements JdbcMigration {
 	}
 
 }
-

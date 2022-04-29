@@ -2,8 +2,10 @@ package com.labsynch.labseer.domain;
 
 import java.util.Iterator;
 import java.util.List;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,17 +25,18 @@ public class InteractionKindIntegrationTest {
     public void testMarkerMethod() {
     }
 
-	@Autowired
+    @Autowired
     InteractionKindDataOnDemand dod;
 
-	@Test
+    @Test
     public void testCountInteractionKinds() {
-        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", dod.getRandomInteractionKind());
+        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly",
+                dod.getRandomInteractionKind());
         long count = InteractionKind.countInteractionKinds();
         Assert.assertTrue("Counter for 'InteractionKind' incorrectly reported there were no entries", count > 0);
     }
 
-	@Test
+    @Test
     public void testFindInteractionKind() {
         InteractionKind obj = dod.getRandomInteractionKind();
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", obj);
@@ -44,29 +47,35 @@ public class InteractionKindIntegrationTest {
         Assert.assertEquals("Find method for 'InteractionKind' returned the incorrect identifier", id, obj.getId());
     }
 
-	@Test
+    @Test
     public void testFindAllInteractionKinds() {
-        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", dod.getRandomInteractionKind());
+        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly",
+                dod.getRandomInteractionKind());
         long count = InteractionKind.countInteractionKinds();
-        Assert.assertTrue("Too expensive to perform a find all test for 'InteractionKind', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
+        Assert.assertTrue("Too expensive to perform a find all test for 'InteractionKind', as there are " + count
+                + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test",
+                count < 250);
         List<InteractionKind> result = InteractionKind.findAllInteractionKinds();
         Assert.assertNotNull("Find all method for 'InteractionKind' illegally returned null", result);
         Assert.assertTrue("Find all method for 'InteractionKind' failed to return any data", result.size() > 0);
     }
 
-	@Test
+    @Test
     public void testFindInteractionKindEntries() {
-        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", dod.getRandomInteractionKind());
+        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly",
+                dod.getRandomInteractionKind());
         long count = InteractionKind.countInteractionKinds();
-        if (count > 20) count = 20;
+        if (count > 20)
+            count = 20;
         int firstResult = 0;
         int maxResults = (int) count;
         List<InteractionKind> result = InteractionKind.findInteractionKindEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'InteractionKind' illegally returned null", result);
-        Assert.assertEquals("Find entries method for 'InteractionKind' returned an incorrect number of entries", count, result.size());
+        Assert.assertEquals("Find entries method for 'InteractionKind' returned an incorrect number of entries", count,
+                result.size());
     }
 
-	@Test
+    @Test
     public void testFlush() {
         InteractionKind obj = dod.getRandomInteractionKind();
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", obj);
@@ -74,30 +83,34 @@ public class InteractionKindIntegrationTest {
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to provide an identifier", id);
         obj = InteractionKind.findInteractionKind(id);
         Assert.assertNotNull("Find method for 'InteractionKind' illegally returned null for id '" + id + "'", obj);
-        boolean modified =  dod.modifyInteractionKind(obj);
+        boolean modified = dod.modifyInteractionKind(obj);
         Integer currentVersion = obj.getVersion();
         obj.flush();
-        Assert.assertTrue("Version for 'InteractionKind' failed to increment on flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
+        Assert.assertTrue("Version for 'InteractionKind' failed to increment on flush directive",
+                (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
 
-	@Test
+    @Test
     public void testMergeUpdate() {
         InteractionKind obj = dod.getRandomInteractionKind();
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", obj);
         Long id = obj.getId();
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to provide an identifier", id);
         obj = InteractionKind.findInteractionKind(id);
-        boolean modified =  dod.modifyInteractionKind(obj);
+        boolean modified = dod.modifyInteractionKind(obj);
         Integer currentVersion = obj.getVersion();
         InteractionKind merged = obj.merge();
         obj.flush();
-        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
-        Assert.assertTrue("Version for 'InteractionKind' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
+        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(),
+                id);
+        Assert.assertTrue("Version for 'InteractionKind' failed to increment on merge and flush directive",
+                (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
 
-	@Test
+    @Test
     public void testPersist() {
-        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", dod.getRandomInteractionKind());
+        Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly",
+                dod.getRandomInteractionKind());
         InteractionKind obj = dod.getNewTransientInteractionKind(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'InteractionKind' identifier to be null", obj.getId());
@@ -107,7 +120,9 @@ public class InteractionKindIntegrationTest {
             final StringBuilder msg = new StringBuilder();
             for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                 final ConstraintViolation<?> cv = iter.next();
-                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath())
+                        .append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue())
+                        .append(")").append("]");
             }
             throw new IllegalStateException(msg.toString(), e);
         }
@@ -115,7 +130,7 @@ public class InteractionKindIntegrationTest {
         Assert.assertNotNull("Expected 'InteractionKind' identifier to no longer be null", obj.getId());
     }
 
-	@Test
+    @Test
     public void testRemove() {
         InteractionKind obj = dod.getRandomInteractionKind();
         Assert.assertNotNull("Data on demand for 'InteractionKind' failed to initialize correctly", obj);
@@ -124,6 +139,7 @@ public class InteractionKindIntegrationTest {
         obj = InteractionKind.findInteractionKind(id);
         obj.remove();
         obj.flush();
-        Assert.assertNull("Failed to remove 'InteractionKind' with identifier '" + id + "'", InteractionKind.findInteractionKind(id));
+        Assert.assertNull("Failed to remove 'InteractionKind' with identifier '" + id + "'",
+                InteractionKind.findInteractionKind(id));
     }
 }

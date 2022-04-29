@@ -1,4 +1,5 @@
 package com.labsynch.labseer.api;
+
 import com.labsynch.labseer.domain.CompoundType;
 
 import org.springframework.http.HttpHeaders;
@@ -12,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RequestMapping(value = {"/api/v1/compoundTypes"})
+@RequestMapping(value = { "/api/v1/compoundTypes" })
 @Transactional
 @Controller
 public class ApiCompoundTypeController {
-
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
@@ -26,8 +26,8 @@ public class ApiCompoundTypeController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         if (compoundType == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -42,10 +42,12 @@ public class ApiCompoundTypeController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
-        return new ResponseEntity<String>(CompoundType.toJsonArray(CompoundType.findAllCompoundTypes("displayOrder", "ASC")), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                CompoundType.toJsonArray(CompoundType.findAllCompoundTypes("displayOrder", "ASC")), headers,
+                HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
@@ -109,5 +111,5 @@ public class ApiCompoundTypeController {
         compoundType.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    
+
 }

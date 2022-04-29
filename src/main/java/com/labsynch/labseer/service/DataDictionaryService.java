@@ -3,19 +3,18 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
+import org.springframework.stereotype.Service;
+
 @Service
 public interface DataDictionaryService {
-	
-	
+
 	public DDictValue saveDataDictionaryValue(DDictValue dDict, Boolean createTypeAndKind);
 
 	public List<CodeTableDTO> getDataDictionaryCodeTableListByTypeKind(String lsType, String lsKind);
-	
+
 	public List<CodeTableDTO> getDataDictionaryCodeTableListByType(String lsType);
 
 	public String getCsvList(List<DDictValue> dDictResults);
@@ -39,8 +38,5 @@ public interface DataDictionaryService {
 
 	CodeTableDTO getOrCreateCodeTable(CodeTableDTO codeTable,
 			Boolean createTypeKind);
-
-
-
 
 }

@@ -6,8 +6,6 @@ import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StructureSaveException;
 
-
-
 public interface SaltStructureService {
 
 	public Salt saveStructure(Salt salt) throws CmpdRegMolFormatException;

@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
@@ -15,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Configurable
 public class ContainerKindDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<ContainerKind> data;
+    private List<ContainerKind> data;
 
-	@Autowired
+    @Autowired
     ContainerTypeDataOnDemand containerTypeDataOnDemand;
 
-	public ContainerKind getNewTransientContainerKind(int index) {
+    public ContainerKind getNewTransientContainerKind(int index) {
         ContainerKind obj = new ContainerKind();
         setKindName(obj, index);
         setLsType(obj, index);
@@ -30,7 +32,7 @@ public class ContainerKindDataOnDemand {
         return obj;
     }
 
-	public void setKindName(ContainerKind obj, int index) {
+    public void setKindName(ContainerKind obj, int index) {
         String kindName = "kindName_" + index;
         if (kindName.length() > 255) {
             kindName = kindName.substring(0, 255);
@@ -38,12 +40,12 @@ public class ContainerKindDataOnDemand {
         obj.setKindName(kindName);
     }
 
-	public void setLsType(ContainerKind obj, int index) {
+    public void setLsType(ContainerKind obj, int index) {
         ContainerType lsType = containerTypeDataOnDemand.getRandomContainerType();
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(ContainerKind obj, int index) {
+    public void setLsTypeAndKind(ContainerKind obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = new Random().nextInt(10) + lsTypeAndKind.substring(1, 255);
@@ -51,7 +53,7 @@ public class ContainerKindDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public ContainerKind getSpecificContainerKind(int index) {
+    public ContainerKind getSpecificContainerKind(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -64,18 +66,18 @@ public class ContainerKindDataOnDemand {
         return ContainerKind.findContainerKind(id);
     }
 
-	public ContainerKind getRandomContainerKind() {
+    public ContainerKind getRandomContainerKind() {
         init();
         ContainerKind obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return ContainerKind.findContainerKind(id);
     }
 
-	public boolean modifyContainerKind(ContainerKind obj) {
+    public boolean modifyContainerKind(ContainerKind obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = ContainerKind.findContainerKindEntries(from, to);
@@ -85,7 +87,7 @@ public class ContainerKindDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<ContainerKind>();
         for (int i = 0; i < 10; i++) {
             ContainerKind obj = getNewTransientContainerKind(i);
@@ -95,7 +97,9 @@ public class ContainerKindDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

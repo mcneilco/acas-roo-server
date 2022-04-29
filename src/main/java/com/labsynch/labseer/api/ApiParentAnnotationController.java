@@ -1,22 +1,19 @@
 package com.labsynch.labseer.api;
-import javax.servlet.http.HttpServletRequest;
+
+import com.labsynch.labseer.domain.ParentAnnotation;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.ParentAnnotation;
-
-@RequestMapping(value = {"/api/v1/parentAnnotations"})
+@RequestMapping(value = { "/api/v1/parentAnnotations" })
 @Transactional
 @Controller
 public class ApiParentAnnotationController {
@@ -29,8 +26,8 @@ public class ApiParentAnnotationController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
         if (parentAnnotation == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -45,10 +42,12 @@ public class ApiParentAnnotationController {
         headers.add("Content-Type", "application/text; charset=utf-8");
         headers.add("Access-Control-Allow-Headers", "Content-Type");
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-        headers.add("Pragma", "no-cache"); //HTTP 1.0
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
         headers.setExpires(0); // Expire the cache
-        return new ResponseEntity<String>(ParentAnnotation.toJsonArray(ParentAnnotation.findAllParentAnnotations("displayOrder", "ASC")), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(
+                ParentAnnotation.toJsonArray(ParentAnnotation.findAllParentAnnotations("displayOrder", "ASC")), headers,
+                HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")

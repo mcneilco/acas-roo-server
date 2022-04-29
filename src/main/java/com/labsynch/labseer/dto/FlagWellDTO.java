@@ -1,7 +1,6 @@
 package com.labsynch.labseer.dto;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,16 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import javax.persistence.NoResultException;
-import org.springframework.transaction.annotation.Transactional;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
@@ -27,14 +19,22 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.StatCalc;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class FlagWellDTO {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(FlagWellDTO.class);
-	
+
 	private Long responseSubjectValueId;
 	private String recordedBy;
 	private Long lsTransaction;
@@ -50,12 +50,13 @@ public class FlagWellDTO {
 	private String userFlagObservation;
 	private String userFlagCause;
 	private String userFlagComment;
-	
-	public FlagWellDTO(){
-		//empty constructor
+
+	public FlagWellDTO() {
+		// empty constructor
 	}
-	
-	public FlagWellDTO(Long responseSubjectValueId, String recordedBy, Long lsTransaction, Map<String, String> flagMap) {
+
+	public FlagWellDTO(Long responseSubjectValueId, String recordedBy, Long lsTransaction,
+			Map<String, String> flagMap) {
 		this.responseSubjectValueId = responseSubjectValueId;
 		this.recordedBy = recordedBy;
 		this.lsTransaction = lsTransaction;
@@ -73,7 +74,7 @@ public class FlagWellDTO {
 		this.userFlagComment = flagMap.get("userFlagComment");
 	}
 
-	public static String[] getColumns(){
+	public static String[] getColumns() {
 		String[] headerColumns = new String[] {
 				"responseSubjectValueId",
 				"recordedBy",
@@ -90,14 +91,14 @@ public class FlagWellDTO {
 				"userFlagObservation",
 				"userFlagCause",
 				"userFlagComment"
-				};
+		};
 
 		return headerColumns;
 
 	}
 
 	public static CellProcessor[] getProcessors() {
-		final CellProcessor[] processors = new CellProcessor[] { 
+		final CellProcessor[] processors = new CellProcessor[] {
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -119,125 +120,148 @@ public class FlagWellDTO {
 	}
 
 	@Transactional
-	public static void updateWellFlags( Collection<FlagWellDTO> flagWellDTOs) {
+	public static void updateWellFlags(Collection<FlagWellDTO> flagWellDTOs) {
 		Collection<TreatmentGroup> allTreatmentGroups = new HashSet<TreatmentGroup>();
 		String recordedBy = null;
 		Long lsTransaction = null;
 		for (FlagWellDTO flagWellDTO : flagWellDTOs) {
-			if (flagWellDTO.getResponseSubjectValueId() == null) logger.error("FIELD MISSING: responseSubjectValueId");
-			if (flagWellDTO.getRecordedBy() == null) logger.error("FIELD MISSING: recordedBy");
+			if (flagWellDTO.getResponseSubjectValueId() == null)
+				logger.error("FIELD MISSING: responseSubjectValueId");
+			if (flagWellDTO.getRecordedBy() == null)
+				logger.error("FIELD MISSING: recordedBy");
 			recordedBy = flagWellDTO.getRecordedBy();
 			lsTransaction = flagWellDTO.getLsTransaction();
 			Subject subject = findSubject(flagWellDTO.getResponseSubjectValueId());
 			Collection<TreatmentGroup> treatmentGroups = subject.getTreatmentGroups();
 			allTreatmentGroups.addAll(treatmentGroups);
-			if ( !(flagWellDTO.getAlgorithmFlagStatus()==null) || !(flagWellDTO.getAlgorithmFlagObservation()==null) || !(flagWellDTO.getAlgorithmFlagCause()==null) || !(flagWellDTO.getAlgorithmFlagComment()==null)) {
+			if (!(flagWellDTO.getAlgorithmFlagStatus() == null) || !(flagWellDTO.getAlgorithmFlagObservation() == null)
+					|| !(flagWellDTO.getAlgorithmFlagCause() == null)
+					|| !(flagWellDTO.getAlgorithmFlagComment() == null)) {
 				logger.debug("Change in algorithm flags detected. Attempting to ignore old state.");
 				try {
 					SubjectState oldAlgorithmFlagState = findAlgorithmFlagState(subject).getSingleResult();
 					oldAlgorithmFlagState.setIgnored(true);
 					oldAlgorithmFlagState.merge();
-//					oldAlgorithmFlagState.flush();
+					// oldAlgorithmFlagState.flush();
 					logger.debug("Old algorithm flag state ignored.");
-				}catch(NoResultException e) {
-					logger.debug("Old state of typekind data/auto flag not found for Subject " + subject.getCodeName() + " , creating new one");
+				} catch (NoResultException e) {
+					logger.debug("Old state of typekind data/auto flag not found for Subject " + subject.getCodeName()
+							+ " , creating new one");
 				}
-				SubjectState newAlgorithmState = createWellFlagState(subject.getId(), "data", "auto flag", recordedBy, lsTransaction);
+				SubjectState newAlgorithmState = createWellFlagState(subject.getId(), "data", "auto flag", recordedBy,
+						lsTransaction);
 				saveWellFlags(newAlgorithmState, flagWellDTO);
 			}
-			if ( !(flagWellDTO.getPreprocessFlagStatus()==null) || !(flagWellDTO.getPreprocessFlagObservation()==null) || !(flagWellDTO.getPreprocessFlagCause()==null) || !(flagWellDTO.getPreprocessFlagComment()==null)) {
+			if (!(flagWellDTO.getPreprocessFlagStatus() == null)
+					|| !(flagWellDTO.getPreprocessFlagObservation() == null)
+					|| !(flagWellDTO.getPreprocessFlagCause() == null)
+					|| !(flagWellDTO.getPreprocessFlagComment() == null)) {
 				logger.debug("Change in preprocess flags detected. Attempting to ignore old state.");
 				try {
 					SubjectState oldPreprocessFlagState = findPreprocessFlagState(subject).getSingleResult();
 					oldPreprocessFlagState.setIgnored(true);
 					oldPreprocessFlagState.merge();
-//					oldPreprocessFlagState.flush();
+					// oldPreprocessFlagState.flush();
 					logger.debug("Old preprocess flag state ignored.");
-				}catch(NoResultException e) {
-					logger.debug("Old state of typekind data/preprocess flag not found for Subject " + subject.getCodeName() + " , creating new one");
+				} catch (NoResultException e) {
+					logger.debug("Old state of typekind data/preprocess flag not found for Subject "
+							+ subject.getCodeName() + " , creating new one");
 				}
-				SubjectState newPreprocessState = createWellFlagState(subject.getId(), "data", "preprocess flag", recordedBy, lsTransaction);
+				SubjectState newPreprocessState = createWellFlagState(subject.getId(), "data", "preprocess flag",
+						recordedBy, lsTransaction);
 				saveWellFlags(newPreprocessState, flagWellDTO);
 			}
-			if ( !(flagWellDTO.getUserFlagStatus()==null) || !(flagWellDTO.getUserFlagObservation()==null) || !(flagWellDTO.getUserFlagCause()==null) || !(flagWellDTO.getUserFlagComment()==null)) {
+			if (!(flagWellDTO.getUserFlagStatus() == null) || !(flagWellDTO.getUserFlagObservation() == null)
+					|| !(flagWellDTO.getUserFlagCause() == null) || !(flagWellDTO.getUserFlagComment() == null)) {
 				logger.debug("Change in user flags detected. Attempting to ignore old state.");
 				try {
 					SubjectState oldUserFlagState = findUserFlagState(subject).getSingleResult();
 					oldUserFlagState.setIgnored(true);
 					oldUserFlagState.merge();
-//					oldUserFlagState.flush();
+					// oldUserFlagState.flush();
 					logger.debug("Old user flag state ignored.");
-				}catch(NoResultException e) {
-					logger.debug("Old state of typekind data/user flag not found for Subject " + subject.getCodeName() + " , creating new one");
+				} catch (NoResultException e) {
+					logger.debug("Old state of typekind data/user flag not found for Subject " + subject.getCodeName()
+							+ " , creating new one");
 				}
-				SubjectState newUserState = createWellFlagState(subject.getId(), "data", "user flag", recordedBy, lsTransaction);
+				SubjectState newUserState = createWellFlagState(subject.getId(), "data", "user flag", recordedBy,
+						lsTransaction);
 				saveWellFlags(newUserState, flagWellDTO);
 			}
 		}
-		//Then go update all of the aggregate values in the treatment groups
-		for (TreatmentGroup treatmentGroup: allTreatmentGroups){
-				Collection<SubjectValue> notKONumericValueSubjectValues = findNotKONumericValueSubjectValues(treatmentGroup);
-				Map<String, Collection<SubjectValue>> numericSubjectValueMapByLsKind = new HashMap<String, Collection<SubjectValue>>();
-				for (SubjectValue subjectValue : notKONumericValueSubjectValues){
-					String lsKind = subjectValue.getLsKind();
-					if (!numericSubjectValueMapByLsKind.containsKey(lsKind)){
-						Collection<SubjectValue> collection = new HashSet<SubjectValue>();
-						collection.add(subjectValue);
-						numericSubjectValueMapByLsKind.put(lsKind, collection);
-					} else{
-						Collection<SubjectValue> collection = numericSubjectValueMapByLsKind.get(lsKind);
-						collection.add(subjectValue);
-					}
+		// Then go update all of the aggregate values in the treatment groups
+		for (TreatmentGroup treatmentGroup : allTreatmentGroups) {
+			Collection<SubjectValue> notKONumericValueSubjectValues = findNotKONumericValueSubjectValues(
+					treatmentGroup);
+			Map<String, Collection<SubjectValue>> numericSubjectValueMapByLsKind = new HashMap<String, Collection<SubjectValue>>();
+			for (SubjectValue subjectValue : notKONumericValueSubjectValues) {
+				String lsKind = subjectValue.getLsKind();
+				if (!numericSubjectValueMapByLsKind.containsKey(lsKind)) {
+					Collection<SubjectValue> collection = new HashSet<SubjectValue>();
+					collection.add(subjectValue);
+					numericSubjectValueMapByLsKind.put(lsKind, collection);
+				} else {
+					Collection<SubjectValue> collection = numericSubjectValueMapByLsKind.get(lsKind);
+					collection.add(subjectValue);
 				}
-				try {
-					TreatmentGroupState oldState = TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(treatmentGroup.getId(), "data", "results").getSingleResult();
-					oldState.setIgnored(true);
-					oldState.merge();
-//					oldState.flush();
-					logger.debug("Old TreatmentGroupState ignored.");
-				}catch(NoResultException e){
-					logger.debug("No state data/results found. Creating a new state.");
+			}
+			try {
+				TreatmentGroupState oldState = TreatmentGroupState
+						.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(treatmentGroup.getId(), "data",
+								"results")
+						.getSingleResult();
+				oldState.setIgnored(true);
+				oldState.merge();
+				// oldState.flush();
+				logger.debug("Old TreatmentGroupState ignored.");
+			} catch (NoResultException e) {
+				logger.debug("No state data/results found. Creating a new state.");
+			}
+			TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results",
+					recordedBy, lsTransaction);
+			// fill in the batch code, using the batch code from one of the subjects (they
+			// are all the same under a treatmentGroup)
+			SubjectValue batchCodeSubjectValue = findBatchCodeSubjectValue(treatmentGroup);
+			if (batchCodeSubjectValue == null)
+				logger.error(
+						"Unable to find batch code subject value for treatmentgroup: " + treatmentGroup.getCodeName());
+			TreatmentGroupValue newBatchCodeTreatmentGroupValue = createTreatmentGroupValue(newState,
+					batchCodeSubjectValue.getLsType(), batchCodeSubjectValue.getLsKind(), recordedBy, lsTransaction);
+			newBatchCodeTreatmentGroupValue.setCodeValue(batchCodeSubjectValue.getCodeValue());
+			newBatchCodeTreatmentGroupValue.setConcentration(batchCodeSubjectValue.getConcentration());
+			newBatchCodeTreatmentGroupValue.setConcUnit(batchCodeSubjectValue.getConcUnit());
+			newBatchCodeTreatmentGroupValue.setCodeType(batchCodeSubjectValue.getCodeType());
+			newBatchCodeTreatmentGroupValue.setCodeKind(batchCodeSubjectValue.getCodeKind());
+			newBatchCodeTreatmentGroupValue.setCodeTypeAndKind(batchCodeSubjectValue.getCodeTypeAndKind());
+			newBatchCodeTreatmentGroupValue.merge();
+			// calculate a new averaged treatmentGroupValue for each lsKind of numericValue
+			// found in the not knocked out subjects
+			for (String key : numericSubjectValueMapByLsKind.keySet()) {
+				String lsType = "numericValue";
+				String lsKind = key;
+				Collection<SubjectValue> subjectValues = numericSubjectValueMapByLsKind.get(key);
+				String unitKind = subjectValues.iterator().next().getUnitKind();
+				String uncertaintyType = "standard deviation";
+				StatCalc statCalc = new StatCalc();
+				for (SubjectValue subjectValue : subjectValues) {
+					statCalc.add(subjectValue.getNumericValue().doubleValue());
 				}
-				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy, lsTransaction);
-				//fill in the batch code, using the batch code from one of the subjects (they are all the same under a treatmentGroup)
-				SubjectValue batchCodeSubjectValue = findBatchCodeSubjectValue(treatmentGroup);
-				if (batchCodeSubjectValue == null) logger.error("Unable to find batch code subject value for treatmentgroup: " + treatmentGroup.getCodeName());
-				TreatmentGroupValue newBatchCodeTreatmentGroupValue = createTreatmentGroupValue(newState, batchCodeSubjectValue.getLsType(), batchCodeSubjectValue.getLsKind(), recordedBy, lsTransaction);
-				newBatchCodeTreatmentGroupValue.setCodeValue(batchCodeSubjectValue.getCodeValue());
-				newBatchCodeTreatmentGroupValue.setConcentration(batchCodeSubjectValue.getConcentration());
-				newBatchCodeTreatmentGroupValue.setConcUnit(batchCodeSubjectValue.getConcUnit());
-				newBatchCodeTreatmentGroupValue.setCodeType(batchCodeSubjectValue.getCodeType());
-				newBatchCodeTreatmentGroupValue.setCodeKind(batchCodeSubjectValue.getCodeKind());
-				newBatchCodeTreatmentGroupValue.setCodeTypeAndKind(batchCodeSubjectValue.getCodeTypeAndKind());
-				newBatchCodeTreatmentGroupValue.merge();
-				//calculate a new averaged treatmentGroupValue for each lsKind of numericValue found in the not knocked out subjects
-				for (String key : numericSubjectValueMapByLsKind.keySet()){
-					String lsType = "numericValue";
-					String lsKind = key;
-					Collection<SubjectValue> subjectValues = numericSubjectValueMapByLsKind.get(key);
-					String unitKind = subjectValues.iterator().next().getUnitKind();
-					String uncertaintyType = "standard deviation";
-					StatCalc statCalc = new StatCalc();
-					for (SubjectValue subjectValue : subjectValues){
-						statCalc.add(subjectValue.getNumericValue().doubleValue()); 
-					}
-					TreatmentGroupValue newNumericTreatmentGroupValue = createTreatmentGroupValue(newState, lsType, lsKind, recordedBy, lsTransaction);
-					newNumericTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
-					newNumericTreatmentGroupValue.setUnitKind(unitKind);
-					newNumericTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
-					newNumericTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
-					newNumericTreatmentGroupValue.setUncertaintyType(uncertaintyType);
-					newNumericTreatmentGroupValue.merge();
-				}
+				TreatmentGroupValue newNumericTreatmentGroupValue = createTreatmentGroupValue(newState, lsType, lsKind,
+						recordedBy, lsTransaction);
+				newNumericTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
+				newNumericTreatmentGroupValue.setUnitKind(unitKind);
+				newNumericTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
+				newNumericTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
+				newNumericTreatmentGroupValue.setUncertaintyType(uncertaintyType);
+				newNumericTreatmentGroupValue.merge();
+			}
 		}
 	}
-
-
 
 	public static Collection<SubjectValue> findNotKONumericValueSubjectValues(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
-		Query q = em.createNativeQuery( "SELECT lsvalues4_.* "
+		Query q = em.createNativeQuery("SELECT lsvalues4_.* "
 				+ "FROM treatment_group treatmentg0_ "
 				+ "INNER JOIN treatmentgroup_subject subjects1_ "
 				+ "ON treatmentg0_.id=subjects1_.treatment_group_id "
@@ -275,7 +299,7 @@ public class FlagWellDTO {
 				+ "  AND lsvalues9_.ls_kind   = ?10 "
 				+ "  AND lsvalues9_.code_value= ?11 "
 				+ "  )) ", SubjectValue.class);
-		
+
 		q.setParameter(1, treatmentGroup.getId());
 		q.setParameter(2, true);
 		q.setParameter(3, true);
@@ -287,10 +311,10 @@ public class FlagWellDTO {
 		q.setParameter(9, "codeValue");
 		q.setParameter(10, "flag status");
 		q.setParameter(11, "knocked out");
-		
+
 		return q.getResultList();
 	}
-	
+
 	public static SubjectValue findBatchCodeSubjectValue(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
@@ -306,7 +330,7 @@ public class FlagWellDTO {
 				+ "AND resultsState.lsKind = :resultsStateKind "
 				+ "AND batchCodeValue.lsType = :batchCodeValueType "
 				+ "AND batchCodeValue.lsKind = :batchCodeValueKind ", SubjectValue.class);
-		
+
 		q.setParameter("resultsStateType", "data");
 		q.setParameter("resultsStateKind", "results");
 		q.setParameter("batchCodeValueType", "codeValue");
@@ -314,10 +338,12 @@ public class FlagWellDTO {
 		q.setParameter("treatmentGroup", treatmentGroup);
 		q.setParameter("ignored", true);
 		Collection<SubjectValue> results = q.getResultList();
-		if (!results.isEmpty()) return results.iterator().next();
-		else return null;
+		if (!results.isEmpty())
+			return results.iterator().next();
+		else
+			return null;
 	}
-	
+
 	@Transactional
 	private static TypedQuery<SubjectState> findAlgorithmFlagState(Subject subject) {
 		EntityManager em = SubjectState.entityManager();
@@ -333,7 +359,7 @@ public class FlagWellDTO {
 		q.setParameter("ignored", true);
 		return q;
 	}
-	
+
 	@Transactional
 	private static TypedQuery<SubjectState> findPreprocessFlagState(Subject subject) {
 		EntityManager em = SubjectState.entityManager();
@@ -349,7 +375,7 @@ public class FlagWellDTO {
 		q.setParameter("ignored", true);
 		return q;
 	}
-	
+
 	@Transactional
 	private static TypedQuery<SubjectState> findUserFlagState(Subject subject) {
 		EntityManager em = SubjectState.entityManager();
@@ -382,7 +408,7 @@ public class FlagWellDTO {
 
 		return result;
 	}
-	
+
 	@Transactional
 	private static void saveWellFlags(SubjectState state, FlagWellDTO flagWellDTO) {
 		Collection<SubjectValue> newValues = new HashSet<SubjectValue>();
@@ -413,40 +439,45 @@ public class FlagWellDTO {
 		}
 		String recordedBy = flagWellDTO.getRecordedBy();
 		Long lsTransaction = flagWellDTO.getLsTransaction();
-		//only create SubjectValues if they would not be empty/null
-		if (!(flagStatus==null)){
-			SubjectValue flagStatusValue = createWellFlagValue(state, "codeValue", "flag status", flagStatus, recordedBy, lsTransaction);
-			flagStatusValue.setCodeType(flagType+" well flags");
+		// only create SubjectValues if they would not be empty/null
+		if (!(flagStatus == null)) {
+			SubjectValue flagStatusValue = createWellFlagValue(state, "codeValue", "flag status", flagStatus,
+					recordedBy, lsTransaction);
+			flagStatusValue.setCodeType(flagType + " well flags");
 			flagStatusValue.setCodeKind("flag status");
 			newValues.add(flagStatusValue);
 		}
-		if (!(flagObservation==null)){
-			SubjectValue flagObservationValue = createWellFlagValue(state, "codeValue", "flag observation", flagObservation, recordedBy, lsTransaction);
-			flagObservationValue.setCodeType(flagType+" well flags");
+		if (!(flagObservation == null)) {
+			SubjectValue flagObservationValue = createWellFlagValue(state, "codeValue", "flag observation",
+					flagObservation, recordedBy, lsTransaction);
+			flagObservationValue.setCodeType(flagType + " well flags");
 			flagObservationValue.setCodeKind("flag observation");
 			newValues.add(flagObservationValue);
 		}
-		if (!(flagCause==null)){
-			SubjectValue flagCauseValue = createWellFlagValue(state, "codeValue", "flag cause", flagCause, recordedBy, lsTransaction);
-			flagCauseValue.setCodeType(flagType+" well flags");
+		if (!(flagCause == null)) {
+			SubjectValue flagCauseValue = createWellFlagValue(state, "codeValue", "flag cause", flagCause, recordedBy,
+					lsTransaction);
+			flagCauseValue.setCodeType(flagType + " well flags");
 			flagCauseValue.setCodeKind("flag cause");
 			newValues.add(flagCauseValue);
 		}
-		if (!(flagComment==null)){
-			SubjectValue flagCommentValue = createWellFlagValue(state, "stringValue", "comment", flagComment, recordedBy, lsTransaction);
+		if (!(flagComment == null)) {
+			SubjectValue flagCommentValue = createWellFlagValue(state, "stringValue", "comment", flagComment,
+					recordedBy, lsTransaction);
 			newValues.add(flagCommentValue);
 		}
-		//persist and flush all the new values
-		for (SubjectValue value: newValues){
+		// persist and flush all the new values
+		for (SubjectValue value : newValues) {
 			value.setCodeOrigin("ACAS DDICT");
 			value.setRecordedBy(recordedBy);
 			value.persist();
-//			value.flush();
-		}		
+			// value.flush();
+		}
 	}
-	
+
 	@Transactional
-	private static TreatmentGroupValue createTreatmentGroupValue(TreatmentGroupState lsState, String lsType, String lsKind, String recordedBy, Long lsTransaction) {
+	private static TreatmentGroupValue createTreatmentGroupValue(TreatmentGroupState lsState, String lsType,
+			String lsKind, String recordedBy, Long lsTransaction) {
 		TreatmentGroupValue treatmentGroupValue = new TreatmentGroupValue();
 		treatmentGroupValue.setLsState(lsState);
 		treatmentGroupValue.setLsType(lsType);
@@ -457,9 +488,10 @@ public class FlagWellDTO {
 		treatmentGroupValue.persist();
 		return treatmentGroupValue;
 	}
-	
+
 	@Transactional
-	private static TreatmentGroupState createResultsTreatmentGroupState(Long treatmentGroupId, String stateType, String stateKind, String recordedBy, Long lsTransaction) {
+	private static TreatmentGroupState createResultsTreatmentGroupState(Long treatmentGroupId, String stateType,
+			String stateKind, String recordedBy, Long lsTransaction) {
 		TreatmentGroupState treatmentGroupState = new TreatmentGroupState();
 		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupId);
 		treatmentGroupState.setTreatmentGroup(treatmentGroup);
@@ -471,26 +503,28 @@ public class FlagWellDTO {
 		treatmentGroupState.persist();
 		return treatmentGroupState;
 	}
-	
-	
+
 	@Transactional
-	private static SubjectValue createWellFlagValue(SubjectState lsState, String lsType, String lsKind, String value, String recordedBy, Long lsTransaction) {
+	private static SubjectValue createWellFlagValue(SubjectState lsState, String lsType, String lsKind, String value,
+			String recordedBy, Long lsTransaction) {
 		SubjectValue subjectValue = new SubjectValue();
 		subjectValue.setLsState(lsState);
 		subjectValue.setLsType(lsType);
 		subjectValue.setLsKind(lsKind);
-		if (lsType.equals("stringValue")) subjectValue.setStringValue(value);
-		if (lsType.equals("codeValue")) subjectValue.setCodeValue(value);
+		if (lsType.equals("stringValue"))
+			subjectValue.setStringValue(value);
+		if (lsType.equals("codeValue"))
+			subjectValue.setCodeValue(value);
 		subjectValue.setRecordedBy(recordedBy);
 		subjectValue.setLsTransaction(lsTransaction);
 		logger.debug("Creating value: " + subjectValue.toJson());
 		subjectValue.persist();
 		return subjectValue;
 	}
-	
 
 	@Transactional
-	private static SubjectState createWellFlagState(Long subjectId, String stateType, String stateKind, String recordedBy, Long lsTransaction) {
+	private static SubjectState createWellFlagState(Long subjectId, String stateType, String stateKind,
+			String recordedBy, Long lsTransaction) {
 		SubjectState subjectState = new SubjectState();
 		Subject subject = Subject.findSubject(subjectId);
 		subjectState.setSubject(subject);
@@ -503,159 +537,157 @@ public class FlagWellDTO {
 		return subjectState;
 	}
 
-
-
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	public Long getResponseSubjectValueId() {
-        return this.responseSubjectValueId;
-    }
+		return this.responseSubjectValueId;
+	}
 
 	public void setResponseSubjectValueId(Long responseSubjectValueId) {
-        this.responseSubjectValueId = responseSubjectValueId;
-    }
+		this.responseSubjectValueId = responseSubjectValueId;
+	}
 
 	public String getRecordedBy() {
-        return this.recordedBy;
-    }
+		return this.recordedBy;
+	}
 
 	public void setRecordedBy(String recordedBy) {
-        this.recordedBy = recordedBy;
-    }
+		this.recordedBy = recordedBy;
+	}
 
 	public Long getLsTransaction() {
-        return this.lsTransaction;
-    }
+		return this.lsTransaction;
+	}
 
 	public void setLsTransaction(Long lsTransaction) {
-        this.lsTransaction = lsTransaction;
-    }
+		this.lsTransaction = lsTransaction;
+	}
 
 	public String getAlgorithmFlagStatus() {
-        return this.algorithmFlagStatus;
-    }
+		return this.algorithmFlagStatus;
+	}
 
 	public void setAlgorithmFlagStatus(String algorithmFlagStatus) {
-        this.algorithmFlagStatus = algorithmFlagStatus;
-    }
+		this.algorithmFlagStatus = algorithmFlagStatus;
+	}
 
 	public String getAlgorithmFlagObservation() {
-        return this.algorithmFlagObservation;
-    }
+		return this.algorithmFlagObservation;
+	}
 
 	public void setAlgorithmFlagObservation(String algorithmFlagObservation) {
-        this.algorithmFlagObservation = algorithmFlagObservation;
-    }
+		this.algorithmFlagObservation = algorithmFlagObservation;
+	}
 
 	public String getAlgorithmFlagCause() {
-        return this.algorithmFlagCause;
-    }
+		return this.algorithmFlagCause;
+	}
 
 	public void setAlgorithmFlagCause(String algorithmFlagCause) {
-        this.algorithmFlagCause = algorithmFlagCause;
-    }
+		this.algorithmFlagCause = algorithmFlagCause;
+	}
 
 	public String getAlgorithmFlagComment() {
-        return this.algorithmFlagComment;
-    }
+		return this.algorithmFlagComment;
+	}
 
 	public void setAlgorithmFlagComment(String algorithmFlagComment) {
-        this.algorithmFlagComment = algorithmFlagComment;
-    }
+		this.algorithmFlagComment = algorithmFlagComment;
+	}
 
 	public String getPreprocessFlagStatus() {
-        return this.preprocessFlagStatus;
-    }
+		return this.preprocessFlagStatus;
+	}
 
 	public void setPreprocessFlagStatus(String preprocessFlagStatus) {
-        this.preprocessFlagStatus = preprocessFlagStatus;
-    }
+		this.preprocessFlagStatus = preprocessFlagStatus;
+	}
 
 	public String getPreprocessFlagObservation() {
-        return this.preprocessFlagObservation;
-    }
+		return this.preprocessFlagObservation;
+	}
 
 	public void setPreprocessFlagObservation(String preprocessFlagObservation) {
-        this.preprocessFlagObservation = preprocessFlagObservation;
-    }
+		this.preprocessFlagObservation = preprocessFlagObservation;
+	}
 
 	public String getPreprocessFlagCause() {
-        return this.preprocessFlagCause;
-    }
+		return this.preprocessFlagCause;
+	}
 
 	public void setPreprocessFlagCause(String preprocessFlagCause) {
-        this.preprocessFlagCause = preprocessFlagCause;
-    }
+		this.preprocessFlagCause = preprocessFlagCause;
+	}
 
 	public String getPreprocessFlagComment() {
-        return this.preprocessFlagComment;
-    }
+		return this.preprocessFlagComment;
+	}
 
 	public void setPreprocessFlagComment(String preprocessFlagComment) {
-        this.preprocessFlagComment = preprocessFlagComment;
-    }
+		this.preprocessFlagComment = preprocessFlagComment;
+	}
 
 	public String getUserFlagStatus() {
-        return this.userFlagStatus;
-    }
+		return this.userFlagStatus;
+	}
 
 	public void setUserFlagStatus(String userFlagStatus) {
-        this.userFlagStatus = userFlagStatus;
-    }
+		this.userFlagStatus = userFlagStatus;
+	}
 
 	public String getUserFlagObservation() {
-        return this.userFlagObservation;
-    }
+		return this.userFlagObservation;
+	}
 
 	public void setUserFlagObservation(String userFlagObservation) {
-        this.userFlagObservation = userFlagObservation;
-    }
+		this.userFlagObservation = userFlagObservation;
+	}
 
 	public String getUserFlagCause() {
-        return this.userFlagCause;
-    }
+		return this.userFlagCause;
+	}
 
 	public void setUserFlagCause(String userFlagCause) {
-        this.userFlagCause = userFlagCause;
-    }
+		this.userFlagCause = userFlagCause;
+	}
 
 	public String getUserFlagComment() {
-        return this.userFlagComment;
-    }
+		return this.userFlagComment;
+	}
 
 	public void setUserFlagComment(String userFlagComment) {
-        this.userFlagComment = userFlagComment;
-    }
+		this.userFlagComment = userFlagComment;
+	}
 
 	public String toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(this);
+	}
 
 	public String toJson(String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(this);
+	}
 
 	public static FlagWellDTO fromJsonToFlagWellDTO(String json) {
-        return new JSONDeserializer<FlagWellDTO>()
-        .use(null, FlagWellDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<FlagWellDTO>()
+				.use(null, FlagWellDTO.class).deserialize(json);
+	}
 
 	public static String toJsonArray(Collection<FlagWellDTO> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(collection);
+	}
 
 	public static String toJsonArray(Collection<FlagWellDTO> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(collection);
+	}
 
 	public static Collection<FlagWellDTO> fromJsonArrayToFlagWellDTO(String json) {
-        return new JSONDeserializer<List<FlagWellDTO>>()
-        .use("values", FlagWellDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<FlagWellDTO>>()
+				.use("values", FlagWellDTO.class).deserialize(json);
+	}
 }

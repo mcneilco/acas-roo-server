@@ -1,5 +1,4 @@
 
-
 package com.labsynch.labseer.service;
 
 import java.io.BufferedReader;
@@ -13,23 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.ParseDate;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvBeanReader;
-import org.supercsv.io.ICsvBeanReader;
-import org.supercsv.prefs.CsvPreference;
-
-import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.LabelKind;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LabelType;
@@ -48,6 +30,20 @@ import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.EntrezDbGeneDTO;
 import com.labsynch.labseer.utils.SimpleUtil;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ParseDate;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanReader;
+import org.supercsv.io.ICsvBeanReader;
+import org.supercsv.prefs.CsvPreference;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
@@ -56,20 +52,19 @@ public class CreateGeneIDsFromCSVFileTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreateGeneIDsFromCSVFileTests.class);
 
-    @Autowired
-    private AutoLabelService autoLabelService;
+	@Autowired
+	private AutoLabelService autoLabelService;
 
-	
 	private String fieldDelimiter = "\t";
 
 	@Test
-	//@Transactional
-	public void ReadCSVFile_Test1() throws IOException{
+	// @Transactional
+	public void ReadCSVFile_Test1() throws IOException {
 
 		logger.info("read tab delimited file");
 		String testFileName = "sample_genes.txt";
 		InputStream is = CreateGeneIDsFromCSVFileTests.class.getClassLoader().getResourceAsStream(testFileName);
-		InputStreamReader isr = new InputStreamReader(is);  
+		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
 
 		String nameMapping;
@@ -82,14 +77,13 @@ public class CreateGeneIDsFromCSVFileTests {
 			lsTransaction.persist();
 			beanReader = new CsvBeanReader(br, CsvPreference.TAB_PREFERENCE);
 			String[] headerText = beanReader.getHeader(true);
-			
-			
-			//set up gene type and kinds (check if already exists)			
+
+			// set up gene type and kinds (check if already exists)
 			String geneTypeString = "gene";
 			String geneKindString = "entrez gene";
 			ThingType geneType = ThingType.getOrCreate(geneTypeString);
 			ThingKind.getOrCreate(geneType, geneKindString);
-			
+
 			LabelType labelType = LabelType.findLabelTypesByTypeNameEquals("name").getSingleResult();
 			LabelKind.getOrCreate(labelType, "gene code name");
 			LabelKind.getOrCreate(labelType, "Entrez Gene ID");
@@ -99,11 +93,13 @@ public class CreateGeneIDsFromCSVFileTests {
 			LabelKind.getOrCreate(labelType, "authoritative gene name");
 			LabelKind.getOrCreate(labelType, "other designations");
 
-
 			String thingTypeAndKind = "gene_entrez gene";
 			String labelTypeAndKind = "name_gene code name";
-			List<LabelSequence> labelSeqs = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
-			if (labelSeqs.size() == 0){
+			List<LabelSequence> labelSeqs = LabelSequence
+					.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind,
+							labelTypeAndKind)
+					.getResultList();
+			if (labelSeqs.size() == 0) {
 				LabelSequence newLabelSeq = new LabelSequence();
 				newLabelSeq.setDigits(6);
 				newLabelSeq.setLabelPrefix("GENE");
@@ -112,8 +108,7 @@ public class CreateGeneIDsFromCSVFileTests {
 				newLabelSeq.setLabelTypeAndKind(labelTypeAndKind);
 				newLabelSeq.setThingTypeAndKind(thingTypeAndKind);
 				newLabelSeq.persist();
-			} 
-			
+			}
 
 			// map header text to standard bean names
 
@@ -136,20 +131,19 @@ public class CreateGeneIDsFromCSVFileTests {
 
 			List<String> headerList = new ArrayList<String>();
 			int position = 0;
-			for (String head : headerText){
+			for (String head : headerText) {
 				logger.info("header column: " + position + "  " + head);
-				if (geneBeanMap.get(head) != null){
-					headerList.add(geneBeanMap.get(head));   				
+				if (geneBeanMap.get(head) != null) {
+					headerList.add(geneBeanMap.get(head));
 				}
 				position++;
 			}
-
 
 			logger.info("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
 			headerList.toArray(header);
 
-			for (String head : header){
+			for (String head : header) {
 				logger.warn("header column array : " + position + "  " + head);
 				position++;
 			}
@@ -173,18 +167,19 @@ public class CreateGeneIDsFromCSVFileTests {
 
 			ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
 			ValueKind.getOrCreate(valueTypeDate, "modification date");
-			
+
 			int numberOfRows = SimpleUtil.countLines(testFileName);
 
 			int i = 0;
 			int batchSize = 25;
-			while( (geneDTO = beanReader.read(EntrezDbGeneDTO.class, header, processors)) != null ) {
-				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), geneDTO));
+			while ((geneDTO = beanReader.read(EntrezDbGeneDTO.class, header, processors)) != null) {
+				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(),
+						beanReader.getRowNumber(), geneDTO));
 				logger.info("current gene: " + geneDTO.getGeneId());
-				
+
 				Long numberOfLabels = 1L;
-				List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);			
-				
+				List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind,
+						numberOfLabels);
 
 				LsThing geneThing = new LsThing();
 				geneThing.setCodeName(thingCodes.get(0).getAutoLabel());
@@ -195,12 +190,18 @@ public class CreateGeneIDsFromCSVFileTests {
 				geneThing.persist();
 
 				String entrezSeparator = "\\|";
-				saveGeneLabel(lsTransaction, geneThing, "name", "Entrez Gene ID", true, geneDTO.getGeneId(), entrezSeparator);
-				saveGeneLabel(lsTransaction, geneThing, "name", "gene symbol", false, geneDTO.getSymbol(), entrezSeparator);
-				saveGeneLabel(lsTransaction, geneThing, "name", "gene synonym", false, geneDTO.getSynonyms(), entrezSeparator);
-				saveGeneLabel(lsTransaction, geneThing, "name", "authoritative gene name", false, geneDTO.getFullNameFromAuthority(), entrezSeparator);
-				saveGeneLabel(lsTransaction, geneThing, "name", "authoritative gene symbol", false, geneDTO.getSymbolFromAuthority(), entrezSeparator);
-				saveGeneLabel(lsTransaction, geneThing, "name", "other designations", false, geneDTO.getOtherDesignations(), entrezSeparator);
+				saveGeneLabel(lsTransaction, geneThing, "name", "Entrez Gene ID", true, geneDTO.getGeneId(),
+						entrezSeparator);
+				saveGeneLabel(lsTransaction, geneThing, "name", "gene symbol", false, geneDTO.getSymbol(),
+						entrezSeparator);
+				saveGeneLabel(lsTransaction, geneThing, "name", "gene synonym", false, geneDTO.getSynonyms(),
+						entrezSeparator);
+				saveGeneLabel(lsTransaction, geneThing, "name", "authoritative gene name", false,
+						geneDTO.getFullNameFromAuthority(), entrezSeparator);
+				saveGeneLabel(lsTransaction, geneThing, "name", "authoritative gene symbol", false,
+						geneDTO.getSymbolFromAuthority(), entrezSeparator);
+				saveGeneLabel(lsTransaction, geneThing, "name", "other designations", false,
+						geneDTO.getOtherDesignations(), entrezSeparator);
 
 				LsThingState geneState = new LsThingState();
 				geneState.setLsThing(geneThing);
@@ -210,47 +211,53 @@ public class CreateGeneIDsFromCSVFileTests {
 				geneState.setRecordedBy("acas admin");
 				geneState.persist();
 
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "tax id", geneDTO.getTaxId(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "locus tag", geneDTO.getLocusTag(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "dbXrefs", geneDTO.getDbXrefs(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "chromosome", geneDTO.getChromosome(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "map location", geneDTO.getMapLocation(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "description", geneDTO.getDescription(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "type of gene", geneDTO.getTypeOfGene(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "nomenclature status", geneDTO.getNomenclatureStatus(), entrezSeparator);
-				saveGeneDescriptor(lsTransaction, geneState, "dateValue", "modification date", geneDTO.getModificationDate());
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "tax id", geneDTO.getTaxId(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "locus tag", geneDTO.getLocusTag(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "dbXrefs", geneDTO.getDbXrefs(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "chromosome", geneDTO.getChromosome(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "map location", geneDTO.getMapLocation(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "description", geneDTO.getDescription(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "type of gene", geneDTO.getTypeOfGene(),
+						entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "stringValue", "nomenclature status",
+						geneDTO.getNomenclatureStatus(), entrezSeparator);
+				saveGeneDescriptor(lsTransaction, geneState, "dateValue", "modification date",
+						geneDTO.getModificationDate());
 
-				if ( i % batchSize == 0 ) { // same as the JDBC batch size
+				if (i % batchSize == 0) { // same as the JDBC batch size
 					geneThing.flush();
 					geneThing.clear();
 				}
 				i++;
 
 			}
-		}
-		finally {
-			if( beanReader != null ) {
+		} finally {
+			if (beanReader != null) {
 				beanReader.close();
 			}
 		}
-
-
-
 
 		logger.info("Registering samples");
 		Map<String, String> dataMapIn = new HashMap<String, String>();
 		StringWriter outFile = new StringWriter();
 		try {
-			//			String[] inputCSVheader = inputMapFile.getHeader(true);
-			//			writer.writeHeader(inputCSVheader);
-		} catch (Exception e){
+			// String[] inputCSVheader = inputMapFile.getHeader(true);
+			// writer.writeHeader(inputCSVheader);
+		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 
 		logger.info(outFile.toString());
 	}
 
-	private void saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind, Date dateValue) {
+	private void saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind,
+			Date dateValue) {
 		LsThingValue lsValue = new LsThingValue();
 		lsValue.setLsState(geneState);
 		lsValue.setLsType(lsType);
@@ -263,10 +270,12 @@ public class CreateGeneIDsFromCSVFileTests {
 
 	}
 
-	private void saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind, String dataValues, String entrezSeparator) {
+	private void saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind,
+			String dataValues, String entrezSeparator) {
 		String[] valueList = dataValues.split(entrezSeparator);
-		for (String value : valueList){
-			List<LsThingValue> foundValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike(lsKind, value).getResultList();
+		for (String value : valueList) {
+			List<LsThingValue> foundValues = LsThingValue
+					.findLsThingValuesByLsKindEqualsAndStringValueLike(lsKind, value).getResultList();
 			LsThingValue lsValue = new LsThingValue();
 			lsValue.setLsState(geneState);
 			lsValue.setLsType(lsType);
@@ -276,12 +285,13 @@ public class CreateGeneIDsFromCSVFileTests {
 			lsValue.setRecordedBy("acas admin");
 			lsValue.persist();
 			logger.info("saving gene descriptor: " + value);
-		}			
+		}
 	}
 
-	private void saveGeneLabel(LsTransaction lsTransaction, LsThing geneThing, String labelType, String labelKind, boolean preferred, String labels, String entrezSeparator) {
+	private void saveGeneLabel(LsTransaction lsTransaction, LsThing geneThing, String labelType, String labelKind,
+			boolean preferred, String labels, String entrezSeparator) {
 		String[] labelList = labels.split(entrezSeparator);
-		for (String label : labelList){
+		for (String label : labelList) {
 			LsThingLabel lsLabel = new LsThingLabel();
 			lsLabel.setLsThing(geneThing);
 			lsLabel.setLsType(labelType);
@@ -292,30 +302,29 @@ public class CreateGeneIDsFromCSVFileTests {
 			lsLabel.setRecordedBy("acas admin");
 			lsLabel.persist();
 			logger.info("saving gene label: " + label);
-		}		
+		}
 	}
-
-
 
 	private static CellProcessor[] getProcessors() {
 
-		//    	"dd/MM/yyyy" (parses a date formatted as "25/12/2011")
-		//    	"dd-MMM-yy" (parses a date formatted as "25-Dec-11")
-		//    	"yyyy.MM.dd.HH.mm.ss" (parses a date formatted as "2011.12.25.08.36.33"
-		//    	"E, dd MMM yyyy HH:mm:ss Z" (parses a date formatted as "Tue, 25 Dec 2011 08:36:33 -0500")
+		// "dd/MM/yyyy" (parses a date formatted as "25/12/2011")
+		// "dd-MMM-yy" (parses a date formatted as "25-Dec-11")
+		// "yyyy.MM.dd.HH.mm.ss" (parses a date formatted as "2011.12.25.08.36.33"
+		// "E, dd MMM yyyy HH:mm:ss Z" (parses a date formatted as "Tue, 25 Dec 2011
+		// 08:36:33 -0500")
 
-		final CellProcessor[] processors = new CellProcessor[] { 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(),  // 
-				new Optional(), // 
-				new Optional(), // 
-				new Optional(), // 
+		final CellProcessor[] processors = new CellProcessor[] {
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
+				new Optional(), //
 				new Optional(), //
 				new Optional(), //
 				new Optional(), //
@@ -324,6 +333,5 @@ public class CreateGeneIDsFromCSVFileTests {
 
 		return processors;
 	}
-
 
 }

@@ -1,59 +1,57 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class RequestNameDTO {
 
-	private String requestName;
-	
+    private String requestName;
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String getRequestName() {
+    public String getRequestName() {
         return this.requestName;
     }
 
-	public void setRequestName(String requestName) {
+    public void setRequestName(String requestName) {
         this.requestName = requestName;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static RequestNameDTO fromJsonToRequestNameDTO(String json) {
+    public static RequestNameDTO fromJsonToRequestNameDTO(String json) {
         return new JSONDeserializer<RequestNameDTO>()
-        .use(null, RequestNameDTO.class).deserialize(json);
+                .use(null, RequestNameDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<RequestNameDTO> collection) {
+    public static String toJsonArray(Collection<RequestNameDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<RequestNameDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<RequestNameDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<RequestNameDTO> fromJsonArrayToRequestNameDTO(String json) {
+    public static Collection<RequestNameDTO> fromJsonArrayToRequestNameDTO(String json) {
         return new JSONDeserializer<List<RequestNameDTO>>()
-        .use("values", RequestNameDTO.class).deserialize(json);
+                .use("values", RequestNameDTO.class).deserialize(json);
     }
 }
-
-

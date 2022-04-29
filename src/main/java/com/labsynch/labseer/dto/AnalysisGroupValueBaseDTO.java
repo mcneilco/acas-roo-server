@@ -1,52 +1,53 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class AnalysisGroupValueBaseDTO {
 
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueBaseDTO.class);
 
-	public AnalysisGroupValueBaseDTO(){
-		//empty constructor
+	public AnalysisGroupValueBaseDTO() {
+		// empty constructor
 	}
 
 	public AnalysisGroupValueBaseDTO(
-			Long id, 
+			Long id,
 			Long stateId,
 			String agCodeName,
 			String lsType,
 			String lsKind,
-			 String stringValue,
-			 String codeValue,
-			 String fileValue,
-			 String urlValue,
-			 Date dateValue,
-		     String clobValue,
-			 String operatorType,
-			 String operatorKind,
-			 BigDecimal numericValue,
-			 Integer sigFigs,
-			 BigDecimal uncertainty,
-			 Integer numberOfReplicates,
-			 String uncertaintyType,
-			 String unitType,
-			 String unitKind,
-			 String comments,
-			 boolean ignored,
-			 Long lsTransaction,
-			 boolean publicData
-			
-			){
+			String stringValue,
+			String codeValue,
+			String fileValue,
+			String urlValue,
+			Date dateValue,
+			String clobValue,
+			String operatorType,
+			String operatorKind,
+			BigDecimal numericValue,
+			Integer sigFigs,
+			BigDecimal uncertainty,
+			Integer numberOfReplicates,
+			String uncertaintyType,
+			String unitType,
+			String unitKind,
+			String comments,
+			boolean ignored,
+			Long lsTransaction,
+			boolean publicData
+
+	) {
 
 		this.id = id;
 		this.stateId = stateId;
@@ -55,11 +56,11 @@ public class AnalysisGroupValueBaseDTO {
 		this.lsKind = lsKind;
 		this.numericValue = numericValue;
 		this.stringValue = stringValue;
-		this.codeValue = codeValue;		
+		this.codeValue = codeValue;
 		this.fileValue = fileValue;
 		this.urlValue = urlValue;
 		this.dateValue = dateValue;
-	    this.clobValue = clobValue;
+		this.clobValue = clobValue;
 		this.operatorType = operatorType;
 		this.operatorKind = operatorKind;
 		this.sigFigs = sigFigs;
@@ -71,9 +72,9 @@ public class AnalysisGroupValueBaseDTO {
 		this.comments = unitKind;
 		this.ignored = ignored;
 		this.lsTransaction = lsTransaction;
-		this.publicData = publicData;	
-		}
-	
+		this.publicData = publicData;
+	}
+
 	private Long id;
 	private Long stateId;
 	private String agCodeName;
@@ -84,7 +85,7 @@ public class AnalysisGroupValueBaseDTO {
 	private String fileValue;
 	private String urlValue;
 	private Date dateValue;
-    private String clobValue;
+	private String clobValue;
 	private String operatorType;
 	private String operatorKind;
 	private BigDecimal numericValue;
@@ -98,233 +99,230 @@ public class AnalysisGroupValueBaseDTO {
 	private boolean ignored;
 	private Long lsTransaction;
 	private boolean publicData;
-	
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	public String toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(this);
+	}
 
 	public String toJson(String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(this);
+	}
 
 	public static AnalysisGroupValueBaseDTO fromJsonToAnalysisGroupValueBaseDTO(String json) {
-        return new JSONDeserializer<AnalysisGroupValueBaseDTO>()
-        .use(null, AnalysisGroupValueBaseDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<AnalysisGroupValueBaseDTO>()
+				.use(null, AnalysisGroupValueBaseDTO.class).deserialize(json);
+	}
 
 	public static String toJsonArray(Collection<AnalysisGroupValueBaseDTO> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(collection);
+	}
 
 	public static String toJsonArray(Collection<AnalysisGroupValueBaseDTO> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(collection);
+	}
 
 	public static Collection<AnalysisGroupValueBaseDTO> fromJsonArrayToAnalysisGroes(String json) {
-        return new JSONDeserializer<List<AnalysisGroupValueBaseDTO>>()
-        .use("values", AnalysisGroupValueBaseDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<AnalysisGroupValueBaseDTO>>()
+				.use("values", AnalysisGroupValueBaseDTO.class).deserialize(json);
+	}
 
 	public Long getId() {
-        return this.id;
-    }
+		return this.id;
+	}
 
 	public void setId(Long id) {
-        this.id = id;
-    }
+		this.id = id;
+	}
 
 	public Long getStateId() {
-        return this.stateId;
-    }
+		return this.stateId;
+	}
 
 	public void setStateId(Long stateId) {
-        this.stateId = stateId;
-    }
+		this.stateId = stateId;
+	}
 
 	public String getAgCodeName() {
-        return this.agCodeName;
-    }
+		return this.agCodeName;
+	}
 
 	public void setAgCodeName(String agCodeName) {
-        this.agCodeName = agCodeName;
-    }
+		this.agCodeName = agCodeName;
+	}
 
 	public String getLsType() {
-        return this.lsType;
-    }
+		return this.lsType;
+	}
 
 	public void setLsType(String lsType) {
-        this.lsType = lsType;
-    }
+		this.lsType = lsType;
+	}
 
 	public String getLsKind() {
-        return this.lsKind;
-    }
+		return this.lsKind;
+	}
 
 	public void setLsKind(String lsKind) {
-        this.lsKind = lsKind;
-    }
+		this.lsKind = lsKind;
+	}
 
 	public String getStringValue() {
-        return this.stringValue;
-    }
+		return this.stringValue;
+	}
 
 	public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
-    }
+		this.stringValue = stringValue;
+	}
 
 	public String getCodeValue() {
-        return this.codeValue;
-    }
+		return this.codeValue;
+	}
 
 	public void setCodeValue(String codeValue) {
-        this.codeValue = codeValue;
-    }
+		this.codeValue = codeValue;
+	}
 
 	public String getFileValue() {
-        return this.fileValue;
-    }
+		return this.fileValue;
+	}
 
 	public void setFileValue(String fileValue) {
-        this.fileValue = fileValue;
-    }
+		this.fileValue = fileValue;
+	}
 
 	public String getUrlValue() {
-        return this.urlValue;
-    }
+		return this.urlValue;
+	}
 
 	public void setUrlValue(String urlValue) {
-        this.urlValue = urlValue;
-    }
+		this.urlValue = urlValue;
+	}
 
 	public Date getDateValue() {
-        return this.dateValue;
-    }
+		return this.dateValue;
+	}
 
 	public void setDateValue(Date dateValue) {
-        this.dateValue = dateValue;
-    }
+		this.dateValue = dateValue;
+	}
 
 	public String getClobValue() {
-        return this.clobValue;
-    }
+		return this.clobValue;
+	}
 
 	public void setClobValue(String clobValue) {
-        this.clobValue = clobValue;
-    }
+		this.clobValue = clobValue;
+	}
 
 	public String getOperatorType() {
-        return this.operatorType;
-    }
+		return this.operatorType;
+	}
 
 	public void setOperatorType(String operatorType) {
-        this.operatorType = operatorType;
-    }
+		this.operatorType = operatorType;
+	}
 
 	public String getOperatorKind() {
-        return this.operatorKind;
-    }
+		return this.operatorKind;
+	}
 
 	public void setOperatorKind(String operatorKind) {
-        this.operatorKind = operatorKind;
-    }
+		this.operatorKind = operatorKind;
+	}
 
 	public BigDecimal getNumericValue() {
-        return this.numericValue;
-    }
+		return this.numericValue;
+	}
 
 	public void setNumericValue(BigDecimal numericValue) {
-        this.numericValue = numericValue;
-    }
+		this.numericValue = numericValue;
+	}
 
 	public Integer getSigFigs() {
-        return this.sigFigs;
-    }
+		return this.sigFigs;
+	}
 
 	public void setSigFigs(Integer sigFigs) {
-        this.sigFigs = sigFigs;
-    }
+		this.sigFigs = sigFigs;
+	}
 
 	public BigDecimal getUncertainty() {
-        return this.uncertainty;
-    }
+		return this.uncertainty;
+	}
 
 	public void setUncertainty(BigDecimal uncertainty) {
-        this.uncertainty = uncertainty;
-    }
+		this.uncertainty = uncertainty;
+	}
 
 	public Integer getNumberOfReplicates() {
-        return this.numberOfReplicates;
-    }
+		return this.numberOfReplicates;
+	}
 
 	public void setNumberOfReplicates(Integer numberOfReplicates) {
-        this.numberOfReplicates = numberOfReplicates;
-    }
+		this.numberOfReplicates = numberOfReplicates;
+	}
 
 	public String getUncertaintyType() {
-        return this.uncertaintyType;
-    }
+		return this.uncertaintyType;
+	}
 
 	public void setUncertaintyType(String uncertaintyType) {
-        this.uncertaintyType = uncertaintyType;
-    }
+		this.uncertaintyType = uncertaintyType;
+	}
 
 	public String getUnitType() {
-        return this.unitType;
-    }
+		return this.unitType;
+	}
 
 	public void setUnitType(String unitType) {
-        this.unitType = unitType;
-    }
+		this.unitType = unitType;
+	}
 
 	public String getUnitKind() {
-        return this.unitKind;
-    }
+		return this.unitKind;
+	}
 
 	public void setUnitKind(String unitKind) {
-        this.unitKind = unitKind;
-    }
+		this.unitKind = unitKind;
+	}
 
 	public String getComments() {
-        return this.comments;
-    }
+		return this.comments;
+	}
 
 	public void setComments(String comments) {
-        this.comments = comments;
-    }
+		this.comments = comments;
+	}
 
 	public boolean isIgnored() {
-        return this.ignored;
-    }
+		return this.ignored;
+	}
 
 	public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+		this.ignored = ignored;
+	}
 
 	public Long getLsTransaction() {
-        return this.lsTransaction;
-    }
+		return this.lsTransaction;
+	}
 
 	public void setLsTransaction(Long lsTransaction) {
-        this.lsTransaction = lsTransaction;
-    }
+		this.lsTransaction = lsTransaction;
+	}
 
 	public boolean isPublicData() {
-        return this.publicData;
-    }
+		return this.publicData;
+	}
 
 	public void setPublicData(boolean publicData) {
-        this.publicData = publicData;
-    }
+		this.publicData = publicData;
+	}
 }
-
-

@@ -8,7 +8,6 @@ import com.labsynch.labseer.dto.CorpNameDTO;
 
 public interface CorpNameService {
 
-
 	public String getPreferredNameFromBuid(String aliasList);
 
 	public String getLotNumberFromBuid(String aliasList);
@@ -18,7 +17,7 @@ public interface CorpNameService {
 	public String convertCorpNameNumber(String corpName);
 
 	public String generateSaltFormCorpName(String parentCorpName, Set<IsoSalt> isoSalts);
-	
+
 	public String convertCorpNamePrefix(String corpName);
 
 	public String removeCorpNamePrefix(String corpName);
@@ -48,5 +47,5 @@ public interface CorpNameService {
 	public String generateCorpLicensePlate();
 
 	public CorpNameDTO generateParentNameFromSequence();
-	
+
 }

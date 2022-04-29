@@ -5,9 +5,7 @@ import java.util.Set;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.LotAlias;
 
-
 public interface LotAliasService {
-
 
 	public Lot updateLotAliases(Lot lot);
 
