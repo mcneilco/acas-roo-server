@@ -212,22 +212,6 @@ public class ApiMetalotController {
 		return new ResponseEntity<String>(metaLot.toJson(), headers, HttpStatus.OK);
 	}
 
-
-	@Transactional
-	@RequestMapping(params = "find=ByCorpNameEquals", method = RequestMethod.GET)
-	public String findMetalotsByCorpNameEqualsForm(@RequestParam("corpName") String corpName, Model uiModel) {
-		uiModel.addAttribute("metalots", Parent.findParentsByCorpNameEquals(corpName).getResultList());
-		return "metalots/list";
-	}
-
-	@Transactional
-	@RequestMapping(params = "find=ByCorpNameLike", method = RequestMethod.GET)
-	public String findParentsByCorpNameLike(@RequestParam("corpName") String corpName, Model uiModel) {
-		uiModel.addAttribute("parents", Parent.findParentsByCorpNameLike(corpName).getResultList());
-		return "metalots/list";
-	}
-
-
 	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
 		String enc = httpServletRequest.getCharacterEncoding();
 		if (enc == null) {

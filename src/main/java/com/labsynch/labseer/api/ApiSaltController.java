@@ -73,24 +73,6 @@ public class ApiSaltController {
 
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public String create(@Valid Salt salt, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) throws CmpdRegMolFormatException {
-		if (bindingResult.hasErrors()) {
-			uiModel.addAttribute("salt", salt);
-			return "salts/create";
-		}
-		uiModel.asMap().clear();
-		salt = saltStructureService.saveStructure(salt);
-		if (salt.getCdId() > 0 && salt.getCdId() != -1) {
-			salt.persist();
-			return "redirect:/salts/" + encodeUrlPathSegment(salt.getId().toString(), httpServletRequest);
-		} else {
-			//remove the salt from the Salt_Structure table??
-			uiModel.addAttribute("salt", salt);
-			return "salts/create";
-		}
-	}
-
 	@ModelAttribute("salts")
 	public Collection<Salt> populateSalts() {
 		return Salt.findAllSalts();
@@ -204,37 +186,6 @@ public class ApiSaltController {
 	// 	headers.add("Access-Control-Max-Age", "86400");
 	// 	return new ResponseEntity<String>(headers, HttpStatus.OK);
 	// }
-
-	@RequestMapping(method = RequestMethod.PUT)
-	public String update(@Valid Salt salt, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-		if (bindingResult.hasErrors()) {
-			uiModel.addAttribute("salt", salt);
-			return "salts/update";
-		}
-		uiModel.asMap().clear();
-		try {
-			logger.debug("Salt weight: " + chemStructureService.getMolWeight(salt.getMolStructure()));
-		} catch (CmpdRegMolFormatException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Salt updatedSalt = null;
-		try{
-			updatedSalt = saltStructureService.update(salt);
-		}catch (CmpdRegMolFormatException e) {
-			logger.error("Bad mol format",e);
-			updatedSalt = null;
-		}
-		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-		if (updatedSalt == null) {
-			ErrorMessage error = new ErrorMessage();
-			error.setLevel("error");
-			error.setMessage("Bad molformat. Please fix the molfile: " + salt.getMolStructure());
-			errors.add(error);
-			return "redirect:/salts/";
-		}
-		return "redirect:/salts/" + encodeUrlPathSegment(salt.getId().toString(), httpServletRequest);
-	}
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody String json) {
