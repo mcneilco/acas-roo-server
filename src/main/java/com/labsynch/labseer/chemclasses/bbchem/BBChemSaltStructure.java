@@ -156,16 +156,6 @@ public class BBChemSaltStructure extends AbstractBBChemStructure {
         .use(null, BBChemSaltStructure.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<BBChemSaltStructure> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
-
-	public static String toJsonArray(Collection<BBChemSaltStructure> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
-
 	public static Collection<BBChemSaltStructure> fromJsonArrayToBBChemSaltStructures(String json) {
         return new JSONDeserializer<List<BBChemSaltStructure>>()
         .use("values", BBChemSaltStructure.class).deserialize(json);

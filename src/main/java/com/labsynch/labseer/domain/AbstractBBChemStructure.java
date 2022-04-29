@@ -132,6 +132,7 @@ public abstract class AbstractBBChemStructure {
 
 
 	@PersistenceContext
+    protected
     transient EntityManager entityManager;
 
 	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "substructure", "similarity", "recordedDate", "standardizationStatus", "standardizationComment", "registrationStatus", "registrationComment", "exactMolWeight", "averageMolWeight", "totalCharge", "smiles", "inchi", "molecularFormula", "properties");

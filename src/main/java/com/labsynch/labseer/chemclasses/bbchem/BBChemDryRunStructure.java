@@ -45,16 +45,6 @@ public class BBChemDryRunStructure extends AbstractBBChemStructure {
         .use(null, BBChemDryRunStructure.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<BBChemDryRunStructure> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
-
-	public static String toJsonArray(Collection<BBChemDryRunStructure> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
-
 	public static Collection<BBChemDryRunStructure> fromJsonArrayToBBChemDryRunStructures(String json) {
         return new JSONDeserializer<List<BBChemDryRunStructure>>()
         .use("values", BBChemDryRunStructure.class).deserialize(json);
