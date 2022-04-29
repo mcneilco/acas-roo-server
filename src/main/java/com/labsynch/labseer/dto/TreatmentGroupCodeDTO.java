@@ -1,71 +1,69 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class TreatmentGroupCodeDTO {
-	
-	private String treatmentGroupCode;
-	private Collection<AnalysisGroupCodeDTO> analysisGroupCodes;
-	
-	public TreatmentGroupCodeDTO(){
-	}
 
+    private String treatmentGroupCode;
+    private Collection<AnalysisGroupCodeDTO> analysisGroupCodes;
 
-	public String toString() {
+    public TreatmentGroupCodeDTO() {
+    }
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static TreatmentGroupCodeDTO fromJsonToTreatmentGroupCodeDTO(String json) {
+    public static TreatmentGroupCodeDTO fromJsonToTreatmentGroupCodeDTO(String json) {
         return new JSONDeserializer<TreatmentGroupCodeDTO>()
-        .use(null, TreatmentGroupCodeDTO.class).deserialize(json);
+                .use(null, TreatmentGroupCodeDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<TreatmentGroupCodeDTO> collection) {
+    public static String toJsonArray(Collection<TreatmentGroupCodeDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<TreatmentGroupCodeDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<TreatmentGroupCodeDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<TreatmentGroupCodeDTO> fromJsonArrayToTreatmentGroupCoes(String json) {
+    public static Collection<TreatmentGroupCodeDTO> fromJsonArrayToTreatmentGroupCoes(String json) {
         return new JSONDeserializer<List<TreatmentGroupCodeDTO>>()
-        .use("values", TreatmentGroupCodeDTO.class).deserialize(json);
+                .use("values", TreatmentGroupCodeDTO.class).deserialize(json);
     }
 
-	public String getTreatmentGroupCode() {
+    public String getTreatmentGroupCode() {
         return this.treatmentGroupCode;
     }
 
-	public void setTreatmentGroupCode(String treatmentGroupCode) {
+    public void setTreatmentGroupCode(String treatmentGroupCode) {
         this.treatmentGroupCode = treatmentGroupCode;
     }
 
-	public Collection<AnalysisGroupCodeDTO> getAnalysisGroupCodes() {
+    public Collection<AnalysisGroupCodeDTO> getAnalysisGroupCodes() {
         return this.analysisGroupCodes;
     }
 
-	public void setAnalysisGroupCodes(Collection<AnalysisGroupCodeDTO> analysisGroupCodes) {
+    public void setAnalysisGroupCodes(Collection<AnalysisGroupCodeDTO> analysisGroupCodes) {
         this.analysisGroupCodes = analysisGroupCodes;
     }
 }
-
-

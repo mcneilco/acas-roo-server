@@ -1,26 +1,27 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class DoseReponseParamsDTO {
 
 	private static final Logger logger = LoggerFactory.getLogger(DoseReponseParamsDTO.class);
 
-	public DoseReponseParamsDTO(){
-		//empty constructor
+	public DoseReponseParamsDTO() {
+		// empty constructor
 	}
 
 	public DoseReponseParamsDTO(
-			Long id, 
+			Long id,
 			Integer version,
 			String agCodeName,
 			String curveId,
@@ -41,8 +42,7 @@ public class DoseReponseParamsDTO {
 			String comments,
 			boolean ignored,
 			Long lsTransaction,
-			boolean publicData
-			){
+			boolean publicData) {
 
 		this.id = id;
 		this.lsType = lsType;
@@ -52,18 +52,18 @@ public class DoseReponseParamsDTO {
 		this.codeValue = codeValue;
 		this.clobValue = clobValue;
 
-		//		private String operatorType;
-		//		private String operatorKind;
-		//		private Integer sigFigs;
-		//		private BigDecimal uncertainty;
-		//		private Integer numberOfReplicates;
-		//		private String uncertaintyType;
-		//		private String unitType;
-		//		private String unitKind;
-		//		private String comments;
-		//		private boolean ignored;
-		//		private Long lsTransaction;
-		//		private boolean publicData;	
+		// private String operatorType;
+		// private String operatorKind;
+		// private Integer sigFigs;
+		// private BigDecimal uncertainty;
+		// private Integer numberOfReplicates;
+		// private String uncertaintyType;
+		// private String unitType;
+		// private String unitKind;
+		// private String comments;
+		// private boolean ignored;
+		// private Long lsTransaction;
+		// private boolean publicData;
 	}
 
 	private Long id;
@@ -90,224 +90,221 @@ public class DoseReponseParamsDTO {
 	private Long lsTransaction;
 	private boolean publicData;
 
-
 	public String toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(this);
+	}
 
 	public String toJson(String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(this);
+	}
 
 	public static DoseReponseParamsDTO fromJsonToDoseReponseParamsDTO(String json) {
-        return new JSONDeserializer<DoseReponseParamsDTO>()
-        .use(null, DoseReponseParamsDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<DoseReponseParamsDTO>()
+				.use(null, DoseReponseParamsDTO.class).deserialize(json);
+	}
 
 	public static String toJsonArray(Collection<DoseReponseParamsDTO> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(collection);
+	}
 
 	public static String toJsonArray(Collection<DoseReponseParamsDTO> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(collection);
+	}
 
 	public static Collection<DoseReponseParamsDTO> fromJsonArrayToDoseRepoes(String json) {
-        return new JSONDeserializer<List<DoseReponseParamsDTO>>()
-        .use("values", DoseReponseParamsDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<DoseReponseParamsDTO>>()
+				.use("values", DoseReponseParamsDTO.class).deserialize(json);
+	}
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	public Long getId() {
-        return this.id;
-    }
+		return this.id;
+	}
 
 	public void setId(Long id) {
-        this.id = id;
-    }
+		this.id = id;
+	}
 
 	public Integer getVersion() {
-        return this.version;
-    }
+		return this.version;
+	}
 
 	public void setVersion(Integer version) {
-        this.version = version;
-    }
+		this.version = version;
+	}
 
 	public Long getStateid() {
-        return this.Stateid;
-    }
+		return this.Stateid;
+	}
 
 	public void setStateid(Long Stateid) {
-        this.Stateid = Stateid;
-    }
+		this.Stateid = Stateid;
+	}
 
 	public String getAgCodeName() {
-        return this.agCodeName;
-    }
+		return this.agCodeName;
+	}
 
 	public void setAgCodeName(String agCodeName) {
-        this.agCodeName = agCodeName;
-    }
+		this.agCodeName = agCodeName;
+	}
 
 	public String getCurveId() {
-        return this.curveId;
-    }
+		return this.curveId;
+	}
 
 	public void setCurveId(String curveId) {
-        this.curveId = curveId;
-    }
+		this.curveId = curveId;
+	}
 
 	public String getLsType() {
-        return this.lsType;
-    }
+		return this.lsType;
+	}
 
 	public void setLsType(String lsType) {
-        this.lsType = lsType;
-    }
+		this.lsType = lsType;
+	}
 
 	public String getLsKind() {
-        return this.lsKind;
-    }
+		return this.lsKind;
+	}
 
 	public void setLsKind(String lsKind) {
-        this.lsKind = lsKind;
-    }
+		this.lsKind = lsKind;
+	}
 
 	public String getStringValue() {
-        return this.stringValue;
-    }
+		return this.stringValue;
+	}
 
 	public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
-    }
+		this.stringValue = stringValue;
+	}
 
 	public String getCodeValue() {
-        return this.codeValue;
-    }
+		return this.codeValue;
+	}
 
 	public void setCodeValue(String codeValue) {
-        this.codeValue = codeValue;
-    }
+		this.codeValue = codeValue;
+	}
 
 	public String getClobValue() {
-        return this.clobValue;
-    }
+		return this.clobValue;
+	}
 
 	public void setClobValue(String clobValue) {
-        this.clobValue = clobValue;
-    }
+		this.clobValue = clobValue;
+	}
 
 	public String getOperatorType() {
-        return this.operatorType;
-    }
+		return this.operatorType;
+	}
 
 	public void setOperatorType(String operatorType) {
-        this.operatorType = operatorType;
-    }
+		this.operatorType = operatorType;
+	}
 
 	public String getOperatorKind() {
-        return this.operatorKind;
-    }
+		return this.operatorKind;
+	}
 
 	public void setOperatorKind(String operatorKind) {
-        this.operatorKind = operatorKind;
-    }
+		this.operatorKind = operatorKind;
+	}
 
 	public BigDecimal getNumericValue() {
-        return this.numericValue;
-    }
+		return this.numericValue;
+	}
 
 	public void setNumericValue(BigDecimal numericValue) {
-        this.numericValue = numericValue;
-    }
+		this.numericValue = numericValue;
+	}
 
 	public Integer getSigFigs() {
-        return this.sigFigs;
-    }
+		return this.sigFigs;
+	}
 
 	public void setSigFigs(Integer sigFigs) {
-        this.sigFigs = sigFigs;
-    }
+		this.sigFigs = sigFigs;
+	}
 
 	public BigDecimal getUncertainty() {
-        return this.uncertainty;
-    }
+		return this.uncertainty;
+	}
 
 	public void setUncertainty(BigDecimal uncertainty) {
-        this.uncertainty = uncertainty;
-    }
+		this.uncertainty = uncertainty;
+	}
 
 	public Integer getNumberOfReplicates() {
-        return this.numberOfReplicates;
-    }
+		return this.numberOfReplicates;
+	}
 
 	public void setNumberOfReplicates(Integer numberOfReplicates) {
-        this.numberOfReplicates = numberOfReplicates;
-    }
+		this.numberOfReplicates = numberOfReplicates;
+	}
 
 	public String getUncertaintyType() {
-        return this.uncertaintyType;
-    }
+		return this.uncertaintyType;
+	}
 
 	public void setUncertaintyType(String uncertaintyType) {
-        this.uncertaintyType = uncertaintyType;
-    }
+		this.uncertaintyType = uncertaintyType;
+	}
 
 	public String getUnitType() {
-        return this.unitType;
-    }
+		return this.unitType;
+	}
 
 	public void setUnitType(String unitType) {
-        this.unitType = unitType;
-    }
+		this.unitType = unitType;
+	}
 
 	public String getUnitKind() {
-        return this.unitKind;
-    }
+		return this.unitKind;
+	}
 
 	public void setUnitKind(String unitKind) {
-        this.unitKind = unitKind;
-    }
+		this.unitKind = unitKind;
+	}
 
 	public String getComments() {
-        return this.comments;
-    }
+		return this.comments;
+	}
 
 	public void setComments(String comments) {
-        this.comments = comments;
-    }
+		this.comments = comments;
+	}
 
 	public boolean isIgnored() {
-        return this.ignored;
-    }
+		return this.ignored;
+	}
 
 	public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+		this.ignored = ignored;
+	}
 
 	public Long getLsTransaction() {
-        return this.lsTransaction;
-    }
+		return this.lsTransaction;
+	}
 
 	public void setLsTransaction(Long lsTransaction) {
-        this.lsTransaction = lsTransaction;
-    }
+		this.lsTransaction = lsTransaction;
+	}
 
 	public boolean isPublicData() {
-        return this.publicData;
-    }
+		return this.publicData;
+	}
 
 	public void setPublicData(boolean publicData) {
-        this.publicData = publicData;
-    }
+		this.publicData = publicData;
+	}
 }
-
-

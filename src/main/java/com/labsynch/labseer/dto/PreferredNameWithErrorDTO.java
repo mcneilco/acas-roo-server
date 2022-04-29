@@ -7,84 +7,79 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-
 public class PreferredNameWithErrorDTO {
 
-	private String requestName;
+    private String requestName;
 
-	private String preferredName;
+    private String preferredName;
 
-	private String referenceName;
-	
-	private ErrorMessageDTO errorMesageDTO;
-	
-	
+    private String referenceName;
 
-	public String toString() {
+    private ErrorMessageDTO errorMesageDTO;
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static PreferredNameWithErrorDTO fromJsonToPreferredNameWithErrorDTO(String json) {
+    public static PreferredNameWithErrorDTO fromJsonToPreferredNameWithErrorDTO(String json) {
         return new JSONDeserializer<PreferredNameWithErrorDTO>()
-        .use(null, PreferredNameWithErrorDTO.class).deserialize(json);
+                .use(null, PreferredNameWithErrorDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<PreferredNameWithErrorDTO> collection) {
+    public static String toJsonArray(Collection<PreferredNameWithErrorDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<PreferredNameWithErrorDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<PreferredNameWithErrorDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<PreferredNameWithErrorDTO> fromJsonArrayToPreferredNameWithErroes(String json) {
+    public static Collection<PreferredNameWithErrorDTO> fromJsonArrayToPreferredNameWithErroes(String json) {
         return new JSONDeserializer<List<PreferredNameWithErrorDTO>>()
-        .use("values", PreferredNameWithErrorDTO.class).deserialize(json);
+                .use("values", PreferredNameWithErrorDTO.class).deserialize(json);
     }
 
-	public String getRequestName() {
+    public String getRequestName() {
         return this.requestName;
     }
 
-	public void setRequestName(String requestName) {
+    public void setRequestName(String requestName) {
         this.requestName = requestName;
     }
 
-	public String getPreferredName() {
+    public String getPreferredName() {
         return this.preferredName;
     }
 
-	public void setPreferredName(String preferredName) {
+    public void setPreferredName(String preferredName) {
         this.preferredName = preferredName;
     }
 
-	public String getReferenceName() {
+    public String getReferenceName() {
         return this.referenceName;
     }
 
-	public void setReferenceName(String referenceName) {
+    public void setReferenceName(String referenceName) {
         this.referenceName = referenceName;
     }
 
-	public ErrorMessageDTO getErrorMesageDTO() {
+    public ErrorMessageDTO getErrorMesageDTO() {
         return this.errorMesageDTO;
     }
 
-	public void setErrorMesageDTO(ErrorMessageDTO errorMesageDTO) {
+    public void setErrorMesageDTO(ErrorMessageDTO errorMesageDTO) {
         this.errorMesageDTO = errorMesageDTO;
     }
 }
-
-

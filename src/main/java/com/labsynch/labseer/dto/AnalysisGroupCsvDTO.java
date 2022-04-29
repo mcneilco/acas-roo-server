@@ -1,7 +1,5 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -16,37 +15,43 @@ import org.slf4j.LoggerFactory;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class AnalysisGroupCsvDTO {
 
-	
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupCsvDTO.class);
 
-	public AnalysisGroupCsvDTO(){
-		//empty constructor
+	public AnalysisGroupCsvDTO() {
+		// empty constructor
 	}
 
-	//	valueType	valueKind	numericValue	stringValue	dateValue	clobValue	urlValue	fileValue	codeValue	valueUnit	valueOperator	publicData	stateType	stateKind	stateID	analysisGroupID	experimentID	experimentVersion	lsTransaction	recordedBy	codeName
-	//	stringValue	Rendering Hint	NULL	4 parameter D-R	NULL	NULL	NULL	NULL	NULL	NULL	NULL	FALSE	data	results	1	1	1007	1	86	smeyer	AG-1
-	//	stringValue	Rendering Hint	NULL	4 parameter D-R	NULL	NULL	NULL	NULL	NULL	NULL	NULL	FALSE	data	results	5	2	1007	1	86	smeyer	AG-2
-	//	valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,lsTransaction,recordedBy,codeName,lsType,lsKind
+	// valueType valueKind numericValue stringValue dateValue clobValue urlValue
+	// fileValue codeValue valueUnit valueOperator publicData stateType stateKind
+	// stateID analysisGroupID experimentID experimentVersion lsTransaction
+	// recordedBy codeName
+	// stringValue Rendering Hint NULL 4 parameter D-R NULL NULL NULL NULL NULL NULL
+	// NULL FALSE data results 1 1 1007 1 86 smeyer AG-1
+	// stringValue Rendering Hint NULL 4 parameter D-R NULL NULL NULL NULL NULL NULL
+	// NULL FALSE data results 5 2 1007 1 86 smeyer AG-2
+	// valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,lsTransaction,recordedBy,codeName,lsType,lsKind
 
 	private Long experimentID;
 	private String experimentCodeName;
 	private Integer experimentVersion;
 
-	private String analysisGroupID;	
-	private Long id;	
+	private String analysisGroupID;
+	private Long id;
 	private Integer version;
 	private String lsType;
 	private String lsKind;
 	private String codeName;
 
-	private Long stateID;	
+	private Long stateID;
 	private String stateType;
 	private String stateKind;
 
-	private Long valueId;	
+	private Long valueId;
 	private String valueType;
 	private String valueKind;
 	private String codeOrigin;
@@ -77,23 +82,23 @@ public class AnalysisGroupCsvDTO {
 	private boolean publicData;
 
 	public void setLsTransaction(String lsTransaction) {
-		if (lsTransaction.equalsIgnoreCase("NULL")){
+		if (lsTransaction.equalsIgnoreCase("NULL")) {
 			this.lsTransaction = null;
 		} else {
-		this.lsTransaction = Long.valueOf(lsTransaction);
-	}
+			this.lsTransaction = Long.valueOf(lsTransaction);
 		}
+	}
 
 	public void setExperimentVersion(String experimentVersion) {
-		if (experimentVersion.equalsIgnoreCase("NULL")){
+		if (experimentVersion.equalsIgnoreCase("NULL")) {
 			this.experimentVersion = null;
 		} else {
-		this.experimentVersion = Integer.valueOf(experimentVersion);
+			this.experimentVersion = Integer.valueOf(experimentVersion);
 		}
 	}
 
 	public void setExperimentID(String experimentID) {
-		if (experimentID.equalsIgnoreCase("NULL")){
+		if (experimentID.equalsIgnoreCase("NULL")) {
 			this.experimentID = null;
 		} else {
 			this.experimentID = Long.valueOf(experimentID);
@@ -105,7 +110,7 @@ public class AnalysisGroupCsvDTO {
 	}
 
 	public void setPublicData(String publicData) {
-		if (publicData.equalsIgnoreCase("FALSE")){
+		if (publicData.equalsIgnoreCase("FALSE")) {
 			this.publicData = false;
 		} else {
 			this.publicData = true;
@@ -113,7 +118,7 @@ public class AnalysisGroupCsvDTO {
 	}
 
 	public void setDateValue(String dateValue) throws ParseException {
-		if (dateValue.equalsIgnoreCase("NULL")){
+		if (dateValue.equalsIgnoreCase("NULL")) {
 			this.dateValue = null;
 		} else {
 			DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
@@ -122,17 +127,16 @@ public class AnalysisGroupCsvDTO {
 	}
 
 	public void setNumericValue(String numericValue) {
-		if (numericValue.equalsIgnoreCase("NULL")){
+		if (numericValue.equalsIgnoreCase("NULL")) {
 			this.numericValue = null;
 		} else {
 			this.numericValue = new BigDecimal(numericValue);
 		}
 	}
 
-
-	public static String[] getColumns(){
+	public static String[] getColumns() {
 		String[] headerColumns = new String[] {
-				"id", 
+				"id",
 				"protocolId",
 				"experimentId",
 				"experimentCodeName",
@@ -140,14 +144,14 @@ public class AnalysisGroupCsvDTO {
 				"lsType",
 				"lsKind",
 				"testedLot",
-				"result"};
+				"result" };
 
 		return headerColumns;
 
 	}
 
 	public static CellProcessor[] getProcessors() {
-		final CellProcessor[] processors = new CellProcessor[] { 
+		final CellProcessor[] processors = new CellProcessor[] {
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -176,369 +180,365 @@ public class AnalysisGroupCsvDTO {
 		return processors;
 	}
 
-
-
 	public Long getExperimentID() {
-        return this.experimentID;
-    }
+		return this.experimentID;
+	}
 
 	public void setExperimentID(Long experimentID) {
-        this.experimentID = experimentID;
-    }
+		this.experimentID = experimentID;
+	}
 
 	public String getExperimentCodeName() {
-        return this.experimentCodeName;
-    }
+		return this.experimentCodeName;
+	}
 
 	public void setExperimentCodeName(String experimentCodeName) {
-        this.experimentCodeName = experimentCodeName;
-    }
+		this.experimentCodeName = experimentCodeName;
+	}
 
 	public Integer getExperimentVersion() {
-        return this.experimentVersion;
-    }
+		return this.experimentVersion;
+	}
 
 	public void setExperimentVersion(Integer experimentVersion) {
-        this.experimentVersion = experimentVersion;
-    }
+		this.experimentVersion = experimentVersion;
+	}
 
 	public String getAnalysisGroupID() {
-        return this.analysisGroupID;
-    }
+		return this.analysisGroupID;
+	}
 
 	public void setAnalysisGroupID(String analysisGroupID) {
-        this.analysisGroupID = analysisGroupID;
-    }
+		this.analysisGroupID = analysisGroupID;
+	}
 
 	public Long getId() {
-        return this.id;
-    }
+		return this.id;
+	}
 
 	public void setId(Long id) {
-        this.id = id;
-    }
+		this.id = id;
+	}
 
 	public Integer getVersion() {
-        return this.version;
-    }
+		return this.version;
+	}
 
 	public void setVersion(Integer version) {
-        this.version = version;
-    }
+		this.version = version;
+	}
 
 	public String getLsType() {
-        return this.lsType;
-    }
+		return this.lsType;
+	}
 
 	public void setLsType(String lsType) {
-        this.lsType = lsType;
-    }
+		this.lsType = lsType;
+	}
 
 	public String getLsKind() {
-        return this.lsKind;
-    }
+		return this.lsKind;
+	}
 
 	public void setLsKind(String lsKind) {
-        this.lsKind = lsKind;
-    }
+		this.lsKind = lsKind;
+	}
 
 	public String getCodeName() {
-        return this.codeName;
-    }
+		return this.codeName;
+	}
 
 	public void setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
+		this.codeName = codeName;
+	}
 
 	public Long getStateID() {
-        return this.stateID;
-    }
+		return this.stateID;
+	}
 
 	public void setStateID(Long stateID) {
-        this.stateID = stateID;
-    }
+		this.stateID = stateID;
+	}
 
 	public String getStateType() {
-        return this.stateType;
-    }
+		return this.stateType;
+	}
 
 	public void setStateType(String stateType) {
-        this.stateType = stateType;
-    }
+		this.stateType = stateType;
+	}
 
 	public String getStateKind() {
-        return this.stateKind;
-    }
+		return this.stateKind;
+	}
 
 	public void setStateKind(String stateKind) {
-        this.stateKind = stateKind;
-    }
+		this.stateKind = stateKind;
+	}
 
 	public Long getValueId() {
-        return this.valueId;
-    }
+		return this.valueId;
+	}
 
 	public void setValueId(Long valueId) {
-        this.valueId = valueId;
-    }
+		this.valueId = valueId;
+	}
 
 	public String getValueType() {
-        return this.valueType;
-    }
+		return this.valueType;
+	}
 
 	public void setValueType(String valueType) {
-        this.valueType = valueType;
-    }
+		this.valueType = valueType;
+	}
 
 	public String getValueKind() {
-        return this.valueKind;
-    }
+		return this.valueKind;
+	}
 
 	public void setValueKind(String valueKind) {
-        this.valueKind = valueKind;
-    }
+		this.valueKind = valueKind;
+	}
 
 	public String getCodeOrigin() {
-        return this.codeOrigin;
-    }
+		return this.codeOrigin;
+	}
 
 	public void setCodeOrigin(String codeOrigin) {
-        this.codeOrigin = codeOrigin;
-    }
+		this.codeOrigin = codeOrigin;
+	}
 
 	public String getCodeType() {
-        return this.codeType;
-    }
+		return this.codeType;
+	}
 
 	public void setCodeType(String codeType) {
-        this.codeType = codeType;
-    }
+		this.codeType = codeType;
+	}
 
 	public String getCodeKind() {
-        return this.codeKind;
-    }
+		return this.codeKind;
+	}
 
 	public void setCodeKind(String codeKind) {
-        this.codeKind = codeKind;
-    }
+		this.codeKind = codeKind;
+	}
 
 	public String getStringValue() {
-        return this.stringValue;
-    }
+		return this.stringValue;
+	}
 
 	public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
-    }
+		this.stringValue = stringValue;
+	}
 
 	public String getCodeValue() {
-        return this.codeValue;
-    }
+		return this.codeValue;
+	}
 
 	public void setCodeValue(String codeValue) {
-        this.codeValue = codeValue;
-    }
+		this.codeValue = codeValue;
+	}
 
 	public String getFileValue() {
-        return this.fileValue;
-    }
+		return this.fileValue;
+	}
 
 	public void setFileValue(String fileValue) {
-        this.fileValue = fileValue;
-    }
+		this.fileValue = fileValue;
+	}
 
 	public String getUrlValue() {
-        return this.urlValue;
-    }
+		return this.urlValue;
+	}
 
 	public void setUrlValue(String urlValue) {
-        this.urlValue = urlValue;
-    }
+		this.urlValue = urlValue;
+	}
 
 	public Date getDateValue() {
-        return this.dateValue;
-    }
+		return this.dateValue;
+	}
 
 	public void setDateValue(Date dateValue) {
-        this.dateValue = dateValue;
-    }
+		this.dateValue = dateValue;
+	}
 
 	public String getClobValue() {
-        return this.clobValue;
-    }
+		return this.clobValue;
+	}
 
 	public void setClobValue(String clobValue) {
-        this.clobValue = clobValue;
-    }
+		this.clobValue = clobValue;
+	}
 
 	public String getValueOperator() {
-        return this.valueOperator;
-    }
+		return this.valueOperator;
+	}
 
 	public void setValueOperator(String valueOperator) {
-        this.valueOperator = valueOperator;
-    }
+		this.valueOperator = valueOperator;
+	}
 
 	public BigDecimal getNumericValue() {
-        return this.numericValue;
-    }
+		return this.numericValue;
+	}
 
 	public void setNumericValue(BigDecimal numericValue) {
-        this.numericValue = numericValue;
-    }
+		this.numericValue = numericValue;
+	}
 
 	public Integer getSigFigs() {
-        return this.sigFigs;
-    }
+		return this.sigFigs;
+	}
 
 	public void setSigFigs(Integer sigFigs) {
-        this.sigFigs = sigFigs;
-    }
+		this.sigFigs = sigFigs;
+	}
 
 	public BigDecimal getUncertainty() {
-        return this.uncertainty;
-    }
+		return this.uncertainty;
+	}
 
 	public void setUncertainty(BigDecimal uncertainty) {
-        this.uncertainty = uncertainty;
-    }
+		this.uncertainty = uncertainty;
+	}
 
 	public Integer getNumberOfReplicates() {
-        return this.numberOfReplicates;
-    }
+		return this.numberOfReplicates;
+	}
 
 	public void setNumberOfReplicates(Integer numberOfReplicates) {
-        this.numberOfReplicates = numberOfReplicates;
-    }
+		this.numberOfReplicates = numberOfReplicates;
+	}
 
 	public String getUncertaintyType() {
-        return this.uncertaintyType;
-    }
+		return this.uncertaintyType;
+	}
 
 	public void setUncertaintyType(String uncertaintyType) {
-        this.uncertaintyType = uncertaintyType;
-    }
+		this.uncertaintyType = uncertaintyType;
+	}
 
 	public String getValueUnit() {
-        return this.valueUnit;
-    }
+		return this.valueUnit;
+	}
 
 	public void setValueUnit(String valueUnit) {
-        this.valueUnit = valueUnit;
-    }
+		this.valueUnit = valueUnit;
+	}
 
 	public Double getConcentration() {
-        return this.concentration;
-    }
+		return this.concentration;
+	}
 
 	public void setConcentration(Double concentration) {
-        this.concentration = concentration;
-    }
+		this.concentration = concentration;
+	}
 
 	public String getConcUnit() {
-        return this.concUnit;
-    }
+		return this.concUnit;
+	}
 
 	public void setConcUnit(String concUnit) {
-        this.concUnit = concUnit;
-    }
+		this.concUnit = concUnit;
+	}
 
 	public String getComments() {
-        return this.comments;
-    }
+		return this.comments;
+	}
 
 	public void setComments(String comments) {
-        this.comments = comments;
-    }
+		this.comments = comments;
+	}
 
 	public boolean isIgnored() {
-        return this.ignored;
-    }
+		return this.ignored;
+	}
 
 	public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
-    }
+		this.ignored = ignored;
+	}
 
 	public Long getLsTransaction() {
-        return this.lsTransaction;
-    }
+		return this.lsTransaction;
+	}
 
 	public void setLsTransaction(Long lsTransaction) {
-        this.lsTransaction = lsTransaction;
-    }
+		this.lsTransaction = lsTransaction;
+	}
 
 	public Date getRecordedDate() {
-        return this.recordedDate;
-    }
+		return this.recordedDate;
+	}
 
 	public void setRecordedDate(Date recordedDate) {
-        this.recordedDate = recordedDate;
-    }
+		this.recordedDate = recordedDate;
+	}
 
 	public String getRecordedBy() {
-        return this.recordedBy;
-    }
+		return this.recordedBy;
+	}
 
 	public void setRecordedBy(String recordedBy) {
-        this.recordedBy = recordedBy;
-    }
+		this.recordedBy = recordedBy;
+	}
 
 	public Date getModifiedDate() {
-        return this.modifiedDate;
-    }
+		return this.modifiedDate;
+	}
 
 	public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
+		this.modifiedDate = modifiedDate;
+	}
 
 	public String getModifiedBy() {
-        return this.modifiedBy;
-    }
+		return this.modifiedBy;
+	}
 
 	public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
+		this.modifiedBy = modifiedBy;
+	}
 
 	public boolean isPublicData() {
-        return this.publicData;
-    }
+		return this.publicData;
+	}
 
 	public void setPublicData(boolean publicData) {
-        this.publicData = publicData;
-    }
+		this.publicData = publicData;
+	}
 
 	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	public String toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(this);
+	}
 
 	public String toJson(String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(this);
+	}
 
 	public static AnalysisGroupCsvDTO fromJsonToAnalysisGroupCsvDTO(String json) {
-        return new JSONDeserializer<AnalysisGroupCsvDTO>()
-        .use(null, AnalysisGroupCsvDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<AnalysisGroupCsvDTO>()
+				.use(null, AnalysisGroupCsvDTO.class).deserialize(json);
+	}
 
 	public static String toJsonArray(Collection<AnalysisGroupCsvDTO> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.exclude("*.class").serialize(collection);
+	}
 
 	public static String toJsonArray(Collection<AnalysisGroupCsvDTO> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
+		return new JSONSerializer()
+				.include(fields).exclude("*.class").serialize(collection);
+	}
 
 	public static Collection<AnalysisGroupCsvDTO> fromJsonArrayToAnalysisGroes(String json) {
-        return new JSONDeserializer<List<AnalysisGroupCsvDTO>>()
-        .use("values", AnalysisGroupCsvDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<AnalysisGroupCsvDTO>>()
+				.use("values", AnalysisGroupCsvDTO.class).deserialize(json);
+	}
 }
-
-

@@ -17,9 +17,9 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 
 public class V2_0_7_1__Recalculate_exact_mass implements SpringJdbcMigration {
- 
+
 	Logger logger = LoggerFactory.getLogger(V2_0_7_1__Recalculate_exact_mass.class);
-	
+
 	@Autowired
 	CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
 
@@ -33,40 +33,41 @@ public class V2_0_7_1__Recalculate_exact_mass implements SpringJdbcMigration {
 
 		List<Integer> ids = jdbcTemplate.queryForList(selectParentIds, Integer.class);
 
-		for (Integer id : ids){
-			ParentStructureObject parent = (ParentStructureObject)jdbcTemplate.queryForObject(selectParentByIdSQL, new Object[] { id }, new ParentRowMapper());
-			if (logger.isDebugEnabled()) logger.debug(parent.getMolStructure());
+		for (Integer id : ids) {
+			ParentStructureObject parent = (ParentStructureObject) jdbcTemplate.queryForObject(selectParentByIdSQL,
+					new Object[] { id }, new ParentRowMapper());
+			if (logger.isDebugEnabled())
+				logger.debug(parent.getMolStructure());
 			Double molWeight = getMolWeight(parent.getMolStructure());
 			Double exactMass = getExactMass(parent.getMolStructure());
-			
-			int rs2 = jdbcTemplate.update(updateParentWeights,  new Object[] { molWeight, exactMass, id });
+
+			int rs2 = jdbcTemplate.update(updateParentWeights, new Object[] { molWeight, exactMass, id });
 		}
 	}
-	
-	private class ParentStructureObject{
+
+	private class ParentStructureObject {
 		private long id;
 		private String molStructure;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getMolStructure(){
+
+		public String getMolStructure() {
 			return this.molStructure;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setMolStructure(String molStructure){
+
+		public void setMolStructure(String molStructure) {
 			this.molStructure = molStructure;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class ParentRowMapper implements RowMapper
-	{
+	public class ParentRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			ParentStructureObject parent = new ParentStructureObject();
@@ -75,26 +76,24 @@ public class V2_0_7_1__Recalculate_exact_mass implements SpringJdbcMigration {
 			return parent;
 		}
 	}
-	
+
 	private double getMolWeight(String molStructure) {
-		try{
+		try {
 			CmpdRegMolecule molecule = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
 			return molecule.getMass();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return 0d;
 		}
-		
+
 	}
 
 	private double getExactMass(String molStructure) {
-		try{
+		try {
 			CmpdRegMolecule molecule = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
 			return molecule.getExactMass();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return 0d;
 		}
 	}
 
-
 }
-

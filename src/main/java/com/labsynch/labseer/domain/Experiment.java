@@ -1,7 +1,6 @@
 package com.labsynch.labseer.domain;
 
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -22,15 +21,15 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -52,26 +51,33 @@ public class Experiment extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
     private Set<ExperimentState> lsStates = new HashSet<ExperimentState>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, mappedBy = "secondExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST,
+            javax.persistence.CascadeType.MERGE }, mappedBy = "secondExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxExperimentExperiment> firstExperiments = new HashSet<ItxExperimentExperiment>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, mappedBy = "firstExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST,
+            javax.persistence.CascadeType.MERGE }, mappedBy = "firstExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxExperimentExperiment> secondExperiments = new HashSet<ItxExperimentExperiment>();
 
-    //Subject is grandparent
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "experiments", fetch = FetchType.LAZY)
+    // Subject is grandparent
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "experiments", fetch = FetchType.LAZY)
     private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-    
-    //Experiment is grandparent
-//    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
-//    @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") })
-//    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+
+    // Experiment is grandparent
+    // @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST,
+    // javax.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
+    // @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = {
+    // @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns =
+    // { @javax.persistence.JoinColumn(name = "analysis_group_id") })
+    // private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
     private Set<ExperimentLabel> lsLabels = new HashSet<ExperimentLabel>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(name = "EXPERIMENT_TAG", joinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "tag_id") })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @JoinTable(name = "EXPERIMENT_TAG", joinColumns = {
+            @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = {
+                    @javax.persistence.JoinColumn(name = "tag_id") })
     private Set<LsTag> lsTags = new HashSet<LsTag>();
 
     public Experiment() {
@@ -134,16 +140,19 @@ public class Experiment extends AbstractThing {
         } else {
             logger.info("No experiment labels to save");
         }
-        if (experiment.getProtocol().getId() != updatedExperiment.getProtocol().getId()){
-			logger.warn("Changing protocol of experiment "+experiment.getCodeName()+" from "+updatedExperiment.getProtocol().getCodeName()+" to "+experiment.getProtocol().getCodeName());
-			updatedExperiment.setProtocol(experiment.getProtocol());
-		}
+        if (experiment.getProtocol().getId() != updatedExperiment.getProtocol().getId()) {
+            logger.warn("Changing protocol of experiment " + experiment.getCodeName() + " from "
+                    + updatedExperiment.getProtocol().getCodeName() + " to " + experiment.getProtocol().getCodeName());
+            updatedExperiment.setProtocol(experiment.getProtocol());
+        }
         updatedExperiment.merge();
         return updatedExperiment;
     }
 
-    public Collection<com.labsynch.labseer.domain.AnalysisGroup> getAnalysisGroups(Long experimentId, boolean includeIgnored) {
-        List<AnalysisGroup> results = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experimentId, includeIgnored).getResultList();
+    public Collection<com.labsynch.labseer.domain.AnalysisGroup> getAnalysisGroups(Long experimentId,
+            boolean includeIgnored) {
+        List<AnalysisGroup> results = AnalysisGroup
+                .findAnalysisGroupsByExperimentIdAndIgnored(experimentId, includeIgnored).getResultList();
         Collection<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
         analysisGroups.addAll(results);
         return analysisGroups;
@@ -151,7 +160,8 @@ public class Experiment extends AbstractThing {
 
     @Transactional
     public static Collection<com.labsynch.labseer.domain.Experiment> findExperimentByName(String experimentName) {
-        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByName(experimentName).getResultList();
+        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByName(experimentName)
+                .getResultList();
         Collection<Experiment> experimentList = new HashSet<Experiment>();
         for (ExperimentLabel experimentLabel : foundExperimentLabels) {
             Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
@@ -166,7 +176,8 @@ public class Experiment extends AbstractThing {
 
     @Transactional
     public static List<com.labsynch.labseer.domain.Experiment> findExperimentByExperimentName(String experimentName) {
-        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByName(experimentName).getResultList();
+        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByName(experimentName)
+                .getResultList();
         List<Experiment> experimentList = new ArrayList<Experiment>();
         for (ExperimentLabel experimentLabel : foundExperimentLabels) {
             Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
@@ -174,21 +185,26 @@ public class Experiment extends AbstractThing {
         }
         return experimentList;
     }
-    
+
     @Transactional
-    public static List<com.labsynch.labseer.domain.Experiment> findExperimentListByExperimentNameAndIgnoredNot(String experimentName) {
-        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByName(experimentName).getResultList();
+    public static List<com.labsynch.labseer.domain.Experiment> findExperimentListByExperimentNameAndIgnoredNot(
+            String experimentName) {
+        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByName(experimentName)
+                .getResultList();
         List<Experiment> experimentList = new ArrayList<Experiment>();
         for (ExperimentLabel experimentLabel : foundExperimentLabels) {
             Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
-            if (!experiment.isIgnored()) experimentList.add(experiment);
+            if (!experiment.isIgnored())
+                experimentList.add(experiment);
         }
         return experimentList;
     }
 
     @Transactional
-    public static List<com.labsynch.labseer.domain.Experiment> findExperimentByExperimentNameAndProtocolId(String experimentName, Long protocolId) {
-        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByNameAndProtocol(experimentName, protocolId).getResultList();
+    public static List<com.labsynch.labseer.domain.Experiment> findExperimentByExperimentNameAndProtocolId(
+            String experimentName, Long protocolId) {
+        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel
+                .findExperimentLabelsByNameAndProtocol(experimentName, protocolId).getResultList();
         List<Experiment> experimentList = new ArrayList<Experiment>();
         for (ExperimentLabel experimentLabel : foundExperimentLabels) {
             Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
@@ -196,21 +212,26 @@ public class Experiment extends AbstractThing {
         }
         return experimentList;
     }
-    
+
     @Transactional
-    public static List<com.labsynch.labseer.domain.Experiment> findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(String experimentName, Long protocolId) {
-        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByNameAndProtocol(experimentName, protocolId).getResultList();
+    public static List<com.labsynch.labseer.domain.Experiment> findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(
+            String experimentName, Long protocolId) {
+        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel
+                .findExperimentLabelsByNameAndProtocol(experimentName, protocolId).getResultList();
         List<Experiment> experimentList = new ArrayList<Experiment>();
         for (ExperimentLabel experimentLabel : foundExperimentLabels) {
             Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
-            if (!experiment.isIgnored()) experimentList.add(experiment);
+            if (!experiment.isIgnored())
+                experimentList.add(experiment);
         }
         return experimentList;
     }
 
     @Transactional
-    public static Collection<com.labsynch.labseer.domain.Experiment> findExperimentByNameAndProtocolId(String experimentName, Long protocolId) {
-        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel.findExperimentLabelsByNameAndProtocol(experimentName, protocolId).getResultList();
+    public static Collection<com.labsynch.labseer.domain.Experiment> findExperimentByNameAndProtocolId(
+            String experimentName, Long protocolId) {
+        List<ExperimentLabel> foundExperimentLabels = ExperimentLabel
+                .findExperimentLabelsByNameAndProtocol(experimentName, protocolId).getResultList();
         Collection<Experiment> experimentList = new HashSet<Experiment>();
         for (ExperimentLabel experimentLabel : foundExperimentLabels) {
             Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
@@ -229,37 +250,73 @@ public class Experiment extends AbstractThing {
 
     @Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment",
+                        "lsLabels.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues",
+                        "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.lsLabels",
+                        "analysisGroups.treatmentGroups.subjects.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.subjects.lsLabels")
+                .transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toPrettyJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiments", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiments",
+                        "lsLabels.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups",
+                        "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels",
+                        "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels",
+                        "analysisGroups.treatmentGroups.subjects.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.subjects.lsLabels")
+                .prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toPrettyJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups",
+                        "lsLabels.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true)
+                .transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups",
+                        "lsLabels.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(false)
+                .transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toJsonStubWithAnalysisGroups() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment",
+                        "analysisGroups.subjects", "analysisGroups.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups").prettyPrint(false)
+                .transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toJsonStubWithAnalysisGroupValues() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment",
+                        "analysisGroups.subjects", "analysisGroups.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues")
+                .prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public String toJsonStubWithAnalysisGroupStates() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment",
+                        "analysisGroups.subjects", "analysisGroups.experiment")
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates").prettyPrint(false)
+                .transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
@@ -269,57 +326,91 @@ public class Experiment extends AbstractThing {
 
     @Transactional
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subject", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer()
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues",
+                        "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.lsLabels",
+                        "analysisGroups.treatmentGroups.subjects.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.subjects.lsLabels")
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment",
+                        "analysisGroups.subject", "lsLabels.experiment")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayPretty(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subject", "lsLabels.experiment").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer()
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues",
+                        "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.lsLabels",
+                        "analysisGroups.treatmentGroups.subjects.lsStates.lsValues",
+                        "analysisGroups.treatmentGroups.subjects.lsLabels")
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment",
+                        "analysisGroups.subject", "lsLabels.experiment")
+                .prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues")
+                .exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment",
+                        "analysisGroups.experiment", "lsLabels.experiment")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
-    
+
     @Transactional
-        public static String toJsonArrayStubWithProt(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-            return new JSONSerializer()
-            		.include("lsTags", "lsLabels", "lsStates.lsValues", "protocol.lsLabels")
-            		.exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", 
-            				"analysisGroups.experiment", "lsLabels.experiment",
-            				"protocol.lsStates", "firstExperiments", "secondExperiments")
-            		.transform(new ExcludeNulls(), void.class).serialize(collection);
-        }
+    public static String toJsonArrayStubWithProt(Collection<com.labsynch.labseer.domain.Experiment> collection) {
+        return new JSONSerializer()
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "protocol.lsLabels")
+                .exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment",
+                        "analysisGroups.experiment", "lsLabels.experiment",
+                        "protocol.lsStates", "firstExperiments", "secondExperiments")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
 
     @Transactional
     public static String toJsonArrayStubWithAG(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subjects", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups")
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment",
+                        "analysisGroups.subjects", "lsLabels.experiment")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStubWithAGStates(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subjects", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates")
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment",
+                        "analysisGroups.subjects", "lsLabels.experiment")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStubWithAGValues(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subjects", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer()
+                .include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues")
+                .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment",
+                        "analysisGroups.subjects", "lsLabels.experiment")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStubPretty(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues")
+                .exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment",
+                        "analysisGroups.experiment", "lsLabels.experiment")
+                .prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static Collection<com.labsynch.labseer.domain.Experiment> fromJsonArrayToExperiments(String json) {
-        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class).deserialize(json);
+        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class)
+                .deserialize(json);
     }
 
     @Transactional
     public static Collection<com.labsynch.labseer.domain.Experiment> fromJsonArrayToExperiments(Reader json) {
-        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class).deserialize(json);
+        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class)
+                .deserialize(json);
     }
 
     @Transactional
@@ -338,7 +429,7 @@ public class Experiment extends AbstractThing {
             attached.remove();
         }
     }
-    
+
     @Transactional
     public static void deleteExperiment(Long experimentId) {
         EntityManager em = Experiment.entityManager();
@@ -355,7 +446,8 @@ public class Experiment extends AbstractThing {
     @Transactional
     public static void deleteExperimentBySQL(com.labsynch.labseer.domain.Experiment experiment) {
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("DELETE FROM Experiment AS o WHERE o.experiment = :experiment", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("DELETE FROM Experiment AS o WHERE o.experiment = :experiment",
+                Experiment.class);
         q.setParameter("experiment", experiment);
         q.executeUpdate();
     }
@@ -363,13 +455,14 @@ public class Experiment extends AbstractThing {
     @Transactional
     public static void deleteExperimentByTransactionID(Long lsTransaction) {
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("DELETE FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("DELETE FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction",
+                Experiment.class);
         q.setParameter("lsTransaction", lsTransaction);
         q.executeUpdate();
     }
 
     public static void removeExperimentFullCascade(Long experimentId) {
-    	Collection<Long> analysisGroups = Experiment.removeExperimentCascadeAware(experimentId);
+        Collection<Long> analysisGroups = Experiment.removeExperimentCascadeAware(experimentId);
         logger.debug("Checking AnalysisGroups: " + analysisGroups.toString());
         Collection<Long> treatmentGroups = AnalysisGroup.removeOrphans(analysisGroups);
         logger.debug("Checking TreatmentGroups: " + treatmentGroups.toString());
@@ -377,18 +470,19 @@ public class Experiment extends AbstractThing {
         logger.debug("Checking Subjects: " + subjects.toString());
         Subject.removeOrphans(subjects);
     }
-    
+
     @Transactional
     public static Collection<Long> removeExperimentCascadeAware(Long id) {
         Experiment experiment = findExperiment(id);
         Collection<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups(id, false);
         Set<Long> analysisGroupIds = new HashSet<Long>();
         for (AnalysisGroup analysisGroup : analysisGroups) {
-        	analysisGroupIds.add(analysisGroup.getId());
+            analysisGroupIds.add(analysisGroup.getId());
         }
         analysisGroups.clear();
         EntityManager em = Experiment.entityManager();
-        Query q1 = em.createNativeQuery("DELETE FROM experiment_analysisgroup o WHERE o.experiment_id = :id", Experiment.class);
+        Query q1 = em.createNativeQuery("DELETE FROM experiment_analysisgroup o WHERE o.experiment_id = :id",
+                Experiment.class);
         q1.setParameter("id", id);
         q1.executeUpdate();
         experiment.remove();
@@ -407,78 +501,116 @@ public class Experiment extends AbstractThing {
     @Transactional
     public static List<com.labsynch.labseer.domain.Experiment> findAllExperiments(boolean isIgnored) {
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment o WHERE o.ignored = :isIgnored", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment o WHERE o.ignored = :isIgnored",
+                Experiment.class);
         q.setParameter("isIgnored", isIgnored);
         return q.getResultList();
     }
-    
+
     @Transactional
     public static com.labsynch.labseer.domain.Experiment findExperiment(Long id) {
-        if (id == null) return null;
+        if (id == null)
+            return null;
         return entityManager().find(Experiment.class, id);
     }
 
     @Transactional
     public static String findExperimentJson(Long id) {
-        if (id == null) return null;
+        if (id == null)
+            return null;
         return entityManager().find(Experiment.class, id).toJson();
     }
 
     public static List<com.labsynch.labseer.domain.Experiment> findExperimentEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM Experiment o", Experiment.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery("SELECT o FROM Experiment o", Experiment.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
     @Transactional
     public com.labsynch.labseer.domain.Experiment merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         Experiment merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
     public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByCodeNameEquals(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.codeName = :codeName", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.codeName = :codeName",
+                Experiment.class);
         q.setParameter("codeName", codeName);
         return q;
     }
 
-    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByCodeNameEquals(String codeName, boolean isIgnored) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByCodeNameEquals(String codeName,
+            boolean isIgnored) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.codeName = :codeName AND o.ignored = :isIgnored", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE o.codeName = :codeName AND o.ignored = :isIgnored",
+                Experiment.class);
         q.setParameter("codeName", codeName);
         q.setParameter("isIgnored", isIgnored);
         return q;
     }
-    
-    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByLsTransaction(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+
+    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByLsTransaction(
+            Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction", Experiment.class);
+        TypedQuery<Experiment> q = em
+                .createQuery("SELECT o FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction", Experiment.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }
 
     public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByProtocol(Protocol protocol) {
-        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+        if (protocol == null)
+            throw new IllegalArgumentException("The protocol argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.protocol = :protocol", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.protocol = :protocol",
+                Experiment.class);
         q.setParameter("protocol", protocol);
         return q;
     }
 
     public static Query findExperimentsByBatchCodes(Collection<java.lang.String> codeValues) {
-        if (codeValues == null) throw new IllegalArgumentException("The batchCodeList argument is required");
+        if (codeValues == null)
+            throw new IllegalArgumentException("The batchCodeList argument is required");
         EntityManager em = Experiment.entityManager();
-        String sqlQueryOld = "SELECT DISTINCT o FROM Experiment " + "WHERE o.analysisGroup.lsState.lsValues = :codeValues";
-        String sqlQuery = "select distinct exp.* " + "from analysis_group_value agv " + "join analysis_group_state ags on ags.id = agv.analysis_state_id AND ags.ignored = false " + "join analysis_group ag on ag.id = ags.analysis_group_id AND ag.ignored = false " + "join experiment exp on exp.id = ag.experiment_id AND exp.ignored = false " + "where agv.code_value in (:batchCodeList) AND agv.ignored = false";
-        String sqlQueryAA = "select distinct exp " + "from AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false " + "join ags.analysisGroup ag with ag.ignored = false " + "join ag.experiments exp with exp.ignored = false " + "where agv.codeValue in (:batchCodeList) AND agv.ignored = false";
-        String sqlQueryNN = "select DISTINCT o FROM Experiment AS o " + "WHERE o.analysisGroups.lsStates.lsType = 'data' " + "AND o.analysisGroups.lsStates.lsValues.lsKind = 'batch code' " + "AND o.analysisGroups.lsStates.lsValues.codeValue IN (:batchCodeList) ";
-        String sqlQueryOO = "select o FROM Experiment AS o " + "WHERE o.id in ( SELECT DISTINCT exp.id " + "FROM AnalysisGroupValue agv " + "JOIN agv.lsState.analysisGroup.experiment exp " + "WHERE agv.codeValue IN (:batchCodeList) )";
-        String sqlQueryPP = "select DISTINCT o FROM Experiment AS o " + "WHERE o.analysisGroups.lsStates.lsValues.codeValue IN (:batchCodeList) ";
-        String sqlQueryRef = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, " + "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " + "agv2.codeValue AS testedLot " + " ) FROM AnalysisGroup ag " + "JOIN ag.lsStates ags with ags.lsType = 'data' " + "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' " + "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' " + "JOIN ag.experiment expt " + "WHERE agv2.codeValue IN (:batchCodeList) ";
+        String sqlQueryOld = "SELECT DISTINCT o FROM Experiment "
+                + "WHERE o.analysisGroup.lsState.lsValues = :codeValues";
+        String sqlQuery = "select distinct exp.* " + "from analysis_group_value agv "
+                + "join analysis_group_state ags on ags.id = agv.analysis_state_id AND ags.ignored = false "
+                + "join analysis_group ag on ag.id = ags.analysis_group_id AND ag.ignored = false "
+                + "join experiment exp on exp.id = ag.experiment_id AND exp.ignored = false "
+                + "where agv.code_value in (:batchCodeList) AND agv.ignored = false";
+        String sqlQueryAA = "select distinct exp " + "from AnalysisGroupValue agv "
+                + "join agv.lsState ags with ags.ignored = false "
+                + "join ags.analysisGroup ag with ag.ignored = false "
+                + "join ag.experiments exp with exp.ignored = false "
+                + "where agv.codeValue in (:batchCodeList) AND agv.ignored = false";
+        String sqlQueryNN = "select DISTINCT o FROM Experiment AS o "
+                + "WHERE o.analysisGroups.lsStates.lsType = 'data' "
+                + "AND o.analysisGroups.lsStates.lsValues.lsKind = 'batch code' "
+                + "AND o.analysisGroups.lsStates.lsValues.codeValue IN (:batchCodeList) ";
+        String sqlQueryOO = "select o FROM Experiment AS o " + "WHERE o.id in ( SELECT DISTINCT exp.id "
+                + "FROM AnalysisGroupValue agv " + "JOIN agv.lsState.analysisGroup.experiment exp "
+                + "WHERE agv.codeValue IN (:batchCodeList) )";
+        String sqlQueryPP = "select DISTINCT o FROM Experiment AS o "
+                + "WHERE o.analysisGroups.lsStates.lsValues.codeValue IN (:batchCodeList) ";
+        String sqlQueryRef = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, "
+                + "agv.lsType as lsType, agv.lsKind as lsKind, "
+                + "agv.stringValue as stringValue, agv.numericValue as numericValue, " + "agv2.codeValue AS testedLot "
+                + " ) FROM AnalysisGroup ag " + "JOIN ag.lsStates ags with ags.lsType = 'data' "
+                + "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' "
+                + "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' " + "JOIN ag.experiment expt "
+                + "WHERE agv2.codeValue IN (:batchCodeList) ";
         Query q = em.createQuery(sqlQueryAA, Experiment.class);
         q.setParameter("batchCodeList", codeValues);
         return q;
@@ -502,9 +634,13 @@ public class Experiment extends AbstractThing {
         }
     }
 
-    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(String protocolType, String protocolKind, String lsType, String lsKind) {
+    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(
+            String protocolType, String protocolKind, String lsType, String lsKind) {
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.protocol.lsType = :protocolType AND " + "o.protocol.lsKind = :protocolKind AND o.lsType = :lsType AND o.lsKind = :lsKind", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE o.protocol.lsType = :protocolType AND "
+                        + "o.protocol.lsKind = :protocolKind AND o.lsType = :lsType AND o.lsKind = :lsKind",
+                Experiment.class);
         q.setParameter("protocolType", protocolType);
         q.setParameter("protocolKind", protocolKind);
         q.setParameter("lsType", lsType);
@@ -512,85 +648,107 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static Collection<Experiment> findAllNonDeletedExperiments() {
+    public static Collection<Experiment> findAllNonDeletedExperiments() {
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.deleted IS NOT :deleted", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.deleted IS NOT :deleted",
+                Experiment.class);
         q.setParameter("deleted", true);
-		return q.getResultList();
-	}
+        return q.getResultList();
+    }
 
-//	public void statusDelete() {
-//		Long id = this.getId();
-//		Collection<ExperimentValue> statuses = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(id, "metadata", "experiment_metadata", "stringValue", "status").getResultList();
-//		if (statuses.isEmpty()) {
-//			{"clobValue":null,"codeKind":null,"codeOrigin":null,"codeType":null,"codeTypeAndKind":"null_null","codeValue":null,"comments":null,"dateValue":null,"fileValue":null,"id":15066,"ignored":false,"lsKind":"status","lsState":{"comments":null,"experiment":{"codeName":"EXPT-00000015","id":2165,"ignored":false,"lsKind":"default","lsTransaction":20,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"protocol":{"codeName":"PROT-00000010","id":1599,"ignored":false,"lsKind":"default","lsTransaction":15,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396423362000,"shortDescription":"protocol created by generic data parser","version":1},"recordedBy":"nouser","recordedDate":1396590049000,"shortDescription":"experiment created by generic data parser","version":1},"id":2987,"ignored":false,"lsKind":"experiment metadata","lsTransaction":20,"lsType":"metadata","lsTypeAndKind":"metadata_experiment metadata","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396590049000,"version":1},"lsTransaction":20,"lsType":"stringValue","lsTypeAndKind":"stringValue_status","modifiedBy":null,"modifiedDate":null,"numberOfReplicates":null,"numericValue":null,"operatorKind":null,"operatorType":null,"operatorTypeAndKind":"null_null","publicData":true,"recordedBy":"nouser","recordedDate":1396590049000,"sigFigs":null,"stringValue":"Approved","uncertainty":null,"uncertaintyType":null,"unitKind":null,"unitType":null,"unitTypeAndKind":"null_null","urlValue":null,"version":0}
-//		}
-//	}
-    
-    public static TypedQuery<Experiment> findExperimentByLabelText(String experimentType, String experimentKind, String labelText) {
-        if (experimentType == null || experimentType.length() == 0) throw new IllegalArgumentException("The experimentType argument is required");
-        if (experimentKind == null || experimentKind.length() == 0) throw new IllegalArgumentException("The experimentKind argument is required");
-		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
-        
+    // public void statusDelete() {
+    // Long id = this.getId();
+    // Collection<ExperimentValue> statuses =
+    // ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(id,
+    // "metadata", "experiment_metadata", "stringValue", "status").getResultList();
+    // if (statuses.isEmpty()) {
+    // {"clobValue":null,"codeKind":null,"codeOrigin":null,"codeType":null,"codeTypeAndKind":"null_null","codeValue":null,"comments":null,"dateValue":null,"fileValue":null,"id":15066,"ignored":false,"lsKind":"status","lsState":{"comments":null,"experiment":{"codeName":"EXPT-00000015","id":2165,"ignored":false,"lsKind":"default","lsTransaction":20,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"protocol":{"codeName":"PROT-00000010","id":1599,"ignored":false,"lsKind":"default","lsTransaction":15,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396423362000,"shortDescription":"protocol
+    // created by generic data
+    // parser","version":1},"recordedBy":"nouser","recordedDate":1396590049000,"shortDescription":"experiment
+    // created by generic data
+    // parser","version":1},"id":2987,"ignored":false,"lsKind":"experiment
+    // metadata","lsTransaction":20,"lsType":"metadata","lsTypeAndKind":"metadata_experiment
+    // metadata","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396590049000,"version":1},"lsTransaction":20,"lsType":"stringValue","lsTypeAndKind":"stringValue_status","modifiedBy":null,"modifiedDate":null,"numberOfReplicates":null,"numericValue":null,"operatorKind":null,"operatorType":null,"operatorTypeAndKind":"null_null","publicData":true,"recordedBy":"nouser","recordedDate":1396590049000,"sigFigs":null,"stringValue":"Approved","uncertainty":null,"uncertaintyType":null,"unitKind":null,"unitType":null,"unitTypeAndKind":"null_null","urlValue":null,"version":0}
+    // }
+    // }
+
+    public static TypedQuery<Experiment> findExperimentByLabelText(String experimentType, String experimentKind,
+            String labelText) {
+        if (experimentType == null || experimentType.length() == 0)
+            throw new IllegalArgumentException("The experimentType argument is required");
+        if (experimentKind == null || experimentKind.length() == 0)
+            throw new IllegalArgumentException("The experimentKind argument is required");
+        if (labelText == null || labelText.length() == 0)
+            throw new IllegalArgumentException("The labelText argument is required");
+
         boolean ignored = true;
         EntityManager em = Experiment.entityManager();
-		String query = "SELECT DISTINCT o FROM Experiment o " +
-				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
-				"WHERE o.ignored IS NOT :ignored " +
-				"AND o.lsType = :experimentType " +
-				"AND o.lsKind = :experimentKind ";
-        
+        String query = "SELECT DISTINCT o FROM Experiment o " +
+                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
+                "WHERE o.ignored IS NOT :ignored " +
+                "AND o.lsType = :experimentType " +
+                "AND o.lsKind = :experimentKind ";
+
         TypedQuery<Experiment> q = em.createQuery(query, Experiment.class);
         q.setParameter("experimentType", experimentType);
         q.setParameter("experimentKind", experimentKind);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
-        
+
         return q;
-	}
-	
-	public static TypedQuery<Experiment> findExperimentByLabelText(String experimentType, String experimentKind, String labelType, String labelKind, String labelText) {
-        if (experimentType == null || experimentType.length() == 0) throw new IllegalArgumentException("The experimentType argument is required");
-        if (experimentKind == null || experimentKind.length() == 0) throw new IllegalArgumentException("The experimentKind argument is required");
-        if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
-        if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
-        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
-        
+    }
+
+    public static TypedQuery<Experiment> findExperimentByLabelText(String experimentType, String experimentKind,
+            String labelType, String labelKind, String labelText) {
+        if (experimentType == null || experimentType.length() == 0)
+            throw new IllegalArgumentException("The experimentType argument is required");
+        if (experimentKind == null || experimentKind.length() == 0)
+            throw new IllegalArgumentException("The experimentKind argument is required");
+        if (labelType == null || labelType.length() == 0)
+            throw new IllegalArgumentException("The labelType argument is required");
+        if (labelKind == null || labelKind.length() == 0)
+            throw new IllegalArgumentException("The labelKind argument is required");
+        if (labelText == null || labelText.length() == 0)
+            throw new IllegalArgumentException("The labelText argument is required");
+
         boolean ignored = true;
-        
+
         EntityManager em = Experiment.entityManager();
-		String query = "SELECT DISTINCT o FROM Experiment o " +
-				"JOIN o.lsLabels ll " +
-				"WHERE o.ignored IS NOT :ignored " +
-				"AND o.lsType = :experimentType " +
-				"AND o.lsKind = :experimentKind " +
-				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
-        
+        String query = "SELECT DISTINCT o FROM Experiment o " +
+                "JOIN o.lsLabels ll " +
+                "WHERE o.ignored IS NOT :ignored " +
+                "AND o.lsType = :experimentType " +
+                "AND o.lsKind = :experimentKind " +
+                "AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+
         TypedQuery<Experiment> q = em.createQuery(query, Experiment.class);
         q.setParameter("experimentType", experimentType);
         q.setParameter("experimentKind", experimentKind);
-        q.setParameter("labelType", labelType);        
+        q.setParameter("labelType", labelType);
         q.setParameter("labelKind", labelKind);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
-        
-        return q;
-	}
 
-	public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsTags", "lsStates", "analysisGroups", "lsLabels").toString();
+        return q;
     }
 
-	public static Long countFindExperimentsByCodeNameEquals(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .setExcludeFieldNames("lsTags", "lsStates", "analysisGroups", "lsLabels").toString();
+    }
+
+    public static Long countFindExperimentsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Experiment.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.codeName = :codeName", Long.class);
         q.setParameter("codeName", codeName);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByCodeNameLike(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static Long countFindExperimentsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         codeName = codeName.replace('*', '%');
         if (codeName.charAt(0) != '%') {
             codeName = "%" + codeName;
@@ -599,21 +757,24 @@ public class Experiment extends AbstractThing {
             codeName = codeName + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Long.class);
         q.setParameter("codeName", codeName);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByLsKindEquals(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static Long countFindExperimentsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Experiment.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsKind = :lsKind", Long.class);
         q.setParameter("lsKind", lsKind);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByLsKindLike(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static Long countFindExperimentsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         lsKind = lsKind.replace('*', '%');
         if (lsKind.charAt(0) != '%') {
             lsKind = "%" + lsKind;
@@ -622,39 +783,47 @@ public class Experiment extends AbstractThing {
             lsKind = lsKind + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)",
+                Long.class);
         q.setParameter("lsKind", lsKind);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByLsTransaction(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static Long countFindExperimentsByLsTransaction(Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction",
+                Long.class);
         q.setParameter("lsTransaction", lsTransaction);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByLsTypeEquals(String lsType) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+    public static Long countFindExperimentsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = Experiment.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsType = :lsType", Long.class);
         q.setParameter("lsType", lsType);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static Long countFindExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByLsTypeLike(String lsType) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+    public static Long countFindExperimentsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
         lsType = lsType.replace('*', '%');
         if (lsType.charAt(0) != '%') {
             lsType = "%" + lsType;
@@ -663,21 +832,24 @@ public class Experiment extends AbstractThing {
             lsType = lsType + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)",
+                Long.class);
         q.setParameter("lsType", lsType);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByProtocol(Protocol protocol) {
-        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+    public static Long countFindExperimentsByProtocol(Protocol protocol) {
+        if (protocol == null)
+            throw new IllegalArgumentException("The protocol argument is required");
         EntityManager em = Experiment.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.protocol = :protocol", Long.class);
         q.setParameter("protocol", protocol);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindExperimentsByRecordedByLike(String recordedBy) {
-        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+    public static Long countFindExperimentsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0)
+            throw new IllegalArgumentException("The recordedBy argument is required");
         recordedBy = recordedBy.replace('*', '%');
         if (recordedBy.charAt(0) != '%') {
             recordedBy = "%" + recordedBy;
@@ -686,13 +858,16 @@ public class Experiment extends AbstractThing {
             recordedBy = recordedBy + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Long.class);
         q.setParameter("recordedBy", recordedBy);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<Experiment> findExperimentsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<Experiment> findExperimentsByCodeNameEquals(String codeName, String sortFieldName,
+            String sortOrder) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Experiment.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.codeName = :codeName");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -706,8 +881,9 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByCodeNameLike(String codeName) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<Experiment> findExperimentsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         codeName = codeName.replace('*', '%');
         if (codeName.charAt(0) != '%') {
             codeName = "%" + codeName;
@@ -716,13 +892,16 @@ public class Experiment extends AbstractThing {
             codeName = codeName + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Experiment.class);
         q.setParameter("codeName", codeName);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByCodeNameLike(String codeName, String sortFieldName, String sortOrder) {
-        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+    public static TypedQuery<Experiment> findExperimentsByCodeNameLike(String codeName, String sortFieldName,
+            String sortOrder) {
+        if (codeName == null || codeName.length() == 0)
+            throw new IllegalArgumentException("The codeName argument is required");
         codeName = codeName.replace('*', '%');
         if (codeName.charAt(0) != '%') {
             codeName = "%" + codeName;
@@ -731,7 +910,8 @@ public class Experiment extends AbstractThing {
             codeName = codeName + "%";
         }
         EntityManager em = Experiment.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -743,16 +923,20 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsKindEquals(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsKind = :lsKind", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsKind = :lsKind",
+                Experiment.class);
         q.setParameter("lsKind", lsKind);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsKindEquals(String lsKind, String sortFieldName, String sortOrder) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsKindEquals(String lsKind, String sortFieldName,
+            String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Experiment.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsKind = :lsKind");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -766,8 +950,9 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsKindLike(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         lsKind = lsKind.replace('*', '%');
         if (lsKind.charAt(0) != '%') {
             lsKind = "%" + lsKind;
@@ -776,13 +961,16 @@ public class Experiment extends AbstractThing {
             lsKind = lsKind + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Experiment.class);
         q.setParameter("lsKind", lsKind);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsKindLike(String lsKind, String sortFieldName, String sortOrder) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsKindLike(String lsKind, String sortFieldName,
+            String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         lsKind = lsKind.replace('*', '%');
         if (lsKind.charAt(0) != '%') {
             lsKind = "%" + lsKind;
@@ -791,7 +979,8 @@ public class Experiment extends AbstractThing {
             lsKind = lsKind + "%";
         }
         EntityManager em = Experiment.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -803,10 +992,13 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTransaction(Long lsTransaction, String sortFieldName, String sortOrder) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTransaction(Long lsTransaction, String sortFieldName,
+            String sortOrder) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = Experiment.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -818,16 +1010,20 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTypeEquals(String lsType) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType",
+                Experiment.class);
         q.setParameter("lsType", lsType);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTypeEquals(String lsType, String sortFieldName, String sortOrder) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTypeEquals(String lsType, String sortFieldName,
+            String sortOrder) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = Experiment.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -841,21 +1037,28 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Experiment.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind,
+            String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Experiment.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -868,8 +1071,9 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTypeLike(String lsType) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
         lsType = lsType.replace('*', '%');
         if (lsType.charAt(0) != '%') {
             lsType = "%" + lsType;
@@ -878,13 +1082,16 @@ public class Experiment extends AbstractThing {
             lsType = lsType + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Experiment.class);
         q.setParameter("lsType", lsType);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByLsTypeLike(String lsType, String sortFieldName, String sortOrder) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+    public static TypedQuery<Experiment> findExperimentsByLsTypeLike(String lsType, String sortFieldName,
+            String sortOrder) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
         lsType = lsType.replace('*', '%');
         if (lsType.charAt(0) != '%') {
             lsType = "%" + lsType;
@@ -893,7 +1100,8 @@ public class Experiment extends AbstractThing {
             lsType = lsType + "%";
         }
         EntityManager em = Experiment.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -905,8 +1113,10 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByProtocol(Protocol protocol, String sortFieldName, String sortOrder) {
-        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+    public static TypedQuery<Experiment> findExperimentsByProtocol(Protocol protocol, String sortFieldName,
+            String sortOrder) {
+        if (protocol == null)
+            throw new IllegalArgumentException("The protocol argument is required");
         EntityManager em = Experiment.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.protocol = :protocol");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -920,8 +1130,9 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByRecordedByLike(String recordedBy) {
-        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+    public static TypedQuery<Experiment> findExperimentsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0)
+            throw new IllegalArgumentException("The recordedBy argument is required");
         recordedBy = recordedBy.replace('*', '%');
         if (recordedBy.charAt(0) != '%') {
             recordedBy = "%" + recordedBy;
@@ -930,13 +1141,16 @@ public class Experiment extends AbstractThing {
             recordedBy = recordedBy + "%";
         }
         EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Experiment.class);
+        TypedQuery<Experiment> q = em.createQuery(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Experiment.class);
         q.setParameter("recordedBy", recordedBy);
         return q;
     }
 
-	public static TypedQuery<Experiment> findExperimentsByRecordedByLike(String recordedBy, String sortFieldName, String sortOrder) {
-        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+    public static TypedQuery<Experiment> findExperimentsByRecordedByLike(String recordedBy, String sortFieldName,
+            String sortOrder) {
+        if (recordedBy == null || recordedBy.length() == 0)
+            throw new IllegalArgumentException("The recordedBy argument is required");
         recordedBy = recordedBy.replace('*', '%');
         if (recordedBy.charAt(0) != '%') {
             recordedBy = "%" + recordedBy;
@@ -945,7 +1159,8 @@ public class Experiment extends AbstractThing {
             recordedBy = recordedBy + "%";
         }
         EntityManager em = Experiment.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -957,9 +1172,11 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "shortDescription", "protocol", "lsStates", "firstExperiments", "secondExperiments", "analysisGroups", "lsLabels", "lsTags");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger",
+            "shortDescription", "protocol", "lsStates", "firstExperiments", "secondExperiments", "analysisGroups",
+            "lsLabels", "lsTags");
 
-	public static List<Experiment> findAllExperiments(String sortFieldName, String sortOrder) {
+    public static List<Experiment> findAllExperiments(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM Experiment o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -970,7 +1187,8 @@ public class Experiment extends AbstractThing {
         return entityManager().createQuery(jpaQuery, Experiment.class).getResultList();
     }
 
-	public static List<Experiment> findExperimentEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<Experiment> findExperimentEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM Experiment o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -978,70 +1196,71 @@ public class Experiment extends AbstractThing {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, Experiment.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, Experiment.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	public String getShortDescription() {
+    public String getShortDescription() {
         return this.shortDescription;
     }
 
-	public void setShortDescription(String shortDescription) {
+    public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
 
-	public Protocol getProtocol() {
+    public Protocol getProtocol() {
         return this.protocol;
     }
 
-	public void setProtocol(Protocol protocol) {
+    public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 
-	public Set<ExperimentState> getLsStates() {
+    public Set<ExperimentState> getLsStates() {
         return this.lsStates;
     }
 
-	public void setLsStates(Set<ExperimentState> lsStates) {
+    public void setLsStates(Set<ExperimentState> lsStates) {
         this.lsStates = lsStates;
     }
 
-	public Set<ItxExperimentExperiment> getFirstExperiments() {
+    public Set<ItxExperimentExperiment> getFirstExperiments() {
         return this.firstExperiments;
     }
 
-	public void setFirstExperiments(Set<ItxExperimentExperiment> firstExperiments) {
+    public void setFirstExperiments(Set<ItxExperimentExperiment> firstExperiments) {
         this.firstExperiments = firstExperiments;
     }
 
-	public Set<ItxExperimentExperiment> getSecondExperiments() {
+    public Set<ItxExperimentExperiment> getSecondExperiments() {
         return this.secondExperiments;
     }
 
-	public void setSecondExperiments(Set<ItxExperimentExperiment> secondExperiments) {
+    public void setSecondExperiments(Set<ItxExperimentExperiment> secondExperiments) {
         this.secondExperiments = secondExperiments;
     }
 
-	public Set<AnalysisGroup> getAnalysisGroups() {
+    public Set<AnalysisGroup> getAnalysisGroups() {
         return this.analysisGroups;
     }
 
-	public void setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+    public void setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
         this.analysisGroups = analysisGroups;
     }
 
-	public Set<ExperimentLabel> getLsLabels() {
+    public Set<ExperimentLabel> getLsLabels() {
         return this.lsLabels;
     }
 
-	public void setLsLabels(Set<ExperimentLabel> lsLabels) {
+    public void setLsLabels(Set<ExperimentLabel> lsLabels) {
         this.lsLabels = lsLabels;
     }
 
-	public Set<LsTag> getLsTags() {
+    public Set<LsTag> getLsTags() {
         return this.lsTags;
     }
 
-	public void setLsTags(Set<LsTag> lsTags) {
+    public void setLsTags(Set<LsTag> lsTags) {
         this.lsTags = lsTags;
     }
 }

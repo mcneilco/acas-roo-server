@@ -7,85 +7,80 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class PlateStubDTO {
-	
-	private String barcode;
-	private String codeName;
-	private String plateType;
-	
-	private Collection<WellStubDTO> wells;
-	
-	public PlateStubDTO(){
-	}
-	
-	public PlateStubDTO(String barcode, String codeName, String plateType){
-		this.barcode = barcode;
-		this.codeName = codeName;
-		this.plateType = plateType;
-	}
-	
-	public String toJson() {
-        return new JSONSerializer().include("wells").exclude("*.class").serialize(this);
-    }
-	
 
+    private String barcode;
+    private String codeName;
+    private String plateType;
 
-	public static PlateStubDTO fromJsonToPlateStubDTO(String json) {
-        return new JSONDeserializer<PlateStubDTO>()
-        .use(null, PlateStubDTO.class).deserialize(json);
+    private Collection<WellStubDTO> wells;
+
+    public PlateStubDTO() {
     }
 
-	public static String toJsonArray(Collection<PlateStubDTO> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
-
-	public static String toJsonArray(Collection<PlateStubDTO> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
-
-	public static Collection<PlateStubDTO> fromJsonArrayToPlateStubDTO(String json) {
-        return new JSONDeserializer<List<PlateStubDTO>>()
-        .use("values", PlateStubDTO.class).deserialize(json);
-    }
-
-	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-    }
-
-	public String getBarcode() {
-        return this.barcode;
-    }
-
-	public void setBarcode(String barcode) {
+    public PlateStubDTO(String barcode, String codeName, String plateType) {
         this.barcode = barcode;
-    }
-
-	public String getCodeName() {
-        return this.codeName;
-    }
-
-	public void setCodeName(String codeName) {
         this.codeName = codeName;
-    }
-
-	public String getPlateType() {
-        return this.plateType;
-    }
-
-	public void setPlateType(String plateType) {
         this.plateType = plateType;
     }
 
-	public Collection<WellStubDTO> getWells() {
+    public String toJson() {
+        return new JSONSerializer().include("wells").exclude("*.class").serialize(this);
+    }
+
+    public static PlateStubDTO fromJsonToPlateStubDTO(String json) {
+        return new JSONDeserializer<PlateStubDTO>()
+                .use(null, PlateStubDTO.class).deserialize(json);
+    }
+
+    public static String toJsonArray(Collection<PlateStubDTO> collection) {
+        return new JSONSerializer()
+                .exclude("*.class").serialize(collection);
+    }
+
+    public static String toJsonArray(Collection<PlateStubDTO> collection, String[] fields) {
+        return new JSONSerializer()
+                .include(fields).exclude("*.class").serialize(collection);
+    }
+
+    public static Collection<PlateStubDTO> fromJsonArrayToPlateStubDTO(String json) {
+        return new JSONDeserializer<List<PlateStubDTO>>()
+                .use("values", PlateStubDTO.class).deserialize(json);
+    }
+
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public String getBarcode() {
+        return this.barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public String getCodeName() {
+        return this.codeName;
+    }
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+    public String getPlateType() {
+        return this.plateType;
+    }
+
+    public void setPlateType(String plateType) {
+        this.plateType = plateType;
+    }
+
+    public Collection<WellStubDTO> getWells() {
         return this.wells;
     }
 
-	public void setWells(Collection<WellStubDTO> wells) {
+    public void setWells(Collection<WellStubDTO> wells) {
         this.wells = wells;
     }
 }
-
-

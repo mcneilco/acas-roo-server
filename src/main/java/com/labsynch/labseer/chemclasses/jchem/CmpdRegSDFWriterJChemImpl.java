@@ -16,39 +16,39 @@ import chemaxon.struc.Molecule;
 public class CmpdRegSDFWriterJChemImpl implements CmpdRegSDFWriter {
 
 	private MolExporter molExporter;
-	
+
 	private ByteArrayOutputStream outstream;
-	
-	public CmpdRegSDFWriterJChemImpl(String fileName) throws IllegalArgumentException, IOException{
-		FileOutputStream outStream = new FileOutputStream (fileName);
+
+	public CmpdRegSDFWriterJChemImpl(String fileName) throws IllegalArgumentException, IOException {
+		FileOutputStream outStream = new FileOutputStream(fileName);
 		this.molExporter = new MolExporter(outStream, "sdf");
 	};
-	
-	public CmpdRegSDFWriterJChemImpl(FileOutputStream outStream) throws IllegalArgumentException, IOException{
+
+	public CmpdRegSDFWriterJChemImpl(FileOutputStream outStream) throws IllegalArgumentException, IOException {
 		this.molExporter = new MolExporter(outStream, "sdf");
 	}
-	
+
 	public CmpdRegSDFWriterJChemImpl() throws IllegalArgumentException, IOException {
 		this.outstream = new ByteArrayOutputStream();
 		this.molExporter = new MolExporter(outstream, "sdf");
 	}
-	
+
 	@Override
-	public void close() throws IOException{
+	public void close() throws IOException {
 		this.molExporter.close();
 	}
-	
+
 	@Override
-	public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException{
+	public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
 		CmpdRegMoleculeJChemImpl molWrapper = (CmpdRegMoleculeJChemImpl) molecule;
 		Molecule mol = molWrapper.molecule;
-		try{
+		try {
 			return this.molExporter.write(mol);
-		}catch (MolExportException e) {
+		} catch (MolExportException e) {
 			throw new CmpdRegMolFormatException(e);
 		}
 	}
-	
+
 	@Override
 	public String getBufferString() {
 		return this.outstream.toString();

@@ -2,12 +2,6 @@ package com.labsynch.labseer.dto;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,15 +12,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.SubjectValue;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class TgDataDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(TgDataDTO.class);
-	
+
 	@Test
 	@Transactional
 	public void getTgDataTest() {
@@ -45,9 +40,9 @@ public class TgDataDTOTest {
 			Assert.assertNotNull(result.getUncertainty());
 			Assert.assertNotNull(result.getPublicData());
 		}
-		
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAllTgDataDataByExperimentTest() {
@@ -58,7 +53,7 @@ public class TgDataDTOTest {
 		long totalTime = endTime - startTime;
 		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
 		logger.debug("total number of TreatmentGroups: " + results.size());
-//		logger.debug(results.toString());
+		// logger.debug(results.toString());
 		Assert.assertTrue(!results.isEmpty());
 	}
 

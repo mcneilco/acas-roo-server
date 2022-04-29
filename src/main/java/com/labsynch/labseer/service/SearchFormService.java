@@ -10,14 +10,11 @@ import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 public interface SearchFormService {
 
-
-	public SearchFormReturnDTO  findQuerySaltForms(SearchFormDTO searchParams) throws CmpdRegMolFormatException;
-
+	public SearchFormReturnDTO findQuerySaltForms(SearchFormDTO searchParams) throws CmpdRegMolFormatException;
 
 	public String findParentIds(String molStructure,
 			int maxResults, Float similarity, SearchType searchType,
 			String outputFormat) throws IOException, CmpdRegMolFormatException;
-
 
 	public List<Integer> findParentIds(String molStructure,
 			Integer maxResults, Float similarity, SearchType searchType,

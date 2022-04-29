@@ -31,11 +31,11 @@ public interface PropertiesUtilService {
 	String getClientFullPath();
 
 	boolean getUniqueLsThingName();
-	
+
 	boolean getEnableSwagger();
 
 	String getAcaslicenseFile();
-	
+
 	boolean getSyncLdapAuthRoles();
 
 	String getAcasAdminRole();
@@ -61,71 +61,71 @@ public interface PropertiesUtilService {
 	String getAcasURL();
 
 	String getAcasAppURL();
-	
+
 	Boolean getLotCalledBatch();
-	
+
 	Boolean getUseExactMass();
-	
+
 	String getCorpPrefix();
-	
+
 	String getCorpSeparator();
-	
+
 	String getSaltSeparator();
-	
+
 	String getBatchSeparator();
-	
+
 	Integer getNumberCorpDigits();
-	
+
 	Integer getFormatBatchDigits();
-	
+
 	Integer getStartingCorpNumber();
-	
+
 	Boolean getFancyCorpNumberFormat();
-	
+
 	String getCorpParentFormat();
-	
+
 	String getCorpBatchFormat();
-	
+
 	Boolean getAppendSaltCodeToLotName();
 
 	Boolean getSaltBeforeLot();
-	
+
 	String getNoSaltCode();
-	
+
 	Boolean getUsePredefinedList();
-	
+
 	Boolean getUniqueNotebook();
-	
+
 	String getNotebookSavePath();
-	
+
 	SearchType getExactMatchDef();
-	
+
 	Integer getMaxSearchTime();
-	
+
 	Integer getMaxSearchResults();
-	
+
 	Boolean getProjectRestrictions();
-	
+
 	Boolean getCompoundInventory();
-	
+
 	Boolean getDisableTubeCreationIfNoBarcode();
-	
+
 	Boolean getCheckACASDependenciesByContainerCode();
-	
+
 	Boolean getUseExternalStandardizerConfig();
-	
+
 	String getStandardizerConfigFilePath();
-	
+
 	Boolean getOrderSelectLists();
-	
+
 	Boolean getRegisterNoStructureCompoundsAsUniqueParents();
-	
+
 	Boolean getUseProjectRoles();
-	
+
 	Collection<SimpleBulkLoadPropertyDTO> getDbProperties();
 
 	String getPreprocessorSettings();
-	
+
 	Integer getStandardizationBatchSize();
 
 	Integer getExternalStructureProcessingBatchSize();

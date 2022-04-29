@@ -5,11 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.labsynch.labseer.domain.FileList;
+import com.labsynch.labseer.dto.FileSaveReturnDTO;
+import com.labsynch.labseer.dto.FileSaveSendDTO;
+import com.labsynch.labseer.utils.MimeTypeUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -26,20 +29,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.WebUtils;
 
-import com.labsynch.labseer.domain.FileList;
-import com.labsynch.labseer.dto.FileSaveReturnDTO;
-import com.labsynch.labseer.dto.FileSaveSendDTO;
-import com.labsynch.labseer.utils.MimeTypeUtil;
-
-@RequestMapping({"/api/v1/filesave", "/api/v1/MultipleFilePicker"})
+@RequestMapping({ "/api/v1/filesave", "/api/v1/MultipleFilePicker" })
 @Controller
 public class ApiFileSaveController {
 
-	//simplified controller. This will just save the file to the directory path
-	//does not save the database info
+	// simplified controller. This will just save the file to the directory path
+	// does not save the database info
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiFileSaveController.class);
 
@@ -47,7 +43,7 @@ public class ApiFileSaveController {
 	public HttpEntity<String> create(@RequestParam("description[]") List<String> description,
 			@RequestParam("subdir") String subdir,
 			@RequestParam("ie") boolean ie,
-			@RequestParam("file[]")  List<MultipartFile> file) {
+			@RequestParam("file[]") List<MultipartFile> file) {
 
 		logger.debug("receiving the post file");
 
@@ -62,33 +58,33 @@ public class ApiFileSaveController {
 
 		List<FileSaveReturnDTO> fileSaveArray = fileSave.saveFile();
 		logger.debug(FileSaveReturnDTO.toJsonArray(fileSaveArray));
-		HttpHeaders headers= new HttpHeaders();
+		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_HTML);
 		headers.add("Access-Control-Allow-Origin", "*");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma","no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(FileSaveReturnDTO.toJsonArray(fileSaveArray), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getFile", method = RequestMethod.GET)
-	public void getfile(	@RequestParam("fileUrl") String fileUrl,
+	public void getfile(@RequestParam("fileUrl") String fileUrl,
 			HttpServletResponse response,
 			Model model) {
-		
+
 		logger.debug("raw query url: " + fileUrl);
 
-//      removing hack that was required due to Node pipe error. 
-//		fileUrl = fileUrl.replace("/", File.separator);
-//		logger.debug("replacing with File.separator   " + File.separator);
-//		logger.debug("modified query url: " + fileUrl);
+		// removing hack that was required due to Node pipe error.
+		// fileUrl = fileUrl.replace("/", File.separator);
+		// logger.debug("replacing with File.separator " + File.separator);
+		// logger.debug("modified query url: " + fileUrl);
 
-		
-		String  searchFileUrl = "getFile?fileUrl=" + fileUrl;  	// this is an ugly hack -- we should clean up this code
+		String searchFileUrl = "getFile?fileUrl=" + fileUrl; // this is an ugly hack -- we should clean up this code
 																// better to use the fileList id as a handle
 
-		// It would be better to get the content type from the database instead of from the file (performance)
+		// It would be better to get the content type from the database instead of from
+		// the file (performance)
 		// However, I am concerned about getting the info by the fileUrl -- is it unique
 		// prefer to get the unique ID to work with
 
@@ -96,7 +92,7 @@ public class ApiFileSaveController {
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		String fileName = readFile.getName();
-		
+
 		String fileType = MimeTypeUtil.getContentTypeFromExtension(fileName);
 		logger.debug("Incoming file url: " + fileUrl);
 		logger.debug("here is the file name from the file itself: " + fileName);
@@ -104,19 +100,19 @@ public class ApiFileSaveController {
 
 		try {
 			response.setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
-//			response.setHeader("Cache-Control","no-store, no-cache, must-revalidate");
-//			response.setHeader("Pragma","no-cache");
-			
+			// response.setHeader("Cache-Control","no-store, no-cache, must-revalidate");
+			// response.setHeader("Pragma","no-cache");
+
 			String mimeType = null;
 
-			if (fileType==null){
+			if (fileType == null) {
 				logger.debug("file extension is not a known type");
 				List<FileList> fileLists = FileList.findFileListsByUrlEquals(searchFileUrl).getResultList();
 				FileList fileList = null;
 				int numberOfFiles = fileLists.size();
 				logger.debug("number of files found with the same url: " + numberOfFiles);
-				if (numberOfFiles > 0){
-					fileList = fileLists.get(numberOfFiles-1);  // just get a single element - the most recent file
+				if (numberOfFiles > 0) {
+					fileList = fileLists.get(numberOfFiles - 1); // just get a single element - the most recent file
 				} else {
 					logger.error("did not find any files for the given url " + searchFileUrl);
 
@@ -128,7 +124,7 @@ public class ApiFileSaveController {
 				mimeType = fileType;
 			}
 			logger.debug("the mime type for the file is " + mimeType);
-			
+
 			response.setContentType(mimeType);
 
 			OutputStream out = response.getOutputStream();
@@ -136,9 +132,8 @@ public class ApiFileSaveController {
 			logger.debug("reading the file");
 			fis = new FileInputStream(readFile);
 			bis = new BufferedInputStream(fis);
-			IOUtils.copy( bis, out);
+			IOUtils.copy(bis, out);
 			out.flush();
-
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -147,9 +142,8 @@ public class ApiFileSaveController {
 		}
 	}
 
-
 	@RequestMapping(value = "/showSavedFile/{id}", method = RequestMethod.GET)
-	public String showdoc(	@PathVariable("id") Long id,
+	public String showdoc(@PathVariable("id") Long id,
 			HttpServletResponse response,
 			Model model) {
 
@@ -160,16 +154,15 @@ public class ApiFileSaveController {
 		BufferedInputStream bis = null;
 
 		try {
-			response.setHeader("Content-Disposition", "inline;filename=\"" +fileList.getFileName()+ "\"");
+			response.setHeader("Content-Disposition", "inline;filename=\"" + fileList.getFileName() + "\"");
 			OutputStream out = response.getOutputStream();
 			response.setContentType(fileList.getType());
 
 			fis = new FileInputStream(readFile);
 			bis = new BufferedInputStream(fis);
 
-			IOUtils.copy( bis, out);
+			IOUtils.copy(bis, out);
 			out.flush();
-
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -179,41 +172,4 @@ public class ApiFileSaveController {
 		return null;
 	}
 
-
-
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-		String enc = httpServletRequest.getCharacterEncoding();
-		if (enc == null) {
-			enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-		}
-		pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-		return pathSegment;
-	}
-
-	@RequestMapping(method = RequestMethod.OPTIONS)
-	public ResponseEntity<String> getOptions() {
-		HttpHeaders headers= new HttpHeaders();
-		headers.add("Content-Type", "application/text, text/html");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma","no-cache"); //HTTP 1.0
-		headers.setExpires(0); // Expire the cache
-
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
-
-
-//	public static String getFileName(String fullUrl) {
-//		fullUrl = fullUrl.trim();
-//		String pattern = "(/.*$)";
-//		String fileName = fullUrl.replace(pattern, "$0");
-//
-//		return fileName;
-//	}
-
-
-
-
-	
 }

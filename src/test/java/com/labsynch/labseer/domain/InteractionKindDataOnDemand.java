@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
@@ -15,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class InteractionKindDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<InteractionKind> data;
+    private List<InteractionKind> data;
 
-	@Autowired
+    @Autowired
     InteractionTypeDataOnDemand interactionTypeDataOnDemand;
 
-	public InteractionKind getNewTransientInteractionKind(int index) {
+    public InteractionKind getNewTransientInteractionKind(int index) {
         InteractionKind obj = new InteractionKind();
         setKindName(obj, index);
         setLsType(obj, index);
@@ -30,7 +32,7 @@ public class InteractionKindDataOnDemand {
         return obj;
     }
 
-	public void setKindName(InteractionKind obj, int index) {
+    public void setKindName(InteractionKind obj, int index) {
         String kindName = "kindName_" + index;
         if (kindName.length() > 255) {
             kindName = kindName.substring(0, 255);
@@ -38,12 +40,12 @@ public class InteractionKindDataOnDemand {
         obj.setKindName(kindName);
     }
 
-	public void setLsType(InteractionKind obj, int index) {
+    public void setLsType(InteractionKind obj, int index) {
         InteractionType lsType = interactionTypeDataOnDemand.getRandomInteractionType();
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(InteractionKind obj, int index) {
+    public void setLsTypeAndKind(InteractionKind obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = new Random().nextInt(10) + lsTypeAndKind.substring(1, 255);
@@ -51,7 +53,7 @@ public class InteractionKindDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public InteractionKind getSpecificInteractionKind(int index) {
+    public InteractionKind getSpecificInteractionKind(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -64,28 +66,29 @@ public class InteractionKindDataOnDemand {
         return InteractionKind.findInteractionKind(id);
     }
 
-	public InteractionKind getRandomInteractionKind() {
+    public InteractionKind getRandomInteractionKind() {
         init();
         InteractionKind obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return InteractionKind.findInteractionKind(id);
     }
 
-	public boolean modifyInteractionKind(InteractionKind obj) {
+    public boolean modifyInteractionKind(InteractionKind obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = InteractionKind.findInteractionKindEntries(from, to);
         if (data == null) {
-            throw new IllegalStateException("Find entries implementation for 'InteractionKind' illegally returned null");
+            throw new IllegalStateException(
+                    "Find entries implementation for 'InteractionKind' illegally returned null");
         }
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<InteractionKind>();
         for (int i = 0; i < 10; i++) {
             InteractionKind obj = getNewTransientInteractionKind(i);
@@ -95,7 +98,9 @@ public class InteractionKindDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

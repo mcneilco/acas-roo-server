@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
@@ -15,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Configurable
 public class UnitKindDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<UnitKind> data;
+    private List<UnitKind> data;
 
-	@Autowired
+    @Autowired
     UnitTypeDataOnDemand unitTypeDataOnDemand;
 
-	public UnitKind getNewTransientUnitKind(int index) {
+    public UnitKind getNewTransientUnitKind(int index) {
         UnitKind obj = new UnitKind();
         setKindName(obj, index);
         setLsType(obj, index);
@@ -30,7 +32,7 @@ public class UnitKindDataOnDemand {
         return obj;
     }
 
-	public void setKindName(UnitKind obj, int index) {
+    public void setKindName(UnitKind obj, int index) {
         String kindName = "kindName_" + index;
         if (kindName.length() > 64) {
             kindName = kindName.substring(0, 64);
@@ -38,12 +40,12 @@ public class UnitKindDataOnDemand {
         obj.setKindName(kindName);
     }
 
-	public void setLsType(UnitKind obj, int index) {
+    public void setLsType(UnitKind obj, int index) {
         UnitType lsType = unitTypeDataOnDemand.getRandomUnitType();
         obj.setLsType(lsType);
     }
 
-	public void setLsTypeAndKind(UnitKind obj, int index) {
+    public void setLsTypeAndKind(UnitKind obj, int index) {
         String lsTypeAndKind = "lsTypeAndKind_" + index;
         if (lsTypeAndKind.length() > 255) {
             lsTypeAndKind = new Random().nextInt(10) + lsTypeAndKind.substring(1, 255);
@@ -51,7 +53,7 @@ public class UnitKindDataOnDemand {
         obj.setLsTypeAndKind(lsTypeAndKind);
     }
 
-	public UnitKind getSpecificUnitKind(int index) {
+    public UnitKind getSpecificUnitKind(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -64,18 +66,18 @@ public class UnitKindDataOnDemand {
         return UnitKind.findUnitKind(id);
     }
 
-	public UnitKind getRandomUnitKind() {
+    public UnitKind getRandomUnitKind() {
         init();
         UnitKind obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return UnitKind.findUnitKind(id);
     }
 
-	public boolean modifyUnitKind(UnitKind obj) {
+    public boolean modifyUnitKind(UnitKind obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = UnitKind.findUnitKindEntries(from, to);
@@ -85,7 +87,7 @@ public class UnitKindDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<UnitKind>();
         for (int i = 0; i < 10; i++) {
             UnitKind obj = getNewTransientUnitKind(i);
@@ -95,7 +97,9 @@ public class UnitKindDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

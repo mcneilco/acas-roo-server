@@ -2,9 +2,9 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.ItxContainerContainerState;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ItxContainerContainerStateService {

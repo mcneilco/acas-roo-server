@@ -9,70 +9,66 @@ import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
 
-
 public class SubjectCodeStateDTO {
-	
-	private String subjectCode;
-	private SubjectState subjectState;
-	
-	public SubjectCodeStateDTO(){
-	}
-	
-	public SubjectCodeStateDTO(String subjectCode, SubjectState subjectState){
-		this.subjectCode = subjectCode;
-		this.subjectState = subjectState;
-	}
 
+    private String subjectCode;
+    private SubjectState subjectState;
 
-	public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    public SubjectCodeStateDTO() {
     }
 
-	public String getSubjectCode() {
-        return this.subjectCode;
-    }
-
-	public void setSubjectCode(String subjectCode) {
+    public SubjectCodeStateDTO(String subjectCode, SubjectState subjectState) {
         this.subjectCode = subjectCode;
-    }
-
-	public SubjectState getSubjectState() {
-        return this.subjectState;
-    }
-
-	public void setSubjectState(SubjectState subjectState) {
         this.subjectState = subjectState;
     }
 
-	public String toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson(String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+    public String getSubjectCode() {
+        return this.subjectCode;
     }
 
-	public static SubjectCodeStateDTO fromJsonToSubjectCodeStateDTO(String json) {
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+    }
+
+    public SubjectState getSubjectState() {
+        return this.subjectState;
+    }
+
+    public void setSubjectState(SubjectState subjectState) {
+        this.subjectState = subjectState;
+    }
+
+    public String toJson() {
+        return new JSONSerializer()
+                .exclude("*.class").serialize(this);
+    }
+
+    public String toJson(String[] fields) {
+        return new JSONSerializer()
+                .include(fields).exclude("*.class").serialize(this);
+    }
+
+    public static SubjectCodeStateDTO fromJsonToSubjectCodeStateDTO(String json) {
         return new JSONDeserializer<SubjectCodeStateDTO>()
-        .use(null, SubjectCodeStateDTO.class).deserialize(json);
+                .use(null, SubjectCodeStateDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<SubjectCodeStateDTO> collection) {
+    public static String toJsonArray(Collection<SubjectCodeStateDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<SubjectCodeStateDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<SubjectCodeStateDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<SubjectCodeStateDTO> fromJsonArrayToSubjectCoes(String json) {
+    public static Collection<SubjectCodeStateDTO> fromJsonArrayToSubjectCoes(String json) {
         return new JSONDeserializer<List<SubjectCodeStateDTO>>()
-        .use("values", SubjectCodeStateDTO.class).deserialize(json);
+                .use("values", SubjectCodeStateDTO.class).deserialize(json);
     }
 }
-
-

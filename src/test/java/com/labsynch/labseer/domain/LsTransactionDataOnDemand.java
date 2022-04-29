@@ -8,8 +8,10 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +19,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class LsTransactionDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<LsTransaction> data;
+    private List<LsTransaction> data;
 
-	public LsTransaction getNewTransientLsTransaction(int index) {
+    public LsTransaction getNewTransientLsTransaction(int index) {
         LsTransaction obj = new LsTransaction();
         setComments(obj, index);
         setRecordedBy(obj, index);
@@ -31,7 +33,7 @@ public class LsTransactionDataOnDemand {
         return obj;
     }
 
-	public void setComments(LsTransaction obj, int index) {
+    public void setComments(LsTransaction obj, int index) {
         String comments = "comments_" + index;
         if (comments.length() > 255) {
             comments = comments.substring(0, 255);
@@ -39,7 +41,7 @@ public class LsTransactionDataOnDemand {
         obj.setComments(comments);
     }
 
-	public void setRecordedBy(LsTransaction obj, int index) {
+    public void setRecordedBy(LsTransaction obj, int index) {
         String recordedBy = "recordedBy_" + index;
         if (recordedBy.length() > 255) {
             recordedBy = recordedBy.substring(0, 255);
@@ -47,22 +49,25 @@ public class LsTransactionDataOnDemand {
         obj.setRecordedBy(recordedBy);
     }
 
-	public void setRecordedDate(LsTransaction obj, int index) {
-        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
+    public void setRecordedDate(LsTransaction obj, int index) {
+        Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE),
+                Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
     }
 
-	public void setStatus(LsTransaction obj, int index) {
+    public void setStatus(LsTransaction obj, int index) {
         LsTransactionStatus status = LsTransactionStatus.class.getEnumConstants()[0];
         obj.setStatus(status);
     }
 
-	public void setType(LsTransaction obj, int index) {
+    public void setType(LsTransaction obj, int index) {
         LsTransactionType type = LsTransactionType.class.getEnumConstants()[0];
         obj.setType(type);
     }
 
-	public LsTransaction getSpecificLsTransaction(int index) {
+    public LsTransaction getSpecificLsTransaction(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -75,18 +80,18 @@ public class LsTransactionDataOnDemand {
         return LsTransaction.findLsTransaction(id);
     }
 
-	public LsTransaction getRandomLsTransaction() {
+    public LsTransaction getRandomLsTransaction() {
         init();
         LsTransaction obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return LsTransaction.findLsTransaction(id);
     }
 
-	public boolean modifyLsTransaction(LsTransaction obj) {
+    public boolean modifyLsTransaction(LsTransaction obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = LsTransaction.findLsTransactionEntries(from, to);
@@ -96,7 +101,7 @@ public class LsTransactionDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<LsTransaction>();
         for (int i = 0; i < 10; i++) {
             LsTransaction obj = getNewTransientLsTransaction(i);
@@ -106,7 +111,9 @@ public class LsTransactionDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

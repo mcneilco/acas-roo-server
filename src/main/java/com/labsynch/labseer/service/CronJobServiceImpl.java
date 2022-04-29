@@ -2,14 +2,14 @@ package com.labsynch.labseer.service;
 
 import java.util.List;
 
+import com.labsynch.labseer.domain.CronJob;
+import com.labsynch.labseer.dto.AutoLabelDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.CronJob;
-import com.labsynch.labseer.dto.AutoLabelDTO;
 
 @Service
 @Transactional
@@ -20,21 +20,21 @@ public class CronJobServiceImpl implements CronJobService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CronJobServiceImpl.class);
 
-
 	@Override
 	public CronJob saveCronJob(CronJob cronJob) {
 		logger.debug("here is the incoming cron job: " + cronJob.toJson());
-		
-		if (cronJob.getCodeName() == null){
+
+		if (cronJob.getCodeName() == null) {
 			String thingTypeAndKind = "document_cronJob";
 			String labelTypeAndKind = "id_codeName";
 			Long numberOfLabels = 1L;
-			List<AutoLabelDTO> labels = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
+			List<AutoLabelDTO> labels = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind,
+					numberOfLabels);
 			cronJob.setCodeName(labels.get(0).getAutoLabel());
 		}
-		
+
 		cronJob.persist();
-		
+
 		return cronJob;
 	}
 
@@ -42,7 +42,7 @@ public class CronJobServiceImpl implements CronJobService {
 	public CronJob updateCronJob(CronJob cronJob) {
 		logger.debug("Here is the incoming cron job: " + cronJob.toJson());
 		CronJob updatedCronJob = CronJob.update(cronJob);
-        logger.debug("Updated cron job: "+updatedCronJob.toJson());
+		logger.debug("Updated cron job: " + updatedCronJob.toJson());
 		return updatedCronJob;
 	}
 

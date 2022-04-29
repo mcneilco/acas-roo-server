@@ -10,73 +10,72 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-
 public class SubjectStatePathDTO {
 
-	public SubjectStatePathDTO() {
-	}
-
-	private String idOrCodeName;
-
-	private String stateType;
-	
-	private String stateKind;
-	
-	private Collection<SubjectState> states;
-	
-	public String toJson() {
-        return new JSONSerializer().include("states.lsValues").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
-	
-	public static String toJsonArray(Collection<SubjectStatePathDTO> collection) {
-        return new JSONSerializer().include("states.lsValues").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+    public SubjectStatePathDTO() {
     }
 
-	public String toString() {
+    private String idOrCodeName;
+
+    private String stateType;
+
+    private String stateKind;
+
+    private Collection<SubjectState> states;
+
+    public String toJson() {
+        return new JSONSerializer().include("states.lsValues").exclude("*.class")
+                .transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+
+    public static String toJsonArray(Collection<SubjectStatePathDTO> collection) {
+        return new JSONSerializer().include("states.lsValues").exclude("*.class")
+                .transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static SubjectStatePathDTO fromJsonToSubjectStatePathDTO(String json) {
+    public static SubjectStatePathDTO fromJsonToSubjectStatePathDTO(String json) {
         return new JSONDeserializer<SubjectStatePathDTO>()
-        .use(null, SubjectStatePathDTO.class).deserialize(json);
+                .use(null, SubjectStatePathDTO.class).deserialize(json);
     }
 
-	public static Collection<SubjectStatePathDTO> fromJsonArrayToSubjectStatePathDTO(String json) {
+    public static Collection<SubjectStatePathDTO> fromJsonArrayToSubjectStatePathDTO(String json) {
         return new JSONDeserializer<List<SubjectStatePathDTO>>()
-        .use("values", SubjectStatePathDTO.class).deserialize(json);
+                .use("values", SubjectStatePathDTO.class).deserialize(json);
     }
 
-	public String getIdOrCodeName() {
+    public String getIdOrCodeName() {
         return this.idOrCodeName;
     }
 
-	public void setIdOrCodeName(String idOrCodeName) {
+    public void setIdOrCodeName(String idOrCodeName) {
         this.idOrCodeName = idOrCodeName;
     }
 
-	public String getStateType() {
+    public String getStateType() {
         return this.stateType;
     }
 
-	public void setStateType(String stateType) {
+    public void setStateType(String stateType) {
         this.stateType = stateType;
     }
 
-	public String getStateKind() {
+    public String getStateKind() {
         return this.stateKind;
     }
 
-	public void setStateKind(String stateKind) {
+    public void setStateKind(String stateKind) {
         this.stateKind = stateKind;
     }
 
-	public Collection<SubjectState> getStates() {
+    public Collection<SubjectState> getStates() {
         return this.states;
     }
 
-	public void setStates(Collection<SubjectState> states) {
+    public void setStates(Collection<SubjectState> states) {
         this.states = states;
     }
 }
-
-

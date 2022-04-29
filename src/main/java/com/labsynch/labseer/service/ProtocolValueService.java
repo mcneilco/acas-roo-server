@@ -34,5 +34,4 @@ public interface ProtocolValueService {
 	Collection<ProtocolValuePathDTO> getProtocolValues(
 			Collection<GenericValuePathRequest> genericRequests);
 
-
 }

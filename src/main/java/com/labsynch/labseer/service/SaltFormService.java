@@ -10,12 +10,13 @@ import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 
-
 public interface SaltFormService {
 
 	public void updateSaltWeight(SaltForm saltForm);
-	
-	public SaltForm updateSaltForm(Parent parent, SaltForm saltForm, Set<IsoSalt> isoSalts, Lot lot, double totalSaltWeight, ArrayList<ErrorMessage> errors) throws SaltFormMolFormatException, DupeSaltFormStructureException;
+
+	public SaltForm updateSaltForm(Parent parent, SaltForm saltForm, Set<IsoSalt> isoSalts, Lot lot,
+			double totalSaltWeight, ArrayList<ErrorMessage> errors)
+			throws SaltFormMolFormatException, DupeSaltFormStructureException;
 
 	public double calculateSaltWeight(SaltForm saltForm);
 }

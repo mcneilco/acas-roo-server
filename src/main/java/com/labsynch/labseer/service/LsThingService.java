@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.hibernate.StaleObjectStateException;
-import org.openscience.cdk.exception.CDKException;
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
@@ -20,15 +16,18 @@ import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
-import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
+import org.hibernate.StaleObjectStateException;
+import org.openscience.cdk.exception.CDKException;
+import org.springframework.stereotype.Service;
+
 @Service
 public interface LsThingService {
-	
+
 	PreferredNameResultsDTO getCodeNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO);
 
@@ -36,7 +35,7 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
-	
+
 	PreferredNameResultsDTO getPreferredNameFromName(String json);
 
 	String getProjectCodes();
@@ -68,8 +67,7 @@ public interface LsThingService {
 
 	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String searchQuery,
 			String lsType,
-			String lsKind
-	);
+			String lsKind);
 
 	Collection<CodeTableDTO> getCodeTableLsThings(String lsType, String lsKind, boolean includeIgnored);
 
@@ -86,7 +84,7 @@ public interface LsThingService {
 	ArrayList<LsThingValidationErrorMessage> validateLsThing(LsThingValidationDTO validationDTO);
 
 	Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings);
-	
+
 	Collection<LsThing> sortBatches(Collection<LsThing> batches);
 
 	DependencyCheckDTO checkBatchDependencies(LsThing batch);
@@ -112,7 +110,7 @@ public interface LsThingService {
 			Integer maxResults, Float similarity);
 
 	DependencyCheckDTO checkDependencies(LsThing lsThing);
-	
+
 	Collection<Long> searchLsThingIdsByQueryDTO(LsThingQueryDTO query) throws Exception;
 
 	Collection<LsThing> getLsThingsByIds(Collection<Long> lsThingIds);
@@ -123,14 +121,14 @@ public interface LsThingService {
 
 	Collection<Long> searchLsThingIdsByBrowserQueryDTO(LsThingBrowserQueryDTO query) throws Exception;
 
-	Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, SearchType searchType,
+	Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol,
+			SearchType searchType,
 			Integer maxResults, Float similarity) throws Exception;
 
 	Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, SearchType searchType,
 			Integer maxResults, Float similarity);
-	
+
 	Collection<String> getLsThingCodesByDateValueComparison(
 			DateValueComparisonRequest requestDTO) throws Exception;
-	
-	
+
 }

@@ -3,12 +3,6 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,15 +13,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.SubjectValue;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 public class RawCurveDataDTOTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RawCurveDataDTOTest.class);
-	
+
 	@Test
 	@Transactional
 	public void getRawCurveDataTest() {
@@ -41,13 +36,13 @@ public class RawCurveDataDTOTest {
 			Assert.assertNotNull(result.getCurveId());
 			Assert.assertNotNull(result.getResponseSubjectValueId());
 			Assert.assertNotNull(result.getResponse());
-//			Assert.assertNotNull(result.getResponseUnits());
+			// Assert.assertNotNull(result.getResponseUnits());
 			Assert.assertNotNull(result.getDose());
 			Assert.assertNotNull(result.getDoseUnits());
 		}
-		
+
 	}
-	
+
 	@Test
 	@Transactional
 	public void getAllRawCurveDataDataByExperimentTest() {
@@ -63,7 +58,7 @@ public class RawCurveDataDTOTest {
 			Assert.assertNotNull(result.getCurveId());
 			Assert.assertNotNull(result.getResponseSubjectValueId());
 			Assert.assertNotNull(result.getResponse());
-//			Assert.assertNotNull(result.getResponseUnits());
+			// Assert.assertNotNull(result.getResponseUnits());
 			Assert.assertNotNull(result.getDose());
 			Assert.assertNotNull(result.getDoseUnits());
 		}

@@ -1,16 +1,15 @@
 package com.labsynch.labseer.service;
 
-import java.util.Date;
-import java.util.Set;
-
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
-
-import org.springframework.stereotype.Service;
+import java.util.Set;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.TempThingDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface TreatmentGroupService {
@@ -21,8 +20,8 @@ public interface TreatmentGroupService {
 
 	TreatmentGroup saveLsTreatmentGroup(TreatmentGroup treatmentGroup);
 
-	TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup, Date recordedDate);
-
+	TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup,
+			Date recordedDate);
 
 	HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
 			HashMap<String, TempThingDTO> analysisGroupMap,
@@ -30,5 +29,5 @@ public interface TreatmentGroupService {
 
 	HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
 			String treatmentGroupFilePath, HashMap<String, TempThingDTO> output) throws IOException;
-	
+
 }

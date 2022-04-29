@@ -18,7 +18,6 @@ import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 @Service
 public interface BulkLoadService {
 
-
 	public BulkLoadPropertiesDTO readSDFPropertiesFromFile(BulkLoadSDFPropertyRequestDTO requestDTO);
 
 	BulkLoadTemplate saveBulkLoadTemplate(BulkLoadTemplate templateToSave);
@@ -30,6 +29,5 @@ public interface BulkLoadService {
 	public PurgeFileDependencyCheckResponseDTO checkPurgeFileDependencies(BulkLoadFile bulkLoadFile);
 
 	public PurgeFileResponseDTO purgeFile(BulkLoadFile bulkLoadFile) throws MalformedURLException, IOException;
-
 
 }

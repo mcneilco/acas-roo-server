@@ -1,15 +1,18 @@
 package com.labsynch.labseer.domain;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
@@ -18,13 +21,13 @@ public class FileThing extends AbstractThing {
 
     @Size(max = 512)
     private String name;
-    
+
     @Size(max = 512)
     private String description;
 
     @Size(max = 255)
     private String fileExtension;
-    
+
     @Size(max = 512)
     private String applicationType;
 
@@ -35,7 +38,7 @@ public class FileThing extends AbstractThing {
     private String fileURL;
 
     private Long fileSize;
-    
+
     public FileThing(FileThing fileThing) {
         super.setRecordedBy(fileThing.getRecordedBy());
         super.setRecordedDate(fileThing.getRecordedDate());
@@ -52,53 +55,51 @@ public class FileThing extends AbstractThing {
         this.applicationType = fileThing.getApplicationType();
         this.mimeType = fileThing.getMimeType();
         this.fileURL = fileThing.getFileURL();
-        this.fileSize = fileThing.getFileSize();        
+        this.fileSize = fileThing.getFileSize();
     }
 
-
-	
-
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static FileThing fromJsonToFileThing(String json) {
+    public static FileThing fromJsonToFileThing(String json) {
         return new JSONDeserializer<FileThing>()
-        .use(null, FileThing.class).deserialize(json);
+                .use(null, FileThing.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<FileThing> collection) {
+    public static String toJsonArray(Collection<FileThing> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<FileThing> collection, String[] fields) {
+    public static String toJsonArray(Collection<FileThing> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<FileThing> fromJsonArrayToFileThings(String json) {
+    public static Collection<FileThing> fromJsonArrayToFileThings(String json) {
         return new JSONDeserializer<List<FileThing>>()
-        .use("values", FileThing.class).deserialize(json);
+                .use("values", FileThing.class).deserialize(json);
     }
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "description", "fileExtension", "applicationType", "mimeType", "fileURL", "fileSize");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "description",
+            "fileExtension", "applicationType", "mimeType", "fileURL", "fileSize");
 
-	public static long countFileThings() {
+    public static long countFileThings() {
         return entityManager().createQuery("SELECT COUNT(o) FROM FileThing o", Long.class).getSingleResult();
     }
 
-	public static List<FileThing> findAllFileThings() {
+    public static List<FileThing> findAllFileThings() {
         return entityManager().createQuery("SELECT o FROM FileThing o", FileThing.class).getResultList();
     }
 
-	public static List<FileThing> findAllFileThings(String sortFieldName, String sortOrder) {
+    public static List<FileThing> findAllFileThings(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM FileThing o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -109,16 +110,19 @@ public class FileThing extends AbstractThing {
         return entityManager().createQuery(jpaQuery, FileThing.class).getResultList();
     }
 
-	public static FileThing findFileThing(Long id) {
-        if (id == null) return null;
+    public static FileThing findFileThing(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(FileThing.class, id);
     }
 
-	public static List<FileThing> findFileThingEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM FileThing o", FileThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<FileThing> findFileThingEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM FileThing o", FileThing.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	public static List<FileThing> findFileThingEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<FileThing> findFileThingEntries(int firstResult, int maxResults, String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM FileThing o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -126,78 +130,80 @@ public class FileThing extends AbstractThing {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, FileThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, FileThing.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public FileThing merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         FileThing merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public FileThing() {
+    public FileThing() {
         super();
     }
 
-	public String getName() {
+    public String getName() {
         return this.name;
     }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-	public String getDescription() {
+    public String getDescription() {
         return this.description;
     }
 
-	public void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-	public String getFileExtension() {
+    public String getFileExtension() {
         return this.fileExtension;
     }
 
-	public void setFileExtension(String fileExtension) {
+    public void setFileExtension(String fileExtension) {
         this.fileExtension = fileExtension;
     }
 
-	public String getApplicationType() {
+    public String getApplicationType() {
         return this.applicationType;
     }
 
-	public void setApplicationType(String applicationType) {
+    public void setApplicationType(String applicationType) {
         this.applicationType = applicationType;
     }
 
-	public String getMimeType() {
+    public String getMimeType() {
         return this.mimeType;
     }
 
-	public void setMimeType(String mimeType) {
+    public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
 
-	public String getFileURL() {
+    public String getFileURL() {
         return this.fileURL;
     }
 
-	public void setFileURL(String fileURL) {
+    public void setFileURL(String fileURL) {
         this.fileURL = fileURL;
     }
 
-	public Long getFileSize() {
+    public Long getFileSize() {
         return this.fileSize;
     }
 
-	public void setFileSize(Long fileSize) {
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 }

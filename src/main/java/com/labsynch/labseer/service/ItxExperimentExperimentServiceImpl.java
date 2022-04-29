@@ -25,15 +25,15 @@ public class ItxExperimentExperimentServiceImpl implements ItxExperimentExperime
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
+
 	@Override
 	@Transactional
-	public ItxExperimentExperiment saveLsItxExperiment(ItxExperimentExperiment itxExperiment) throws Exception{
+	public ItxExperimentExperiment saveLsItxExperiment(ItxExperimentExperiment itxExperiment) throws Exception {
 		logger.debug("incoming meta itxExperimentExperiment: " + itxExperiment.toJson() + "\n");
-		try{
+		try {
 			itxExperiment.setFirstExperiment(Experiment.findExperiment(itxExperiment.getFirstExperiment().getId()));
 			itxExperiment.setSecondExperiment(Experiment.findExperiment(itxExperiment.getSecondExperiment().getId()));
-		}catch (Exception e){
+		} catch (Exception e) {
 			throw new Exception("One or both of the provided experiment do not exist");
 		}
 		int i = 0;
@@ -42,72 +42,73 @@ public class ItxExperimentExperimentServiceImpl implements ItxExperimentExperime
 		ItxExperimentExperiment newItxExperiment = new ItxExperimentExperiment(itxExperiment);
 		newItxExperiment.persist();
 
-		if (itxExperiment.getLsStates() != null){
-			for(ItxExperimentExperimentState itxState : itxExperiment.getLsStates()){
+		if (itxExperiment.getLsStates() != null) {
+			for (ItxExperimentExperimentState itxState : itxExperiment.getLsStates()) {
 				ItxExperimentExperimentState newItxState = new ItxExperimentExperimentState(itxState);
 				newItxState.setItxExperimentExperiment(newItxExperiment);
 				newItxState.persist();
-			    if ( j % batchSize == 0 ) { // same as the JDBC batch size
-			    	newItxState.flush();
-			    	newItxState.clear();
-			    }
-			    j++;
-				if (itxState.getLsValues() != null){
-					for(ItxExperimentExperimentValue itxValue : itxState.getLsValues()){
+				if (j % batchSize == 0) { // same as the JDBC batch size
+					newItxState.flush();
+					newItxState.clear();
+				}
+				j++;
+				if (itxState.getLsValues() != null) {
+					for (ItxExperimentExperimentValue itxValue : itxState.getLsValues()) {
 						itxValue.setLsState(newItxState);
 						itxValue.persist();
-					    if ( i % batchSize == 0 ) { // same as the JDBC batch size
-					    	itxValue.flush();
-					    	itxValue.clear();
-					    }
-					    i++;
-					}				
-				} 
+						if (i % batchSize == 0) { // same as the JDBC batch size
+							itxValue.flush();
+							itxValue.clear();
+						}
+						i++;
+					}
+				}
 			}
 		}
-		
+
 		return newItxExperiment;
 	}
 
 	@Override
 	@Transactional
-	public Collection<ItxExperimentExperiment> saveLsItxExperiments(String json){
+	public Collection<ItxExperimentExperiment> saveLsItxExperiments(String json) {
 		int i = 0;
 		int j = 0;
 		int batchSize = propertiesUtilService.getBatchSize();
-        Collection<ItxExperimentExperiment> savedItxExperimentExperiments = new ArrayList<ItxExperimentExperiment>();
+		Collection<ItxExperimentExperiment> savedItxExperimentExperiments = new ArrayList<ItxExperimentExperiment>();
 
-        StringReader sr = new StringReader(json);
+		StringReader sr = new StringReader(json);
 		BufferedReader br = new BufferedReader(sr);
-        for (ItxExperimentExperiment itxExperiment : ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(br)) {
-    		ItxExperimentExperiment newItxExperiment = new ItxExperimentExperiment(itxExperiment);
-    		newItxExperiment.persist();
-    		savedItxExperimentExperiments.add(newItxExperiment);
-    		if (itxExperiment.getLsStates() != null){
-    			for(ItxExperimentExperimentState itxState : itxExperiment.getLsStates()){
-    				ItxExperimentExperimentState newItxState = new ItxExperimentExperimentState(itxState);
-    				newItxState.setItxExperimentExperiment(newItxExperiment);
-    				newItxState.persist();
-    			    if ( j % batchSize == 0 ) { // same as the JDBC batch size
-    			    	newItxState.flush();
-    			    	newItxState.clear();
-    			    }
-    			    j++;
-    				if (itxState.getLsValues() != null){
-    					for(ItxExperimentExperimentValue itxValue : itxState.getLsValues()){
-    						itxValue.setLsState(newItxState);
-    						itxValue.persist();
-    					    if ( i % batchSize == 0 ) {
-    					    	itxValue.flush();
-    					    	itxValue.clear();
-    					    }
-    					    i++;
-    					}				
-    				} 
-    			}
-    		}
-        }
-		
+		for (ItxExperimentExperiment itxExperiment : ItxExperimentExperiment
+				.fromJsonArrayToItxExperimentExperiments(br)) {
+			ItxExperimentExperiment newItxExperiment = new ItxExperimentExperiment(itxExperiment);
+			newItxExperiment.persist();
+			savedItxExperimentExperiments.add(newItxExperiment);
+			if (itxExperiment.getLsStates() != null) {
+				for (ItxExperimentExperimentState itxState : itxExperiment.getLsStates()) {
+					ItxExperimentExperimentState newItxState = new ItxExperimentExperimentState(itxState);
+					newItxState.setItxExperimentExperiment(newItxExperiment);
+					newItxState.persist();
+					if (j % batchSize == 0) { // same as the JDBC batch size
+						newItxState.flush();
+						newItxState.clear();
+					}
+					j++;
+					if (itxState.getLsValues() != null) {
+						for (ItxExperimentExperimentValue itxValue : itxState.getLsValues()) {
+							itxValue.setLsState(newItxState);
+							itxValue.persist();
+							if (i % batchSize == 0) {
+								itxValue.flush();
+								itxValue.clear();
+							}
+							i++;
+						}
+					}
+				}
+			}
+		}
+
 		return savedItxExperimentExperiments;
 	}
 
@@ -115,60 +116,72 @@ public class ItxExperimentExperimentServiceImpl implements ItxExperimentExperime
 	public Collection<ItxExperimentExperiment> saveLsItxExperiments(
 			Collection<ItxExperimentExperiment> itxExperimentExperiments) throws Exception {
 		Collection<ItxExperimentExperiment> savedItxExperimentExperiments = new ArrayList<ItxExperimentExperiment>();
-		for (ItxExperimentExperiment itxExperimentExperiment : itxExperimentExperiments){
+		for (ItxExperimentExperiment itxExperimentExperiment : itxExperimentExperiments) {
 			savedItxExperimentExperiments.add(saveLsItxExperiment(itxExperimentExperiment));
 		}
 		return savedItxExperimentExperiments;
 	}
-	
+
 	@Override
 	@Transactional
-	public ItxExperimentExperiment updateItxExperimentExperiment(ItxExperimentExperiment jsonItxExperimentExperiment){
-		
-		ItxExperimentExperiment updatedItxExperimentExperiment = ItxExperimentExperiment.updateNoStates(jsonItxExperimentExperiment);
+	public ItxExperimentExperiment updateItxExperimentExperiment(ItxExperimentExperiment jsonItxExperimentExperiment) {
+
+		ItxExperimentExperiment updatedItxExperimentExperiment = ItxExperimentExperiment
+				.updateNoStates(jsonItxExperimentExperiment);
 		updatedItxExperimentExperiment.merge();
 		logger.debug("here is the updated itx: " + updatedItxExperimentExperiment.toJson());
-		logger.debug("----------------- here is the itx id " + updatedItxExperimentExperiment.getId() + "   -----------");
-		
-		if(jsonItxExperimentExperiment.getLsStates() != null){
-			for(ItxExperimentExperimentState itxExperimentExperimentState : jsonItxExperimentExperiment.getLsStates()){
-				logger.debug("-------- current itxExperimentExperimentState ID: " + itxExperimentExperimentState.getId());
+		logger.debug(
+				"----------------- here is the itx id " + updatedItxExperimentExperiment.getId() + "   -----------");
+
+		if (jsonItxExperimentExperiment.getLsStates() != null) {
+			for (ItxExperimentExperimentState itxExperimentExperimentState : jsonItxExperimentExperiment
+					.getLsStates()) {
+				logger.debug(
+						"-------- current itxExperimentExperimentState ID: " + itxExperimentExperimentState.getId());
 				ItxExperimentExperimentState updatedItxExperimentExperimentState;
-				if (itxExperimentExperimentState.getId() == null){
-					updatedItxExperimentExperimentState = new ItxExperimentExperimentState(itxExperimentExperimentState);
-					updatedItxExperimentExperimentState.setItxExperimentExperiment(ItxExperimentExperiment.findItxExperimentExperiment(updatedItxExperimentExperiment.getId()));
+				if (itxExperimentExperimentState.getId() == null) {
+					updatedItxExperimentExperimentState = new ItxExperimentExperimentState(
+							itxExperimentExperimentState);
+					updatedItxExperimentExperimentState.setItxExperimentExperiment(ItxExperimentExperiment
+							.findItxExperimentExperiment(updatedItxExperimentExperiment.getId()));
 					updatedItxExperimentExperimentState.persist();
 					updatedItxExperimentExperiment.getLsStates().add(updatedItxExperimentExperimentState);
 				} else {
 
-					if (itxExperimentExperimentState.getItxExperimentExperiment() == null) itxExperimentExperimentState.setItxExperimentExperiment(updatedItxExperimentExperiment);
-					updatedItxExperimentExperimentState = ItxExperimentExperimentState.update(itxExperimentExperimentState);			
+					if (itxExperimentExperimentState.getItxExperimentExperiment() == null)
+						itxExperimentExperimentState.setItxExperimentExperiment(updatedItxExperimentExperiment);
+					updatedItxExperimentExperimentState = ItxExperimentExperimentState
+							.update(itxExperimentExperimentState);
 					updatedItxExperimentExperiment.getLsStates().add(updatedItxExperimentExperimentState);
-					logger.debug("updated itxExperimentExperiment state " + updatedItxExperimentExperimentState.getId());
+					logger.debug(
+							"updated itxExperimentExperiment state " + updatedItxExperimentExperimentState.getId());
 
 				}
-				if (itxExperimentExperimentState.getLsValues() != null){
-					for(ItxExperimentExperimentValue itxExperimentExperimentValue : itxExperimentExperimentState.getLsValues()){
+				if (itxExperimentExperimentState.getLsValues() != null) {
+					for (ItxExperimentExperimentValue itxExperimentExperimentValue : itxExperimentExperimentState
+							.getLsValues()) {
 						ItxExperimentExperimentValue updatedItxExperimentExperimentValue;
-						if (itxExperimentExperimentValue.getId() == null){
-							updatedItxExperimentExperimentValue = ItxExperimentExperimentValue.create(itxExperimentExperimentValue);
+						if (itxExperimentExperimentValue.getId() == null) {
+							updatedItxExperimentExperimentValue = ItxExperimentExperimentValue
+									.create(itxExperimentExperimentValue);
 							updatedItxExperimentExperimentValue.setLsState(updatedItxExperimentExperimentState);
 							updatedItxExperimentExperimentValue.persist();
 							updatedItxExperimentExperimentState.getLsValues().add(updatedItxExperimentExperimentValue);
 
 						} else {
-							//itxExperimentExperimentValue.setLsState(updatedItxExperimentExperimentState);
+							// itxExperimentExperimentValue.setLsState(updatedItxExperimentExperimentState);
 							itxExperimentExperimentValue.setLsState(updatedItxExperimentExperimentState);
-							updatedItxExperimentExperimentValue = ItxExperimentExperimentValue.update(itxExperimentExperimentValue);
+							updatedItxExperimentExperimentValue = ItxExperimentExperimentValue
+									.update(itxExperimentExperimentValue);
 							updatedItxExperimentExperimentState.getLsValues().add(updatedItxExperimentExperimentValue);
 						}
-					}	
+					}
 				} else {
 					logger.debug("No itxExperimentExperiment values to update");
 				}
 			}
 		}
-		
+
 		return updatedItxExperimentExperiment;
 	}
 }

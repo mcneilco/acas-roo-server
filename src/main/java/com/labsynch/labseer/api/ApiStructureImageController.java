@@ -2,6 +2,12 @@ package com.labsynch.labseer.api;
 
 import java.util.List;
 
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
+import com.labsynch.labseer.service.StructureImageService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.StandardizationDryRunCompound;
-import com.labsynch.labseer.service.StructureImageService;
 
 @RequestMapping("/api/v1/structureimage")
 @Controller

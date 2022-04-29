@@ -5,9 +5,7 @@ import java.util.Set;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 
-
 public interface ParentAliasService {
-
 
 	public Parent updateParentAliases(Parent parent);
 

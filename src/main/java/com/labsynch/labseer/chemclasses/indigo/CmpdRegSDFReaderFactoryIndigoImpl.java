@@ -11,9 +11,10 @@ import com.labsynch.labseer.chemclasses.indigo.CmpdRegSDFReaderIndigoImpl;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
 @Component
-public class CmpdRegSDFReaderFactoryIndigoImpl implements CmpdRegSDFReaderFactory{
-	
-	public CmpdRegSDFReader getCmpdRegSDFReader(String fileName) throws FileNotFoundException, CmpdRegMolFormatException, IOException {
+public class CmpdRegSDFReaderFactoryIndigoImpl implements CmpdRegSDFReaderFactory {
+
+	public CmpdRegSDFReader getCmpdRegSDFReader(String fileName)
+			throws FileNotFoundException, CmpdRegMolFormatException, IOException {
 		return new CmpdRegSDFReaderIndigoImpl(fileName);
 	}
 

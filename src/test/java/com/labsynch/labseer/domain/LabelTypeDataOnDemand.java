@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
@@ -14,17 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class LabelTypeDataOnDemand {
 
-	private Random rnd = new SecureRandom();
+    private Random rnd = new SecureRandom();
 
-	private List<LabelType> data;
+    private List<LabelType> data;
 
-	public LabelType getNewTransientLabelType(int index) {
+    public LabelType getNewTransientLabelType(int index) {
         LabelType obj = new LabelType();
         setTypeName(obj, index);
         return obj;
     }
 
-	public void setTypeName(LabelType obj, int index) {
+    public void setTypeName(LabelType obj, int index) {
         String typeName = "typeName_" + index;
         if (typeName.length() > 255) {
             typeName = new Random().nextInt(10) + typeName.substring(1, 255);
@@ -32,7 +34,7 @@ public class LabelTypeDataOnDemand {
         obj.setTypeName(typeName);
     }
 
-	public LabelType getSpecificLabelType(int index) {
+    public LabelType getSpecificLabelType(int index) {
         init();
         if (index < 0) {
             index = 0;
@@ -45,18 +47,18 @@ public class LabelTypeDataOnDemand {
         return LabelType.findLabelType(id);
     }
 
-	public LabelType getRandomLabelType() {
+    public LabelType getRandomLabelType() {
         init();
         LabelType obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getId();
         return LabelType.findLabelType(id);
     }
 
-	public boolean modifyLabelType(LabelType obj) {
+    public boolean modifyLabelType(LabelType obj) {
         return false;
     }
 
-	public void init() {
+    public void init() {
         int from = 0;
         int to = 10;
         data = LabelType.findLabelTypeEntries(from, to);
@@ -66,7 +68,7 @@ public class LabelTypeDataOnDemand {
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<LabelType>();
         for (int i = 0; i < 10; i++) {
             LabelType obj = getNewTransientLabelType(i);
@@ -76,7 +78,9 @@ public class LabelTypeDataOnDemand {
                 final StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
                     final ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+                    msg.append("[").append(cv.getRootBean().getClass().getName()).append(".")
+                            .append(cv.getPropertyPath()).append(": ").append(cv.getMessage())
+                            .append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
                 }
                 throw new IllegalStateException(msg.toString(), e);
             }

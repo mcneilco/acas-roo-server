@@ -1,24 +1,26 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
+
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Entity
 @Configurable
@@ -72,15 +74,21 @@ public class ItxLsThingLsThingValue extends AbstractValue {
     public ItxLsThingLsThingValue() {
     }
 
-    public static com.labsynch.labseer.domain.ItxLsThingLsThingValue update(com.labsynch.labseer.domain.ItxLsThingLsThingValue object) {
-        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
+    public static com.labsynch.labseer.domain.ItxLsThingLsThingValue update(
+            com.labsynch.labseer.domain.ItxLsThingLsThingValue object) {
+        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>()
+                .use(null, ItxLsThingLsThingValue.class)
+                .deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
         updatedObject.setModifiedDate(new Date());
         updatedObject.merge();
         return updatedObject;
     }
 
-    public static com.labsynch.labseer.domain.ItxLsThingLsThingValue updateNoMerge(com.labsynch.labseer.domain.ItxLsThingLsThingValue object) {
-        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
+    public static com.labsynch.labseer.domain.ItxLsThingLsThingValue updateNoMerge(
+            com.labsynch.labseer.domain.ItxLsThingLsThingValue object) {
+        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>()
+                .use(null, ItxLsThingLsThingValue.class)
+                .deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
         updatedObject.setModifiedDate(new Date());
         return updatedObject;
     }
@@ -89,12 +97,16 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         return new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserialize(json);
     }
 
-    public static Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> fromJsonArrayToItxLsThingLsThingValues(String json) {
-        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class).use("values", ItxLsThingLsThingValue.class).deserialize(json);
+    public static Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> fromJsonArrayToItxLsThingLsThingValues(
+            String json) {
+        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class)
+                .use("values", ItxLsThingLsThingValue.class).deserialize(json);
     }
 
-    public static Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> fromJsonArrayToItxLsThingLsThingValues(Reader json) {
-        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class).use("values", ItxLsThingLsThingValue.class).deserialize(json);
+    public static Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> fromJsonArrayToItxLsThingLsThingValues(
+            Reader json) {
+        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class)
+                .use("values", ItxLsThingLsThingValue.class).deserialize(json);
     }
 
     @Transactional
@@ -109,26 +121,33 @@ public class ItxLsThingLsThingValue extends AbstractValue {
 
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> collection) {
-        return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class)
+                .serialize(collection);
     }
 
-    public static com.labsynch.labseer.domain.ItxLsThingLsThingValue create(com.labsynch.labseer.domain.ItxLsThingLsThingValue lsThingValue) {
-        ItxLsThingLsThingValue newItxLsThingLsThingValue = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserializeInto(lsThingValue.toJson(), new ItxLsThingLsThingValue());
+    public static com.labsynch.labseer.domain.ItxLsThingLsThingValue create(
+            com.labsynch.labseer.domain.ItxLsThingLsThingValue lsThingValue) {
+        ItxLsThingLsThingValue newItxLsThingLsThingValue = new JSONDeserializer<ItxLsThingLsThingValue>()
+                .use(null, ItxLsThingLsThingValue.class)
+                .deserializeInto(lsThingValue.toJson(), new ItxLsThingLsThingValue());
         return newItxLsThingLsThingValue;
     }
 
-    public static TypedQuery<ItxLsThingLsThingValue> findItxLsValueByItxThingAndStateTypeStateKindAndValueTypeKind(Long itxOrthologId, String stateType,
-    		String stateKind, String valueType, String valueKind) {
-        if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-        if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+    public static TypedQuery<ItxLsThingLsThingValue> findItxLsValueByItxThingAndStateTypeStateKindAndValueTypeKind(
+            Long itxOrthologId, String stateType,
+            String stateKind, String valueType, String valueKind) {
+        if (valueType == null || valueType.length() == 0)
+            throw new IllegalArgumentException("The valueType argument is required");
+        if (valueKind == null || valueKind.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
 
         EntityManager em = ItxLsThingLsThingValue.entityManager();
         String hqlQuery = "SELECT o FROM ItxLsThingLsThingValue AS o "
-        		+ "JOIN o.lsState its with its.ignored = false AND its.lsType = :stateType and its.lsKind = :stateKind "
-        		+ "JOIN its.itxLsThingLsThing itxThing with itxThing.ignored = false "
-        		+ "WHERE o.lsType = :valueType AND o.lsKind = :valueKind "
-        		+ "AND itxThing.id = :itxOrthologId";
-                
+                + "JOIN o.lsState its with its.ignored = false AND its.lsType = :stateType and its.lsKind = :stateKind "
+                + "JOIN its.itxLsThingLsThing itxThing with itxThing.ignored = false "
+                + "WHERE o.lsType = :valueType AND o.lsKind = :valueKind "
+                + "AND itxThing.id = :itxOrthologId";
+
         TypedQuery<ItxLsThingLsThingValue> q = em.createQuery(hqlQuery, ItxLsThingLsThingValue.class);
         q.setParameter("stateType", stateType);
         q.setParameter("stateKind", stateKind);
@@ -139,37 +158,44 @@ public class ItxLsThingLsThingValue extends AbstractValue {
     }
 
     public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsKindEquals(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = ItxLsThingLsThingValue.entityManager();
-        TypedQuery<ItxLsThingLsThingValue> q = em.createQuery("SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsKind = :lsKind", ItxLsThingLsThingValue.class);
+        TypedQuery<ItxLsThingLsThingValue> q = em.createQuery(
+                "SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsKind = :lsKind", ItxLsThingLsThingValue.class);
         q.setParameter("lsKind", lsKind);
         return q;
     }
-    
-    public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+
+    public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsTransactionEquals(
+            Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxLsThingLsThingValue.entityManager();
-        TypedQuery<ItxLsThingLsThingValue> q = em.createQuery("SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsTransaction = :lsTransaction", ItxLsThingLsThingValue.class);
+        TypedQuery<ItxLsThingLsThingValue> q = em.createQuery(
+                "SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsTransaction = :lsTransaction",
+                ItxLsThingLsThingValue.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }
-    
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
 
-	public static long countItxLsThingLsThingValues() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingValue o", Long.class).getSingleResult();
+    public static long countItxLsThingLsThingValues() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingValue o", Long.class)
+                .getSingleResult();
     }
 
-	public static List<ItxLsThingLsThingValue> findAllItxLsThingLsThingValues() {
-        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingValue o", ItxLsThingLsThingValue.class).getResultList();
+    public static List<ItxLsThingLsThingValue> findAllItxLsThingLsThingValues() {
+        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingValue o", ItxLsThingLsThingValue.class)
+                .getResultList();
     }
 
-	public static List<ItxLsThingLsThingValue> findAllItxLsThingLsThingValues(String sortFieldName, String sortOrder) {
+    public static List<ItxLsThingLsThingValue> findAllItxLsThingLsThingValues(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ItxLsThingLsThingValue o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -180,16 +206,19 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         return entityManager().createQuery(jpaQuery, ItxLsThingLsThingValue.class).getResultList();
     }
 
-	public static ItxLsThingLsThingValue findItxLsThingLsThingValue(Long id) {
-        if (id == null) return null;
+    public static ItxLsThingLsThingValue findItxLsThingLsThingValue(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(ItxLsThingLsThingValue.class, id);
     }
 
-	public static List<ItxLsThingLsThingValue> findItxLsThingLsThingValueEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingValue o", ItxLsThingLsThingValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<ItxLsThingLsThingValue> findItxLsThingLsThingValueEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingValue o", ItxLsThingLsThingValue.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<ItxLsThingLsThingValue> findItxLsThingLsThingValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<ItxLsThingLsThingValue> findItxLsThingLsThingValueEntries(int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM ItxLsThingLsThingValue o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -197,37 +226,46 @@ public class ItxLsThingLsThingValue extends AbstractValue {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, ItxLsThingLsThingValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThingValue.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public ItxLsThingLsThingValue merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         ItxLsThingLsThingValue merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public static Long countFindItxLsThingLsThingValuesByLsKindEquals(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static Long countFindItxLsThingLsThingValuesByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = ItxLsThingLsThingValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingValue AS o WHERE o.lsKind = :lsKind", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingValue AS o WHERE o.lsKind = :lsKind",
+                Long.class);
         q.setParameter("lsKind", lsKind);
         return ((Long) q.getSingleResult());
     }
 
-	public static Long countFindItxLsThingLsThingValuesByLsTransactionEquals(Long lsTransaction) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static Long countFindItxLsThingLsThingValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxLsThingLsThingValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM ItxLsThingLsThingValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
         q.setParameter("lsTransaction", lsTransaction);
         return ((Long) q.getSingleResult());
     }
 
-	public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsKindEquals(String lsKind, String sortFieldName, String sortOrder) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+    public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsKindEquals(String lsKind,
+            String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = ItxLsThingLsThingValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsKind = :lsKind");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsKind = :lsKind");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -239,10 +277,13 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         return q;
     }
 
-	public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
-        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+    public static TypedQuery<ItxLsThingLsThingValue> findItxLsThingLsThingValuesByLsTransactionEquals(
+            Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null)
+            throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxLsThingLsThingValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsTransaction = :lsTransaction");
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM ItxLsThingLsThingValue AS o WHERE o.lsTransaction = :lsTransaction");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -254,11 +295,11 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         return q;
     }
 
-	public ItxLsThingLsThingState getLsState() {
+    public ItxLsThingLsThingState getLsState() {
         return this.lsState;
     }
 
-	public void setLsState(ItxLsThingLsThingState lsState) {
+    public void setLsState(ItxLsThingLsThingState lsState) {
         this.lsState = lsState;
     }
 }

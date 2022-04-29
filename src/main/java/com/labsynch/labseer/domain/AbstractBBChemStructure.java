@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -24,14 +25,16 @@ import javax.validation.constraints.NotNull;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
@@ -44,13 +47,13 @@ public abstract class AbstractBBChemStructure {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "bbChemStructureGen")
     private Long id;
 
-	public Long getId() {
-		return this.id;
-	}
+    public Long getId() {
+        return this.id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @Column(columnDefinition = "CHAR(40)")
     private String preReg;
@@ -71,18 +74,18 @@ public abstract class AbstractBBChemStructure {
     private BitSet similarity;
 
     @NotNull
-    @DateTimeFormat(style="M-")
+    @DateTimeFormat(style = "M-")
     private Date recordedDate;
 
-	@Enumerated(EnumType.STRING)
-	private CmpdRegMolecule.StandardizationStatus standardizationStatus;
+    @Enumerated(EnumType.STRING)
+    private CmpdRegMolecule.StandardizationStatus standardizationStatus;
 
-	private String standardizationComment;
+    private String standardizationComment;
 
-	@Enumerated(EnumType.STRING)
-	private CmpdRegMolecule.RegistrationStatus registrationStatus;
+    @Enumerated(EnumType.STRING)
+    private CmpdRegMolecule.RegistrationStatus registrationStatus;
 
-	private String registrationComment;
+    private String registrationComment;
 
     @Transient
     private Double exactMolWeight;
@@ -103,7 +106,7 @@ public abstract class AbstractBBChemStructure {
     private String molecularFormula;
 
     @Transient
-    private HashMap<String, String> properties =  new HashMap<>();
+    private HashMap<String, String> properties = new HashMap<>();
 
     public void updateStructureInfo(AbstractBBChemStructure updatedBbChemStructure) {
         this.setMol(updatedBbChemStructure.getMol());
@@ -121,31 +124,37 @@ public abstract class AbstractBBChemStructure {
         this.setRegistrationStatus(updatedBbChemStructure.getRegistrationStatus());
         this.setRegistrationComment(updatedBbChemStructure.getRegistrationComment());
         this.setRecordedDate(updatedBbChemStructure.getRecordedDate());
-    } 
+    }
 
+    @PersistenceContext
+    protected transient EntityManager entityManager;
 
-	@PersistenceContext
-    protected
-    transient EntityManager entityManager;
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg",
+            "mol", "substructure", "similarity", "recordedDate", "standardizationStatus", "standardizationComment",
+            "registrationStatus", "registrationComment", "exactMolWeight", "averageMolWeight", "totalCharge", "smiles",
+            "inchi", "molecularFormula", "properties");
 
-	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "substructure", "similarity", "recordedDate", "standardizationStatus", "standardizationComment", "registrationStatus", "registrationComment", "exactMolWeight", "averageMolWeight", "totalCharge", "smiles", "inchi", "molecularFormula", "properties");
-
-	public static final EntityManager entityManager() {
+    public static final EntityManager entityManager() {
         EntityManager em = new AbstractBBChemStructure() {
         }.entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
 
-	public static long countAbstractBBChemStructures() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM AbstractBBChemStructure o", Long.class).getSingleResult();
+    public static long countAbstractBBChemStructures() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM AbstractBBChemStructure o", Long.class)
+                .getSingleResult();
     }
 
-	public static List<AbstractBBChemStructure> findAllAbstractBBChemStructures() {
-        return entityManager().createQuery("SELECT o FROM AbstractBBChemStructure o", AbstractBBChemStructure.class).getResultList();
+    public static List<AbstractBBChemStructure> findAllAbstractBBChemStructures() {
+        return entityManager().createQuery("SELECT o FROM AbstractBBChemStructure o", AbstractBBChemStructure.class)
+                .getResultList();
     }
 
-	public static List<AbstractBBChemStructure> findAllAbstractBBChemStructures(String sortFieldName, String sortOrder) {
+    public static List<AbstractBBChemStructure> findAllAbstractBBChemStructures(String sortFieldName,
+            String sortOrder) {
         String jpaQuery = "SELECT o FROM AbstractBBChemStructure o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -156,16 +165,19 @@ public abstract class AbstractBBChemStructure {
         return entityManager().createQuery(jpaQuery, AbstractBBChemStructure.class).getResultList();
     }
 
-	public static AbstractBBChemStructure findAbstractBBChemStructure(Long id) {
-        if (id == null) return null;
+    public static AbstractBBChemStructure findAbstractBBChemStructure(Long id) {
+        if (id == null)
+            return null;
         return entityManager().find(AbstractBBChemStructure.class, id);
     }
 
-	public static List<AbstractBBChemStructure> findAbstractBBChemStructureEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM AbstractBBChemStructure o", AbstractBBChemStructure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<AbstractBBChemStructure> findAbstractBBChemStructureEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM AbstractBBChemStructure o", AbstractBBChemStructure.class)
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-	public static List<AbstractBBChemStructure> findAbstractBBChemStructureEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+    public static List<AbstractBBChemStructure> findAbstractBBChemStructureEntries(int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM AbstractBBChemStructure o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
@@ -173,18 +185,21 @@ public abstract class AbstractBBChemStructure {
                 jpaQuery = jpaQuery + " " + sortOrder;
             }
         }
-        return entityManager().createQuery(jpaQuery, AbstractBBChemStructure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery(jpaQuery, AbstractBBChemStructure.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-	@Transactional
+    @Transactional
     public void persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
-	@Transactional
+    @Transactional
     public void remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
@@ -193,205 +208,208 @@ public abstract class AbstractBBChemStructure {
         }
     }
 
-	@Transactional
+    @Transactional
     public void flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.flush();
     }
 
-	@Transactional
+    @Transactional
     public void clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.clear();
     }
 
-	@Transactional
+    @Transactional
     public AbstractBBChemStructure merge() {
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         AbstractBBChemStructure merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }
 
-	public String getPreReg() {
+    public String getPreReg() {
         return this.preReg;
     }
 
-	public void setPreReg(String preReg) {
+    public void setPreReg(String preReg) {
         this.preReg = preReg;
     }
 
-	public String getReg() {
+    public String getReg() {
         return this.reg;
     }
 
-	public void setReg(String reg) {
+    public void setReg(String reg) {
         this.reg = reg;
     }
 
-	public String getMol() {
+    public String getMol() {
         return this.mol;
     }
 
-	public void setMol(String mol) {
+    public void setMol(String mol) {
         this.mol = mol;
     }
 
-	public BitSet getSubstructure() {
+    public BitSet getSubstructure() {
         return this.substructure;
     }
 
-	public void setSubstructure(BitSet substructure) {
+    public void setSubstructure(BitSet substructure) {
         this.substructure = substructure;
     }
 
-	public BitSet getSimilarity() {
+    public BitSet getSimilarity() {
         return this.similarity;
     }
 
-	public void setSimilarity(BitSet similarity) {
+    public void setSimilarity(BitSet similarity) {
         this.similarity = similarity;
     }
 
-	public Date getRecordedDate() {
+    public Date getRecordedDate() {
         return this.recordedDate;
     }
 
-	public void setRecordedDate(Date recordedDate) {
+    public void setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
     }
 
-	public StandardizationStatus getStandardizationStatus() {
+    public StandardizationStatus getStandardizationStatus() {
         return this.standardizationStatus;
     }
 
-	public void setStandardizationStatus(StandardizationStatus standardizationStatus) {
+    public void setStandardizationStatus(StandardizationStatus standardizationStatus) {
         this.standardizationStatus = standardizationStatus;
     }
 
-	public String getStandardizationComment() {
+    public String getStandardizationComment() {
         return this.standardizationComment;
     }
 
-	public void setStandardizationComment(String standardizationComment) {
+    public void setStandardizationComment(String standardizationComment) {
         this.standardizationComment = standardizationComment;
     }
 
-	public RegistrationStatus getRegistrationStatus() {
+    public RegistrationStatus getRegistrationStatus() {
         return this.registrationStatus;
     }
 
-	public void setRegistrationStatus(RegistrationStatus registrationStatus) {
+    public void setRegistrationStatus(RegistrationStatus registrationStatus) {
         this.registrationStatus = registrationStatus;
     }
 
-	public String getRegistrationComment() {
+    public String getRegistrationComment() {
         return this.registrationComment;
     }
 
-	public void setRegistrationComment(String registrationComment) {
+    public void setRegistrationComment(String registrationComment) {
         this.registrationComment = registrationComment;
     }
 
-	public Double getExactMolWeight() {
+    public Double getExactMolWeight() {
         return this.exactMolWeight;
     }
 
-	public void setExactMolWeight(Double exactMolWeight) {
+    public void setExactMolWeight(Double exactMolWeight) {
         this.exactMolWeight = exactMolWeight;
     }
 
-	public Double getAverageMolWeight() {
+    public Double getAverageMolWeight() {
         return this.averageMolWeight;
     }
 
-	public void setAverageMolWeight(Double averageMolWeight) {
+    public void setAverageMolWeight(Double averageMolWeight) {
         this.averageMolWeight = averageMolWeight;
     }
 
-	public Integer getTotalCharge() {
+    public Integer getTotalCharge() {
         return this.totalCharge;
     }
 
-	public void setTotalCharge(Integer totalCharge) {
+    public void setTotalCharge(Integer totalCharge) {
         this.totalCharge = totalCharge;
     }
 
-	public String getSmiles() {
+    public String getSmiles() {
         return this.smiles;
     }
 
-	public void setSmiles(String smiles) {
+    public void setSmiles(String smiles) {
         this.smiles = smiles;
     }
 
-	public String getInchi() {
+    public String getInchi() {
         return this.inchi;
     }
 
-	public void setInchi(String inchi) {
+    public void setInchi(String inchi) {
         this.inchi = inchi;
     }
 
-	public String getMolecularFormula() {
+    public String getMolecularFormula() {
         return this.molecularFormula;
     }
 
-	public void setMolecularFormula(String molecularFormula) {
+    public void setMolecularFormula(String molecularFormula) {
         this.molecularFormula = molecularFormula;
     }
 
-	public HashMap<String, String> getProperties() {
+    public HashMap<String, String> getProperties() {
         return this.properties;
     }
 
-	public void setProperties(HashMap<String, String> properties) {
+    public void setProperties(HashMap<String, String> properties) {
         this.properties = properties;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static AbstractBBChemStructure fromJsonToAbstractBBChemStructure(String json) {
+    public static AbstractBBChemStructure fromJsonToAbstractBBChemStructure(String json) {
         return new JSONDeserializer<AbstractBBChemStructure>()
-        .use(null, AbstractBBChemStructure.class).deserialize(json);
+                .use(null, AbstractBBChemStructure.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<AbstractBBChemStructure> collection) {
+    public static String toJsonArray(Collection<AbstractBBChemStructure> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<AbstractBBChemStructure> collection, String[] fields) {
+    public static String toJsonArray(Collection<AbstractBBChemStructure> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<AbstractBBChemStructure> fromJsonArrayToAbstractBBChemStructures(String json) {
+    public static Collection<AbstractBBChemStructure> fromJsonArrayToAbstractBBChemStructures(String json) {
         return new JSONDeserializer<List<AbstractBBChemStructure>>()
-        .use("values", AbstractBBChemStructure.class).deserialize(json);
+                .use("values", AbstractBBChemStructure.class).deserialize(json);
     }
 
-	@Version
+    @Version
     @Column(name = "version")
     private Integer version;
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

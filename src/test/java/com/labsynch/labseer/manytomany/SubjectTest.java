@@ -7,7 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.service.SubjectService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,29 +24,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.service.SubjectService;
-import com.labsynch.labseer.service.TreatmentGroupService;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml" })
 @Configurable
 
 public class SubjectTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(SubjectTest.class);
 
 	@Autowired
 	private SubjectService subjectService;
-	
+
 	public HashMap<String, Long> makeTestStack() {
-		//each of these methods creates the full stack from protocol to subject.
+		// each of these methods creates the full stack from protocol to subject.
 		Date now = new Date();
-		//create 1 Protocol
+		// create 1 Protocol
 		Protocol protocol = new Protocol();
 		protocol.setRecordedBy("test user");
 		protocol.setRecordedDate(now);
@@ -49,50 +49,50 @@ public class SubjectTest {
 		protocol.setLsType("default");
 		protocol.setLsTransaction(98765L);
 		protocol.persist();
-		
-		//create 3 Experiments
+
+		// create 3 Experiments
 		Experiment e1 = new Experiment();
-        e1.setCodeName("T-EXPT-1111111");
-        Experiment e2 = new Experiment();
-        e2.setCodeName("T-EXPT-22222222");
-        Experiment e3 = new Experiment();
-        e3.setCodeName("T-EXPT-33333333");
-        Set<Experiment> allExperiments = new HashSet<Experiment>();
-        allExperiments.add(e1);
-        allExperiments.add(e2);
-        allExperiments.add(e3);
-        for (Experiment experiment: allExperiments) {
-        	experiment.setIgnored(false);
-        	experiment.setLsKind(protocol.getLsKind());
-        	experiment.setLsType(protocol.getLsType());
-        	experiment.setRecordedBy(protocol.getRecordedBy());
-        	experiment.setRecordedDate(protocol.getRecordedDate());
-            experiment.setLsTransaction(protocol.getLsTransaction());
-        	experiment.setProtocol(protocol);
-        }
-        
-		//create 3 AnalysisGroups
-        AnalysisGroup a1= new AnalysisGroup();
-        a1.setCodeName("T-AG-11111111");
-        AnalysisGroup a2= new AnalysisGroup();
-        a2.setCodeName("T-AG-22222222");
-        AnalysisGroup a3= new AnalysisGroup();
-        a3.setCodeName("T-AG-33333333");
-        Set<AnalysisGroup> allAnalysisGroups = new HashSet<AnalysisGroup>();
-        allAnalysisGroups.add(a1);
-        allAnalysisGroups.add(a2);
-        allAnalysisGroups.add(a3);
-        for (AnalysisGroup analysisGroup: allAnalysisGroups) {
-        	analysisGroup.setIgnored(e1.isIgnored());
-            analysisGroup.setLsKind(e1.getLsKind());
-            analysisGroup.setLsType(e1.getLsType());
-            analysisGroup.setRecordedBy(e1.getRecordedBy());
-            analysisGroup.setRecordedDate(e1.getRecordedDate());
-            analysisGroup.setLsTransaction(e1.getLsTransaction());
-        }
-        
-        //create 3 TreatmentGroups
-        TreatmentGroup t1 = new TreatmentGroup();
+		e1.setCodeName("T-EXPT-1111111");
+		Experiment e2 = new Experiment();
+		e2.setCodeName("T-EXPT-22222222");
+		Experiment e3 = new Experiment();
+		e3.setCodeName("T-EXPT-33333333");
+		Set<Experiment> allExperiments = new HashSet<Experiment>();
+		allExperiments.add(e1);
+		allExperiments.add(e2);
+		allExperiments.add(e3);
+		for (Experiment experiment : allExperiments) {
+			experiment.setIgnored(false);
+			experiment.setLsKind(protocol.getLsKind());
+			experiment.setLsType(protocol.getLsType());
+			experiment.setRecordedBy(protocol.getRecordedBy());
+			experiment.setRecordedDate(protocol.getRecordedDate());
+			experiment.setLsTransaction(protocol.getLsTransaction());
+			experiment.setProtocol(protocol);
+		}
+
+		// create 3 AnalysisGroups
+		AnalysisGroup a1 = new AnalysisGroup();
+		a1.setCodeName("T-AG-11111111");
+		AnalysisGroup a2 = new AnalysisGroup();
+		a2.setCodeName("T-AG-22222222");
+		AnalysisGroup a3 = new AnalysisGroup();
+		a3.setCodeName("T-AG-33333333");
+		Set<AnalysisGroup> allAnalysisGroups = new HashSet<AnalysisGroup>();
+		allAnalysisGroups.add(a1);
+		allAnalysisGroups.add(a2);
+		allAnalysisGroups.add(a3);
+		for (AnalysisGroup analysisGroup : allAnalysisGroups) {
+			analysisGroup.setIgnored(e1.isIgnored());
+			analysisGroup.setLsKind(e1.getLsKind());
+			analysisGroup.setLsType(e1.getLsType());
+			analysisGroup.setRecordedBy(e1.getRecordedBy());
+			analysisGroup.setRecordedDate(e1.getRecordedDate());
+			analysisGroup.setLsTransaction(e1.getLsTransaction());
+		}
+
+		// create 3 TreatmentGroups
+		TreatmentGroup t1 = new TreatmentGroup();
 		t1.setCodeName("T-TG-11111111");
 		TreatmentGroup t2 = new TreatmentGroup();
 		t2.setCodeName("T-TG-22222222");
@@ -102,16 +102,16 @@ public class SubjectTest {
 		allTreatmentGroups.add(t1);
 		allTreatmentGroups.add(t2);
 		allTreatmentGroups.add(t3);
-		for (TreatmentGroup treatmentGroup: allTreatmentGroups) {
+		for (TreatmentGroup treatmentGroup : allTreatmentGroups) {
 			treatmentGroup.setIgnored(a1.isIgnored());
 			treatmentGroup.setLsKind(a1.getLsKind());
 			treatmentGroup.setLsType(a1.getLsType());
 			treatmentGroup.setRecordedBy(a1.getRecordedBy());
-            treatmentGroup.setRecordedDate(a1.getRecordedDate());
+			treatmentGroup.setRecordedDate(a1.getRecordedDate());
 			treatmentGroup.setLsTransaction(a1.getLsTransaction());
 		}
-		
-		//create 3 Subjects
+
+		// create 3 Subjects
 		Subject s1 = new Subject();
 		s1.setCodeName("T-SUBJ-11111111");
 		Subject s2 = new Subject();
@@ -122,16 +122,16 @@ public class SubjectTest {
 		allSubjects.add(s1);
 		allSubjects.add(s2);
 		allSubjects.add(s3);
-		for (Subject subject: allSubjects) {
+		for (Subject subject : allSubjects) {
 			subject.setIgnored(t1.isIgnored());
 			subject.setLsKind(t1.getLsKind());
 			subject.setLsType(t1.getLsType());
 			subject.setRecordedBy(t1.getRecordedBy());
-            subject.setRecordedDate(t1.getRecordedDate());
+			subject.setRecordedDate(t1.getRecordedDate());
 			subject.setLsTransaction(t1.getLsTransaction());
 		}
-		
-		//Create the various Sets for mapping
+
+		// Create the various Sets for mapping
 		Set<AnalysisGroup> e1AnalysisGroups = new HashSet<AnalysisGroup>();
 		e1AnalysisGroups.add(a1);
 		e1AnalysisGroups.add(a3);
@@ -186,8 +186,8 @@ public class SubjectTest {
 		Set<TreatmentGroup> s3TreatmentGroups = new HashSet<TreatmentGroup>();
 		s3TreatmentGroups.add(t1);
 		s3TreatmentGroups.add(t3);
-		
-		//Then assign all the groups to their owners to create the mappings
+
+		// Then assign all the groups to their owners to create the mappings
 		e1.setAnalysisGroups(e1AnalysisGroups);
 		e2.setAnalysisGroups(e2AnalysisGroups);
 		e3.setAnalysisGroups(e3AnalysisGroups);
@@ -206,8 +206,8 @@ public class SubjectTest {
 		s1.setTreatmentGroups(s1TreatmentGroups);
 		s2.setTreatmentGroups(s2TreatmentGroups);
 		s3.setTreatmentGroups(s3TreatmentGroups);
-		
-		//Then persist and flush everything to the database
+
+		// Then persist and flush everything to the database
 		e1.persist();
 		e2.persist();
 		e3.persist();
@@ -220,7 +220,7 @@ public class SubjectTest {
 		s1.persist();
 		s2.persist();
 		s3.persist();
-		
+
 		HashMap<String, Long> idMap = new HashMap<String, Long>();
 		idMap.put("e1", e1.getId());
 		idMap.put("e2", e2.getId());
@@ -234,16 +234,15 @@ public class SubjectTest {
 		idMap.put("s1", s1.getId());
 		idMap.put("s2", s2.getId());
 		idMap.put("s3", s3.getId());
-		
+
 		return idMap;
-		
+
 	}
-	
-	
+
 	private Protocol makeTestingProtocol() {
-		//initialize some entries to fill in the fields
+		// initialize some entries to fill in the fields
 		Date now = new Date();
-		//create protocol
+		// create protocol
 		Protocol protocol = new Protocol();
 		protocol.setRecordedBy("test user");
 		protocol.setRecordedDate(now);
@@ -253,38 +252,38 @@ public class SubjectTest {
 		protocol.persist();
 		return protocol;
 	}
-	
+
 	private Experiment makeTestingExperiment() {
 		Protocol protocol = makeTestingProtocol();
 		Experiment experiment = new Experiment();
-        experiment.setCodeName("EXPT-12345678");
-        experiment.setIgnored(false);
-        experiment.setLsKind(protocol.getLsKind());
-        experiment.setLsType(protocol.getLsType());
-        experiment.setRecordedBy(protocol.getRecordedBy());
-        experiment.setRecordedDate(protocol.getRecordedDate());
-        experiment.setLsTransaction(protocol.getLsTransaction());
-        experiment.setProtocol(protocol);
-        experiment.persist();
-        return experiment;
+		experiment.setCodeName("EXPT-12345678");
+		experiment.setIgnored(false);
+		experiment.setLsKind(protocol.getLsKind());
+		experiment.setLsType(protocol.getLsType());
+		experiment.setRecordedBy(protocol.getRecordedBy());
+		experiment.setRecordedDate(protocol.getRecordedDate());
+		experiment.setLsTransaction(protocol.getLsTransaction());
+		experiment.setProtocol(protocol);
+		experiment.persist();
+		return experiment;
 	}
-	
+
 	private AnalysisGroup makeTestingAnalysisGroup() {
 		Experiment experiment = makeTestingExperiment();
-		AnalysisGroup analysisgroup= new AnalysisGroup();
-        analysisgroup.setCodeName("AG-12345678");
-        analysisgroup.setIgnored(experiment.isIgnored());
-        analysisgroup.setLsKind(experiment.getLsKind());
-        analysisgroup.setLsType(experiment.getLsType());
-        analysisgroup.setRecordedBy(experiment.getRecordedBy());
-        analysisgroup.setLsTransaction(experiment.getLsTransaction());
-        Set<Experiment> experimentSet = new HashSet<Experiment>();
-        experimentSet.add(experiment);
-        analysisgroup.setExperiments(experimentSet);
-        analysisgroup.persist();
-        return analysisgroup;
+		AnalysisGroup analysisgroup = new AnalysisGroup();
+		analysisgroup.setCodeName("AG-12345678");
+		analysisgroup.setIgnored(experiment.isIgnored());
+		analysisgroup.setLsKind(experiment.getLsKind());
+		analysisgroup.setLsType(experiment.getLsType());
+		analysisgroup.setRecordedBy(experiment.getRecordedBy());
+		analysisgroup.setLsTransaction(experiment.getLsTransaction());
+		Set<Experiment> experimentSet = new HashSet<Experiment>();
+		experimentSet.add(experiment);
+		analysisgroup.setExperiments(experimentSet);
+		analysisgroup.persist();
+		return analysisgroup;
 	}
-	
+
 	private TreatmentGroup makeTestingTreatmentGroup() {
 		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
 		TreatmentGroup treatmentgroup = new TreatmentGroup();
@@ -300,7 +299,7 @@ public class SubjectTest {
 		treatmentgroup.persist();
 		return treatmentgroup;
 	}
-	
+
 	private Subject makeTestingSubject() {
 		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
 		Subject subject = new Subject();
@@ -316,9 +315,9 @@ public class SubjectTest {
 		subject.persist();
 		return subject;
 	}
-	
+
 	@Transactional
-	//@Test
+	// @Test
 	public void updateTest() {
 	}
 
@@ -330,7 +329,7 @@ public class SubjectTest {
 		Subject check = Subject.fromJsonToSample(json);
 		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
-	
+
 	@Transactional
 	@Test
 	public void toJsonArrayTest() {
@@ -343,7 +342,7 @@ public class SubjectTest {
 		String jsonArray = Subject.toJsonArray(subjectCollection);
 		Assert.assertNotNull(jsonArray);
 	}
-	
+
 	@Transactional
 	@Test
 	public void fromJsonToSubjectTest() {
@@ -372,10 +371,10 @@ public class SubjectTest {
 	}
 
 	@Transactional
-	//@Test
+	// @Test
 	public void fromJsonArrayToSubjectsReaderTest() {
 	}
-	
+
 	@Transactional
 	@Test
 	public void findSubjectsByTreatmentGroupsManyTest() {
@@ -387,9 +386,9 @@ public class SubjectTest {
 		Assert.assertEquals(checkList.size(), 1);
 		Assert.assertEquals(checkList.get(0).toJson(), Subject.findSubject(idMap.get("s1")).toJson());
 	}
-	
+
 	@Transactional
-	//@Test
+	// @Test
 	public void findSubjectsByTreatmentGroupsSingleTest() {
 		Subject subject = makeTestingSubject();
 		Set<TreatmentGroup> treatmentgroups = new HashSet<TreatmentGroup>();
@@ -397,7 +396,7 @@ public class SubjectTest {
 		Subject check = Subject.findSubjectsByTreatmentGroups(treatmentgroups).getSingleResult();
 		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
-	
+
 	@Transactional
 	@Test
 	public void findSubjectsByLsTransactionEqualsManyTest() {
@@ -411,7 +410,7 @@ public class SubjectTest {
 		List<Subject> check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getResultList();
 		Assert.assertEquals(3, check.size());
 	}
-	
+
 	@Transactional
 	@Test
 	public void findSubjectsByLsTransactionEqualsSingleTest() {
@@ -420,7 +419,7 @@ public class SubjectTest {
 		Subject check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getSingleResult();
 		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
-	
+
 	@Transactional
 	@Test
 	public void findSubjectsByCodeNameEqualsTest() {
@@ -431,16 +430,18 @@ public class SubjectTest {
 	}
 
 	@Transactional
-	//@Test
+	// @Test
 	public void deleteByExperimentIDTest() {
 		Subject subject = makeTestingSubject();
 		Long id = subject.getId();
-		Long experimentid = subject.getTreatmentGroups().iterator().next().getAnalysisGroups().iterator().next().getExperiments().iterator().next().getId();
+		Long experimentid = subject.getTreatmentGroups().iterator().next().getAnalysisGroups().iterator().next()
+				.getExperiments().iterator().next().getId();
 		Subject checkbefore = Subject.findSubject(id);
 		Assert.assertEquals(subject.toJson(), checkbefore.toJson());
 		Subject.deleteByExperimentID(experimentid);
 		Subject checkafter = Subject.findSubject(id);
-		Assert.assertEquals(true,checkafter == null);;
+		Assert.assertEquals(true, checkafter == null);
+		;
 	}
 
 }

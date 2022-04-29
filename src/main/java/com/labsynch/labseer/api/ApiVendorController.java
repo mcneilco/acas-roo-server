@@ -3,8 +3,14 @@ package com.labsynch.labseer.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.Vendor;
+import com.labsynch.labseer.service.ErrorMessage;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.domain.Vendor;
-
-import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import org.springframework.beans.factory.annotation.Autowired;
-
-@RequestMapping(value = {"/api/v1/vendors"})
+@RequestMapping(value = { "/api/v1/vendors" })
 @Controller
 public class ApiVendorController {
 
@@ -32,28 +31,27 @@ public class ApiVendorController {
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
-
-	//check if vendor already exists by code
+	// check if vendor already exists by code
 	// if exists -- return false else true
 	@RequestMapping(value = "/validate", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<Boolean> validate(@RequestParam(value="code", required = true) String code) {
+	public ResponseEntity<Boolean> validate(@RequestParam(value = "code", required = true) String code) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		if (Vendor.countFindVendorsByCodeEquals(code) > 0){
-			return new ResponseEntity<Boolean>(false, headers,HttpStatus.CONFLICT );
+		if (Vendor.countFindVendorsByCodeEquals(code) > 0) {
+			return new ResponseEntity<Boolean>(false, headers, HttpStatus.CONFLICT);
 		} else {
-			return new ResponseEntity<Boolean>(true, headers,HttpStatus.ACCEPTED );	        	
+			return new ResponseEntity<Boolean>(true, headers, HttpStatus.ACCEPTED);
 		}
-	}	
+	}
 
-	//validate vendor before saving
+	// validate vendor before saving
 	// is vendor code still unique?
 	// is vendor name unique? (optional)
 	@RequestMapping(value = "/validateBeforeSave", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -74,14 +72,14 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
 		Long vendorByCodeCount = 0L;
 		List<Vendor> queryVendors = Vendor.findVendorsByCodeEquals(queryVendor.getCode()).getResultList();
-		for (Vendor vendor : queryVendors){
-			if (queryVendor.getId() == null || vendor.getId().longValue() != queryVendor.getId().longValue()){
+		for (Vendor vendor : queryVendors) {
+			if (queryVendor.getId() == null || vendor.getId().longValue() != queryVendor.getId().longValue()) {
 				++vendorByCodeCount;
 				logger.debug("current vendor: " + vendor.toJson());
 				logger.debug("vendor id: " + vendor.getId());
@@ -90,49 +88,50 @@ public class ApiVendorController {
 			}
 		}
 
-		if (vendorByCodeCount > 0  ){
+		if (vendorByCodeCount > 0) {
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("ERROR");
 			error.setMessage("Found another vendor with the same code name");
 			errors.add(error);
-			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers,HttpStatus.CONFLICT );
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
 		} else {
-			return new ResponseEntity<String>(queryVendor.toJson(), headers,HttpStatus.OK );	        	
+			return new ResponseEntity<String>(queryVendor.toJson(), headers, HttpStatus.OK);
 		}
 	}
 
 	@RequestMapping(value = "/findByCodeEquals", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> findByCodeEquals(@RequestParam(value="code", required = true) String code) {
+	public ResponseEntity<String> findByCodeEquals(@RequestParam(value = "code", required = true) String code) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		List<Vendor> vendors = Vendor.findVendorsByCodeEquals(code).getResultList();
 		logger.debug("number of vendors found: " + vendors.size());
-		if (vendors.size() != 1){
-			return new ResponseEntity<String>("[]", headers, HttpStatus.CONFLICT);       	
+		if (vendors.size() != 1) {
+			return new ResponseEntity<String>("[]", headers, HttpStatus.CONFLICT);
 		} else {
 			return new ResponseEntity<String>(vendors.get(0).toJson(), headers, HttpStatus.OK);
 		}
 
-	}	 
+	}
 
 	@RequestMapping(value = "/findByCodeLike", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> findByCodeLike(@RequestParam(value="code", required = true) String code) {
+	public ResponseEntity<String> findByCodeLike(@RequestParam(value = "code", required = true) String code) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
-		return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findVendorsByCodeLike(code).getResultList()), headers, HttpStatus.OK);
-	}	 
+		return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findVendorsByCodeLike(code).getResultList()),
+				headers, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -142,8 +141,8 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		if (vendor == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -158,12 +157,13 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		if (propertiesUtilService.getOrderSelectLists()){
-			return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors("name", "ASC")), headers, HttpStatus.OK);
+		if (propertiesUtilService.getOrderSelectLists()) {
+			return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors("name", "ASC")), headers,
+					HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors()), headers, HttpStatus.OK);
 		}
@@ -181,8 +181,8 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(newVendor.toJson(), headers, HttpStatus.CREATED);
 	}
@@ -200,8 +200,8 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
@@ -212,8 +212,8 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		if (Vendor.fromJsonToVendor(json).merge() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -227,8 +227,8 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		for (Vendor vendor : Vendor.fromJsonArrayToVendors(json)) {
 			if (vendor.merge() == null) {
@@ -245,8 +245,8 @@ public class ApiVendorController {
 		headers.add("Content-Type", "application/text; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		if (vendor == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -254,15 +254,17 @@ public class ApiVendorController {
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		try {
 			vendor.remove();
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.info("Hit an exception: " + e);
 			Long lotCount = Lot.countLotsByVendor(vendor);
-			logger.info("Unable to delete the vendor. " + lotCount + " lots associated with the vendor " + vendor.getName());
+			logger.info("Unable to delete the vendor. " + lotCount + " lots associated with the vendor "
+					+ vendor.getName());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("ERROR");
-			error.setMessage("Unable to delete the vendor. " + lotCount + " lots associated with the vendor " + vendor.getName());
+			error.setMessage("Unable to delete the vendor. " + lotCount + " lots associated with the vendor "
+					+ vendor.getName());
 			errors.add(error);
-			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers,HttpStatus.CONFLICT );
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
 		}
 
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
@@ -270,27 +272,17 @@ public class ApiVendorController {
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> searchBySearchTerms(@RequestParam(value="searchTerm", required = true) String searchTerm) {
+	public ResponseEntity<String> searchBySearchTerms(
+			@RequestParam(value = "searchTerm", required = true) String searchTerm) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
-		return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findVendorsBySearchTerm(searchTerm).getResultList()), headers, HttpStatus.OK);
-	}	
-
-	@RequestMapping(method = RequestMethod.OPTIONS)
-	public ResponseEntity<String> getOptions() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma", "no-cache"); //HTTP 1.0
-		headers.setExpires(0); // Expire the cache
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}	 
+		return new ResponseEntity<String>(
+				Vendor.toJsonArray(Vendor.findVendorsBySearchTerm(searchTerm).getResultList()), headers, HttpStatus.OK);
+	}
 
 }

@@ -2,10 +2,10 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ItxLsThingLsThingService {
@@ -16,6 +16,4 @@ public interface ItxLsThingLsThingService {
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<ItxLsThingLsThing> itxLsThingLsThings);
 
-	
-	
 }

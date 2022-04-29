@@ -7,71 +7,69 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+public class MetalotReturnDTO {
 
-public class MetalotReturnDTO{
+    private long id;
 
-	private long id;
-	
-	private String corpName;
-	
-	private long buid;
+    private String corpName;
 
+    private long buid;
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public long getId() {
+    public long getId() {
         return this.id;
     }
 
-	public void setId(long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-	public String getCorpName() {
+    public String getCorpName() {
         return this.corpName;
     }
 
-	public void setCorpName(String corpName) {
+    public void setCorpName(String corpName) {
         this.corpName = corpName;
     }
 
-	public long getBuid() {
+    public long getBuid() {
         return this.buid;
     }
 
-	public void setBuid(long buid) {
+    public void setBuid(long buid) {
         this.buid = buid;
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static MetalotReturnDTO fromJsonToMetalotReturnDTO(String json) {
+    public static MetalotReturnDTO fromJsonToMetalotReturnDTO(String json) {
         return new JSONDeserializer<MetalotReturnDTO>()
-        .use(null, MetalotReturnDTO.class).deserialize(json);
+                .use(null, MetalotReturnDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<MetalotReturnDTO> collection) {
+    public static String toJsonArray(Collection<MetalotReturnDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<MetalotReturnDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<MetalotReturnDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<MetalotReturnDTO> fromJsonArrayToMetaloes(String json) {
+    public static Collection<MetalotReturnDTO> fromJsonArrayToMetaloes(String json) {
         return new JSONDeserializer<List<MetalotReturnDTO>>()
-        .use("values", MetalotReturnDTO.class).deserialize(json);
+                .use("values", MetalotReturnDTO.class).deserialize(json);
     }
 }

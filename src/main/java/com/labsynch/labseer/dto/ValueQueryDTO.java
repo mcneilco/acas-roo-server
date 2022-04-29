@@ -1,105 +1,106 @@
 package com.labsynch.labseer.dto;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 public class ValueQueryDTO {
 
-	String stateType;
-	String stateKind;
-	String valueType;
-	String valueKind;
-	String value;
-	String operator;
-	
-	public ValueQueryDTO(){
-		
-	}
+    String stateType;
+    String stateKind;
+    String valueType;
+    String valueKind;
+    String value;
+    String operator;
 
-	public String getStateType() {
+    public ValueQueryDTO() {
+
+    }
+
+    public String getStateType() {
         return this.stateType;
     }
 
-	public void setStateType(String stateType) {
+    public void setStateType(String stateType) {
         this.stateType = stateType;
     }
 
-	public String getStateKind() {
+    public String getStateKind() {
         return this.stateKind;
     }
 
-	public void setStateKind(String stateKind) {
+    public void setStateKind(String stateKind) {
         this.stateKind = stateKind;
     }
 
-	public String getValueType() {
+    public String getValueType() {
         return this.valueType;
     }
 
-	public void setValueType(String valueType) {
+    public void setValueType(String valueType) {
         this.valueType = valueType;
     }
 
-	public String getValueKind() {
+    public String getValueKind() {
         return this.valueKind;
     }
 
-	public void setValueKind(String valueKind) {
+    public void setValueKind(String valueKind) {
         this.valueKind = valueKind;
     }
 
-	public String getValue() {
+    public String getValue() {
         return this.value;
     }
 
-	public void setValue(String value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
-	public String getOperator() {
+    public String getOperator() {
         return this.operator;
     }
 
-	public void setOperator(String operator) {
+    public void setOperator(String operator) {
         this.operator = operator;
     }
 
-	public String toString() {
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-	public String toJson() {
+    public String toJson() {
         return new JSONSerializer()
-        .exclude("*.class").serialize(this);
+                .exclude("*.class").serialize(this);
     }
 
-	public String toJson(String[] fields) {
+    public String toJson(String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(this);
+                .include(fields).exclude("*.class").serialize(this);
     }
 
-	public static ValueQueryDTO fromJsonToValueQueryDTO(String json) {
+    public static ValueQueryDTO fromJsonToValueQueryDTO(String json) {
         return new JSONDeserializer<ValueQueryDTO>()
-        .use(null, ValueQueryDTO.class).deserialize(json);
+                .use(null, ValueQueryDTO.class).deserialize(json);
     }
 
-	public static String toJsonArray(Collection<ValueQueryDTO> collection) {
+    public static String toJsonArray(Collection<ValueQueryDTO> collection) {
         return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
+                .exclude("*.class").serialize(collection);
     }
 
-	public static String toJsonArray(Collection<ValueQueryDTO> collection, String[] fields) {
+    public static String toJsonArray(Collection<ValueQueryDTO> collection, String[] fields) {
         return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
+                .include(fields).exclude("*.class").serialize(collection);
     }
 
-	public static Collection<ValueQueryDTO> fromJsonArrayToValueQueryDTO(String json) {
+    public static Collection<ValueQueryDTO> fromJsonArrayToValueQueryDTO(String json) {
         return new JSONDeserializer<List<ValueQueryDTO>>()
-        .use("values", ValueQueryDTO.class).deserialize(json);
+                .use("values", ValueQueryDTO.class).deserialize(json);
     }
 }
