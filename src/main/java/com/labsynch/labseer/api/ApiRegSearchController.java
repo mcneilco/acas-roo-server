@@ -24,7 +24,6 @@ import com.labsynch.labseer.dto.RegSearchDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.RegSearchService;
 
-//@RooWebScaffold(path = "regsearches", formBackingObject = RegSearch.class)
 @RequestMapping(value ={"/api/v1/regsearches", "/api/v1/regSearches"})
 @Controller
 public class ApiRegSearchController {

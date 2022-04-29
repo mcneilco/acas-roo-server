@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -18,13 +19,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
@@ -34,10 +33,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroups", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
-@RooJson
+@Entity
+@Configurable
+
 public class Subject extends AbstractThing {
 	
 	private static final Logger logger = LoggerFactory.getLogger(Subject.class);
@@ -231,5 +229,206 @@ public class Subject extends AbstractThing {
         TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.codeName = :codeName", Subject.class);
         q.setParameter("codeName", codeName);
         return q.getSingleResult();
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "treatmentGroups", "lsLabels", "lsStates", "containers");
+
+	public static long countSubjects() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM Subject o", Long.class).getSingleResult();
+    }
+
+	public static List<Subject> findAllSubjects() {
+        return entityManager().createQuery("SELECT o FROM Subject o", Subject.class).getResultList();
+    }
+
+	public static List<Subject> findAllSubjects(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Subject o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Subject.class).getResultList();
+    }
+
+	public static Subject findSubject(Long id) {
+        if (id == null) return null;
+        return entityManager().find(Subject.class, id);
+    }
+
+	public static List<Subject> findSubjectEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM Subject o", Subject.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<Subject> findSubjectEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Subject o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Subject.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public Subject merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        Subject merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public Set<TreatmentGroup> getTreatmentGroups() {
+        return this.treatmentGroups;
+    }
+
+	public void setTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
+        this.treatmentGroups = treatmentGroups;
+    }
+
+	public Set<SubjectLabel> getLsLabels() {
+        return this.lsLabels;
+    }
+
+	public void setLsLabels(Set<SubjectLabel> lsLabels) {
+        this.lsLabels = lsLabels;
+    }
+
+	public Set<SubjectState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<SubjectState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public Set<ItxSubjectContainer> getContainers() {
+        return this.containers;
+    }
+
+	public void setContainers(Set<ItxSubjectContainer> containers) {
+        this.containers = containers;
+    }
+
+	public static Long countFindSubjectsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Subject AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Subject AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
+        if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(o) FROM Subject AS o WHERE");
+        for (int i = 0; i < treatmentGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        TypedQuery q = em.createQuery(queryBuilder.toString(), Long.class);
+        int treatmentGroupsIndex = 0;
+        for (TreatmentGroup _treatmentgroup: treatmentGroups) {
+            q.setParameter("treatmentGroups_item" + treatmentGroupsIndex++, _treatmentgroup);
+        }
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<Subject> findSubjectsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.codeName = :codeName", Subject.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Subject> findSubjectsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Subject> findSubjectsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.lsTransaction = :lsTransaction", Subject.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<Subject> findSubjectsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<Subject> findSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
+        if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE");
+        for (int i = 0; i < treatmentGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        int treatmentGroupsIndex = 0;
+        for (TreatmentGroup _treatmentgroup: treatmentGroups) {
+            q.setParameter("treatmentGroups_item" + treatmentGroupsIndex++, _treatmentgroup);
+        }
+        return q;
+    }
+
+	public static TypedQuery<Subject> findSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups, String sortFieldName, String sortOrder) {
+        if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE");
+        for (int i = 0; i < treatmentGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" " + sortOrder);
+            }
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        int treatmentGroupsIndex = 0;
+        for (TreatmentGroup _treatmentgroup: treatmentGroups) {
+            q.setParameter("treatmentGroups_item" + treatmentGroupsIndex++, _treatmentgroup);
+        }
+        return q;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

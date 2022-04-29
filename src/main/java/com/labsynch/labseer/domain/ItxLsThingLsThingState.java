@@ -10,17 +10,16 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -29,10 +28,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
+@Entity
+@Configurable
+
 public class ItxLsThingLsThingState extends AbstractState {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ItxLsThingLsThingState.class);
@@ -142,4 +140,77 @@ public class ItxLsThingLsThingState extends AbstractState {
 
 
 
+
+	public ItxLsThingLsThingState() {
+        super();
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "itxLsThingLsThing", "lsValues");
+
+	public static long countItxLsThingLsThingStates() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingState o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxLsThingLsThingState> findAllItxLsThingLsThingStates() {
+        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingState o", ItxLsThingLsThingState.class).getResultList();
+    }
+
+	public static List<ItxLsThingLsThingState> findAllItxLsThingLsThingStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThingState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThingState.class).getResultList();
+    }
+
+	public static ItxLsThingLsThingState findItxLsThingLsThingState(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxLsThingLsThingState.class, id);
+    }
+
+	public static List<ItxLsThingLsThingState> findItxLsThingLsThingStateEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingState o", ItxLsThingLsThingState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxLsThingLsThingState> findItxLsThingLsThingStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThingState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThingState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxLsThingLsThingState merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxLsThingLsThingState merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public ItxLsThingLsThing getItxLsThingLsThing() {
+        return this.itxLsThingLsThing;
+    }
+
+	public void setItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+        this.itxLsThingLsThing = itxLsThingLsThing;
+    }
+
+	public Set<ItxLsThingLsThingValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<ItxLsThingLsThingValue> lsValues) {
+        this.lsValues = lsValues;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

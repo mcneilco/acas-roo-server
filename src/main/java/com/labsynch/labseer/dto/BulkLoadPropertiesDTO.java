@@ -10,14 +10,12 @@ import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.BulkLoadTemplate;
@@ -29,12 +27,10 @@ import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class BulkLoadPropertiesDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BulkLoadPropertiesDTO.class);
@@ -176,4 +172,76 @@ public class BulkLoadPropertiesDTO {
 			logger.error("Caught exception comparing template to mappings.",e);
 		}
 	}
+
+	public Collection<SimpleBulkLoadPropertyDTO> getSdfProperties() {
+        return this.sdfProperties;
+    }
+
+	public void setSdfProperties(Collection<SimpleBulkLoadPropertyDTO> sdfProperties) {
+        this.sdfProperties = sdfProperties;
+    }
+
+	public Collection<SimpleBulkLoadPropertyDTO> getDbProperties() {
+        return this.dbProperties;
+    }
+
+	public void setDbProperties(Collection<SimpleBulkLoadPropertyDTO> dbProperties) {
+        this.dbProperties = dbProperties;
+    }
+
+	public Collection<BulkLoadPropertyMappingDTO> getBulkLoadProperties() {
+        return this.bulkLoadProperties;
+    }
+
+	public void setBulkLoadProperties(Collection<BulkLoadPropertyMappingDTO> bulkLoadProperties) {
+        this.bulkLoadProperties = bulkLoadProperties;
+    }
+
+	public Collection<ErrorMessage> getErrors() {
+        return this.errors;
+    }
+
+	public void setErrors(Collection<ErrorMessage> errors) {
+        this.errors = errors;
+    }
+
+	public int getNumRecordsRead() {
+        return this.numRecordsRead;
+    }
+
+	public void setNumRecordsRead(int numRecordsRead) {
+        this.numRecordsRead = numRecordsRead;
+    }
+
+	public String getTemplateName() {
+        return this.templateName;
+    }
+
+	public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+	public static BulkLoadPropertiesDTO fromJsonToBulkLoadPropertiesDTO(String json) {
+        return new JSONDeserializer<BulkLoadPropertiesDTO>()
+        .use(null, BulkLoadPropertiesDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<BulkLoadPropertiesDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<BulkLoadPropertiesDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<BulkLoadPropertiesDTO> fromJsonArrayToBulkLoadProes(String json) {
+        return new JSONDeserializer<List<BulkLoadPropertiesDTO>>()
+        .use("values", BulkLoadPropertiesDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

@@ -3,22 +3,18 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class CodeTableDTO {
 
 	public CodeTableDTO() {
@@ -143,6 +139,100 @@ public class CodeTableDTO {
 	
 	public static String toJsonArray(Collection<CodeTableDTO> collection) {
         return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+
+	public static CodeTableDTO fromJsonToCodeTableDTO(String json) {
+        return new JSONDeserializer<CodeTableDTO>()
+        .use(null, CodeTableDTO.class).deserialize(json);
+    }
+
+	public static Collection<CodeTableDTO> fromJsonArrayToCoes(String json) {
+        return new JSONDeserializer<List<CodeTableDTO>>()
+        .use("values", CodeTableDTO.class).deserialize(json);
+    }
+
+	public String getCode() {
+        return this.code;
+    }
+
+	public void setCode(String code) {
+        this.code = code;
+    }
+
+	public String getName() {
+        return this.name;
+    }
+
+	public void setName(String name) {
+        this.name = name;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public Integer getDisplayOrder() {
+        return this.displayOrder;
+    }
+
+	public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public String getDescription() {
+        return this.description;
+    }
+
+	public void setDescription(String description) {
+        this.description = description;
+    }
+
+	public String getComments() {
+        return this.comments;
+    }
+
+	public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+	public String getCodeType() {
+        return this.codeType;
+    }
+
+	public void setCodeType(String codeType) {
+        this.codeType = codeType;
+    }
+
+	public String getCodeKind() {
+        return this.codeKind;
+    }
+
+	public void setCodeKind(String codeKind) {
+        this.codeKind = codeKind;
+    }
+
+	public String getCodeOrigin() {
+        return this.codeOrigin;
+    }
+
+	public void setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
 

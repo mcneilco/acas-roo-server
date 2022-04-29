@@ -5,13 +5,10 @@ import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class StructureAndThingSearchDTO {
 	
 	private String queryMol;
@@ -46,6 +43,50 @@ public class StructureAndThingSearchDTO {
 
 	public static Collection<StructureAndThingSearchDTO> fromJsonArrayToStructureAndThingSearchDTO(String json) {
         return new JSONDeserializer<List<StructureAndThingSearchDTO>>().use(null, ArrayList.class).use("values", StructureAndThingSearchDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getQueryMol() {
+        return this.queryMol;
+    }
+
+	public void setQueryMol(String queryMol) {
+        this.queryMol = queryMol;
+    }
+
+	public String getSearchType() {
+        return this.searchType;
+    }
+
+	public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
+
+	public Integer getMaxResults() {
+        return this.maxResults;
+    }
+
+	public void setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
+    }
+
+	public Float getSimilarity() {
+        return this.similarity;
+    }
+
+	public void setSimilarity(Float similarity) {
+        this.similarity = similarity;
+    }
+
+	public LsThingQueryDTO getLsThingQueryDTO() {
+        return this.lsThingQueryDTO;
+    }
+
+	public void setLsThingQueryDTO(LsThingQueryDTO lsThingQueryDTO) {
+        this.lsThingQueryDTO = lsThingQueryDTO;
     }
 }
 

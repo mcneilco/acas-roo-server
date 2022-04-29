@@ -7,20 +7,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -33,11 +31,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findTreatmentGroupValuesByLsState", "findTreatmentGroupValuesByLsTransactionEquals",
-		"findTreatmentGroupValuesByCodeValueEquals", "findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals"})
+@Entity
+@Configurable
 public class TreatmentGroupValue extends AbstractValue {
 
 	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupValue.class);
@@ -468,4 +463,167 @@ public class TreatmentGroupValue extends AbstractValue {
 	}
 
 
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static Long countFindTreatmentGroupValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupValue AS o WHERE o.codeValue = :codeValue", Long.class);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", Long.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindTreatmentGroupValuesByLsState(TreatmentGroupState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupValue AS o WHERE o.lsState = :lsState", Long.class);
+        q.setParameter("lsState", lsState);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindTreatmentGroupValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery<TreatmentGroupValue> q = em.createQuery("SELECT o FROM TreatmentGroupValue AS o WHERE o.codeValue = :codeValue", TreatmentGroupValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByCodeValueEquals(String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupValue AS o WHERE o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupValue> q = em.createQuery(queryBuilder.toString(), TreatmentGroupValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery<TreatmentGroupValue> q = em.createQuery("SELECT o FROM TreatmentGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", TreatmentGroupValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupValue> q = em.createQuery(queryBuilder.toString(), TreatmentGroupValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByLsState(TreatmentGroupState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery<TreatmentGroupValue> q = em.createQuery("SELECT o FROM TreatmentGroupValue AS o WHERE o.lsState = :lsState", TreatmentGroupValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByLsState(TreatmentGroupState lsState, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupValue AS o WHERE o.lsState = :lsState");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupValue> q = em.createQuery(queryBuilder.toString(), TreatmentGroupValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        TypedQuery<TreatmentGroupValue> q = em.createQuery("SELECT o FROM TreatmentGroupValue AS o WHERE o.lsTransaction = :lsTransaction", TreatmentGroupValue.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupValue AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupValue> q = em.createQuery(queryBuilder.toString(), TreatmentGroupValue.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public TreatmentGroupState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(TreatmentGroupState lsState) {
+        this.lsState = lsState;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsState");
+
+	public static List<TreatmentGroupValue> findAllTreatmentGroupValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TreatmentGroupValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TreatmentGroupValue.class).getResultList();
+    }
+
+	public static List<TreatmentGroupValue> findTreatmentGroupValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TreatmentGroupValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TreatmentGroupValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
 }

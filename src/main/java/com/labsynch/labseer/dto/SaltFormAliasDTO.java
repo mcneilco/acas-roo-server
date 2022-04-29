@@ -1,15 +1,16 @@
 package com.labsynch.labseer.dto;
 
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.SaltFormAlias;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+import java.util.Collection;
+import java.util.List;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class SaltFormAliasDTO {
 
     private String saltFormCorpName;
@@ -39,4 +40,78 @@ public class SaltFormAliasDTO {
     }
     
    
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getSaltFormCorpName() {
+        return this.saltFormCorpName;
+    }
+
+	public void setSaltFormCorpName(String saltFormCorpName) {
+        this.saltFormCorpName = saltFormCorpName;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getAliasName() {
+        return this.aliasName;
+    }
+
+	public void setAliasName(String aliasName) {
+        this.aliasName = aliasName;
+    }
+
+	public boolean isPreferred() {
+        return this.preferred;
+    }
+
+	public void setPreferred(boolean preferred) {
+        this.preferred = preferred;
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static SaltFormAliasDTO fromJsonToSaltFormAliasDTO(String json) {
+        return new JSONDeserializer<SaltFormAliasDTO>()
+        .use(null, SaltFormAliasDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<SaltFormAliasDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<SaltFormAliasDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<SaltFormAliasDTO> fromJsonArrayToSaltFoes(String json) {
+        return new JSONDeserializer<List<SaltFormAliasDTO>>()
+        .use("values", SaltFormAliasDTO.class).deserialize(json);
+    }
 }

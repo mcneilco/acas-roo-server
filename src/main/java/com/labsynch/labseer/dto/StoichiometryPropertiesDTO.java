@@ -3,24 +3,20 @@ package com.labsynch.labseer.dto;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.SimpleUtil;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class StoichiometryPropertiesDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(StoichiometryPropertiesDTO.class);
@@ -143,4 +139,114 @@ public class StoichiometryPropertiesDTO {
 		}
 	}
 	
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static StoichiometryPropertiesDTO fromJsonToStoichiometryPropertiesDTO(String json) {
+        return new JSONDeserializer<StoichiometryPropertiesDTO>()
+        .use(null, StoichiometryPropertiesDTO.class).deserialize(json);
+    }
+
+	public static Collection<StoichiometryPropertiesDTO> fromJsonArrayToStoichiometryProes(String json) {
+        return new JSONDeserializer<List<StoichiometryPropertiesDTO>>()
+        .use("values", StoichiometryPropertiesDTO.class).deserialize(json);
+    }
+
+	public String getCodeName() {
+        return this.codeName;
+    }
+
+	public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+	public String getCorpName() {
+        return this.corpName;
+    }
+
+	public void setCorpName(String corpName) {
+        this.corpName = corpName;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getPreferredName() {
+        return this.preferredName;
+    }
+
+	public void setPreferredName(String preferredName) {
+        this.preferredName = preferredName;
+    }
+
+	public BigDecimal getMolWeight() {
+        return this.molWeight;
+    }
+
+	public void setMolWeight(BigDecimal molWeight) {
+        this.molWeight = molWeight;
+    }
+
+	public BigDecimal getDensity() {
+        return this.density;
+    }
+
+	public void setDensity(BigDecimal density) {
+        this.density = density;
+    }
+
+	public BigDecimal getConcentration() {
+        return this.concentration;
+    }
+
+	public void setConcentration(BigDecimal concentration) {
+        this.concentration = concentration;
+    }
+
+	public String getConcUnit() {
+        return this.concUnit;
+    }
+
+	public void setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
+    }
+
+	public String getPhase() {
+        return this.phase;
+    }
+
+	public void setPhase(String phase) {
+        this.phase = phase;
+    }
+
+	public BigDecimal getAmountMade() {
+        return this.amountMade;
+    }
+
+	public void setAmountMade(BigDecimal amountMade) {
+        this.amountMade = amountMade;
+    }
+
+	public String getAmountMadeUnits() {
+        return this.amountMadeUnits;
+    }
+
+	public void setAmountMadeUnits(String amountMadeUnits) {
+        this.amountMadeUnits = amountMadeUnits;
+    }
 }

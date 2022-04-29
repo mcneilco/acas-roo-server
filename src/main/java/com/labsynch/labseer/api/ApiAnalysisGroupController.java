@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,9 +45,7 @@ import com.labsynch.labseer.utils.SimpleUtil;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")
-//@RooWebFinder
 @Transactional
-//@RooWebJson(jsonObject = AnalysisGroup.class)
 public class ApiAnalysisGroupController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -18,11 +19,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
@@ -32,10 +31,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findTreatmentGroupStatesByLsTypeAndKindEquals", "findTreatmentGroupStatesByTreatmentGroup", "findTreatmentGroupStatesByLsTransactionEquals" })
+@Entity
+@Configurable
+
 public class TreatmentGroupState extends AbstractState {
 
     @NotNull
@@ -230,4 +228,141 @@ public class TreatmentGroupState extends AbstractState {
 		return q;
 	}
 	
+
+	public TreatmentGroup getTreatmentGroup() {
+        return this.treatmentGroup;
+    }
+
+	public void setTreatmentGroup(TreatmentGroup treatmentGroup) {
+        this.treatmentGroup = treatmentGroup;
+    }
+
+	public Set<TreatmentGroupValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<TreatmentGroupValue> lsValues) {
+        this.lsValues = lsValues;
+    }
+
+	public static Long countFindTreatmentGroupStatesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupState AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindTreatmentGroupStatesByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupState AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", Long.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindTreatmentGroupStatesByTreatmentGroup(TreatmentGroup treatmentGroup) {
+        if (treatmentGroup == null) throw new IllegalArgumentException("The treatmentGroup argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroupState AS o WHERE o.treatmentGroup = :treatmentGroup", Long.class);
+        q.setParameter("treatmentGroup", treatmentGroup);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        TypedQuery<TreatmentGroupState> q = em.createQuery("SELECT o FROM TreatmentGroupState AS o WHERE o.lsTransaction = :lsTransaction", TreatmentGroupState.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupState AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupState> q = em.createQuery(queryBuilder.toString(), TreatmentGroupState.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        TypedQuery<TreatmentGroupState> q = em.createQuery("SELECT o FROM TreatmentGroupState AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", TreatmentGroupState.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByLsTypeAndKindEquals(String lsTypeAndKind, String sortFieldName, String sortOrder) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupState AS o WHERE o.lsTypeAndKind = :lsTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupState> q = em.createQuery(queryBuilder.toString(), TreatmentGroupState.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByTreatmentGroup(TreatmentGroup treatmentGroup) {
+        if (treatmentGroup == null) throw new IllegalArgumentException("The treatmentGroup argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        TypedQuery<TreatmentGroupState> q = em.createQuery("SELECT o FROM TreatmentGroupState AS o WHERE o.treatmentGroup = :treatmentGroup", TreatmentGroupState.class);
+        q.setParameter("treatmentGroup", treatmentGroup);
+        return q;
+    }
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByTreatmentGroup(TreatmentGroup treatmentGroup, String sortFieldName, String sortOrder) {
+        if (treatmentGroup == null) throw new IllegalArgumentException("The treatmentGroup argument is required");
+        EntityManager em = TreatmentGroupState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroupState AS o WHERE o.treatmentGroup = :treatmentGroup");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroupState> q = em.createQuery(queryBuilder.toString(), TreatmentGroupState.class);
+        q.setParameter("treatmentGroup", treatmentGroup);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("treatmentGroup", "lsValues");
+
+	public static List<TreatmentGroupState> findAllTreatmentGroupStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TreatmentGroupState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TreatmentGroupState.class).getResultList();
+    }
+
+	public static List<TreatmentGroupState> findTreatmentGroupStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TreatmentGroupState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TreatmentGroupState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

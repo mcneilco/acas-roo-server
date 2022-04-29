@@ -7,10 +7,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.ThingPage;
@@ -20,9 +18,7 @@ import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class SubjectDTO {
 	
     public SubjectDTO(Subject subject) {
@@ -98,6 +94,130 @@ public class SubjectDTO {
 
 	public static Collection<SubjectDTO> fromJsonArrayToSubjectDTO(String json) {
         return new JSONDeserializer<List<SubjectDTO>>().use(null, ArrayList.class).use("values", SubjectDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getCodeName() {
+        return this.codeName;
+    }
+
+	public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Date getRecordedDate() {
+        return this.recordedDate;
+    }
+
+	public void setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
+    }
+
+	public String getModifiedBy() {
+        return this.modifiedBy;
+    }
+
+	public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+	public Date getModifiedDate() {
+        return this.modifiedDate;
+    }
+
+	public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public Set<TreatmentGroupMiniDTO> getTreatmentGroups() {
+        return this.treatmentGroups;
+    }
+
+	public void setTreatmentGroups(Set<TreatmentGroupMiniDTO> treatmentGroups) {
+        this.treatmentGroups = treatmentGroups;
+    }
+
+	public Set<SubjectLabelDTO> getLsLabels() {
+        return this.lsLabels;
+    }
+
+	public void setLsLabels(Set<SubjectLabelDTO> lsLabels) {
+        this.lsLabels = lsLabels;
+    }
+
+	public Set<SubjectStateDTO> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<SubjectStateDTO> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public Set<ThingPage> getThingPage() {
+        return this.thingPage;
+    }
+
+	public void setThingPage(Set<ThingPage> thingPage) {
+        this.thingPage = thingPage;
     }
 }
 

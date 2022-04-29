@@ -21,7 +21,6 @@ import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.LsTransactionQueryDTO;
 import com.labsynch.labseer.service.LsTransactionService;
 
-//@RooWebJson(jsonObject = LsTransaction.class)
 @Controller
 @RequestMapping("/api/v1/lstransactions")
 @Transactional

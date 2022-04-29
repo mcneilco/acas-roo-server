@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -18,13 +19,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
@@ -34,10 +33,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString(excludeFields = { "subject", "lsValues" })
-@RooJson
-@RooJpaActiveRecord(finders = { "findSubjectStatesBySubject", "findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject" })
+@Configurable
+@Entity
 public class SubjectState extends AbstractState {
 
     private static final Logger logger = LoggerFactory.getLogger(SubjectState.class);
@@ -258,4 +255,114 @@ public class SubjectState extends AbstractState {
 		q.setParameter("ignored", true);
 		return q;
 	}
+
+	public static Long countFindSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(String lsType, String lsKind, Subject subject) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = SubjectState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectState AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.subject = :subject", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("subject", subject);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectStatesBySubject(Subject subject) {
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = SubjectState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectState AS o WHERE o.subject = :subject", Long.class);
+        q.setParameter("subject", subject);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<SubjectState> findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(String lsType, String lsKind, Subject subject) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = SubjectState.entityManager();
+        TypedQuery<SubjectState> q = em.createQuery("SELECT o FROM SubjectState AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.subject = :subject", SubjectState.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("subject", subject);
+        return q;
+    }
+
+	public static TypedQuery<SubjectState> findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(String lsType, String lsKind, Subject subject, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = SubjectState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectState AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.subject = :subject");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectState> q = em.createQuery(queryBuilder.toString(), SubjectState.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("subject", subject);
+        return q;
+    }
+
+	public static TypedQuery<SubjectState> findSubjectStatesBySubject(Subject subject, String sortFieldName, String sortOrder) {
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = SubjectState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectState AS o WHERE o.subject = :subject");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectState> q = em.createQuery(queryBuilder.toString(), SubjectState.class);
+        q.setParameter("subject", subject);
+        return q;
+    }
+
+	public Subject getSubject() {
+        return this.subject;
+    }
+
+	public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+	public Set<SubjectValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<SubjectValue> lsValues) {
+        this.lsValues = lsValues;
+    }
+
+	public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("subject", "lsValues").toString();
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "subject", "lsValues");
+
+	public static List<SubjectState> findAllSubjectStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SubjectState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SubjectState.class).getResultList();
+    }
+
+	public static List<SubjectState> findSubjectStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SubjectState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SubjectState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
 }

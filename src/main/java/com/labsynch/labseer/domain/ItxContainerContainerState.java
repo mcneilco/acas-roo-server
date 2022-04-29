@@ -10,15 +10,14 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -27,10 +26,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
+@Entity
+@Configurable
+
 public class ItxContainerContainerState extends AbstractState {
 
     public ItxContainerContainerState(ItxContainerContainerState itxState) {
@@ -110,4 +108,77 @@ public class ItxContainerContainerState extends AbstractState {
     }
 
 
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("itxContainerContainer", "lsValues");
+
+	public static long countItxContainerContainerStates() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxContainerContainerState o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxContainerContainerState> findAllItxContainerContainerStates() {
+        return entityManager().createQuery("SELECT o FROM ItxContainerContainerState o", ItxContainerContainerState.class).getResultList();
+    }
+
+	public static List<ItxContainerContainerState> findAllItxContainerContainerStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainerState.class).getResultList();
+    }
+
+	public static ItxContainerContainerState findItxContainerContainerState(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxContainerContainerState.class, id);
+    }
+
+	public static List<ItxContainerContainerState> findItxContainerContainerStateEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxContainerContainerState o", ItxContainerContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxContainerContainerState> findItxContainerContainerStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxContainerContainerState merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxContainerContainerState merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public ItxContainerContainerState() {
+        super();
+    }
+
+	public ItxContainerContainer getItxContainerContainer() {
+        return this.itxContainerContainer;
+    }
+
+	public void setItxContainerContainer(ItxContainerContainer itxContainerContainer) {
+        this.itxContainerContainer = itxContainerContainer;
+    }
+
+	public Set<ItxContainerContainerValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<ItxContainerContainerValue> lsValues) {
+        this.lsValues = lsValues;
+    }
 }

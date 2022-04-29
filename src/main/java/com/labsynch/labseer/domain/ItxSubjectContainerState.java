@@ -10,16 +10,15 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -28,10 +27,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
+@Configurable
+@Entity
+
 public class ItxSubjectContainerState extends AbstractState {
 
     public ItxSubjectContainerState() {
@@ -118,4 +116,73 @@ public class ItxSubjectContainerState extends AbstractState {
 		int numberOfDeletedEntities = q.executeUpdate();
 		return numberOfDeletedEntities;
 	}
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public ItxSubjectContainer getItxSubjectContainer() {
+        return this.itxSubjectContainer;
+    }
+
+	public void setItxSubjectContainer(ItxSubjectContainer itxSubjectContainer) {
+        this.itxSubjectContainer = itxSubjectContainer;
+    }
+
+	public Set<ItxSubjectContainerValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<ItxSubjectContainerValue> lsValues) {
+        this.lsValues = lsValues;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("itxSubjectContainer", "lsValues");
+
+	public static long countItxSubjectContainerStates() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxSubjectContainerState o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxSubjectContainerState> findAllItxSubjectContainerStates() {
+        return entityManager().createQuery("SELECT o FROM ItxSubjectContainerState o", ItxSubjectContainerState.class).getResultList();
+    }
+
+	public static List<ItxSubjectContainerState> findAllItxSubjectContainerStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainerState.class).getResultList();
+    }
+
+	public static ItxSubjectContainerState findItxSubjectContainerState(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxSubjectContainerState.class, id);
+    }
+
+	public static List<ItxSubjectContainerState> findItxSubjectContainerStateEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxSubjectContainerState o", ItxSubjectContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxSubjectContainerState> findItxSubjectContainerStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxSubjectContainerState merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxSubjectContainerState merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
 }

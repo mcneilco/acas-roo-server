@@ -2,18 +2,14 @@ package com.labsynch.labseer.dto;
 
 import java.util.Collection;
 import java.util.List;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class CodeLabelDTO {
 	
 	private List<String> foundCodeNames;
@@ -47,6 +43,52 @@ public class CodeLabelDTO {
     }
 	
 
+
+	public List<String> getFoundCodeNames() {
+        return this.foundCodeNames;
+    }
+
+	public void setFoundCodeNames(List<String> foundCodeNames) {
+        this.foundCodeNames = foundCodeNames;
+    }
+
+	public String getLevel() {
+        return this.level;
+    }
+
+	public void setLevel(String level) {
+        this.level = level;
+    }
+
+	public String getMessage() {
+        return this.message;
+    }
+
+	public void setMessage(String message) {
+        this.message = message;
+    }
+
+	public String getRequestLabel() {
+        return this.requestLabel;
+    }
+
+	public void setRequestLabel(String requestLabel) {
+        this.requestLabel = requestLabel;
+    }
+
+	public static CodeLabelDTO fromJsonToCodeLabelDTO(String json) {
+        return new JSONDeserializer<CodeLabelDTO>()
+        .use(null, CodeLabelDTO.class).deserialize(json);
+    }
+
+	public static Collection<CodeLabelDTO> fromJsonArrayToCoes(String json) {
+        return new JSONDeserializer<List<CodeLabelDTO>>()
+        .use("values", CodeLabelDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }
 
 

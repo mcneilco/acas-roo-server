@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -18,13 +19,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -33,10 +32,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findItxSubjectContainersBySubject", "findItxSubjectContainersByCodeNameEquals", "findItxSubjectContainersByContainer", "findItxSubjectContainersByLsTransactionEquals" })
+@Configurable
+@Entity
+
 public class ItxSubjectContainer extends AbstractThing {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ItxSubjectContainer.class);
@@ -180,4 +178,180 @@ public class ItxSubjectContainer extends AbstractThing {
         return updatedItxSubjectContainer;
     }
 
+
+	public Subject getSubject() {
+        return this.subject;
+    }
+
+	public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+	public Container getContainer() {
+        return this.container;
+    }
+
+	public void setContainer(Container container) {
+        this.container = container;
+    }
+
+	public Set<ItxSubjectContainerState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<ItxSubjectContainerState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public static Long countFindItxSubjectContainersByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindItxSubjectContainersByContainer(Container container) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.container = :container", Long.class);
+        q.setParameter("container", container);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindItxSubjectContainersByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindItxSubjectContainersBySubject(Subject subject) {
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxSubjectContainer AS o WHERE o.subject = :subject", Long.class);
+        q.setParameter("subject", subject);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName", ItxSubjectContainer.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(queryBuilder.toString(), ItxSubjectContainer.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByContainer(Container container) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.container = :container", ItxSubjectContainer.class);
+        q.setParameter("container", container);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByContainer(Container container, String sortFieldName, String sortOrder) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.container = :container");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(queryBuilder.toString(), ItxSubjectContainer.class);
+        q.setParameter("container", container);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction", ItxSubjectContainer.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(queryBuilder.toString(), ItxSubjectContainer.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersBySubject(Subject subject) {
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        TypedQuery<ItxSubjectContainer> q = em.createQuery("SELECT o FROM ItxSubjectContainer AS o WHERE o.subject = :subject", ItxSubjectContainer.class);
+        q.setParameter("subject", subject);
+        return q;
+    }
+
+	public static TypedQuery<ItxSubjectContainer> findItxSubjectContainersBySubject(Subject subject, String sortFieldName, String sortOrder) {
+        if (subject == null) throw new IllegalArgumentException("The subject argument is required");
+        EntityManager em = ItxSubjectContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxSubjectContainer AS o WHERE o.subject = :subject");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxSubjectContainer> q = em.createQuery(queryBuilder.toString(), ItxSubjectContainer.class);
+        q.setParameter("subject", subject);
+        return q;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "subject", "container", "lsStates");
+
+	public static List<ItxSubjectContainer> findAllItxSubjectContainers(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainer o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainer.class).getResultList();
+    }
+
+	public static List<ItxSubjectContainer> findItxSubjectContainerEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainer o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainer.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
 }

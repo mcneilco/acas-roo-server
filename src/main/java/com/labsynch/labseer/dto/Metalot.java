@@ -6,10 +6,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
@@ -19,9 +17,7 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 import flexjson.transformer.DateTransformer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 
 public class Metalot {
 	
@@ -59,5 +55,41 @@ public class Metalot {
 
 	public static Collection<Metalot> fromJsonArrayToMetalots(String json) {
         return new JSONDeserializer<List<Metalot>>().use(null, ArrayList.class).use("values", Metalot.class).deserialize(json);
+    }
+
+	public boolean isSkipParentDupeCheck() {
+        return this.skipParentDupeCheck;
+    }
+
+	public void setSkipParentDupeCheck(boolean skipParentDupeCheck) {
+        this.skipParentDupeCheck = skipParentDupeCheck;
+    }
+
+	public Lot getLot() {
+        return this.lot;
+    }
+
+	public void setLot(Lot lot) {
+        this.lot = lot;
+    }
+
+	public Set<IsoSalt> getIsosalts() {
+        return this.isosalts;
+    }
+
+	public void setIsosalts(Set<IsoSalt> isosalts) {
+        this.isosalts = isosalts;
+    }
+
+	public Set<FileList> getFileList() {
+        return this.fileList;
+    }
+
+	public void setFileList(Set<FileList> fileList) {
+        this.fileList = fileList;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

@@ -2,7 +2,6 @@
 .project
 .classpath
 .settings
-log.roo
 .vscode
 .m2
 lib

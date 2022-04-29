@@ -6,16 +6,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -24,10 +22,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
+@Configurable
+@Entity
+
 public class ItxSubjectContainerValue extends AbstractValue {
 
     @ManyToOne
@@ -106,4 +103,65 @@ public class ItxSubjectContainerValue extends AbstractValue {
 		ItxSubjectContainerValue newItxSubjectContainerValue = new JSONDeserializer<ItxSubjectContainerValue>().use(null, ItxSubjectContainerValue.class).deserializeInto(itxSubjectContainerValue.toJson(), new ItxSubjectContainerValue());
         return newItxSubjectContainerValue;
 	}
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+
+	public static long countItxSubjectContainerValues() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxSubjectContainerValue o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxSubjectContainerValue> findAllItxSubjectContainerValues() {
+        return entityManager().createQuery("SELECT o FROM ItxSubjectContainerValue o", ItxSubjectContainerValue.class).getResultList();
+    }
+
+	public static List<ItxSubjectContainerValue> findAllItxSubjectContainerValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainerValue.class).getResultList();
+    }
+
+	public static ItxSubjectContainerValue findItxSubjectContainerValue(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxSubjectContainerValue.class, id);
+    }
+
+	public static List<ItxSubjectContainerValue> findItxSubjectContainerValueEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxSubjectContainerValue o", ItxSubjectContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxSubjectContainerValue> findItxSubjectContainerValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxSubjectContainerValue merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxSubjectContainerValue merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public ItxSubjectContainerState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(ItxSubjectContainerState lsState) {
+        this.lsState = lsState;
+    }
 }

@@ -83,7 +83,6 @@ import flexjson.JSONSerializer;
 @Controller
 @RequestMapping("api/v1/experiments")
 //@Transactional
-//@RooWebJson(jsonObject = Experiment.class)
 public class ApiExperimentController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentController.class);
 	

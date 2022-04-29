@@ -4,21 +4,21 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
-
+import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.domain.ExperimentValue;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class StateValueCsvDTO {
 
 	private static final Logger logger = LoggerFactory.getLogger(StateValueCsvDTO.class);
@@ -278,6 +278,280 @@ public class StateValueCsvDTO {
 	}
 
 
+
+	public Long getStateId() {
+        return this.stateId;
+    }
+
+	public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getCodeOrigin() {
+        return this.codeOrigin;
+    }
+
+	public void setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
+    }
+
+	public String getCodeType() {
+        return this.codeType;
+    }
+
+	public void setCodeType(String codeType) {
+        this.codeType = codeType;
+    }
+
+	public String getCodeKind() {
+        return this.codeKind;
+    }
+
+	public void setCodeKind(String codeKind) {
+        this.codeKind = codeKind;
+    }
+
+	public String getCodeValue() {
+        return this.codeValue;
+    }
+
+	public void setCodeValue(String codeValue) {
+        this.codeValue = codeValue;
+    }
+
+	public String getStringValue() {
+        return this.stringValue;
+    }
+
+	public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+	public String getFileValue() {
+        return this.fileValue;
+    }
+
+	public void setFileValue(String fileValue) {
+        this.fileValue = fileValue;
+    }
+
+	public String getUrlValue() {
+        return this.urlValue;
+    }
+
+	public void setUrlValue(String urlValue) {
+        this.urlValue = urlValue;
+    }
+
+	public Date getDateValue() {
+        return this.dateValue;
+    }
+
+	public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
+    }
+
+	public String getClobValue() {
+        return this.clobValue;
+    }
+
+	public void setClobValue(String clobValue) {
+        this.clobValue = clobValue;
+    }
+
+	public String getOperatorType() {
+        return this.operatorType;
+    }
+
+	public void setOperatorType(String operatorType) {
+        this.operatorType = operatorType;
+    }
+
+	public String getOperatorKind() {
+        return this.operatorKind;
+    }
+
+	public void setOperatorKind(String operatorKind) {
+        this.operatorKind = operatorKind;
+    }
+
+	public BigDecimal getNumericValue() {
+        return this.numericValue;
+    }
+
+	public void setNumericValue(BigDecimal numericValue) {
+        this.numericValue = numericValue;
+    }
+
+	public Integer getSigFigs() {
+        return this.sigFigs;
+    }
+
+	public void setSigFigs(Integer sigFigs) {
+        this.sigFigs = sigFigs;
+    }
+
+	public BigDecimal getUncertainty() {
+        return this.uncertainty;
+    }
+
+	public void setUncertainty(BigDecimal uncertainty) {
+        this.uncertainty = uncertainty;
+    }
+
+	public Integer getNumberOfReplicates() {
+        return this.numberOfReplicates;
+    }
+
+	public void setNumberOfReplicates(Integer numberOfReplicates) {
+        this.numberOfReplicates = numberOfReplicates;
+    }
+
+	public String getUncertaintyType() {
+        return this.uncertaintyType;
+    }
+
+	public void setUncertaintyType(String uncertaintyType) {
+        this.uncertaintyType = uncertaintyType;
+    }
+
+	public String getUnitType() {
+        return this.unitType;
+    }
+
+	public void setUnitType(String unitType) {
+        this.unitType = unitType;
+    }
+
+	public String getUnitKind() {
+        return this.unitKind;
+    }
+
+	public void setUnitKind(String unitKind) {
+        this.unitKind = unitKind;
+    }
+
+	public String getComments() {
+        return this.comments;
+    }
+
+	public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public Date getRecordedDate() {
+        return this.recordedDate;
+    }
+
+	public void setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Date getModifiedDate() {
+        return this.modifiedDate;
+    }
+
+	public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+	public String getModifiedBy() {
+        return this.modifiedBy;
+    }
+
+	public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+	public boolean isPublicData() {
+        return this.publicData;
+    }
+
+	public void setPublicData(boolean publicData) {
+        this.publicData = publicData;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static StateValueCsvDTO fromJsonToStateValueCsvDTO(String json) {
+        return new JSONDeserializer<StateValueCsvDTO>()
+        .use(null, StateValueCsvDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<StateValueCsvDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<StateValueCsvDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<StateValueCsvDTO> fromJsonArrayToStateValueCsvDTO(String json) {
+        return new JSONDeserializer<List<StateValueCsvDTO>>()
+        .use("values", StateValueCsvDTO.class).deserialize(json);
+    }
 }
 
 

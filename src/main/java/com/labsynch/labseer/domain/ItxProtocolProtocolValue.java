@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -22,10 +20,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
+@Configurable
+@Entity
+
 public class ItxProtocolProtocolValue extends AbstractValue {
 		
     @ManyToOne
@@ -89,5 +86,66 @@ public class ItxProtocolProtocolValue extends AbstractValue {
 	public static ItxProtocolProtocolValue create(ItxProtocolProtocolValue lsThingValue) {
         ItxProtocolProtocolValue newItxProtocolProtocolValue = new JSONDeserializer<ItxProtocolProtocolValue>().use(null, ItxProtocolProtocolValue.class).deserializeInto(lsThingValue.toJson(), new ItxProtocolProtocolValue());
         return newItxProtocolProtocolValue;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+
+	public static long countItxProtocolProtocolValues() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxProtocolProtocolValue o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxProtocolProtocolValue> findAllItxProtocolProtocolValues() {
+        return entityManager().createQuery("SELECT o FROM ItxProtocolProtocolValue o", ItxProtocolProtocolValue.class).getResultList();
+    }
+
+	public static List<ItxProtocolProtocolValue> findAllItxProtocolProtocolValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxProtocolProtocolValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxProtocolProtocolValue.class).getResultList();
+    }
+
+	public static ItxProtocolProtocolValue findItxProtocolProtocolValue(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxProtocolProtocolValue.class, id);
+    }
+
+	public static List<ItxProtocolProtocolValue> findItxProtocolProtocolValueEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxProtocolProtocolValue o", ItxProtocolProtocolValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxProtocolProtocolValue> findItxProtocolProtocolValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxProtocolProtocolValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxProtocolProtocolValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxProtocolProtocolValue merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxProtocolProtocolValue merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public ItxProtocolProtocolState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(ItxProtocolProtocolState lsState) {
+        this.lsState = lsState;
     }
 }

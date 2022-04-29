@@ -5,13 +5,10 @@ import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class AuthGroupsDTO {
 	
 	private String name;
@@ -33,6 +30,26 @@ public class AuthGroupsDTO {
 
 	public static Collection<AuthGroupsDTO> fromJsonArrayToAuthGroes(String json) {
         return new JSONDeserializer<List<AuthGroupsDTO>>().use(null, ArrayList.class).use("values", AuthGroupsDTO.class).deserialize(json);
+    }
+
+	public String getName() {
+        return this.name;
+    }
+
+	public void setName(String name) {
+        this.name = name;
+    }
+
+	public Collection<String> getMembers() {
+        return this.members;
+    }
+
+	public void setMembers(Collection<String> members) {
+        this.members = members;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
 

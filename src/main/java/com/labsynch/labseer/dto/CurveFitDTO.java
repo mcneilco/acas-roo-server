@@ -14,13 +14,11 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -37,10 +35,10 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.utils.SimpleUtil;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class CurveFitDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CurveFitDTO.class);
@@ -977,4 +975,430 @@ public class CurveFitDTO {
 		return getDisplayMinMaxByProtocolIds(findProtocolIdsByCurveId(curveId));
 	}
 	
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static CurveFitDTO fromJsonToCurveFitDTO(String json) {
+        return new JSONDeserializer<CurveFitDTO>()
+        .use(null, CurveFitDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<CurveFitDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<CurveFitDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<CurveFitDTO> fromJsonArrayToCurveFitDTO(String json) {
+        return new JSONDeserializer<List<CurveFitDTO>>()
+        .use("values", CurveFitDTO.class).deserialize(json);
+    }
+
+	public String getCurveId() {
+        return this.curveId;
+    }
+
+	public void setCurveId(String curveId) {
+        this.curveId = curveId;
+    }
+
+	public String getAnalysisGroupCode() {
+        return this.analysisGroupCode;
+    }
+
+	public void setAnalysisGroupCode(String analysisGroupCode) {
+        this.analysisGroupCode = analysisGroupCode;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Date getRecordedDate() {
+        return this.recordedDate;
+    }
+
+	public void setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public String getBatchCode() {
+        return this.batchCode;
+    }
+
+	public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
+	public String getCategory() {
+        return this.category;
+    }
+
+	public void setCategory(String category) {
+        this.category = category;
+    }
+
+	public String getRenderingHint() {
+        return this.renderingHint;
+    }
+
+	public void setRenderingHint(String renderingHint) {
+        this.renderingHint = renderingHint;
+    }
+
+	public String getMin() {
+        return this.min;
+    }
+
+	public void setMin(String min) {
+        this.min = min;
+    }
+
+	public String getMax() {
+        return this.max;
+    }
+
+	public void setMax(String max) {
+        this.max = max;
+    }
+
+	public String getEc50() {
+        return this.ec50;
+    }
+
+	public void setEc50(String ec50) {
+        this.ec50 = ec50;
+    }
+
+	public String getMinUnits() {
+        return this.minUnits;
+    }
+
+	public void setMinUnits(String minUnits) {
+        this.minUnits = minUnits;
+    }
+
+	public String getMaxUnits() {
+        return this.maxUnits;
+    }
+
+	public void setMaxUnits(String maxUnits) {
+        this.maxUnits = maxUnits;
+    }
+
+	public String getEc50Units() {
+        return this.ec50Units;
+    }
+
+	public void setEc50Units(String ec50Units) {
+        this.ec50Units = ec50Units;
+    }
+
+	public String getSlope() {
+        return this.slope;
+    }
+
+	public void setSlope(String slope) {
+        this.slope = slope;
+    }
+
+	public BigDecimal getMinUncertainty() {
+        return this.minUncertainty;
+    }
+
+	public void setMinUncertainty(BigDecimal minUncertainty) {
+        this.minUncertainty = minUncertainty;
+    }
+
+	public BigDecimal getMaxUncertainty() {
+        return this.maxUncertainty;
+    }
+
+	public void setMaxUncertainty(BigDecimal maxUncertainty) {
+        this.maxUncertainty = maxUncertainty;
+    }
+
+	public BigDecimal getEc50Uncertainty() {
+        return this.ec50Uncertainty;
+    }
+
+	public void setEc50Uncertainty(BigDecimal ec50Uncertainty) {
+        this.ec50Uncertainty = ec50Uncertainty;
+    }
+
+	public BigDecimal getSlopeUncertainty() {
+        return this.slopeUncertainty;
+    }
+
+	public void setSlopeUncertainty(BigDecimal slopeUncertainty) {
+        this.slopeUncertainty = slopeUncertainty;
+    }
+
+	public String getMinUncertaintyType() {
+        return this.minUncertaintyType;
+    }
+
+	public void setMinUncertaintyType(String minUncertaintyType) {
+        this.minUncertaintyType = minUncertaintyType;
+    }
+
+	public String getMaxUncertaintyType() {
+        return this.maxUncertaintyType;
+    }
+
+	public void setMaxUncertaintyType(String maxUncertaintyType) {
+        this.maxUncertaintyType = maxUncertaintyType;
+    }
+
+	public String getEc50UncertaintyType() {
+        return this.ec50UncertaintyType;
+    }
+
+	public void setEc50UncertaintyType(String ec50UncertaintyType) {
+        this.ec50UncertaintyType = ec50UncertaintyType;
+    }
+
+	public String getSlopeUncertaintyType() {
+        return this.slopeUncertaintyType;
+    }
+
+	public void setSlopeUncertaintyType(String slopeUncertaintyType) {
+        this.slopeUncertaintyType = slopeUncertaintyType;
+    }
+
+	public String getMinOperatorKind() {
+        return this.minOperatorKind;
+    }
+
+	public void setMinOperatorKind(String minOperatorKind) {
+        this.minOperatorKind = minOperatorKind;
+    }
+
+	public String getMaxOperatorKind() {
+        return this.maxOperatorKind;
+    }
+
+	public void setMaxOperatorKind(String maxOperatorKind) {
+        this.maxOperatorKind = maxOperatorKind;
+    }
+
+	public String getEc50OperatorKind() {
+        return this.ec50OperatorKind;
+    }
+
+	public void setEc50OperatorKind(String ec50OperatorKind) {
+        this.ec50OperatorKind = ec50OperatorKind;
+    }
+
+	public String getSlopeOperatorKind() {
+        return this.slopeOperatorKind;
+    }
+
+	public void setSlopeOperatorKind(String slopeOperatorKind) {
+        this.slopeOperatorKind = slopeOperatorKind;
+    }
+
+	public BigDecimal getFittedMin() {
+        return this.fittedMin;
+    }
+
+	public void setFittedMin(BigDecimal fittedMin) {
+        this.fittedMin = fittedMin;
+    }
+
+	public BigDecimal getFittedMax() {
+        return this.fittedMax;
+    }
+
+	public void setFittedMax(BigDecimal fittedMax) {
+        this.fittedMax = fittedMax;
+    }
+
+	public BigDecimal getFittedEC50() {
+        return this.fittedEC50;
+    }
+
+	public void setFittedEC50(BigDecimal fittedEC50) {
+        this.fittedEC50 = fittedEC50;
+    }
+
+	public BigDecimal getFittedSlope() {
+        return this.fittedSlope;
+    }
+
+	public void setFittedSlope(BigDecimal fittedSlope) {
+        this.fittedSlope = fittedSlope;
+    }
+
+	public BigDecimal getFittedMinUncertainty() {
+        return this.fittedMinUncertainty;
+    }
+
+	public void setFittedMinUncertainty(BigDecimal fittedMinUncertainty) {
+        this.fittedMinUncertainty = fittedMinUncertainty;
+    }
+
+	public BigDecimal getFittedMaxUncertainty() {
+        return this.fittedMaxUncertainty;
+    }
+
+	public void setFittedMaxUncertainty(BigDecimal fittedMaxUncertainty) {
+        this.fittedMaxUncertainty = fittedMaxUncertainty;
+    }
+
+	public BigDecimal getFittedEc50Uncertainty() {
+        return this.fittedEc50Uncertainty;
+    }
+
+	public void setFittedEc50Uncertainty(BigDecimal fittedEc50Uncertainty) {
+        this.fittedEc50Uncertainty = fittedEc50Uncertainty;
+    }
+
+	public BigDecimal getFittedSlopeUncertainty() {
+        return this.fittedSlopeUncertainty;
+    }
+
+	public void setFittedSlopeUncertainty(BigDecimal fittedSlopeUncertainty) {
+        this.fittedSlopeUncertainty = fittedSlopeUncertainty;
+    }
+
+	public String getFittedMinUncertaintyType() {
+        return this.fittedMinUncertaintyType;
+    }
+
+	public void setFittedMinUncertaintyType(String fittedMinUncertaintyType) {
+        this.fittedMinUncertaintyType = fittedMinUncertaintyType;
+    }
+
+	public String getFittedMaxUncertaintyType() {
+        return this.fittedMaxUncertaintyType;
+    }
+
+	public void setFittedMaxUncertaintyType(String fittedMaxUncertaintyType) {
+        this.fittedMaxUncertaintyType = fittedMaxUncertaintyType;
+    }
+
+	public String getFittedEc50UncertaintyType() {
+        return this.fittedEc50UncertaintyType;
+    }
+
+	public void setFittedEc50UncertaintyType(String fittedEc50UncertaintyType) {
+        this.fittedEc50UncertaintyType = fittedEc50UncertaintyType;
+    }
+
+	public String getFittedSlopeUncertaintyType() {
+        return this.fittedSlopeUncertaintyType;
+    }
+
+	public void setFittedSlopeUncertaintyType(String fittedSlopeUncertaintyType) {
+        this.fittedSlopeUncertaintyType = fittedSlopeUncertaintyType;
+    }
+
+	public BigDecimal getSse() {
+        return this.sse;
+    }
+
+	public void setSse(BigDecimal sse) {
+        this.sse = sse;
+    }
+
+	public BigDecimal getSst() {
+        return this.sst;
+    }
+
+	public void setSst(BigDecimal sst) {
+        this.sst = sst;
+    }
+
+	public BigDecimal getRsquared() {
+        return this.rsquared;
+    }
+
+	public void setRsquared(BigDecimal rsquared) {
+        this.rsquared = rsquared;
+    }
+
+	public String getCurveErrorsClob() {
+        return this.curveErrorsClob;
+    }
+
+	public void setCurveErrorsClob(String curveErrorsClob) {
+        this.curveErrorsClob = curveErrorsClob;
+    }
+
+	public String getReportedValuesClob() {
+        return this.reportedValuesClob;
+    }
+
+	public void setReportedValuesClob(String reportedValuesClob) {
+        this.reportedValuesClob = reportedValuesClob;
+    }
+
+	public String getParameterStdErrorsClob() {
+        return this.parameterStdErrorsClob;
+    }
+
+	public void setParameterStdErrorsClob(String parameterStdErrorsClob) {
+        this.parameterStdErrorsClob = parameterStdErrorsClob;
+    }
+
+	public String getFitSettings() {
+        return this.fitSettings;
+    }
+
+	public void setFitSettings(String fitSettings) {
+        this.fitSettings = fitSettings;
+    }
+
+	public String getFitSummaryClob() {
+        return this.fitSummaryClob;
+    }
+
+	public void setFitSummaryClob(String fitSummaryClob) {
+        this.fitSummaryClob = fitSummaryClob;
+    }
+
+	public String getUserFlagStatus() {
+        return this.userFlagStatus;
+    }
+
+	public void setUserFlagStatus(String userFlagStatus) {
+        this.userFlagStatus = userFlagStatus;
+    }
+
+	public String getAlgorithmFlagStatus() {
+        return this.algorithmFlagStatus;
+    }
+
+	public void setAlgorithmFlagStatus(String algorithmFlagStatus) {
+        this.algorithmFlagStatus = algorithmFlagStatus;
+    }
 }

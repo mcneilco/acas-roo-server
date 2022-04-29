@@ -8,18 +8,15 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.labsynch.labseer.domain.LsTag;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
+
 public class JSTreeNodeDTO {
 	
 	private String id; // use codeName
@@ -78,6 +75,50 @@ public class JSTreeNodeDTO {
             append(id, rhs.id).
             append(parent, rhs.parent).
             isEquals();
+    }
+
+	public String getId() {
+        return this.id;
+    }
+
+	public void setId(String id) {
+        this.id = id;
+    }
+
+	public String getParent() {
+        return this.parent;
+    }
+
+	public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+	public String getText() {
+        return this.text;
+    }
+
+	public void setText(String text) {
+        this.text = text;
+    }
+
+	public String getDescription() {
+        return this.description;
+    }
+
+	public void setDescription(String description) {
+        this.description = description;
+    }
+
+	public Set<LsTag> getLsTags() {
+        return this.lsTags;
+    }
+
+	public void setLsTags(Set<LsTag> lsTags) {
+        this.lsTags = lsTags;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
 

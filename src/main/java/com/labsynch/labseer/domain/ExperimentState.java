@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -20,10 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -32,10 +30,9 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord(finders = { "findExperimentStatesByExperiment" })
-@RooJson
+@Configurable
+@Entity
+
 public class ExperimentState extends AbstractState {
 
     @NotNull
@@ -141,4 +138,100 @@ public class ExperimentState extends AbstractState {
 		q.setParameter("ignored", true);
 		return q;
 	}
+
+	public static Long countFindExperimentStatesByExperiment(Experiment experiment) {
+        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+        EntityManager em = ExperimentState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ExperimentState AS o WHERE o.experiment = :experiment", Long.class);
+        q.setParameter("experiment", experiment);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ExperimentState> findExperimentStatesByExperiment(Experiment experiment) {
+        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+        EntityManager em = ExperimentState.entityManager();
+        TypedQuery<ExperimentState> q = em.createQuery("SELECT o FROM ExperimentState AS o WHERE o.experiment = :experiment", ExperimentState.class);
+        q.setParameter("experiment", experiment);
+        return q;
+    }
+
+	public static TypedQuery<ExperimentState> findExperimentStatesByExperiment(Experiment experiment, String sortFieldName, String sortOrder) {
+        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+        EntityManager em = ExperimentState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ExperimentState AS o WHERE o.experiment = :experiment");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ExperimentState> q = em.createQuery(queryBuilder.toString(), ExperimentState.class);
+        q.setParameter("experiment", experiment);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("experiment", "lsValues");
+
+	public static long countExperimentStates() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ExperimentState o", Long.class).getSingleResult();
+    }
+
+	public static List<ExperimentState> findAllExperimentStates() {
+        return entityManager().createQuery("SELECT o FROM ExperimentState o", ExperimentState.class).getResultList();
+    }
+
+	public static List<ExperimentState> findAllExperimentStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ExperimentState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ExperimentState.class).getResultList();
+    }
+
+	public static ExperimentState findExperimentState(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ExperimentState.class, id);
+    }
+
+	public static List<ExperimentState> findExperimentStateEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ExperimentState o", ExperimentState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ExperimentState> findExperimentStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ExperimentState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ExperimentState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ExperimentState merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ExperimentState merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public Experiment getExperiment() {
+        return this.experiment;
+    }
+
+	public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
+	public Set<ExperimentValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<ExperimentValue> lsValues) {
+        this.lsValues = lsValues;
+    }
 }

@@ -5,27 +5,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
-
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.annotation.Transactional;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findProtocolLabelsByProtocol", "findProtocolLabelsByLsTransactionEquals", "findProtocolLabelsByLabelTextEqualsAndIgnoredNot", "findProtocolLabelsByLabelTextLike" })
+@Configurable
+@Entity
+
 public class ProtocolLabel extends AbstractLabel {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProtocolLabel.class);
@@ -215,6 +212,214 @@ public class ProtocolLabel extends AbstractLabel {
         q.setParameter("labelKind", labelKind);
         q.setParameter("preferred", preferred);
         q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public Protocol getProtocol() {
+        return this.protocol;
+    }
+
+	public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+	public ProtocolLabel() {
+        super();
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "protocol");
+
+	public static long countProtocolLabels() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ProtocolLabel o", Long.class).getSingleResult();
+    }
+
+	public static List<ProtocolLabel> findAllProtocolLabels() {
+        return entityManager().createQuery("SELECT o FROM ProtocolLabel o", ProtocolLabel.class).getResultList();
+    }
+
+	public static List<ProtocolLabel> findAllProtocolLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ProtocolLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ProtocolLabel.class).getResultList();
+    }
+
+	public static List<ProtocolLabel> findProtocolLabelEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ProtocolLabel o", ProtocolLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ProtocolLabel> findProtocolLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ProtocolLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ProtocolLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ProtocolLabel merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ProtocolLabel merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public static Long countFindProtocolLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolLabelsByLabelTextLike(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)", Long.class);
+        q.setParameter("labelText", labelText);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolLabel AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolLabelsByProtocol(Protocol protocol) {
+        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolLabel AS o WHERE o.protocol = :protocol", Long.class);
+        q.setParameter("protocol", protocol);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored", ProtocolLabel.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ProtocolLabel> q = em.createQuery(queryBuilder.toString(), ProtocolLabel.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByLabelTextLike(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)", ProtocolLabel.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByLabelTextLike(String labelText, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = ProtocolLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ProtocolLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ProtocolLabel> q = em.createQuery(queryBuilder.toString(), ProtocolLabel.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE o.lsTransaction = :lsTransaction", ProtocolLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ProtocolLabel AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ProtocolLabel> q = em.createQuery(queryBuilder.toString(), ProtocolLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByProtocol(Protocol protocol) {
+        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE o.protocol = :protocol", ProtocolLabel.class);
+        q.setParameter("protocol", protocol);
+        return q;
+    }
+
+	public static TypedQuery<ProtocolLabel> findProtocolLabelsByProtocol(Protocol protocol, String sortFieldName, String sortOrder) {
+        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ProtocolLabel AS o WHERE o.protocol = :protocol");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ProtocolLabel> q = em.createQuery(queryBuilder.toString(), ProtocolLabel.class);
+        q.setParameter("protocol", protocol);
         return q;
     }
 }

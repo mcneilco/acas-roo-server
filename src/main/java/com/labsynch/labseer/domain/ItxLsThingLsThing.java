@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -17,25 +18,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
-
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findItxLsThingLsThingsByCodeNameEquals", "findItxLsThingLsThingsByFirstLsThing", "findItxLsThingLsThingsBySecondLsThing" })
+@Entity
+@Configurable
+
 public class ItxLsThingLsThing extends AbstractThing {
 
 	private static final Logger logger = LoggerFactory.getLogger(ItxLsThingLsThing.class);
@@ -481,5 +479,155 @@ public class ItxLsThingLsThing extends AbstractThing {
         TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.secondLsThing = :secondLsThing", ItxLsThingLsThing.class);
         q.setParameter("secondLsThing", secondLsThing);
         return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "firstLsThing", "secondLsThing", "lsStates");
+
+	public static long countItxLsThingLsThings() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxLsThingLsThing o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxLsThingLsThing> findAllItxLsThingLsThings() {
+        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThing o", ItxLsThingLsThing.class).getResultList();
+    }
+
+	public static List<ItxLsThingLsThing> findAllItxLsThingLsThings(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThing.class).getResultList();
+    }
+
+	public static ItxLsThingLsThing findItxLsThingLsThing(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxLsThingLsThing.class, id);
+    }
+
+	public static List<ItxLsThingLsThing> findItxLsThingLsThingEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxLsThingLsThing o", ItxLsThingLsThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxLsThingLsThing> findItxLsThingLsThingEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxLsThingLsThing merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxLsThingLsThing merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static Long countFindItxLsThingLsThingsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxLsThingLsThing AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindItxLsThingLsThingsByFirstLsThing(LsThing firstLsThing) {
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxLsThingLsThing AS o WHERE o.firstLsThing = :firstLsThing", Long.class);
+        q.setParameter("firstLsThing", firstLsThing);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindItxLsThingLsThingsBySecondLsThing(LsThing secondLsThing) {
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxLsThingLsThing AS o WHERE o.secondLsThing = :secondLsThing", Long.class);
+        q.setParameter("secondLsThing", secondLsThing);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxLsThingLsThing AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(queryBuilder.toString(), ItxLsThingLsThing.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByFirstLsThing(LsThing firstLsThing, String sortFieldName, String sortOrder) {
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxLsThingLsThing AS o WHERE o.firstLsThing = :firstLsThing");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(queryBuilder.toString(), ItxLsThingLsThing.class);
+        q.setParameter("firstLsThing", firstLsThing);
+        return q;
+    }
+
+	public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsBySecondLsThing(LsThing secondLsThing, String sortFieldName, String sortOrder) {
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxLsThingLsThing AS o WHERE o.secondLsThing = :secondLsThing");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(queryBuilder.toString(), ItxLsThingLsThing.class);
+        q.setParameter("secondLsThing", secondLsThing);
+        return q;
+    }
+
+	public LsThing getFirstLsThing() {
+        return this.firstLsThing;
+    }
+
+	public void setFirstLsThing(LsThing firstLsThing) {
+        this.firstLsThing = firstLsThing;
+    }
+
+	public LsThing getSecondLsThing() {
+        return this.secondLsThing;
+    }
+
+	public void setSecondLsThing(LsThing secondLsThing) {
+        this.secondLsThing = secondLsThing;
+    }
+
+	public Set<ItxLsThingLsThingState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<ItxLsThingLsThingState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public ItxLsThingLsThing() {
+        super();
     }
 }
