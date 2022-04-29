@@ -78,16 +78,4 @@ public class ApiRegSearchController {
 
 		return new ResponseEntity<String>(regSearchDTO.toJson(), headers, HttpStatus.OK);
 	}
-
-
-	@RequestMapping(method = RequestMethod.OPTIONS)
-	public ResponseEntity<String> getOptions() {
-		HttpHeaders headers= new HttpHeaders();
-		headers.add("Content-Type", "application/text, text/html");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Access-Control-Max-Age", "86400");
-
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
 }

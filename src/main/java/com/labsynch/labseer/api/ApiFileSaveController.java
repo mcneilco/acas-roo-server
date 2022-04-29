@@ -179,30 +179,4 @@ public class ApiFileSaveController {
 		return null;
 	}
 
-	@RequestMapping(method = RequestMethod.OPTIONS)
-	public ResponseEntity<String> getOptions() {
-		HttpHeaders headers= new HttpHeaders();
-		headers.add("Content-Type", "application/text, text/html");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
-		headers.add("Pragma","no-cache"); //HTTP 1.0
-		headers.setExpires(0); // Expire the cache
-
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
-
-
-//	public static String getFileName(String fullUrl) {
-//		fullUrl = fullUrl.trim();
-//		String pattern = "(/.*$)";
-//		String fileName = fullUrl.replace(pattern, "$0");
-//
-//		return fileName;
-//	}
-
-
-
-
-	
 }
