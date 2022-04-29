@@ -18,10 +18,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -36,10 +32,6 @@ import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
-@RooJavaBean
-@RooToString(excludeFields = { "lsState" })
-@RooJson
-@RooJpaActiveRecord(finders = { "findSubjectValuesByLsState", "findSubjectValuesByCodeValueEquals", "findSubjectValuesByIgnoredNotAndCodeValueEquals", "findSubjectValuesByLsTypeEqualsAndLsKindEquals", "findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals" })
 public class SubjectValue extends AbstractValue {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubjectValue.class);

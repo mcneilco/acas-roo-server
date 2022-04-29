@@ -31,19 +31,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configurable
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(sequenceName = "BBCHEM_STRUCTURE_PKSEQ", inheritanceType = "TABLE_PER_CLASS")
+
 public abstract class AbstractBBChemStructure {
 
     @Id

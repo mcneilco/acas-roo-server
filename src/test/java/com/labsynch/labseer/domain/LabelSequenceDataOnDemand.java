@@ -11,12 +11,10 @@ import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.dod.RooDataOnDemand;
 import org.springframework.stereotype.Component;
 
 @Component
 @Configurable
-@RooDataOnDemand(entity = LabelSequence.class)
 public class LabelSequenceDataOnDemand {
 
 	private Random rnd = new SecureRandom();

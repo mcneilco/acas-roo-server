@@ -8,12 +8,10 @@ import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.dod.RooDataOnDemand;
 import org.springframework.stereotype.Component;
 
 @Component
 @Configurable
-@RooDataOnDemand(entity = OperatorType.class)
 public class OperatorTypeDataOnDemand {
 
 	private Random rnd = new SecureRandom();

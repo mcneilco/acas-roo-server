@@ -40,10 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.LabelPrefixDTO;
@@ -56,10 +52,7 @@ import flexjson.JSONSerializer;
 @Entity
 @Configurable
 @Transactional
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findParentsByCorpNameEquals", "findParentsByCorpNameLike", "findParentsByCdId", "findParentsBySaltForms", "findParentsByCommonNameLike", "findParentsByBulkLoadFileEquals" })
+
 public class Parent {
 
 	private static final Logger logger = LoggerFactory.getLogger(Parent.class);

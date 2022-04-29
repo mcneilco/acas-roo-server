@@ -5,13 +5,8 @@ import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 
-@RooJavaBean
-@RooJson
 public class LotsByProjectDTO {
 	private Long id;
 	private String lotCorpName;

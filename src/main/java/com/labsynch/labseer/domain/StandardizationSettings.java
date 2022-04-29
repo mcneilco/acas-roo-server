@@ -1,8 +1,4 @@
 package com.labsynch.labseer.domain;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -27,10 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Configurable
 @Entity
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findStandardizationSettingsesByNeedsStandardization" })
+
 public class StandardizationSettings {
 
     /**

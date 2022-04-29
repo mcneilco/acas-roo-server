@@ -45,7 +45,6 @@ import com.labsynch.labseer.utils.SimpleUtil;
 @Controller
 @RequestMapping("api/v1/subjects")
 @Transactional
-//@RooWebJson(jsonObject = Subject.class)
 public class ApiSubjectController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApiSubjectController.class);

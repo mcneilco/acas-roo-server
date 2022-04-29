@@ -14,10 +14,6 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
 import com.labsynch.labseer.dto.BulkLoadTemplateDTO;
@@ -28,10 +24,7 @@ import java.util.List;
 
 @Configurable
 @Entity
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders={"findBulkLoadTemplatesByRecordedByEquals", "findBulkLoadTemplatesByTemplateNameEqualsAndRecordedByEquals", "findBulkLoadTemplatesByTemplateNameEquals"})
+
 public class BulkLoadTemplate {
 
     @Size(max = 255)

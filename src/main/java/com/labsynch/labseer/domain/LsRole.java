@@ -22,9 +22,6 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.CodeTableDTO;
@@ -33,16 +30,6 @@ import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
-@RooJson
-@RooJavaBean
-@RooJpaActiveRecord(sequenceName = "LSROLE_PKSEQ", finders = { 
-		"findLsRolesByRoleNameEquals", 
-		"findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", 
-		"findLsRolesByLsTypeEqualsAndRoleNameEquals", 
-		"findLsRolesByLsTypeEqualsAndLsKindEquals",
-		"findLsRolesByLsTypeEquals",
-		"findLsRolesByLsKindEquals"})
-
 public class LsRole {
 
     @Size(max = 255)

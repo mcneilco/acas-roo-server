@@ -51,9 +51,7 @@ import com.labsynch.labseer.service.TreatmentGroupStateService;
 
 @Controller
 @RequestMapping("api/v1")
-//@RooWebFinder
 @Transactional
-//@RooWebJson(jsonObject = AbstractState.class)
 public class ApiStateController {
 private static final Logger logger = LoggerFactory.getLogger(ApiStateController.class);
 

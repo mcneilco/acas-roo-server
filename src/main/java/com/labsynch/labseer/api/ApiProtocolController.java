@@ -46,10 +46,8 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONSerializer;
 
-//@RooWebJson(jsonObject = Protocol.class)
 @Controller
 @RequestMapping("api/v1/protocols")
-//@RooWebFinder
 @Transactional
 public class ApiProtocolController {
 

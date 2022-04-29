@@ -25,10 +25,6 @@ import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.api.ApiExperimentController;
@@ -42,16 +38,6 @@ import flexjson.JSONSerializer;
 
 @Entity
 @Configurable
-@RooJavaBean
-@RooToString(excludeFields = { "lsTags", "lsStates", "lsLabels" })
-@RooJson
-@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", 
-		"findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", 
-		"findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", 
-		"findLsThingsByLsTypeEquals", "findLsThingsByLsKindEquals", 
-		"findLsThingsByLsTypeEqualsAndLsKindEquals",
-		"findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
-
 public class LsThing extends AbstractThing {
 
 	private static final Logger logger = LoggerFactory.getLogger(LsThing.class);

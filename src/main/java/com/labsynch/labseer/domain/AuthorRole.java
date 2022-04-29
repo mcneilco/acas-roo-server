@@ -19,21 +19,13 @@ import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @Entity
 @Configurable
-@RooJson
-@RooJavaBean
-@RooToString(excludeFields = { "userEntry", "roleEntry", "version" })
 @Table(name = "author_role", uniqueConstraints = { @javax.persistence.UniqueConstraint(columnNames = { "author_id", "lsrole_id" }) })
-@RooJpaActiveRecord(sequenceName = "AUTH_ROLE_PKSEQ", finders = { "findAuthorRolesByUserEntry", "findAuthorRolesByRoleEntry", "findAuthorRolesByRoleEntryAndUserEntry" })
 public class AuthorRole {
 	
     @NotNull
