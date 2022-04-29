@@ -73,11 +73,6 @@ public class ApiSaltController {
 
 	}
 
-	@ModelAttribute("salts")
-	public Collection<Salt> populateSalts() {
-		return Salt.findAllSalts();
-	}
-
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> showJson(@PathVariable("id") Long id) {

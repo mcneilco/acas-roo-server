@@ -35,11 +35,6 @@ public class ApiIsotopeController {
 	
     private static final Logger logger = LoggerFactory.getLogger(ApiIsotopeController.class);
 
-    @ModelAttribute("isotopes")
-    public Collection<Isotope> populateIsotopes() {
-        return Isotope.findAllIsotopes();
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {

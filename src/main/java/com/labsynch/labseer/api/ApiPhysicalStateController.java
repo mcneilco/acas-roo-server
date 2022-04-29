@@ -35,10 +35,6 @@ public class ApiPhysicalStateController {
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
-    @ModelAttribute("physicalstates")
-    public Collection<PhysicalState> populatePhysicalStates() {
-        return PhysicalState.findAllPhysicalStates();
-    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
