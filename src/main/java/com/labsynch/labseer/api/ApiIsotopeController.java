@@ -40,15 +40,6 @@ public class ApiIsotopeController {
         return Isotope.findAllIsotopes();
     }
 
-    String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-        String enc = httpServletRequest.getCharacterEncoding();
-        if (enc == null) {
-            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-        }
-        pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        return pathSegment;
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {

@@ -33,17 +33,6 @@ public class ApiRegSearchController {
 	
 	Logger logger = LoggerFactory.getLogger(ApiRegSearchController.class);
 
-
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-		String enc = httpServletRequest.getCharacterEncoding();
-		if (enc == null) {
-			enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-		}
-		pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-		return pathSegment;
-	}
-
-
 	@RequestMapping(value = "/parent", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getParentsbyParamsPost(@RequestBody String searchParams) {
 		logger.debug("using the /regsearches/parent controller" );

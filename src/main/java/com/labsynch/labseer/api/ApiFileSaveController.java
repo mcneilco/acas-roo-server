@@ -179,17 +179,6 @@ public class ApiFileSaveController {
 		return null;
 	}
 
-
-
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-		String enc = httpServletRequest.getCharacterEncoding();
-		if (enc == null) {
-			enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-		}
-		pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-		return pathSegment;
-	}
-
 	@RequestMapping(method = RequestMethod.OPTIONS)
 	public ResponseEntity<String> getOptions() {
 		HttpHeaders headers= new HttpHeaders();
