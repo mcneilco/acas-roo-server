@@ -6,16 +6,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -32,6 +34,8 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString(excludeFields = { "lsState" })
 @RooJson
@@ -514,4 +518,216 @@ public class SubjectValue extends AbstractValue {
 		return q;
 	}
 
+
+	public SubjectState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(SubjectState lsState) {
+        this.lsState = lsState;
+    }
+
+	public static Long countFindSubjectValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.codeValue = :codeValue", Long.class);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", Long.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectValuesByLsState(SubjectState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsState = :lsState", Long.class);
+        q.setParameter("lsState", lsState);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsState", lsState);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.codeValue = :codeValue", SubjectValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByCodeValueEquals(String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", SubjectValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsState(SubjectState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState", SubjectValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsState(SubjectState lsState, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
+        q.setParameter("lsState", lsState);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+        q.setParameter("lsState", lsState);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<SubjectValue> findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SubjectValue> q = em.createQuery(queryBuilder.toString(), SubjectValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsState").toString();
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsState");
+
+	public static List<SubjectValue> findAllSubjectValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SubjectValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SubjectValue.class).getResultList();
+    }
+
+	public static List<SubjectValue> findSubjectValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SubjectValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SubjectValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
 }

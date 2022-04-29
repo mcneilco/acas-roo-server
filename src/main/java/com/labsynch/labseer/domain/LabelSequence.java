@@ -12,21 +12,32 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
 import org.hibernate.jdbc.ReturningWork;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -38,9 +49,11 @@ import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.SimpleUtil;
 import com.labsynch.labseer.utils.SimpleUtil.DbType;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString
 @RooJson
@@ -255,4 +268,361 @@ public class LabelSequence {
 
 
 
+
+	public static Long countFindLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind) {
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.labelTypeAndKind = :labelTypeAndKind", Long.class);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind", Long.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(String thingTypeAndKind, String labelTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind", Long.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix", Long.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        q.setParameter("labelPrefix", labelPrefix);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind) {
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.labelTypeAndKind = :labelTypeAndKind", LabelSequence.class);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind, String sortFieldName, String sortOrder) {
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.labelTypeAndKind = :labelTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind, String sortFieldName, String sortOrder) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(String thingTypeAndKind, String labelTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(String thingTypeAndKind, String labelTypeAndKind, String sortFieldName, String sortOrder) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        q.setParameter("labelPrefix", labelPrefix);
+        return q;
+    }
+
+	public static TypedQuery<LabelSequence> findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix, String sortFieldName, String sortOrder) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        q.setParameter("labelPrefix", labelPrefix);
+        return q;
+    }
+
+	@Id
+    @SequenceGenerator(name = "labelSequenceGen", sequenceName = "LABEL_SEQUENCE_PKSEQ")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "labelSequenceGen")
+    @Column(name = "id")
+    private Long id;
+
+	@Version
+    @Column(name = "version")
+    private Integer version;
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getThingTypeAndKind() {
+        return this.thingTypeAndKind;
+    }
+
+	public void setThingTypeAndKind(String thingTypeAndKind) {
+        this.thingTypeAndKind = thingTypeAndKind;
+    }
+
+	public String getLabelTypeAndKind() {
+        return this.labelTypeAndKind;
+    }
+
+	public void setLabelTypeAndKind(String labelTypeAndKind) {
+        this.labelTypeAndKind = labelTypeAndKind;
+    }
+
+	public String getLabelPrefix() {
+        return this.labelPrefix;
+    }
+
+	public void setLabelPrefix(String labelPrefix) {
+        this.labelPrefix = labelPrefix;
+    }
+
+	public String getLabelSeparator() {
+        return this.labelSeparator;
+    }
+
+	public void setLabelSeparator(String labelSeparator) {
+        this.labelSeparator = labelSeparator;
+    }
+
+	public boolean isGroupDigits() {
+        return this.groupDigits;
+    }
+
+	public void setGroupDigits(boolean groupDigits) {
+        this.groupDigits = groupDigits;
+    }
+
+	public Integer getDigits() {
+        return this.digits;
+    }
+
+	public void setDigits(Integer digits) {
+        this.digits = digits;
+    }
+
+	public Long getStartingNumber() {
+        return this.startingNumber;
+    }
+
+	public void setStartingNumber(Long startingNumber) {
+        this.startingNumber = startingNumber;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public Date getModifiedDate() {
+        return this.modifiedDate;
+    }
+
+	public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+	public String getDbSequence() {
+        return this.dbSequence;
+    }
+
+	public void setDbSequence(String dbSequence) {
+        this.dbSequence = dbSequence;
+    }
+
+	public Set<LabelSequenceRole> getLabelSequenceRoles() {
+        return this.labelSequenceRoles;
+    }
+
+	public void setLabelSequenceRoles(Set<LabelSequenceRole> labelSequenceRoles) {
+        this.labelSequenceRoles = labelSequenceRoles;
+    }
+
+	@PersistenceContext
+    transient EntityManager entityManager;
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("thingTypeAndKind", "labelTypeAndKind", "labelPrefix", "labelSeparator", "groupDigits", "digits", "startingNumber", "ignored", "modifiedDate", "dbSequence", "labelSequenceRoles");
+
+	public static final EntityManager entityManager() {
+        EntityManager em = new LabelSequence().entityManager;
+        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+
+	public static long countLabelSequences() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM LabelSequence o", Long.class).getSingleResult();
+    }
+
+	public static List<LabelSequence> findAllLabelSequences() {
+        return entityManager().createQuery("SELECT o FROM LabelSequence o", LabelSequence.class).getResultList();
+    }
+
+	public static List<LabelSequence> findAllLabelSequences(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LabelSequence o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LabelSequence.class).getResultList();
+    }
+
+	public static LabelSequence findLabelSequence(Long id) {
+        if (id == null) return null;
+        return entityManager().find(LabelSequence.class, id);
+    }
+
+	public static List<LabelSequence> findLabelSequenceEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM LabelSequence o", LabelSequence.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<LabelSequence> findLabelSequenceEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LabelSequence o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LabelSequence.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public void persist() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.persist(this);
+    }
+
+	@Transactional
+    public void remove() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager.contains(this)) {
+            this.entityManager.remove(this);
+        } else {
+            LabelSequence attached = LabelSequence.findLabelSequence(this.id);
+            this.entityManager.remove(attached);
+        }
+    }
+
+	@Transactional
+    public void flush() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.flush();
+    }
+
+	@Transactional
+    public void clear() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.clear();
+    }
+
+	@Transactional
+    public LabelSequence merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        LabelSequence merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public static LabelSequence fromJsonToLabelSequence(String json) {
+        return new JSONDeserializer<LabelSequence>()
+        .use(null, LabelSequence.class).deserialize(json);
+    }
+
+	public static Collection<LabelSequence> fromJsonArrayToLabelSequences(String json) {
+        return new JSONDeserializer<List<LabelSequence>>()
+        .use("values", LabelSequence.class).deserialize(json);
+    }
 }

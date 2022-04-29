@@ -11,7 +11,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
@@ -29,6 +30,8 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.StatCalc;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -506,4 +509,158 @@ public class FlagWellDTO {
 	}
 
 
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public Long getResponseSubjectValueId() {
+        return this.responseSubjectValueId;
+    }
+
+	public void setResponseSubjectValueId(Long responseSubjectValueId) {
+        this.responseSubjectValueId = responseSubjectValueId;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public String getAlgorithmFlagStatus() {
+        return this.algorithmFlagStatus;
+    }
+
+	public void setAlgorithmFlagStatus(String algorithmFlagStatus) {
+        this.algorithmFlagStatus = algorithmFlagStatus;
+    }
+
+	public String getAlgorithmFlagObservation() {
+        return this.algorithmFlagObservation;
+    }
+
+	public void setAlgorithmFlagObservation(String algorithmFlagObservation) {
+        this.algorithmFlagObservation = algorithmFlagObservation;
+    }
+
+	public String getAlgorithmFlagCause() {
+        return this.algorithmFlagCause;
+    }
+
+	public void setAlgorithmFlagCause(String algorithmFlagCause) {
+        this.algorithmFlagCause = algorithmFlagCause;
+    }
+
+	public String getAlgorithmFlagComment() {
+        return this.algorithmFlagComment;
+    }
+
+	public void setAlgorithmFlagComment(String algorithmFlagComment) {
+        this.algorithmFlagComment = algorithmFlagComment;
+    }
+
+	public String getPreprocessFlagStatus() {
+        return this.preprocessFlagStatus;
+    }
+
+	public void setPreprocessFlagStatus(String preprocessFlagStatus) {
+        this.preprocessFlagStatus = preprocessFlagStatus;
+    }
+
+	public String getPreprocessFlagObservation() {
+        return this.preprocessFlagObservation;
+    }
+
+	public void setPreprocessFlagObservation(String preprocessFlagObservation) {
+        this.preprocessFlagObservation = preprocessFlagObservation;
+    }
+
+	public String getPreprocessFlagCause() {
+        return this.preprocessFlagCause;
+    }
+
+	public void setPreprocessFlagCause(String preprocessFlagCause) {
+        this.preprocessFlagCause = preprocessFlagCause;
+    }
+
+	public String getPreprocessFlagComment() {
+        return this.preprocessFlagComment;
+    }
+
+	public void setPreprocessFlagComment(String preprocessFlagComment) {
+        this.preprocessFlagComment = preprocessFlagComment;
+    }
+
+	public String getUserFlagStatus() {
+        return this.userFlagStatus;
+    }
+
+	public void setUserFlagStatus(String userFlagStatus) {
+        this.userFlagStatus = userFlagStatus;
+    }
+
+	public String getUserFlagObservation() {
+        return this.userFlagObservation;
+    }
+
+	public void setUserFlagObservation(String userFlagObservation) {
+        this.userFlagObservation = userFlagObservation;
+    }
+
+	public String getUserFlagCause() {
+        return this.userFlagCause;
+    }
+
+	public void setUserFlagCause(String userFlagCause) {
+        this.userFlagCause = userFlagCause;
+    }
+
+	public String getUserFlagComment() {
+        return this.userFlagComment;
+    }
+
+	public void setUserFlagComment(String userFlagComment) {
+        this.userFlagComment = userFlagComment;
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static FlagWellDTO fromJsonToFlagWellDTO(String json) {
+        return new JSONDeserializer<FlagWellDTO>()
+        .use(null, FlagWellDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<FlagWellDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<FlagWellDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<FlagWellDTO> fromJsonArrayToFlagWellDTO(String json) {
+        return new JSONDeserializer<List<FlagWellDTO>>()
+        .use("values", FlagWellDTO.class).deserialize(json);
+    }
 }

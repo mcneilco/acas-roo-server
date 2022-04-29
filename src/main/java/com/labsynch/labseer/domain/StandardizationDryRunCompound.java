@@ -1,13 +1,20 @@
 package com.labsynch.labseer.domain;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
+import javax.persistence.Version;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -15,6 +22,8 @@ import javax.persistence.criteria.Root;
 
 import static java.lang.Math.toIntExact;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -28,7 +37,10 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
+@Entity
 @RooJavaBean
 @RooToString
 @RooJson
@@ -311,4 +323,409 @@ public class StandardizationDryRunCompound {
 
 		return(standardizationHistory);
 	}
+
+	public int getRunNumber() {
+        return this.runNumber;
+    }
+
+	public void setRunNumber(int runNumber) {
+        this.runNumber = runNumber;
+    }
+
+	public Date getQcDate() {
+        return this.qcDate;
+    }
+
+	public void setQcDate(Date qcDate) {
+        this.qcDate = qcDate;
+    }
+
+	public Long getParentId() {
+        return this.parentId;
+    }
+
+	public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+	public String getCorpName() {
+        return this.corpName;
+    }
+
+	public void setCorpName(String corpName) {
+        this.corpName = corpName;
+    }
+
+	public String getNewDuplicates() {
+        return this.newDuplicates;
+    }
+
+	public void setNewDuplicates(String newDuplicates) {
+        this.newDuplicates = newDuplicates;
+    }
+
+	public String getExistingDuplicates() {
+        return this.existingDuplicates;
+    }
+
+	public void setExistingDuplicates(String existingDuplicates) {
+        this.existingDuplicates = existingDuplicates;
+    }
+
+	public boolean isChangedStructure() {
+        return this.changedStructure;
+    }
+
+	public void setChangedStructure(boolean changedStructure) {
+        this.changedStructure = changedStructure;
+    }
+
+	public Double getOldMolWeight() {
+        return this.oldMolWeight;
+    }
+
+	public void setOldMolWeight(Double oldMolWeight) {
+        this.oldMolWeight = oldMolWeight;
+    }
+
+	public Double getNewMolWeight() {
+        return this.newMolWeight;
+    }
+
+	public void setNewMolWeight(Double newMolWeight) {
+        this.newMolWeight = newMolWeight;
+    }
+
+	public Double getDeltaMolWeight() {
+        return this.deltaMolWeight;
+    }
+
+	public void setDeltaMolWeight(Double deltaMolWeight) {
+        this.deltaMolWeight = deltaMolWeight;
+    }
+
+	public boolean isDisplayChange() {
+        return this.displayChange;
+    }
+
+	public void setDisplayChange(boolean displayChange) {
+        this.displayChange = displayChange;
+    }
+
+	public boolean isAsDrawnDisplayChange() {
+        return this.asDrawnDisplayChange;
+    }
+
+	public void setAsDrawnDisplayChange(boolean asDrawnDisplayChange) {
+        this.asDrawnDisplayChange = asDrawnDisplayChange;
+    }
+
+	public int getNewDuplicateCount() {
+        return this.newDuplicateCount;
+    }
+
+	public void setNewDuplicateCount(int newDuplicateCount) {
+        this.newDuplicateCount = newDuplicateCount;
+    }
+
+	public int getExistingDuplicateCount() {
+        return this.existingDuplicateCount;
+    }
+
+	public void setExistingDuplicateCount(int existingDuplicateCount) {
+        this.existingDuplicateCount = existingDuplicateCount;
+    }
+
+	public String getAlias() {
+        return this.alias;
+    }
+
+	public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+	public String getStereoCategory() {
+        return this.stereoCategory;
+    }
+
+	public void setStereoCategory(String stereoCategory) {
+        this.stereoCategory = stereoCategory;
+    }
+
+	public String getStereoComment() {
+        return this.stereoComment;
+    }
+
+	public void setStereoComment(String stereoComment) {
+        this.stereoComment = stereoComment;
+    }
+
+	public int getCdId() {
+        return this.CdId;
+    }
+
+	public void setCdId(int CdId) {
+        this.CdId = CdId;
+    }
+
+	public String getMolStructure() {
+        return this.molStructure;
+    }
+
+	public void setMolStructure(String molStructure) {
+        this.molStructure = molStructure;
+    }
+
+	public String getComment() {
+        return this.comment;
+    }
+
+	public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+	public boolean isIgnore() {
+        return this.ignore;
+    }
+
+	public void setIgnore(boolean ignore) {
+        this.ignore = ignore;
+    }
+
+	public StandardizationStatus getStandardizationStatus() {
+        return this.standardizationStatus;
+    }
+
+	public void setStandardizationStatus(StandardizationStatus standardizationStatus) {
+        this.standardizationStatus = standardizationStatus;
+    }
+
+	public String getStandardizationComment() {
+        return this.standardizationComment;
+    }
+
+	public void setStandardizationComment(String standardizationComment) {
+        this.standardizationComment = standardizationComment;
+    }
+
+	public RegistrationStatus getRegistrationStatus() {
+        return this.registrationStatus;
+    }
+
+	public void setRegistrationStatus(RegistrationStatus registrationStatus) {
+        this.registrationStatus = registrationStatus;
+    }
+
+	public String getRegistrationComment() {
+        return this.registrationComment;
+    }
+
+	public void setRegistrationComment(String registrationComment) {
+        this.registrationComment = registrationComment;
+    }
+
+	public static Long countFindStandardizationDryRunCompoundsByCdId(int CdId) {
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM StandardizationDryRunCompound AS o WHERE o.CdId = :CdId", Long.class);
+        q.setParameter("CdId", CdId);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindStandardizationDryRunCompoundsByCorpNameEquals(String corpName) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM StandardizationDryRunCompound AS o WHERE o.corpName = :corpName", Long.class);
+        q.setParameter("corpName", corpName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<StandardizationDryRunCompound> findStandardizationDryRunCompoundsByCdId(int CdId) {
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        TypedQuery<StandardizationDryRunCompound> q = em.createQuery("SELECT o FROM StandardizationDryRunCompound AS o WHERE o.CdId = :CdId", StandardizationDryRunCompound.class);
+        q.setParameter("CdId", CdId);
+        return q;
+    }
+
+	public static TypedQuery<StandardizationDryRunCompound> findStandardizationDryRunCompoundsByCdId(int CdId, String sortFieldName, String sortOrder) {
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM StandardizationDryRunCompound AS o WHERE o.CdId = :CdId");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<StandardizationDryRunCompound> q = em.createQuery(queryBuilder.toString(), StandardizationDryRunCompound.class);
+        q.setParameter("CdId", CdId);
+        return q;
+    }
+
+	public static TypedQuery<StandardizationDryRunCompound> findStandardizationDryRunCompoundsByCorpNameEquals(String corpName) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        TypedQuery<StandardizationDryRunCompound> q = em.createQuery("SELECT o FROM StandardizationDryRunCompound AS o WHERE o.corpName = :corpName", StandardizationDryRunCompound.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+	public static TypedQuery<StandardizationDryRunCompound> findStandardizationDryRunCompoundsByCorpNameEquals(String corpName, String sortFieldName, String sortOrder) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM StandardizationDryRunCompound AS o WHERE o.corpName = :corpName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<StandardizationDryRunCompound> q = em.createQuery(queryBuilder.toString(), StandardizationDryRunCompound.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+	@PersistenceContext
+    transient EntityManager entityManager;
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("runNumber", "qcDate", "parentId", "corpName", "newDuplicates", "existingDuplicates", "changedStructure", "oldMolWeight", "newMolWeight", "deltaMolWeight", "displayChange", "asDrawnDisplayChange", "newDuplicateCount", "existingDuplicateCount", "alias", "stereoCategory", "stereoComment", "CdId", "molStructure", "comment", "ignore", "standardizationStatus", "standardizationComment", "registrationStatus", "registrationComment");
+
+	public static final EntityManager entityManager() {
+        EntityManager em = new StandardizationDryRunCompound().entityManager;
+        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+
+	public static long countStandardizationDryRunCompounds() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM StandardizationDryRunCompound o", Long.class).getSingleResult();
+    }
+
+	public static List<StandardizationDryRunCompound> findAllStandardizationDryRunCompounds() {
+        return entityManager().createQuery("SELECT o FROM StandardizationDryRunCompound o", StandardizationDryRunCompound.class).getResultList();
+    }
+
+	public static List<StandardizationDryRunCompound> findAllStandardizationDryRunCompounds(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM StandardizationDryRunCompound o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, StandardizationDryRunCompound.class).getResultList();
+    }
+
+	public static StandardizationDryRunCompound findStandardizationDryRunCompound(Long id) {
+        if (id == null) return null;
+        return entityManager().find(StandardizationDryRunCompound.class, id);
+    }
+
+	public static List<StandardizationDryRunCompound> findStandardizationDryRunCompoundEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM StandardizationDryRunCompound o", StandardizationDryRunCompound.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<StandardizationDryRunCompound> findStandardizationDryRunCompoundEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM StandardizationDryRunCompound o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, StandardizationDryRunCompound.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public void persist() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.persist(this);
+    }
+
+	@Transactional
+    public void remove() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager.contains(this)) {
+            this.entityManager.remove(this);
+        } else {
+            StandardizationDryRunCompound attached = StandardizationDryRunCompound.findStandardizationDryRunCompound(this.id);
+            this.entityManager.remove(attached);
+        }
+    }
+
+	@Transactional
+    public void flush() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.flush();
+    }
+
+	@Transactional
+    public void clear() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.clear();
+    }
+
+	@Transactional
+    public StandardizationDryRunCompound merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        StandardizationDryRunCompound merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+
+	@Version
+    @Column(name = "version")
+    private Integer version;
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static StandardizationDryRunCompound fromJsonToStandardizationDryRunCompound(String json) {
+        return new JSONDeserializer<StandardizationDryRunCompound>()
+        .use(null, StandardizationDryRunCompound.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<StandardizationDryRunCompound> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<StandardizationDryRunCompound> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<StandardizationDryRunCompound> fromJsonArrayToStandardizationDryRunCompounds(String json) {
+        return new JSONDeserializer<List<StandardizationDryRunCompound>>()
+        .use("values", StandardizationDryRunCompound.class).deserialize(json);
+    }
 }

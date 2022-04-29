@@ -1,7 +1,10 @@
 package com.labsynch.labseer.dto;
 
 import java.math.BigDecimal;
-
+import java.util.Collection;
+import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -11,6 +14,8 @@ import org.springframework.roo.addon.tostring.RooToString;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.service.LsThingServiceImpl;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 
 @RooJavaBean
@@ -72,6 +77,64 @@ public class ValueRuleDTO {
 		return false;
 	}
 	
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static ValueRuleDTO fromJsonToValueRuleDTO(String json) {
+        return new JSONDeserializer<ValueRuleDTO>()
+        .use(null, ValueRuleDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<ValueRuleDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<ValueRuleDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<ValueRuleDTO> fromJsonArrayToValueRuleDTO(String json) {
+        return new JSONDeserializer<List<ValueRuleDTO>>()
+        .use("values", ValueRuleDTO.class).deserialize(json);
+    }
+
+	public String getComparisonMethod() {
+        return this.comparisonMethod;
+    }
+
+	public void setComparisonMethod(String comparisonMethod) {
+        this.comparisonMethod = comparisonMethod;
+    }
+
+	public BigDecimal getComparisonRange() {
+        return this.comparisonRange;
+    }
+
+	public void setComparisonRange(BigDecimal comparisonRange) {
+        this.comparisonRange = comparisonRange;
+    }
+
+	public ValuePathDTO getValue() {
+        return this.value;
+    }
+
+	public void setValue(ValuePathDTO value) {
+        this.value = value;
+    }
 }
 
 

@@ -3,7 +3,8 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
@@ -35,6 +36,8 @@ import com.labsynch.labseer.domain.UnitKind;
 import com.labsynch.labseer.domain.UnitType;
 import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -363,6 +366,56 @@ public class TypeKindDTO {
 	
 	
 	
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static TypeKindDTO fromJsonToTypeKindDTO(String json) {
+        return new JSONDeserializer<TypeKindDTO>()
+        .use(null, TypeKindDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<TypeKindDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<TypeKindDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<TypeKindDTO> fromJsonArrayToTypeKindDTO(String json) {
+        return new JSONDeserializer<List<TypeKindDTO>>()
+        .use("values", TypeKindDTO.class).deserialize(json);
+    }
+
+	public String getTypeName() {
+        return this.typeName;
+    }
+
+	public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+	public String getKindName() {
+        return this.kindName;
+    }
+
+	public void setKindName(String kindName) {
+        this.kindName = kindName;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }
 
 

@@ -1,11 +1,14 @@
 package com.labsynch.labseer.dto;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Lob;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -13,6 +16,8 @@ import org.springframework.roo.addon.tostring.RooToString;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.SaltForm;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -118,5 +123,43 @@ public class SaltFormDTO{
     
     public void setLots(Set<Lot> lots) {
         this.lots = lots;
+    }
+
+	public void setChemist(String chemist) {
+        this.chemist = chemist;
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static SaltFormDTO fromJsonToSaltFormDTO(String json) {
+        return new JSONDeserializer<SaltFormDTO>()
+        .use(null, SaltFormDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<SaltFormDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<SaltFormDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<SaltFormDTO> fromJsonArrayToSaltFoes(String json) {
+        return new JSONDeserializer<List<SaltFormDTO>>()
+        .use("values", SaltFormDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

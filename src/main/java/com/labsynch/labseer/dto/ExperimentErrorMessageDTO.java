@@ -1,7 +1,9 @@
 package com.labsynch.labseer.dto;
 
 import java.util.Collection;
-
+import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -9,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RooJavaBean
@@ -108,4 +110,50 @@ public class ExperimentErrorMessageDTO {
 		this.experiment = experiment;
 	}
 	
+
+	public static ExperimentErrorMessageDTO fromJsonToExperimentErrorMessageDTO(String json) {
+        return new JSONDeserializer<ExperimentErrorMessageDTO>()
+        .use(null, ExperimentErrorMessageDTO.class).deserialize(json);
+    }
+
+	public static Collection<ExperimentErrorMessageDTO> fromJsonArrayToExperimentErroes(String json) {
+        return new JSONDeserializer<List<ExperimentErrorMessageDTO>>()
+        .use("values", ExperimentErrorMessageDTO.class).deserialize(json);
+    }
+
+	public String getExperimentCodeName() {
+        return this.experimentCodeName;
+    }
+
+	public void setExperimentCodeName(String experimentCodeName) {
+        this.experimentCodeName = experimentCodeName;
+    }
+
+	public String getLevel() {
+        return this.level;
+    }
+
+	public void setLevel(String level) {
+        this.level = level;
+    }
+
+	public String getMessage() {
+        return this.message;
+    }
+
+	public void setMessage(String message) {
+        this.message = message;
+    }
+
+	public Experiment getExperiment() {
+        return this.experiment;
+    }
+
+	public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

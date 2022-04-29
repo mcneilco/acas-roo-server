@@ -3,7 +3,8 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -11,7 +12,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RooJavaBean
@@ -74,4 +75,76 @@ public class BulkLoadPropertyMappingDTO {
     	return null;
     }
     
+
+	public static BulkLoadPropertyMappingDTO fromJsonToBulkLoadPropertyMappingDTO(String json) {
+        return new JSONDeserializer<BulkLoadPropertyMappingDTO>()
+        .use(null, BulkLoadPropertyMappingDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<BulkLoadPropertyMappingDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<BulkLoadPropertyMappingDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<BulkLoadPropertyMappingDTO> fromJsonArrayToBulkLoadProes(String json) {
+        return new JSONDeserializer<List<BulkLoadPropertyMappingDTO>>()
+        .use("values", BulkLoadPropertyMappingDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getDbProperty() {
+        return this.dbProperty;
+    }
+
+	public void setDbProperty(String dbProperty) {
+        this.dbProperty = dbProperty;
+    }
+
+	public String getSdfProperty() {
+        return this.sdfProperty;
+    }
+
+	public void setSdfProperty(String sdfProperty) {
+        this.sdfProperty = sdfProperty;
+    }
+
+	public boolean isRequired() {
+        return this.required;
+    }
+
+	public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+	public Collection<String> getInvalidValues() {
+        return this.invalidValues;
+    }
+
+	public void setInvalidValues(Collection<String> invalidValues) {
+        this.invalidValues = invalidValues;
+    }
+
+	public String getDefaultVal() {
+        return this.defaultVal;
+    }
+
+	public void setDefaultVal(String defaultVal) {
+        this.defaultVal = defaultVal;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
 }

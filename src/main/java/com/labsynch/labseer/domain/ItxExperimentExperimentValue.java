@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -23,6 +25,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
@@ -91,5 +95,66 @@ public class ItxExperimentExperimentValue extends AbstractValue {
 	public static ItxExperimentExperimentValue create(ItxExperimentExperimentValue lsThingValue) {
         ItxExperimentExperimentValue newItxExperimentExperimentValue = new JSONDeserializer<ItxExperimentExperimentValue>().use(null, ItxExperimentExperimentValue.class).deserializeInto(lsThingValue.toJson(), new ItxExperimentExperimentValue());
         return newItxExperimentExperimentValue;
+    }
+
+	public ItxExperimentExperimentState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(ItxExperimentExperimentState lsState) {
+        this.lsState = lsState;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+
+	public static long countItxExperimentExperimentValues() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxExperimentExperimentValue o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxExperimentExperimentValue> findAllItxExperimentExperimentValues() {
+        return entityManager().createQuery("SELECT o FROM ItxExperimentExperimentValue o", ItxExperimentExperimentValue.class).getResultList();
+    }
+
+	public static List<ItxExperimentExperimentValue> findAllItxExperimentExperimentValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxExperimentExperimentValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxExperimentExperimentValue.class).getResultList();
+    }
+
+	public static ItxExperimentExperimentValue findItxExperimentExperimentValue(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxExperimentExperimentValue.class, id);
+    }
+
+	public static List<ItxExperimentExperimentValue> findItxExperimentExperimentValueEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxExperimentExperimentValue o", ItxExperimentExperimentValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxExperimentExperimentValue> findItxExperimentExperimentValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxExperimentExperimentValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxExperimentExperimentValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxExperimentExperimentValue merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxExperimentExperimentValue merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
     }
 }

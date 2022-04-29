@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -21,9 +22,11 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -36,6 +39,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "analysisGroups", "lsLabels" })
 @RooJson
@@ -579,4 +584,472 @@ public class Experiment extends AbstractThing {
         
         return q;
 	}
+
+	public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsTags", "lsStates", "analysisGroups", "lsLabels").toString();
+    }
+
+	public static Long countFindExperimentsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Long.class);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByLsTransaction(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByProtocol(Protocol protocol) {
+        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE o.protocol = :protocol", Long.class);
+        q.setParameter("protocol", protocol);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindExperimentsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Long.class);
+        q.setParameter("recordedBy", recordedBy);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Experiment.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByCodeNameLike(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsKind = :lsKind", Experiment.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsKindEquals(String lsKind, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Experiment.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsKindLike(String lsKind, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTransaction(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType", Experiment.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTypeEquals(String lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Experiment.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Experiment.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByLsTypeLike(String lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByProtocol(Protocol protocol, String sortFieldName, String sortOrder) {
+        if (protocol == null) throw new IllegalArgumentException("The protocol argument is required");
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE o.protocol = :protocol");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("protocol", protocol);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Experiment.class);
+        q.setParameter("recordedBy", recordedBy);
+        return q;
+    }
+
+	public static TypedQuery<Experiment> findExperimentsByRecordedByLike(String recordedBy, String sortFieldName, String sortOrder) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Experiment> q = em.createQuery(queryBuilder.toString(), Experiment.class);
+        q.setParameter("recordedBy", recordedBy);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "shortDescription", "protocol", "lsStates", "firstExperiments", "secondExperiments", "analysisGroups", "lsLabels", "lsTags");
+
+	public static List<Experiment> findAllExperiments(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Experiment o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Experiment.class).getResultList();
+    }
+
+	public static List<Experiment> findExperimentEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Experiment o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Experiment.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+	public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+	public Protocol getProtocol() {
+        return this.protocol;
+    }
+
+	public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+	public Set<ExperimentState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<ExperimentState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public Set<ItxExperimentExperiment> getFirstExperiments() {
+        return this.firstExperiments;
+    }
+
+	public void setFirstExperiments(Set<ItxExperimentExperiment> firstExperiments) {
+        this.firstExperiments = firstExperiments;
+    }
+
+	public Set<ItxExperimentExperiment> getSecondExperiments() {
+        return this.secondExperiments;
+    }
+
+	public void setSecondExperiments(Set<ItxExperimentExperiment> secondExperiments) {
+        this.secondExperiments = secondExperiments;
+    }
+
+	public Set<AnalysisGroup> getAnalysisGroups() {
+        return this.analysisGroups;
+    }
+
+	public void setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+        this.analysisGroups = analysisGroups;
+    }
+
+	public Set<ExperimentLabel> getLsLabels() {
+        return this.lsLabels;
+    }
+
+	public void setLsLabels(Set<ExperimentLabel> lsLabels) {
+        this.lsLabels = lsLabels;
+    }
+
+	public Set<LsTag> getLsTags() {
+        return this.lsTags;
+    }
+
+	public void setLsTags(Set<LsTag> lsTags) {
+        this.lsTags = lsTags;
+    }
 }

@@ -11,7 +11,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -23,6 +24,8 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -195,4 +198,142 @@ public class TgDataDTO {
 		return getTgData(makeTgDataDTOsFromCurveIdList(curveIds));
 	}
 	
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static TgDataDTO fromJsonToTgDataDTO(String json) {
+        return new JSONDeserializer<TgDataDTO>()
+        .use(null, TgDataDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<TgDataDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<TgDataDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<TgDataDTO> fromJsonArrayToTgDataDTO(String json) {
+        return new JSONDeserializer<List<TgDataDTO>>()
+        .use("values", TgDataDTO.class).deserialize(json);
+    }
+
+	public String getCurveId() {
+        return this.curveId;
+    }
+
+	public void setCurveId(String curveId) {
+        this.curveId = curveId;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public Long getTgvId() {
+        return this.tgvId;
+    }
+
+	public void setTgvId(Long tgvId) {
+        this.tgvId = tgvId;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public Integer getNumberOfReplicates() {
+        return this.numberOfReplicates;
+    }
+
+	public void setNumberOfReplicates(Integer numberOfReplicates) {
+        this.numberOfReplicates = numberOfReplicates;
+    }
+
+	public BigDecimal getNumericValue() {
+        return this.numericValue;
+    }
+
+	public void setNumericValue(BigDecimal numericValue) {
+        this.numericValue = numericValue;
+    }
+
+	public String getUnitType() {
+        return this.unitType;
+    }
+
+	public void setUnitType(String unitType) {
+        this.unitType = unitType;
+    }
+
+	public String getUnitKind() {
+        return this.unitKind;
+    }
+
+	public void setUnitKind(String unitKind) {
+        this.unitKind = unitKind;
+    }
+
+	public String getUncertaintyType() {
+        return this.uncertaintyType;
+    }
+
+	public void setUncertaintyType(String uncertaintyType) {
+        this.uncertaintyType = uncertaintyType;
+    }
+
+	public BigDecimal getUncertainty() {
+        return this.uncertainty;
+    }
+
+	public void setUncertainty(BigDecimal uncertainty) {
+        this.uncertainty = uncertainty;
+    }
+
+	public Boolean getPublicData() {
+        return this.publicData;
+    }
+
+	public void setPublicData(Boolean publicData) {
+        this.publicData = publicData;
+    }
 }

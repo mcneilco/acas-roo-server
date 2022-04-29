@@ -5,7 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -48,4 +49,24 @@ public class SearchFormReturnDTO{
         		.deserialize(json);
     }
 
+
+	public Collection<SearchCompoundReturnDTO> getFoundCompounds() {
+        return this.foundCompounds;
+    }
+
+	public void setFoundCompounds(Collection<SearchCompoundReturnDTO> foundCompounds) {
+        this.foundCompounds = foundCompounds;
+    }
+
+	public boolean isLotsWithheld() {
+        return this.lotsWithheld;
+    }
+
+	public void setLotsWithheld(boolean lotsWithheld) {
+        this.lotsWithheld = lotsWithheld;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

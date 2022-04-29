@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -48,6 +49,42 @@ public class ExperimentFilterDTO {
 
 	public static Collection<ExperimentFilterDTO> fromJsonArrayToExperimentFilterDTO(String json) {
         return new JSONDeserializer<List<ExperimentFilterDTO>>().use(null, ArrayList.class).use("values", ExperimentFilterDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public Long getExperimentId() {
+        return this.experimentId;
+    }
+
+	public void setExperimentId(Long experimentId) {
+        this.experimentId = experimentId;
+    }
+
+	public String getExperimentCode() {
+        return this.experimentCode;
+    }
+
+	public void setExperimentCode(String experimentCode) {
+        this.experimentCode = experimentCode;
+    }
+
+	public String getExperimentName() {
+        return this.experimentName;
+    }
+
+	public void setExperimentName(String experimentName) {
+        this.experimentName = experimentName;
+    }
+
+	public Collection<ValueTypeKindDTO> getValueKinds() {
+        return this.valueKinds;
+    }
+
+	public void setValueKinds(Collection<ValueTypeKindDTO> valueKinds) {
+        this.valueKinds = valueKinds;
     }
 }
 

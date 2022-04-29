@@ -3,12 +3,14 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -24,7 +26,7 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RooJavaBean
@@ -129,6 +131,70 @@ public class ContainerDependencyCheckDTO {
 		return results;
 	}
 	
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public Container getQueryContainer() {
+        return this.queryContainer;
+    }
+
+	public void setQueryContainer(Container queryContainer) {
+        this.queryContainer = queryContainer;
+    }
+
+	public Collection<String> getDependentCorpNames() {
+        return this.dependentCorpNames;
+    }
+
+	public void setDependentCorpNames(Collection<String> dependentCorpNames) {
+        this.dependentCorpNames = dependentCorpNames;
+    }
+
+	public boolean isLinkedDataExists() {
+        return this.linkedDataExists;
+    }
+
+	public void setLinkedDataExists(boolean linkedDataExists) {
+        this.linkedDataExists = linkedDataExists;
+    }
+
+	public Collection<CodeTableDTO> getLinkedExperiments() {
+        return this.linkedExperiments;
+    }
+
+	public void setLinkedExperiments(Collection<CodeTableDTO> linkedExperiments) {
+        this.linkedExperiments = linkedExperiments;
+    }
+
+	public Collection<ErrorMessageDTO> getErrors() {
+        return this.errors;
+    }
+
+	public void setErrors(Collection<ErrorMessageDTO> errors) {
+        this.errors = errors;
+    }
+
+	public static ContainerDependencyCheckDTO fromJsonToContainerDependencyCheckDTO(String json) {
+        return new JSONDeserializer<ContainerDependencyCheckDTO>()
+        .use(null, ContainerDependencyCheckDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<ContainerDependencyCheckDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<ContainerDependencyCheckDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<ContainerDependencyCheckDTO> fromJsonArrayToCoes(String json) {
+        return new JSONDeserializer<List<ContainerDependencyCheckDTO>>()
+        .use("values", ContainerDependencyCheckDTO.class).deserialize(json);
+    }
 }
 
 

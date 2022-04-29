@@ -3,7 +3,8 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -46,6 +47,36 @@ public class AuthGroupsAndProjectsDTO {
 
 	public static Collection<AuthGroupsAndProjectsDTO> fromJsonArrayToAuthProes(String json) {
         return new JSONDeserializer<List<AuthGroupsAndProjectsDTO>>().use(null, ArrayList.class).use("values", AuthGroupsAndProjectsDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static AuthGroupsAndProjectsDTO fromJsonToAuthGroupsAndProjectsDTO(String json) {
+        return new JSONDeserializer<AuthGroupsAndProjectsDTO>()
+        .use(null, AuthGroupsAndProjectsDTO.class).deserialize(json);
+    }
+
+	public static Collection<AuthGroupsAndProjectsDTO> fromJsonArrayToAuthGroupsAndProes(String json) {
+        return new JSONDeserializer<List<AuthGroupsAndProjectsDTO>>()
+        .use("values", AuthGroupsAndProjectsDTO.class).deserialize(json);
+    }
+
+	public Collection<AuthGroupsDTO> getGroups() {
+        return this.groups;
+    }
+
+	public void setGroups(Collection<AuthGroupsDTO> groups) {
+        this.groups = groups;
+    }
+
+	public Collection<AuthProjectGroupsDTO> getProjects() {
+        return this.projects;
+    }
+
+	public void setProjects(Collection<AuthProjectGroupsDTO> projects) {
+        this.projects = projects;
     }
 }
 

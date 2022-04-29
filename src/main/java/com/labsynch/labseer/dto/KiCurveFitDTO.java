@@ -13,7 +13,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
@@ -33,6 +34,8 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.utils.SimpleUtil;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -764,4 +767,454 @@ public class KiCurveFitDTO {
 		return curveFitDTOs;
 	}
 	
+
+	public String getCurveId() {
+        return this.curveId;
+    }
+
+	public void setCurveId(String curveId) {
+        this.curveId = curveId;
+    }
+
+	public String getAnalysisGroupCode() {
+        return this.analysisGroupCode;
+    }
+
+	public void setAnalysisGroupCode(String analysisGroupCode) {
+        this.analysisGroupCode = analysisGroupCode;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Date getRecordedDate() {
+        return this.recordedDate;
+    }
+
+	public void setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public String getBatchCode() {
+        return this.batchCode;
+    }
+
+	public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
+	public String getCategory() {
+        return this.category;
+    }
+
+	public void setCategory(String category) {
+        this.category = category;
+    }
+
+	public String getRenderingHint() {
+        return this.renderingHint;
+    }
+
+	public void setRenderingHint(String renderingHint) {
+        this.renderingHint = renderingHint;
+    }
+
+	public String getMin() {
+        return this.min;
+    }
+
+	public void setMin(String min) {
+        this.min = min;
+    }
+
+	public String getMax() {
+        return this.max;
+    }
+
+	public void setMax(String max) {
+        this.max = max;
+    }
+
+	public String getMinUnits() {
+        return this.minUnits;
+    }
+
+	public void setMinUnits(String minUnits) {
+        this.minUnits = minUnits;
+    }
+
+	public String getMaxUnits() {
+        return this.maxUnits;
+    }
+
+	public void setMaxUnits(String maxUnits) {
+        this.maxUnits = maxUnits;
+    }
+
+	public String getKi() {
+        return this.ki;
+    }
+
+	public void setKi(String ki) {
+        this.ki = ki;
+    }
+
+	public String getKiUnits() {
+        return this.kiUnits;
+    }
+
+	public void setKiUnits(String kiUnits) {
+        this.kiUnits = kiUnits;
+    }
+
+	public BigDecimal getLigandConc() {
+        return this.ligandConc;
+    }
+
+	public void setLigandConc(BigDecimal ligandConc) {
+        this.ligandConc = ligandConc;
+    }
+
+	public String getLigandConcUnits() {
+        return this.ligandConcUnits;
+    }
+
+	public void setLigandConcUnits(String ligandConcUnits) {
+        this.ligandConcUnits = ligandConcUnits;
+    }
+
+	public BigDecimal getKd() {
+        return this.kd;
+    }
+
+	public void setKd(BigDecimal kd) {
+        this.kd = kd;
+    }
+
+	public String getKdUnits() {
+        return this.kdUnits;
+    }
+
+	public void setKdUnits(String kdUnits) {
+        this.kdUnits = kdUnits;
+    }
+
+	public BigDecimal getMinUncertainty() {
+        return this.minUncertainty;
+    }
+
+	public void setMinUncertainty(BigDecimal minUncertainty) {
+        this.minUncertainty = minUncertainty;
+    }
+
+	public BigDecimal getMaxUncertainty() {
+        return this.maxUncertainty;
+    }
+
+	public void setMaxUncertainty(BigDecimal maxUncertainty) {
+        this.maxUncertainty = maxUncertainty;
+    }
+
+	public BigDecimal getKiUncertainty() {
+        return this.kiUncertainty;
+    }
+
+	public void setKiUncertainty(BigDecimal kiUncertainty) {
+        this.kiUncertainty = kiUncertainty;
+    }
+
+	public BigDecimal getLigandConcUncertainty() {
+        return this.ligandConcUncertainty;
+    }
+
+	public void setLigandConcUncertainty(BigDecimal ligandConcUncertainty) {
+        this.ligandConcUncertainty = ligandConcUncertainty;
+    }
+
+	public BigDecimal getKdUncertainty() {
+        return this.kdUncertainty;
+    }
+
+	public void setKdUncertainty(BigDecimal kdUncertainty) {
+        this.kdUncertainty = kdUncertainty;
+    }
+
+	public String getMinUncertaintyType() {
+        return this.minUncertaintyType;
+    }
+
+	public void setMinUncertaintyType(String minUncertaintyType) {
+        this.minUncertaintyType = minUncertaintyType;
+    }
+
+	public String getMaxUncertaintyType() {
+        return this.maxUncertaintyType;
+    }
+
+	public void setMaxUncertaintyType(String maxUncertaintyType) {
+        this.maxUncertaintyType = maxUncertaintyType;
+    }
+
+	public String getKiUncertaintyType() {
+        return this.kiUncertaintyType;
+    }
+
+	public void setKiUncertaintyType(String kiUncertaintyType) {
+        this.kiUncertaintyType = kiUncertaintyType;
+    }
+
+	public String getLigandConcUncertaintyType() {
+        return this.ligandConcUncertaintyType;
+    }
+
+	public void setLigandConcUncertaintyType(String ligandConcUncertaintyType) {
+        this.ligandConcUncertaintyType = ligandConcUncertaintyType;
+    }
+
+	public String getKdUncertaintyType() {
+        return this.kdUncertaintyType;
+    }
+
+	public void setKdUncertaintyType(String kdUncertaintyType) {
+        this.kdUncertaintyType = kdUncertaintyType;
+    }
+
+	public String getMinOperatorKind() {
+        return this.minOperatorKind;
+    }
+
+	public void setMinOperatorKind(String minOperatorKind) {
+        this.minOperatorKind = minOperatorKind;
+    }
+
+	public String getMaxOperatorKind() {
+        return this.maxOperatorKind;
+    }
+
+	public void setMaxOperatorKind(String maxOperatorKind) {
+        this.maxOperatorKind = maxOperatorKind;
+    }
+
+	public String getKiOperatorKind() {
+        return this.kiOperatorKind;
+    }
+
+	public void setKiOperatorKind(String kiOperatorKind) {
+        this.kiOperatorKind = kiOperatorKind;
+    }
+
+	public String getLigandConcOperatorKind() {
+        return this.ligandConcOperatorKind;
+    }
+
+	public void setLigandConcOperatorKind(String ligandConcOperatorKind) {
+        this.ligandConcOperatorKind = ligandConcOperatorKind;
+    }
+
+	public String getKdOperatorKind() {
+        return this.kdOperatorKind;
+    }
+
+	public void setKdOperatorKind(String kdOperatorKind) {
+        this.kdOperatorKind = kdOperatorKind;
+    }
+
+	public BigDecimal getFittedMin() {
+        return this.fittedMin;
+    }
+
+	public void setFittedMin(BigDecimal fittedMin) {
+        this.fittedMin = fittedMin;
+    }
+
+	public BigDecimal getFittedMax() {
+        return this.fittedMax;
+    }
+
+	public void setFittedMax(BigDecimal fittedMax) {
+        this.fittedMax = fittedMax;
+    }
+
+	public BigDecimal getFittedKi() {
+        return this.fittedKi;
+    }
+
+	public void setFittedKi(BigDecimal fittedKi) {
+        this.fittedKi = fittedKi;
+    }
+
+	public BigDecimal getFittedMinUncertainty() {
+        return this.fittedMinUncertainty;
+    }
+
+	public void setFittedMinUncertainty(BigDecimal fittedMinUncertainty) {
+        this.fittedMinUncertainty = fittedMinUncertainty;
+    }
+
+	public BigDecimal getFittedMaxUncertainty() {
+        return this.fittedMaxUncertainty;
+    }
+
+	public void setFittedMaxUncertainty(BigDecimal fittedMaxUncertainty) {
+        this.fittedMaxUncertainty = fittedMaxUncertainty;
+    }
+
+	public BigDecimal getFittedKiUncertainty() {
+        return this.fittedKiUncertainty;
+    }
+
+	public void setFittedKiUncertainty(BigDecimal fittedKiUncertainty) {
+        this.fittedKiUncertainty = fittedKiUncertainty;
+    }
+
+	public String getFittedMinUncertaintyType() {
+        return this.fittedMinUncertaintyType;
+    }
+
+	public void setFittedMinUncertaintyType(String fittedMinUncertaintyType) {
+        this.fittedMinUncertaintyType = fittedMinUncertaintyType;
+    }
+
+	public String getFittedMaxUncertaintyType() {
+        return this.fittedMaxUncertaintyType;
+    }
+
+	public void setFittedMaxUncertaintyType(String fittedMaxUncertaintyType) {
+        this.fittedMaxUncertaintyType = fittedMaxUncertaintyType;
+    }
+
+	public String getFittedKiUncertaintyType() {
+        return this.fittedKiUncertaintyType;
+    }
+
+	public void setFittedKiUncertaintyType(String fittedKiUncertaintyType) {
+        this.fittedKiUncertaintyType = fittedKiUncertaintyType;
+    }
+
+	public BigDecimal getSse() {
+        return this.sse;
+    }
+
+	public void setSse(BigDecimal sse) {
+        this.sse = sse;
+    }
+
+	public BigDecimal getSst() {
+        return this.sst;
+    }
+
+	public void setSst(BigDecimal sst) {
+        this.sst = sst;
+    }
+
+	public BigDecimal getRsquared() {
+        return this.rsquared;
+    }
+
+	public void setRsquared(BigDecimal rsquared) {
+        this.rsquared = rsquared;
+    }
+
+	public String getCurveErrorsClob() {
+        return this.curveErrorsClob;
+    }
+
+	public void setCurveErrorsClob(String curveErrorsClob) {
+        this.curveErrorsClob = curveErrorsClob;
+    }
+
+	public String getReportedValuesClob() {
+        return this.reportedValuesClob;
+    }
+
+	public void setReportedValuesClob(String reportedValuesClob) {
+        this.reportedValuesClob = reportedValuesClob;
+    }
+
+	public String getParameterStdErrorsClob() {
+        return this.parameterStdErrorsClob;
+    }
+
+	public void setParameterStdErrorsClob(String parameterStdErrorsClob) {
+        this.parameterStdErrorsClob = parameterStdErrorsClob;
+    }
+
+	public String getFitSettings() {
+        return this.fitSettings;
+    }
+
+	public void setFitSettings(String fitSettings) {
+        this.fitSettings = fitSettings;
+    }
+
+	public String getFitSummaryClob() {
+        return this.fitSummaryClob;
+    }
+
+	public void setFitSummaryClob(String fitSummaryClob) {
+        this.fitSummaryClob = fitSummaryClob;
+    }
+
+	public String getUserFlagStatus() {
+        return this.userFlagStatus;
+    }
+
+	public void setUserFlagStatus(String userFlagStatus) {
+        this.userFlagStatus = userFlagStatus;
+    }
+
+	public String getAlgorithmFlagStatus() {
+        return this.algorithmFlagStatus;
+    }
+
+	public void setAlgorithmFlagStatus(String algorithmFlagStatus) {
+        this.algorithmFlagStatus = algorithmFlagStatus;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static KiCurveFitDTO fromJsonToKiCurveFitDTO(String json) {
+        return new JSONDeserializer<KiCurveFitDTO>()
+        .use(null, KiCurveFitDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<KiCurveFitDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<KiCurveFitDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<KiCurveFitDTO> fromJsonArrayToKiCurveFitDTO(String json) {
+        return new JSONDeserializer<List<KiCurveFitDTO>>()
+        .use("values", KiCurveFitDTO.class).deserialize(json);
+    }
 }

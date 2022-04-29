@@ -5,12 +5,16 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.NoResultException;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -77,4 +81,110 @@ public class ParentAliasDTO {
 		return results;
 	}
 
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static ParentAliasDTO fromJsonToParentAliasDTO(String json) {
+        return new JSONDeserializer<ParentAliasDTO>()
+        .use(null, ParentAliasDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<ParentAliasDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<ParentAliasDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<ParentAliasDTO> fromJsonArrayToParentAliasDTO(String json) {
+        return new JSONDeserializer<List<ParentAliasDTO>>()
+        .use("values", ParentAliasDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getParentCorpName() {
+        return this.parentCorpName;
+    }
+
+	public void setParentCorpName(String parentCorpName) {
+        this.parentCorpName = parentCorpName;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getAliasName() {
+        return this.aliasName;
+    }
+
+	public void setAliasName(String aliasName) {
+        this.aliasName = aliasName;
+    }
+
+	public boolean isPreferred() {
+        return this.preferred;
+    }
+
+	public void setPreferred(boolean preferred) {
+        this.preferred = preferred;
+    }
+
+	public Integer getSortId() {
+        return this.sortId;
+    }
+
+	public void setSortId(Integer sortId) {
+        this.sortId = sortId;
+    }
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Boolean getIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(Boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
 }
