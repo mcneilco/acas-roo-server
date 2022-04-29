@@ -146,12 +146,6 @@ public class ApiSolutionUnitController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@Autowired
-    public ConversionService conversionService_dtt;
-
-	@Autowired
-    public MessageSource messageSource_dtt;
-
 	public BeanWrapper beanWrapper;
 
 
