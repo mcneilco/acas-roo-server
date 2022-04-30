@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-		<licenses>
+	<licenses>
 		<license>
 			<name>&gt;GNU General Public License (GPL), Version 3.0</name>
 			<url>https://www.gnu.org/licenses/gpl-3.0.html</url>
 			<distribution>repo</distribution>
 			<comments>
-<![CDATA[
+				<![CDATA[
 Copyright 2011-2018 John McNeil & Co., Inc.
 http://www.mcneilco.com
 info@mcneilco.com
@@ -23,11 +23,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
-</comments>
+			</comments>
 		</license>
 	</licenses>
 	<groupId>com.labsynch.labseer</groupId>
-<artifactId>acas</artifactId>
+	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
 	<version>1.13-BUILD-SNAPSHOT</version>
 	<description>ACAS Java persistence layer</description>
@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<tomcat.version>9.0.58</tomcat.version>
 		<hibernate.version>5.6.1.Final</hibernate.version>
 		<maven-plugins.version>3.3.0</maven-plugins.version>
-    </properties>
+	</properties>
 	<scm>
 		<connection>scm:git:git://github.com/mcneilco/acas-roo-server.git</connection>
 		<developerConnection>scm:git:git:@github.com:mcneilco/acas-roo-server.git</developerConnection>
@@ -87,8 +87,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<profile>
 			<id>bbchem</id>
 			<activation>
-            	<activeByDefault>true</activeByDefault>
-        	</activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
 				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
@@ -99,15 +99,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<profile>
 			<id>jchem</id>
 			<activation>
-            	<activeByDefault>false</activeByDefault>
-        	</activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
 					<artifactId>jchem</artifactId>
 					<version>${jchem.version}</version>
 				</dependency>
-			</dependencies>	
+			</dependencies>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
 				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
@@ -118,8 +118,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<profile>
 			<id>indigo</id>
 			<activation>
-            	<activeByDefault>false</activeByDefault>
-        	</activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.epam.indigo</groupId>
@@ -131,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<artifactId>indigo-renderer</artifactId>
 					<version>${indigo.version}</version>
 				</dependency>
-			</dependencies>	
+			</dependencies>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/bbchem/**</exclude.chemistry.packageA>
 				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/bbchem/**</exclude.chemistry.migrationsA>
@@ -174,12 +174,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
-		  </dependency>
-		  <dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
-		  </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -443,54 +443,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
 		<dependency>
-    		<groupId>com.github.javadev</groupId>
-    		<artifactId>underscore</artifactId>
-    		<version>1.19</version>
-  		</dependency>
-		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-core</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>com.github.javadev</groupId>
+			<artifactId>underscore</artifactId>
+			<version>1.19</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-sdg</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-core</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-silent</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-sdg</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-standard</artifactId>
-    		<version>${cdk.version}</version>
-		</dependency>
-		  <dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-smiles</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-silent</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-formula</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-standard</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-io</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-smiles</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-interfaces</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-formula</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>org.openscience.cdk</groupId>
-    		<artifactId>cdk-depict</artifactId>
-    		<version>${cdk.version}</version>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-io</artifactId>
+			<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-interfaces</artifactId>
+			<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-depict</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -591,10 +591,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 						the test-compile goal if weaveWithAspectsInMainSourceFolder is set to true -->
 					<weaveWithAspectsInMainSourceFolder>false</weaveWithAspectsInMainSourceFolder>
 					<excludes>
-							<exclude>${exclude.chemistry.packageA}</exclude>
-							<exclude>${exclude.chemistry.migrationsA}</exclude>
-							<exclude>${exclude.chemistry.packageB}</exclude>
-							<exclude>${exclude.chemistry.migrationsB}</exclude>
+						<exclude>${exclude.chemistry.packageA}</exclude>
+						<exclude>${exclude.chemistry.migrationsA}</exclude>
+						<exclude>${exclude.chemistry.packageB}</exclude>
+						<exclude>${exclude.chemistry.migrationsB}</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -645,117 +645,117 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					</usedDependencies>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
 				<version>1.1</version>
 			</plugin>
 			<plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>${exclude.chemistry.packageA}</exclude>
-                        <exclude>${exclude.chemistry.migrationsA}</exclude>
-                        <exclude>${exclude.chemistry.packageB}</exclude>
-                        <exclude>${exclude.chemistry.migrationsB}</exclude>
-                    </excludes>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.tomcat.embed</groupId>
-                        <artifactId>tomcat-embed-core</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-util</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-coyote</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-api</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-jdbc</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-dbcp</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-servlet-api</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-jsp-api</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-jasper</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-jasper-el</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-el-api</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-catalina</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-tribes</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-catalina-ha</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-annotations-api</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>tomcat-juli</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat.embed</groupId>
-                        <artifactId>tomcat-embed-logging-juli</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.tomcat.embed</groupId>
-                        <artifactId>tomcat-embed-logging-log4j</artifactId>
-                        <version>${tomcat.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<excludes>
+						<exclude>${exclude.chemistry.packageA}</exclude>
+						<exclude>${exclude.chemistry.migrationsA}</exclude>
+						<exclude>${exclude.chemistry.packageB}</exclude>
+						<exclude>${exclude.chemistry.migrationsB}</exclude>
+					</excludes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-core</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-util</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-coyote</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-api</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jdbc</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-dbcp</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-servlet-api</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jsp-api</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jasper</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jasper-el</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-el-api</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-catalina</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-tribes</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-catalina-ha</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-annotations-api</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-juli</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-logging-juli</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-logging-log4j</artifactId>
+						<version>${tomcat.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
