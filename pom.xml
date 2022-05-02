@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<profile>
 			<id>bbchem</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
@@ -99,13 +99,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<profile>
 			<id>jchem</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
 					<artifactId>jchem</artifactId>
 					<version>${jchem.version}</version>
+				</dependency>
+				<!-- JCHEM 16 requires dom4j 1.3. This depdendency can be removed when we upgrade jchem to jchem > 17 -->
+				<dependency>
+					<groupId>dom4j</groupId>
+					<artifactId>dom4j</artifactId>
+					<version>1.3</version>
+				</dependency>
+				<!-- JHEM 16 requires trove4j https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
+				<dependency>
+					<groupId>net.sf.trove4j</groupId>
+					<artifactId>trove4j</artifactId>
+					<version>3.0.3</version>
 				</dependency>
 			</dependencies>
 			<properties>
@@ -436,13 +448,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>postgresql</artifactId>
 			<version>42.3.3</version>
 		</dependency>
-		<!-- JCHEM 16 requires dom4j 1.3. This depdendency can be removed when we upgrade jchem to jchem > 17 -->
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
 		<dependency>
 			<groupId>com.github.javadev</groupId>
 			<artifactId>underscore</artifactId>
