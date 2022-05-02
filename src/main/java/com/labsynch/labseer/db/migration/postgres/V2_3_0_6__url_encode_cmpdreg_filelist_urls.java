@@ -1,17 +1,16 @@
 package com.labsynch.labseer.db.migration.postgres;
 
+import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.net.URLEncoder;
-
-import javax.transaction.Transactional;
 
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 public class V2_3_0_6__url_encode_cmpdreg_filelist_urls implements SpringJdbcMigration {
 

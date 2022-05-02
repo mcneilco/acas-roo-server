@@ -4,7 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.slf4j.Logger;
@@ -12,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
-import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class V2_0_7_1__Recalculate_exact_mass implements SpringJdbcMigration {
 
