@@ -645,7 +645,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 						<depdendency>org.aspectj:aspectjrt</depdendency>
 						<!-- Required at runtime logging dependencies -->
 						<depdendency>org.apache.logging.log4j:log4j-core</depdendency>
-						<!-- <depdendency>dom4j:dom4j:jar:1.3:compile</depdendency> -->
+						<!-- logging depedencies which force spring to use log4j -->
 						<depdendency>org.slf4j:jcl-over-slf4j</depdendency>
 						<depdendency>org.apache.logging.log4j:log4j-api</depdendency>
 						<depdendency>org.apache.logging.log4j:log4j-slf4j-impl</depdendency>
