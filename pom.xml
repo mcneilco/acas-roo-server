@@ -287,6 +287,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
+		<!-- com.vladmihalcea hibernate-types is used for bit type addition to hibernate which is used in bbchem structure searches -->
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>hibernate-types-55</artifactId>
@@ -357,7 +358,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<!-- This is required by org.springframework.web.multipart.commons.CommonsMultipartResolver -->
+		<!-- commons-fileupload is required by org.springframework.web.multipart.commons.CommonsMultipartResolver -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -447,6 +448,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>underscore</artifactId>
 			<version>1.19</version>
 		</dependency>
+		<!-- cdk is used for Chem ELN functionality on LS thing is and is independent of the chemistry package used for CmpdReg -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-core</artifactId>
