@@ -632,7 +632,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 				+ "protocol.codeName, "
 				+ "protocol )"
 				+ " FROM Protocol protocol ";
-		queryString += "where ( protocol.ignored <> true ) and ( ";
+		queryString += "where ( protocol.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "protocol.codeName", codeNames);
 		Collection<ProtocolErrorMessageDTO> results = new HashSet<ProtocolErrorMessageDTO>();
 		for (Query q : queries) {

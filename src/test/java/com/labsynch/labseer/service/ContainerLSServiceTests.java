@@ -1401,7 +1401,7 @@ public class ContainerLSServiceTests {
 		String queryString = "SELECT new Map(container.codeName, itx.id )"
 				+ " FROM Container container ";
 		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", itxType, itxKind);
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<Map<String, Long>> results = new HashSet<Map<String, Long>>();
 		for (Query q : queries) {
