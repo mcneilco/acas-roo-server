@@ -1,3 +1,4 @@
+
 properties = require "properties"
 _ = require "underscore"
 underscoreDeepExtend = require "underscore-deep-extend"
@@ -9,8 +10,6 @@ path = require 'path'
 acasHome =  path.resolve "#{__dirname}/../../.."
 os = require 'os'
 propertiesParser = require "properties-parser"
-dotenv = require "dotenv"
-dotenvexpand = require "dotenv-expand"
 configDir = "#{acasHome}/conf/"
 global.deployMode= "Dev" 
 
@@ -19,7 +18,7 @@ mkdirSync = (path) ->
 		fs.mkdirSync path,{ recursive: true }
 	catch e
 		if e.code != 'EEXIST'
-			console.log e
+			throw e
 	return
 
 writeJSONFormat = (conf) ->
@@ -186,23 +185,39 @@ getProperties = (configDir) =>
 		allConf = _.extend allConf, propertiesParser.read(configFile)
 		console.info "read conf file: #{configFile}"
 
-
-	configString = ""
+	confMap = new Map()
+	lowerCaseConfNames = []
+	confNames = []
 	for attr, value of allConf
+		lowerCaseConfNames.push(attr.toLowerCase())
+		confNames.push(attr)
 		if value != null
-			configString += attr+"="+value+"\n"
+			confMap.set(attr, value)
 		else
-			configString += attr+"=\n"
+			confMap.set(attr, null)
 
-	envFiles = glob.sync("#{acasHome}/conf/*.env")
-	envFiles = envFiles.reverse()
-	envFiles.push "#{acasHome}/conf/.env"
-	console.info "started with process.env and now reading env files in this order (former envs take presidence over latter envs): #{envFiles}"
-	for envFile in envFiles
-		console.info "reading env file: #{envFile}"
-		fileEnv = dotenv.config({ path: envFile} )
-		dotenvexpand(fileEnv)
-		console.info "read env file: #{envFile}"
+	# Read environment variables prefixed with ACAS_ and substitute them in the config file
+	for key, value of process.env
+		if key.startsWith('ACAS_')
+			# Remove ACAS prefix and lower case
+			newKey = key.substring(5).toLowerCase()
+			# To deal with configs with an underscore, a user can set a double _ inside an environment variable and ACAS will replace it with a single _
+			# Replace double underscores with a unique separator
+			uniqueSeparator = '----------------------------ACAS-UNIQUE-SEPARATOR----------------------------'
+			newKey = newKey.replace(/__/g, uniqueSeparator)
+			# Replace remaining underscores with a single .
+			newKey = newKey.replace(/\_/g,'.')
+			# Replace the unique separator with a underscore
+			newKey = newKey.replace(uniqueSeparator, '_')
+			# Get the index of key in lowerCaseKeys
+			index = lowerCaseConfNames.indexOf(newKey)
+			if index != -1
+				# If there is a match then override the config by setting it in the configString
+				console.log "environment variable #{key} is being substituted for config key #{confNames[index]}"
+				if value != null
+					confMap.set(confNames[index], value)
+				else
+					confMap.set(confNames[index], null)
 
 	substitutions =
 		env: process.env
@@ -214,6 +229,14 @@ getProperties = (configDir) =>
 		variables: true
 		include: true
 		vars: substitutions
+
+	# Convert config map to a string seperated by = and \n
+	configString = ""
+	confMap.forEach (value, key) =>
+		if value != null
+			configString += key + "=" + value + "\n"
+		else
+			configString += key + "=\n"
 
 	properties.parse configString, options, (error, conf) =>
 		if error?
