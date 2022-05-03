@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
-		<tomcat.version>9.0.58</tomcat.version>
+		<tomcat.version>9.0.62</tomcat.version>
 		<hibernate.version>5.6.1.Final</hibernate.version>
 		<maven-plugins.version>3.3.0</maven-plugins.version>
 	</properties>
