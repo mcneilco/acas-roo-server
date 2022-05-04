@@ -674,7 +674,7 @@ public class SubjectServiceImpl implements SubjectService {
 				+ "subject.codeName, "
 				+ "subject )"
 				+ " FROM Subject subject ";
-		queryString += "where ( subject.ignored <> true ) and ( ";
+		queryString += "where ( subject.ignored <> true ) and ";
 		Query q = SimpleUtil.addHqlInClause(em, queryString, "subject.codeName", codeNames);
 
 		// if (logger.isDebugEnabled())

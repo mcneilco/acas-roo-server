@@ -2130,7 +2130,7 @@ public class ContainerServiceImpl implements ContainerService {
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.ContainerErrorMessageDTO( " + "container.codeName, "
 				+ "container )" + " FROM Container container ";
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
 		for (Query q : queries) {
@@ -2168,7 +2168,7 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += SimpleUtil.makeInnerJoinHql("container.firstContainers", "itx", "defines",
 				"definition container_container");
 		queryString += SimpleUtil.makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
 		for (Query q : queries) {
@@ -2205,7 +2205,7 @@ public class ContainerServiceImpl implements ContainerService {
 		String queryString = "SELECT new map(container.codeName as containerCodeName, itx.id as itxId)"
 				+ " FROM Container container ";
 		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", itxType, itxKind);
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<Map<String, Long>> results = new HashSet<Map<String, Long>>();
 		for (Query q : queries) {
@@ -2230,7 +2230,7 @@ public class ContainerServiceImpl implements ContainerService {
 				+ "well.codeName as wellCodeName )" + " FROM Container container ";
 		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", "has member");
 		queryString += SimpleUtil.makeInnerJoinHql("itx.secondContainer", "well", "well");
-		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ( ";
+		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<Map<String, String>> results = new HashSet<Map<String, String>>();
 		for (Query q : queries) {

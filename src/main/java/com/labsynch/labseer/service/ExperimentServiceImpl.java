@@ -1684,7 +1684,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				+ "experiment.codeName, "
 				+ "experiment )"
 				+ " FROM Experiment experiment ";
-		queryString += "where ( experiment.ignored <> true ) and ( ";
+		queryString += "where ( experiment.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "experiment.codeName", codeNames);
 		Collection<ExperimentErrorMessageDTO> results = new HashSet<ExperimentErrorMessageDTO>();
 		for (Query q : queries) {
