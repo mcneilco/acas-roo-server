@@ -12,9 +12,8 @@ import chemaxon.jchem.db.Updater;
 import chemaxon.util.ConnectionHandler;
 
 public class V2_0_4_3__Upgrade_Jchem_Tables implements JdbcMigration {
- 
-	Logger logger = LoggerFactory.getLogger(V2_0_4_3__Upgrade_Jchem_Tables.class);
 
+	Logger logger = LoggerFactory.getLogger(V2_0_4_3__Upgrade_Jchem_Tables.class);
 
 	public void migrate(Connection conn) throws Exception {
 		logger.info("ATTEMPTING TO UPGRADE JCHEM TABLES");
@@ -27,7 +26,7 @@ public class V2_0_4_3__Upgrade_Jchem_Tables implements JdbcMigration {
 		conn.setAutoCommit(false);
 		logger.info("connection autocommit mode: " + conn.getAutoCommit());
 
-	}	
+	}
 
 	private boolean recalculateJChemTable(Connection conn) throws UpdateHandlerException, SQLException {
 		ConnectionHandler ch = new ConnectionHandler();
@@ -43,13 +42,9 @@ public class V2_0_4_3__Upgrade_Jchem_Tables implements JdbcMigration {
 			logger.info(message);
 		}
 
-		logger.info("updated the Jchem structure tables " );
+		logger.info("updated the Jchem structure tables ");
 
 		return false;
 	}
 
-
-
-
 }
-

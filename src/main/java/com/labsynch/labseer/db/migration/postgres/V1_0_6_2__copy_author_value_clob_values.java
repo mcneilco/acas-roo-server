@@ -20,50 +20,50 @@ public class V1_0_6_2__copy_author_value_clob_values implements SpringJdbcMigrat
 		migrateClobValue("author_value", jdbcTemplate);
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void migrateClobValue(String table_name, JdbcTemplate jdbcTemplate){
-		String selectIds = "SELECT id FROM "+table_name+" WHERE id IS NOT null AND clob_value IS NOT NULL";
-		String selectClobValueById = "SELECT id, clob_value FROM "+table_name+" WHERE id = ?";
-		String updateClobValue = "UPDATE "+table_name+" SET clob_value_temp = ? WHERE id = ?";
-		
+	public void migrateClobValue(String table_name, JdbcTemplate jdbcTemplate) {
+		String selectIds = "SELECT id FROM " + table_name + " WHERE id IS NOT null AND clob_value IS NOT NULL";
+		String selectClobValueById = "SELECT id, clob_value FROM " + table_name + " WHERE id = ?";
+		String updateClobValue = "UPDATE " + table_name + " SET clob_value_temp = ? WHERE id = ?";
+
 		List<Long> ids = jdbcTemplate.queryForList(selectIds, Long.class);
-		
-		for (Long id : ids){
-			ClobValueObject clobValue = (ClobValueObject) jdbcTemplate.queryForObject(selectClobValueById, new Object[] { id }, new ClobValueRowMapper());
-			int rs2 = jdbcTemplate.update(updateClobValue, new Object[] {clobValue.getClobValue(), id});
+
+		for (Long id : ids) {
+			ClobValueObject clobValue = (ClobValueObject) jdbcTemplate.queryForObject(selectClobValueById,
+					new Object[] { id }, new ClobValueRowMapper());
+			int rs2 = jdbcTemplate.update(updateClobValue, new Object[] { clobValue.getClobValue(), id });
 		}
 	}
-	
-	private class ClobValueObject{
+
+	private class ClobValueObject {
 		private long id;
 		private String clobValue;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getClobValue(){
+
+		public String getClobValue() {
 			return this.clobValue;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setClobValue(String clobValue){
+
+		public void setClobValue(String clobValue) {
 			this.clobValue = clobValue;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class ClobValueRowMapper implements RowMapper
-	{
+	public class ClobValueRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			ClobValueObject clobValue = new ClobValueObject();
 			clobValue.setId(rs.getLong("id"));
-			//Additional code to deal with the clob data
+			// Additional code to deal with the clob data
 			Clob molClob = rs.getClob("clob_value");
 			InputStream in = molClob.getAsciiStream();
 			StringWriter w = new StringWriter();
@@ -78,50 +78,50 @@ public class V1_0_6_2__copy_author_value_clob_values implements SpringJdbcMigrat
 			return clobValue;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void migratePageContent(String table_name, JdbcTemplate jdbcTemplate){
-		String selectIds = "SELECT id FROM "+table_name+" WHERE id IS NOT null";
-		String selectPageContentById = "SELECT id, page_content FROM "+table_name+" WHERE id = ?";
-		String updatePageContent = "UPDATE "+table_name+" SET page_content_temp = ? WHERE id = ?";
-		
+	public void migratePageContent(String table_name, JdbcTemplate jdbcTemplate) {
+		String selectIds = "SELECT id FROM " + table_name + " WHERE id IS NOT null";
+		String selectPageContentById = "SELECT id, page_content FROM " + table_name + " WHERE id = ?";
+		String updatePageContent = "UPDATE " + table_name + " SET page_content_temp = ? WHERE id = ?";
+
 		List<Long> ids = jdbcTemplate.queryForList(selectIds, Long.class);
-		
-		for (Long id : ids){
-			PageContentObject pageContent = (PageContentObject) jdbcTemplate.queryForObject(selectPageContentById, new Object[] { id }, new PageContentRowMapper());
-			int rs2 = jdbcTemplate.update(updatePageContent, new Object[] {pageContent.getPageContent(), id});
+
+		for (Long id : ids) {
+			PageContentObject pageContent = (PageContentObject) jdbcTemplate.queryForObject(selectPageContentById,
+					new Object[] { id }, new PageContentRowMapper());
+			int rs2 = jdbcTemplate.update(updatePageContent, new Object[] { pageContent.getPageContent(), id });
 		}
 	}
-	
-	private class PageContentObject{
+
+	private class PageContentObject {
 		private long id;
 		private String pageContent;
-		
-		public long getId(){
+
+		public long getId() {
 			return this.id;
 		}
-		
-		public String getPageContent(){
+
+		public String getPageContent() {
 			return this.pageContent;
 		}
-		
-		public void setId(long id){
+
+		public void setId(long id) {
 			this.id = id;
 		}
-		
-		public void setPageContent(String pageContent){
+
+		public void setPageContent(String pageContent) {
 			this.pageContent = pageContent;
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public class PageContentRowMapper implements RowMapper
-	{
+	public class PageContentRowMapper implements RowMapper {
 		@Override
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PageContentObject pageContent = new PageContentObject();
 			pageContent.setId(rs.getLong("id"));
-			//Additional code to deal with the clob data
+			// Additional code to deal with the clob data
 			Clob molClob = rs.getClob("page_content");
 			InputStream in = molClob.getAsciiStream();
 			StringWriter w = new StringWriter();
@@ -136,6 +136,5 @@ public class V1_0_6_2__copy_author_value_clob_values implements SpringJdbcMigrat
 			return pageContent;
 		}
 	}
-	
-	
+
 }

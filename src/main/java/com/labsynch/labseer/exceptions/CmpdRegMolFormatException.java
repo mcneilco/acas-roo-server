@@ -10,7 +10,7 @@ public class CmpdRegMolFormatException extends Exception {
 	public CmpdRegMolFormatException() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public CmpdRegMolFormatException(String message) {
 		super(message);
 	}

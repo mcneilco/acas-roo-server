@@ -34,5 +34,4 @@ public interface LsThingValueService {
 	Collection<LsThingValuePathDTO> getLsThingValues(
 			Collection<GenericValuePathRequest> genericRequests);
 
-
 }

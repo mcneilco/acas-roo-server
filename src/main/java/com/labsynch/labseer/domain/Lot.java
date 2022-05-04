@@ -1,25 +1,30 @@
 package com.labsynch.labseer.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
+import javax.persistence.Version;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -30,35 +35,28 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.transaction.annotation.Transactional;
+
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @Transactional
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findLotsByCorpNameEquals", "findLotsByCorpNameLike", "findLotsBySynthesisDateBetween", 
-		                         "findLotsBySaltForm", "findLotsBySynthesisDateGreaterThan", "findLotsBySynthesisDateLessThan", 
-		                         "findLotsByChemistAndSynthesisDateBetween", "findLotsByIsVirtualNot", "findLotsByBuid", 
-		                         "findLotsByNotebookPageEquals", "findLotsByNotebookPageEqualsAndIgnoreNot", 
-		                         "findLotsByBulkLoadFileEquals" })
 public class Lot {
-	
+
     private static final Logger logger = LoggerFactory.getLogger(Lot.class);
-    
-	@Column(columnDefinition="text")
+
+    @Column(columnDefinition = "text")
     private String asDrawnStruct;
 
     private int lotAsDrawnCdId;
@@ -68,53 +66,49 @@ public class Lot {
     @Column(unique = true)
     @NotNull
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Lot_corpName_IDX")
     private String corpName;
 
-    @org.hibernate.annotations.Index(name = "Lot_lotNumber_IDX")
     private Integer lotNumber;
 
     private Double lotMolWeight;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
-    @org.hibernate.annotations.Index(name = "Lot_SynthDate_IDX")
     private Date synthesisDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
-    @org.hibernate.annotations.Index(name = "Lot_RegDate_IDX")
     private Date registrationDate;
-    
-	private String registeredBy;
-    
-	@Temporal(TemporalType.TIMESTAMP)
-	@DateTimeFormat(style = "S-")
-	private Date modifiedDate;
-	
-	private String modifiedBy;
+
+    private String registeredBy;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(style = "S-")
+    private Date modifiedDate;
+
+    private String modifiedBy;
 
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Lot_Barcode_IDX")
     private String barcode;
-    
+
     @Size(max = 255)
     private String color;
 
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Lot_Notebook_IDX")
     private String notebookPage;
 
     private Double amount;
 
     @ManyToOne
+    @JoinColumn(name = "amount_units")
     private Unit amountUnits;
 
     private Double solutionAmount;
 
-    @ManyToOne    
+    @ManyToOne
+    @JoinColumn(name = "solution_amount_units")
     private SolutionUnit solutionAmountUnits;
-    
+
     @Size(max = 255)
     private String supplier;
 
@@ -124,37 +118,38 @@ public class Lot {
     private Double purity;
 
     @ManyToOne
+    @JoinColumn(name = "purity_operator")
     private Operator purityOperator;
 
     @ManyToOne
+    @JoinColumn(name = "purity_measured_by")
     private PurityMeasuredBy purityMeasuredBy;
 
     private String chemist;
 
     private Double percentEE;
 
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String comments;
 
-    @org.hibernate.annotations.Index(name = "Lot_Virtual_IDX")
     private Boolean isVirtual;
 
     private Boolean ignore;
 
-    
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_PhysicalState_IDX")
+    @JoinColumn(name = "physical_state")
     private PhysicalState physicalState;
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_Vendor_IDX")
+    @JoinColumn(name = "vendor")
     private Vendor vendor;
 
     @Size(max = 255)
-    private String vendorID;
+    @Column(name = "vendorid")
+    private String vendorId;
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_SaltForm_IDX")
+    @JoinColumn(name = "salt_form")
     private SaltForm saltForm;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "lot", fetch = FetchType.LAZY)
@@ -163,8 +158,9 @@ public class Lot {
     private Double retain;
 
     @ManyToOne
+    @JoinColumn(name = "retain_units")
     private Unit retainUnits;
-    
+
     private String retainLocation;
 
     private Double meltingPoint;
@@ -178,46 +174,49 @@ public class Lot {
 
     @Transient
     private Parent parent;
-    
+
     @ManyToOne
+    @JoinColumn(name = "bulk_load_file")
     private BulkLoadFile bulkLoadFile;
-    
+
     private Double lambda;
-    
+
     private Double absorbance;
-    
+
     private String stockSolvent;
-    
+
     private String stockLocation;
-    
+
     private Double observedMassOne;
-    
+
     private Double observedMassTwo;
-    
+
     private Double tareWeight;
-    
+
     @ManyToOne
+    @JoinColumn(name = "tare_weight_units")
     private Unit tareWeightUnits;
-    
+
     private Double totalAmountStored;
-    
+
     @ManyToOne
+    @JoinColumn(name = "total_amount_stored_units")
     private Unit totalAmountStoredUnits;
-    
+
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "lot", fetch = FetchType.LAZY)
-	private Set<LotAlias> lotAliases = new HashSet<LotAlias>();
-   
+    private Set<LotAlias> lotAliases = new HashSet<LotAlias>();
+
     @Transient
     private transient String storageLocation;
-    
+
     public String getStorageLocation() {
-    		return this.storageLocation;
+        return this.storageLocation;
     }
-    
+
     public void setStorageLocation(String storageLocation) {
-    		this.storageLocation = storageLocation;
+        this.storageLocation = storageLocation;
     }
-    
+
     public Long getBuid() {
         return this.buid;
     }
@@ -248,63 +247,67 @@ public class Lot {
             this.saltForm.setParent(this.parent);
         }
     }
-	
+
     @Transactional
     public static List<Lot> findLotsByLessMolWeight(double molWeight) {
-		EntityManager em = Lot.entityManager();
-		String sqlQuery = "SELECT o FROM Lot o WHERE o.lotMolWeight < :molWeight ";
-		TypedQuery<Lot> query = em.createQuery(sqlQuery, Lot.class);
-		query.setParameter("molWeight", molWeight);
-		List<Lot> lots = query.getResultList();
+        EntityManager em = Lot.entityManager();
+        String sqlQuery = "SELECT o FROM Lot o WHERE o.lotMolWeight < :molWeight ";
+        TypedQuery<Lot> query = em.createQuery(sqlQuery, Lot.class);
+        query.setParameter("molWeight", molWeight);
+        List<Lot> lots = query.getResultList();
 
-		return lots;       
+        return lots;
     }
-  
-    
-	public static double calculateLotMolWeight(Lot lot) {
-		double totalLotWeight = lot.getSaltForm().getSaltWeight() + lot.getParent().getMolWeight();
-		logger.debug("the new lot weight: " + totalLotWeight);
-		return totalLotWeight;
-	}
 
+    public static double calculateLotMolWeight(Lot lot) {
+        double totalLotWeight = lot.getSaltForm().getSaltWeight() + lot.getParent().getMolWeight();
+        logger.debug("the new lot weight: " + totalLotWeight);
+        return totalLotWeight;
+    }
 
     @Transactional
     public static List<Lot> findAllLots() {
         return Lot.entityManager().createQuery("SELECT o FROM Lot o", Lot.class).getResultList();
     }
-    
-    @Transactional  
+
+    @Transactional
     public static List<Lot> findLotEntries(int firstResult, int maxResults) {
-        return Lot.entityManager().createQuery("SELECT o FROM Lot o", Lot.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return Lot.entityManager().createQuery("SELECT o FROM Lot o", Lot.class).setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
-    
-    @Transactional  
+
+    @Transactional
     public static Lot findLot(Long id) {
-        if (id == null) return null;
+        if (id == null)
+            return null;
         return Lot.entityManager().find(Lot.class, id);
     }
-    
 
     public static TypedQuery<Lot> findLotsByBuidNumber(Long buidNumber) {
-        if (buidNumber == null) throw new IllegalArgumentException("The buidNumber argument is required");
+        if (buidNumber == null)
+            throw new IllegalArgumentException("The buidNumber argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.buid = :buidNumber AND o.ignore IS null", Lot.class);
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.buid = :buidNumber AND o.ignore IS null",
+                Lot.class);
         q.setParameter("buidNumber", buidNumber);
         return q;
     }
-    
+
     public static TypedQuery<Lot> findLotsByNotebookPageEquals(String notebookPage) {
-        if (notebookPage == null || notebookPage.length() == 0) throw new IllegalArgumentException("The notebookPage argument is required");
+        if (notebookPage == null || notebookPage.length() == 0)
+            throw new IllegalArgumentException("The notebookPage argument is required");
         EntityManager em = Lot.entityManager();
-//        boolean ignore = true;
-        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage AND o.ignore IS null", Lot.class);
+        // boolean ignore = true;
+        TypedQuery<Lot> q = em.createQuery(
+                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage AND o.ignore IS null", Lot.class);
         q.setParameter("notebookPage", notebookPage);
-//        q.setParameter("ignore", ignore);
+        // q.setParameter("ignore", ignore);
         return q;
     }
 
     public static TypedQuery<Lot> findLotsByDate(Date synthesisDate) {
-        if (synthesisDate == null) throw new IllegalArgumentException("The synthesisDate argument is required");
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
         EntityManager em = Lot.entityManager();
         TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.synthesisDate > :synthesisDate", Lot.class);
         q.setParameter("synthesisDate", synthesisDate);
@@ -348,17 +351,22 @@ public class Lot {
     }
 
     public static Long countNonVirtualSaltFormLots(SaltForm saltForm, Boolean isVirtual) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
-        if (isVirtual == null) throw new IllegalArgumentException("The isVirtual argument is required");
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        if (isVirtual == null)
+            throw new IllegalArgumentException("The isVirtual argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM Lot o WHERE o.saltForm = :saltForm AND o.isVirtual IS NOT :isVirtual", Long.class);
+        TypedQuery<Long> q = em.createQuery(
+                "SELECT COUNT(o) FROM Lot o WHERE o.saltForm = :saltForm AND o.isVirtual IS NOT :isVirtual",
+                Long.class);
         q.setParameter("saltForm", saltForm);
         q.setParameter("isVirtual", isVirtual);
         return q.getSingleResult();
     }
 
     public static Integer getMaxSaltFormLotNumber(SaltForm saltForm) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
         EntityManager em = Lot.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Integer> criteria = criteriaBuilder.createQuery(Integer.class);
@@ -372,7 +380,8 @@ public class Lot {
     }
 
     public static Integer getMaxParentLotNumber(Parent parent) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         logger.debug("get max parent lot number for parent " + parent.getCorpName());
         EntityManager em = Lot.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
@@ -387,26 +396,30 @@ public class Lot {
         return q.getSingleResult();
     }
 
-	@SuppressWarnings("unchecked")
-	public static List<Long> generateCustomLotSequence() {
+    @SuppressWarnings("unchecked")
+    public static List<Long> generateCustomLotSequence() {
         String sqlQuery = "SELECT nextval('custom_lot_pkseq')";
         logger.info(sqlQuery);
         EntityManager em = Lot.entityManager();
         Query q = em.createNativeQuery(sqlQuery);
         return q.getResultList();
     }
-    
+
     public static Long countLotsByParent(Parent parent) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Long> q = em.createQuery("SELECT COUNT(l) FROM Lot l, SaltForm sf WHERE l.saltForm = sf AND sf.parent = :parent AND l.isVirtual IS NOT :isVirtual", Long.class);
+        TypedQuery<Long> q = em.createQuery(
+                "SELECT COUNT(l) FROM Lot l, SaltForm sf WHERE l.saltForm = sf AND sf.parent = :parent AND l.isVirtual IS NOT :isVirtual",
+                Long.class);
         q.setParameter("parent", parent);
         q.setParameter("isVirtual", true);
         return q.getSingleResult();
     }
 
     public static Long countLotsByVendor(Vendor vendor) {
-        if (vendor == null) throw new IllegalArgumentException("The vendor argument is required");
+        if (vendor == null)
+            throw new IllegalArgumentException("The vendor argument is required");
         EntityManager em = Lot.entityManager();
         TypedQuery<Long> q = em.createQuery("SELECT COUNT(l) FROM Lot l WHERE l.vendor = :vendor ", Long.class);
         q.setParameter("vendor", vendor);
@@ -414,16 +427,18 @@ public class Lot {
     }
 
     public static Long countLotsByRegisteredBy(Author registeredBy) {
-        if (registeredBy == null) throw new IllegalArgumentException("The registeredBy argument is required");
+        if (registeredBy == null)
+            throw new IllegalArgumentException("The registeredBy argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Long> q = em.createQuery("SELECT COUNT(l) FROM Lot l WHERE l.registeredBy = :registeredBy ", Long.class);
+        TypedQuery<Long> q = em.createQuery("SELECT COUNT(l) FROM Lot l WHERE l.registeredBy = :registeredBy ",
+                Long.class);
         q.setParameter("registeredBy", registeredBy);
         return q.getSingleResult();
     }
-    
-    
+
     public static TypedQuery<Lot> findLotsByParent(Parent parent) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         EntityManager em = Lot.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Lot> criteria = criteriaBuilder.createQuery(Lot.class);
@@ -437,10 +452,10 @@ public class Lot {
         TypedQuery<Lot> q = em.createQuery(criteria);
         return q;
     }
-    
 
     public static TypedQuery<Lot> findFirstLotByParent(Parent parent) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         EntityManager em = Lot.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Lot> criteria = criteriaBuilder.createQuery(Lot.class);
@@ -453,33 +468,42 @@ public class Lot {
         TypedQuery<Lot> q = em.createQuery(criteria);
         return q;
     }
-    
+
     public static TypedQuery<Lot> findLotByParentAndLotNumber(Parent parent, int lotNumber) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.saltForm.parent = :parent AND o.lotNumber = :lotNumber ORDER BY o.lotNumber desc", Lot.class);
+        TypedQuery<Lot> q = em.createQuery(
+                "SELECT o FROM Lot AS o WHERE o.saltForm.parent = :parent AND o.lotNumber = :lotNumber ORDER BY o.lotNumber desc",
+                Lot.class);
         q.setParameter("parent", parent);
         q.setParameter("lotNumber", lotNumber);
         return q;
     }
 
     public static TypedQuery<Lot> findLotByParentAndLowestLotNumber(Parent parent) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))", Lot.class);
+        TypedQuery<Lot> q = em.createQuery(
+                "SELECT o FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))",
+                Lot.class);
         q.setParameter("parent", parent);
         q.setParameter("ignore", false);
         return q;
     }
 
     public static String getOriginallyDrawnAsStructure(Parent parent) {
-        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        if (parent == null)
+            throw new IllegalArgumentException("The parent argument is required");
         String parentStructure = parent.getMolStructure();
         EntityManager em = Lot.entityManager();
-        TypedQuery<String> q = em.createQuery("SELECT o.asDrawnStruct FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))", String.class);
+        TypedQuery<String> q = em.createQuery(
+                "SELECT o.asDrawnStruct FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))",
+                String.class);
         q.setParameter("parent", parent);
         q.setParameter("ignore", false);
-        
+
         // Get string result from typed query
         String lotAsDrawnStrucucture = q.getSingleResult();
         if (lotAsDrawnStrucucture == null) {
@@ -490,26 +514,30 @@ public class Lot {
     }
 
     public static TypedQuery<Lot> findLotsBySaltForm(SaltForm saltForm) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
         EntityManager em = Lot.entityManager();
-        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.saltForm = :saltForm ORDER BY ID desc", Lot.class);
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.saltForm = :saltForm ORDER BY ID desc",
+                Lot.class);
         q.setParameter("saltForm", saltForm);
         return q;
     }
 
     public static TypedQuery<Lot> findLotsBySaltFormAndMeta(SaltForm saltForm, SearchFormDTO searchParams) {
-        if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
-        if (searchParams == null) throw new IllegalArgumentException("The searchParams argument is required");
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        if (searchParams == null)
+            throw new IllegalArgumentException("The searchParams argument is required");
         EntityManager em = Lot.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Lot> criteria = criteriaBuilder.createQuery(Lot.class);
         Root<Lot> lotRoot = criteria.from(Lot.class);
         Join<Lot, SaltForm> lotSaltForm = lotRoot.join("saltForm");
         Join<SaltForm, Parent> saltFormParent = lotSaltForm.join("parent");
-		Join<Parent, ParentAlias> parentAliases = saltFormParent.join("parentAliases", JoinType.LEFT);
+        Join<Parent, ParentAlias> parentAliases = saltFormParent.join("parentAliases", JoinType.LEFT);
 
         criteria.select(lotRoot);
-//        criteria.distinct(true);
+        // criteria.distinct(true);
         ParameterExpression<Date> firstDate = criteriaBuilder.parameter(Date.class);
         ParameterExpression<Date> lastDate = criteriaBuilder.parameter(Date.class);
         Predicate[] predicates = new Predicate[0];
@@ -543,12 +571,14 @@ public class Lot {
         }
         if (searchParams.getSaltFormCorpName() != null) {
             logger.debug("incoming saltFormCorpName :" + searchParams.getSaltFormCorpName());
-            Predicate predicate = criteriaBuilder.equal(lotSaltForm.get("corpName"), searchParams.getSaltFormCorpName());
+            Predicate predicate = criteriaBuilder.equal(lotSaltForm.get("corpName"),
+                    searchParams.getSaltFormCorpName());
             predicateList.add(predicate);
         }
         if (searchParams.getParentCorpName() != null) {
             logger.debug("incoming parentCorpName :" + searchParams.getParentCorpName());
-            Predicate predicate = criteriaBuilder.equal(saltFormParent.get("corpName"), searchParams.getParentCorpName());
+            Predicate predicate = criteriaBuilder.equal(saltFormParent.get("corpName"),
+                    searchParams.getParentCorpName());
             predicateList.add(predicate);
         }
         if (searchParams.getAlias() != null && !searchParams.getAlias().equals("")) {
@@ -557,14 +587,16 @@ public class Lot {
             String aliasName = searchParams.getAlias().trim().toUpperCase();
             logger.debug("incoming alias name :" + searchParams.getAlias());
             if (searchParams.getAliasContSelect().equalsIgnoreCase("exact")) {
-            	Predicate notIgnored = criteriaBuilder.not(parentAliases.<Boolean>get("ignored"));
-                Predicate nameEquals = criteriaBuilder.equal(criteriaBuilder.upper(parentAliases.<String>get("aliasName")), aliasName);
+                Predicate notIgnored = criteriaBuilder.not(parentAliases.<Boolean>get("ignored"));
+                Predicate nameEquals = criteriaBuilder
+                        .equal(criteriaBuilder.upper(parentAliases.<String>get("aliasName")), aliasName);
                 predicate = criteriaBuilder.and(notIgnored, nameEquals);
             } else {
                 aliasName = "%" + aliasName + "%";
                 logger.debug("looking for a like match on the alias   " + aliasName);
                 Predicate notIgnored = criteriaBuilder.not(parentAliases.<Boolean>get("ignored"));
-                Predicate nameLike = criteriaBuilder.like(criteriaBuilder.upper(parentAliases.<String>get("aliasName")), aliasName);
+                Predicate nameLike = criteriaBuilder.like(criteriaBuilder.upper(parentAliases.<String>get("aliasName")),
+                        aliasName);
                 predicate = criteriaBuilder.and(notIgnored, nameLike);
             }
             predicateList.add(predicate);
@@ -579,35 +611,1061 @@ public class Lot {
         if (searchParams.getMinSynthDate() != null) {
             q.setParameter(firstDate, searchParams.getMinSynthDate(), TemporalType.DATE);
         }
-        
-        if (searchParams.getMaxResults() != null) q.setMaxResults(searchParams.getMaxResults());
-        
+
+        if (searchParams.getMaxResults() != null)
+            q.setMaxResults(searchParams.getMaxResults());
+
         return q;
     }
 
     public static TypedQuery<LotsByProjectDTO> findLotsByProjectsList(List<String> projects) {
-		
-		EntityManager em = Lot.entityManager();
-		String query = "SELECT new com.labsynch.labseer.dto.LotsByProjectDTO( "
-				+ "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project) " 
+
+        EntityManager em = Lot.entityManager();
+        String query = "SELECT new com.labsynch.labseer.dto.LotsByProjectDTO( "
+                + "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project) "
                 + "FROM Lot AS lt "
-				+ "JOIN lt.saltForm sltfrm "
-				+ "JOIN sltfrm.parent prnt "
-				+ "WHERE lt.project in (:projects) ";
-		
-		logger.debug("sql query " + query);
+                + "JOIN lt.saltForm sltfrm "
+                + "JOIN sltfrm.parent prnt "
+                + "WHERE lt.project in (:projects) ";
+
+        logger.debug("sql query " + query);
         TypedQuery<LotsByProjectDTO> q = em.createQuery(query, LotsByProjectDTO.class);
         q.setParameter("projects", projects);
 
-		return q;
-	}
-	
-    
-    public String toJsonIncludeAliases() {
-        return new JSONSerializer()
-        		.include("lotAliases")
-        .exclude("*.class").serialize(this);
+        return q;
     }
 
-    
+    public String toJsonIncludeAliases() {
+        return new JSONSerializer()
+                .include("lotAliases")
+                .exclude("*.class").serialize(this);
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getAsDrawnStruct() {
+        return this.asDrawnStruct;
+    }
+
+    public void setAsDrawnStruct(String asDrawnStruct) {
+        this.asDrawnStruct = asDrawnStruct;
+    }
+
+    public int getLotAsDrawnCdId() {
+        return this.lotAsDrawnCdId;
+    }
+
+    public void setLotAsDrawnCdId(int lotAsDrawnCdId) {
+        this.lotAsDrawnCdId = lotAsDrawnCdId;
+    }
+
+    public void setBuid(Long buid) {
+        this.buid = buid;
+    }
+
+    public String getCorpName() {
+        return this.corpName;
+    }
+
+    public void setCorpName(String corpName) {
+        this.corpName = corpName;
+    }
+
+    public Integer getLotNumber() {
+        return this.lotNumber;
+    }
+
+    public void setLotNumber(Integer lotNumber) {
+        this.lotNumber = lotNumber;
+    }
+
+    public Double getLotMolWeight() {
+        return this.lotMolWeight;
+    }
+
+    public void setLotMolWeight(Double lotMolWeight) {
+        this.lotMolWeight = lotMolWeight;
+    }
+
+    public Date getSynthesisDate() {
+        return this.synthesisDate;
+    }
+
+    public void setSynthesisDate(Date synthesisDate) {
+        this.synthesisDate = synthesisDate;
+    }
+
+    public Date getRegistrationDate() {
+        return this.registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public String getRegisteredBy() {
+        return this.registeredBy;
+    }
+
+    public void setRegisteredBy(String registeredBy) {
+        this.registeredBy = registeredBy;
+    }
+
+    public Date getModifiedDate() {
+        return this.modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public String getModifiedBy() {
+        return this.modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public String getBarcode() {
+        return this.barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public String getColor() {
+        return this.color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getNotebookPage() {
+        return this.notebookPage;
+    }
+
+    public void setNotebookPage(String notebookPage) {
+        this.notebookPage = notebookPage;
+    }
+
+    public Double getAmount() {
+        return this.amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public Unit getAmountUnits() {
+        return this.amountUnits;
+    }
+
+    public void setAmountUnits(Unit amountUnits) {
+        this.amountUnits = amountUnits;
+    }
+
+    public Double getSolutionAmount() {
+        return this.solutionAmount;
+    }
+
+    public void setSolutionAmount(Double solutionAmount) {
+        this.solutionAmount = solutionAmount;
+    }
+
+    public SolutionUnit getSolutionAmountUnits() {
+        return this.solutionAmountUnits;
+    }
+
+    public void setSolutionAmountUnits(SolutionUnit solutionAmountUnits) {
+        this.solutionAmountUnits = solutionAmountUnits;
+    }
+
+    public String getSupplier() {
+        return this.supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    public String getSupplierID() {
+        return this.supplierID;
+    }
+
+    public void setSupplierID(String supplierID) {
+        this.supplierID = supplierID;
+    }
+
+    public Double getPurity() {
+        return this.purity;
+    }
+
+    public void setPurity(Double purity) {
+        this.purity = purity;
+    }
+
+    public Operator getPurityOperator() {
+        return this.purityOperator;
+    }
+
+    public void setPurityOperator(Operator purityOperator) {
+        this.purityOperator = purityOperator;
+    }
+
+    public PurityMeasuredBy getPurityMeasuredBy() {
+        return this.purityMeasuredBy;
+    }
+
+    public void setPurityMeasuredBy(PurityMeasuredBy purityMeasuredBy) {
+        this.purityMeasuredBy = purityMeasuredBy;
+    }
+
+    public String getChemist() {
+        return this.chemist;
+    }
+
+    public void setChemist(String chemist) {
+        this.chemist = chemist;
+    }
+
+    public Double getPercentEE() {
+        return this.percentEE;
+    }
+
+    public void setPercentEE(Double percentEE) {
+        this.percentEE = percentEE;
+    }
+
+    public String getComments() {
+        return this.comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public Boolean getIsVirtual() {
+        return this.isVirtual;
+    }
+
+    public void setIsVirtual(Boolean isVirtual) {
+        this.isVirtual = isVirtual;
+    }
+
+    public Boolean getIgnore() {
+        return this.ignore;
+    }
+
+    public void setIgnore(Boolean ignore) {
+        this.ignore = ignore;
+    }
+
+    public PhysicalState getPhysicalState() {
+        return this.physicalState;
+    }
+
+    public void setPhysicalState(PhysicalState physicalState) {
+        this.physicalState = physicalState;
+    }
+
+    public Vendor getVendor() {
+        return this.vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getVendorId() {
+        return this.vendorId;
+    }
+
+    public void setVendorId(String vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    public Set<FileList> getFileLists() {
+        return this.fileLists;
+    }
+
+    public void setFileLists(Set<FileList> fileLists) {
+        this.fileLists = fileLists;
+    }
+
+    public Double getRetain() {
+        return this.retain;
+    }
+
+    public void setRetain(Double retain) {
+        this.retain = retain;
+    }
+
+    public Unit getRetainUnits() {
+        return this.retainUnits;
+    }
+
+    public void setRetainUnits(Unit retainUnits) {
+        this.retainUnits = retainUnits;
+    }
+
+    public String getRetainLocation() {
+        return this.retainLocation;
+    }
+
+    public void setRetainLocation(String retainLocation) {
+        this.retainLocation = retainLocation;
+    }
+
+    public Double getMeltingPoint() {
+        return this.meltingPoint;
+    }
+
+    public void setMeltingPoint(Double meltingPoint) {
+        this.meltingPoint = meltingPoint;
+    }
+
+    public Double getBoilingPoint() {
+        return this.boilingPoint;
+    }
+
+    public void setBoilingPoint(Double boilingPoint) {
+        this.boilingPoint = boilingPoint;
+    }
+
+    public String getSupplierLot() {
+        return this.supplierLot;
+    }
+
+    public void setSupplierLot(String supplierLot) {
+        this.supplierLot = supplierLot;
+    }
+
+    public String getProject() {
+        return this.project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public BulkLoadFile getBulkLoadFile() {
+        return this.bulkLoadFile;
+    }
+
+    public void setBulkLoadFile(BulkLoadFile bulkLoadFile) {
+        this.bulkLoadFile = bulkLoadFile;
+    }
+
+    public Double getLambda() {
+        return this.lambda;
+    }
+
+    public void setLambda(Double lambda) {
+        this.lambda = lambda;
+    }
+
+    public Double getAbsorbance() {
+        return this.absorbance;
+    }
+
+    public void setAbsorbance(Double absorbance) {
+        this.absorbance = absorbance;
+    }
+
+    public String getStockSolvent() {
+        return this.stockSolvent;
+    }
+
+    public void setStockSolvent(String stockSolvent) {
+        this.stockSolvent = stockSolvent;
+    }
+
+    public String getStockLocation() {
+        return this.stockLocation;
+    }
+
+    public void setStockLocation(String stockLocation) {
+        this.stockLocation = stockLocation;
+    }
+
+    public Double getObservedMassOne() {
+        return this.observedMassOne;
+    }
+
+    public void setObservedMassOne(Double observedMassOne) {
+        this.observedMassOne = observedMassOne;
+    }
+
+    public Double getObservedMassTwo() {
+        return this.observedMassTwo;
+    }
+
+    public void setObservedMassTwo(Double observedMassTwo) {
+        this.observedMassTwo = observedMassTwo;
+    }
+
+    public Double getTareWeight() {
+        return this.tareWeight;
+    }
+
+    public void setTareWeight(Double tareWeight) {
+        this.tareWeight = tareWeight;
+    }
+
+    public Unit getTareWeightUnits() {
+        return this.tareWeightUnits;
+    }
+
+    public void setTareWeightUnits(Unit tareWeightUnits) {
+        this.tareWeightUnits = tareWeightUnits;
+    }
+
+    public Double getTotalAmountStored() {
+        return this.totalAmountStored;
+    }
+
+    public void setTotalAmountStored(Double totalAmountStored) {
+        this.totalAmountStored = totalAmountStored;
+    }
+
+    public Unit getTotalAmountStoredUnits() {
+        return this.totalAmountStoredUnits;
+    }
+
+    public void setTotalAmountStoredUnits(Unit totalAmountStoredUnits) {
+        this.totalAmountStoredUnits = totalAmountStoredUnits;
+    }
+
+    public Set<LotAlias> getLotAliases() {
+        return this.lotAliases;
+    }
+
+    public void setLotAliases(Set<LotAlias> lotAliases) {
+        this.lotAliases = lotAliases;
+    }
+
+    @PersistenceContext
+    transient EntityManager entityManager;
+
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "asDrawnStruct",
+            "lotAsDrawnCdId", "buid", "corpName", "lotNumber", "lotMolWeight", "synthesisDate", "registrationDate",
+            "registeredBy", "modifiedDate", "modifiedBy", "barcode", "color", "notebookPage", "amount", "amountUnits",
+            "solutionAmount", "solutionAmountUnits", "supplier", "supplierID", "purity", "purityOperator",
+            "purityMeasuredBy", "chemist", "percentEE", "comments", "isVirtual", "ignore", "physicalState", "vendor",
+            "vendorId", "saltForm", "fileLists", "retain", "retainUnits", "retainLocation", "meltingPoint",
+            "boilingPoint", "supplierLot", "project", "parent", "bulkLoadFile", "lambda", "absorbance", "stockSolvent",
+            "stockLocation", "observedMassOne", "observedMassTwo", "tareWeight", "tareWeightUnits", "totalAmountStored",
+            "totalAmountStoredUnits", "lotAliases", "storageLocation");
+
+    public static final EntityManager entityManager() {
+        EntityManager em = new Lot().entityManager;
+        if (em == null)
+            throw new IllegalStateException(
+                    "Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+
+    public static long countLots() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM Lot o", Long.class).getSingleResult();
+    }
+
+    public static List<Lot> findAllLots(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Lot o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Lot.class).getResultList();
+    }
+
+    public static List<Lot> findLotEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Lot o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Lot.class).setFirstResult(firstResult).setMaxResults(maxResults)
+                .getResultList();
+    }
+
+    @Transactional
+    public void persist() {
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
+        this.entityManager.persist(this);
+    }
+
+    @Transactional
+    public void remove() {
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
+        if (this.entityManager.contains(this)) {
+            this.entityManager.remove(this);
+        } else {
+            Lot attached = Lot.findLot(this.id);
+            this.entityManager.remove(attached);
+        }
+    }
+
+    @Transactional
+    public void flush() {
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
+        this.entityManager.flush();
+    }
+
+    @Transactional
+    public void clear() {
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
+        this.entityManager.clear();
+    }
+
+    @Transactional
+    public Lot merge() {
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
+        Lot merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+    public static Long countFindLotsByBuid(Long buid) {
+        if (buid == null)
+            throw new IllegalArgumentException("The buid argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.buid = :buid", Long.class);
+        q.setParameter("buid", buid);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile) {
+        if (bulkLoadFile == null)
+            throw new IllegalArgumentException("The bulkLoadFile argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.bulkLoadFile = :bulkLoadFile", Long.class);
+        q.setParameter("bulkLoadFile", bulkLoadFile);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByChemistAndSynthesisDateBetween(String chemist, Date minSynthesisDate,
+            Date maxSynthesisDate) {
+        if (chemist == null || chemist.length() == 0)
+            throw new IllegalArgumentException("The chemist argument is required");
+        if (minSynthesisDate == null)
+            throw new IllegalArgumentException("The minSynthesisDate argument is required");
+        if (maxSynthesisDate == null)
+            throw new IllegalArgumentException("The maxSynthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM Lot AS o WHERE o.chemist = :chemist AND o.synthesisDate BETWEEN :minSynthesisDate AND :maxSynthesisDate",
+                Long.class);
+        q.setParameter("chemist", chemist);
+        q.setParameter("minSynthesisDate", minSynthesisDate);
+        q.setParameter("maxSynthesisDate", maxSynthesisDate);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByCorpNameEquals(String corpName) {
+        if (corpName == null || corpName.length() == 0)
+            throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.corpName = :corpName", Long.class);
+        q.setParameter("corpName", corpName);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByCorpNameLike(String corpName) {
+        if (corpName == null || corpName.length() == 0)
+            throw new IllegalArgumentException("The corpName argument is required");
+        corpName = corpName.replace('*', '%');
+        if (corpName.charAt(0) != '%') {
+            corpName = "%" + corpName;
+        }
+        if (corpName.charAt(corpName.length() - 1) != '%') {
+            corpName = corpName + "%";
+        }
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE LOWER(o.corpName) LIKE LOWER(:corpName)",
+                Long.class);
+        q.setParameter("corpName", corpName);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByIsVirtualNot(Boolean isVirtual) {
+        if (isVirtual == null)
+            throw new IllegalArgumentException("The isVirtual argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.isVirtual IS NOT :isVirtual", Long.class);
+        q.setParameter("isVirtual", isVirtual);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByNotebookPageEquals(String notebookPage) {
+        if (notebookPage == null || notebookPage.length() == 0)
+            throw new IllegalArgumentException("The notebookPage argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.notebookPage = :notebookPage", Long.class);
+        q.setParameter("notebookPage", notebookPage);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsByNotebookPageEqualsAndIgnoreNot(String notebookPage, Boolean ignore) {
+        if (notebookPage == null || notebookPage.length() == 0)
+            throw new IllegalArgumentException("The notebookPage argument is required");
+        if (ignore == null)
+            throw new IllegalArgumentException("The ignore argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND o.ignore IS NOT :ignore",
+                Long.class);
+        q.setParameter("notebookPage", notebookPage);
+        q.setParameter("ignore", ignore);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsBySaltForm(SaltForm saltForm) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.saltForm = :saltForm", Long.class);
+        q.setParameter("saltForm", saltForm);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsBySynthesisDateBetween(Date minSynthesisDate, Date maxSynthesisDate) {
+        if (minSynthesisDate == null)
+            throw new IllegalArgumentException("The minSynthesisDate argument is required");
+        if (maxSynthesisDate == null)
+            throw new IllegalArgumentException("The maxSynthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery(
+                "SELECT COUNT(o) FROM Lot AS o WHERE o.synthesisDate BETWEEN :minSynthesisDate AND :maxSynthesisDate",
+                Long.class);
+        q.setParameter("minSynthesisDate", minSynthesisDate);
+        q.setParameter("maxSynthesisDate", maxSynthesisDate);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsBySynthesisDateGreaterThan(Date synthesisDate) {
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.synthesisDate > :synthesisDate",
+                Long.class);
+        q.setParameter("synthesisDate", synthesisDate);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static Long countFindLotsBySynthesisDateLessThan(Date synthesisDate) {
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Lot AS o WHERE o.synthesisDate < :synthesisDate",
+                Long.class);
+        q.setParameter("synthesisDate", synthesisDate);
+        return ((Long) q.getSingleResult());
+    }
+
+    public static TypedQuery<Lot> findLotsByBuid(Long buid) {
+        if (buid == null)
+            throw new IllegalArgumentException("The buid argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.buid = :buid", Lot.class);
+        q.setParameter("buid", buid);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByBuid(Long buid, String sortFieldName, String sortOrder) {
+        if (buid == null)
+            throw new IllegalArgumentException("The buid argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.buid = :buid");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("buid", buid);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile) {
+        if (bulkLoadFile == null)
+            throw new IllegalArgumentException("The bulkLoadFile argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.bulkLoadFile = :bulkLoadFile", Lot.class);
+        q.setParameter("bulkLoadFile", bulkLoadFile);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile, String sortFieldName,
+            String sortOrder) {
+        if (bulkLoadFile == null)
+            throw new IllegalArgumentException("The bulkLoadFile argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.bulkLoadFile = :bulkLoadFile");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("bulkLoadFile", bulkLoadFile);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByChemistAndSynthesisDateBetween(String chemist, Date minSynthesisDate,
+            Date maxSynthesisDate) {
+        if (chemist == null || chemist.length() == 0)
+            throw new IllegalArgumentException("The chemist argument is required");
+        if (minSynthesisDate == null)
+            throw new IllegalArgumentException("The minSynthesisDate argument is required");
+        if (maxSynthesisDate == null)
+            throw new IllegalArgumentException("The maxSynthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery(
+                "SELECT o FROM Lot AS o WHERE o.chemist = :chemist AND o.synthesisDate BETWEEN :minSynthesisDate AND :maxSynthesisDate",
+                Lot.class);
+        q.setParameter("chemist", chemist);
+        q.setParameter("minSynthesisDate", minSynthesisDate);
+        q.setParameter("maxSynthesisDate", maxSynthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByChemistAndSynthesisDateBetween(String chemist, Date minSynthesisDate,
+            Date maxSynthesisDate, String sortFieldName, String sortOrder) {
+        if (chemist == null || chemist.length() == 0)
+            throw new IllegalArgumentException("The chemist argument is required");
+        if (minSynthesisDate == null)
+            throw new IllegalArgumentException("The minSynthesisDate argument is required");
+        if (maxSynthesisDate == null)
+            throw new IllegalArgumentException("The maxSynthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Lot AS o WHERE o.chemist = :chemist AND o.synthesisDate BETWEEN :minSynthesisDate AND :maxSynthesisDate");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("chemist", chemist);
+        q.setParameter("minSynthesisDate", minSynthesisDate);
+        q.setParameter("maxSynthesisDate", maxSynthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByCorpNameEquals(String corpName) {
+        if (corpName == null || corpName.length() == 0)
+            throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.corpName = :corpName", Lot.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByCorpNameEquals(String corpName, String sortFieldName, String sortOrder) {
+        if (corpName == null || corpName.length() == 0)
+            throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.corpName = :corpName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByCorpNameLike(String corpName) {
+        if (corpName == null || corpName.length() == 0)
+            throw new IllegalArgumentException("The corpName argument is required");
+        corpName = corpName.replace('*', '%');
+        if (corpName.charAt(0) != '%') {
+            corpName = "%" + corpName;
+        }
+        if (corpName.charAt(corpName.length() - 1) != '%') {
+            corpName = corpName + "%";
+        }
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE LOWER(o.corpName) LIKE LOWER(:corpName)",
+                Lot.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByCorpNameLike(String corpName, String sortFieldName, String sortOrder) {
+        if (corpName == null || corpName.length() == 0)
+            throw new IllegalArgumentException("The corpName argument is required");
+        corpName = corpName.replace('*', '%');
+        if (corpName.charAt(0) != '%') {
+            corpName = "%" + corpName;
+        }
+        if (corpName.charAt(corpName.length() - 1) != '%') {
+            corpName = corpName + "%";
+        }
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Lot AS o WHERE LOWER(o.corpName) LIKE LOWER(:corpName)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByIsVirtualNot(Boolean isVirtual) {
+        if (isVirtual == null)
+            throw new IllegalArgumentException("The isVirtual argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.isVirtual IS NOT :isVirtual", Lot.class);
+        q.setParameter("isVirtual", isVirtual);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByIsVirtualNot(Boolean isVirtual, String sortFieldName, String sortOrder) {
+        if (isVirtual == null)
+            throw new IllegalArgumentException("The isVirtual argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.isVirtual IS NOT :isVirtual");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("isVirtual", isVirtual);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByNotebookPageEquals(String notebookPage, String sortFieldName,
+            String sortOrder) {
+        if (notebookPage == null || notebookPage.length() == 0)
+            throw new IllegalArgumentException("The notebookPage argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("notebookPage", notebookPage);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByNotebookPageEqualsAndIgnoreNot(String notebookPage, Boolean ignore) {
+        if (notebookPage == null || notebookPage.length() == 0)
+            throw new IllegalArgumentException("The notebookPage argument is required");
+        if (ignore == null)
+            throw new IllegalArgumentException("The ignore argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery(
+                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND o.ignore IS NOT :ignore", Lot.class);
+        q.setParameter("notebookPage", notebookPage);
+        q.setParameter("ignore", ignore);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsByNotebookPageEqualsAndIgnoreNot(String notebookPage, Boolean ignore,
+            String sortFieldName, String sortOrder) {
+        if (notebookPage == null || notebookPage.length() == 0)
+            throw new IllegalArgumentException("The notebookPage argument is required");
+        if (ignore == null)
+            throw new IllegalArgumentException("The ignore argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND o.ignore IS NOT :ignore");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("notebookPage", notebookPage);
+        q.setParameter("ignore", ignore);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySaltForm(SaltForm saltForm, String sortFieldName, String sortOrder) {
+        if (saltForm == null)
+            throw new IllegalArgumentException("The saltForm argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.saltForm = :saltForm");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("saltForm", saltForm);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySynthesisDateBetween(Date minSynthesisDate, Date maxSynthesisDate) {
+        if (minSynthesisDate == null)
+            throw new IllegalArgumentException("The minSynthesisDate argument is required");
+        if (maxSynthesisDate == null)
+            throw new IllegalArgumentException("The maxSynthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery(
+                "SELECT o FROM Lot AS o WHERE o.synthesisDate BETWEEN :minSynthesisDate AND :maxSynthesisDate",
+                Lot.class);
+        q.setParameter("minSynthesisDate", minSynthesisDate);
+        q.setParameter("maxSynthesisDate", maxSynthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySynthesisDateBetween(Date minSynthesisDate, Date maxSynthesisDate,
+            String sortFieldName, String sortOrder) {
+        if (minSynthesisDate == null)
+            throw new IllegalArgumentException("The minSynthesisDate argument is required");
+        if (maxSynthesisDate == null)
+            throw new IllegalArgumentException("The maxSynthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder(
+                "SELECT o FROM Lot AS o WHERE o.synthesisDate BETWEEN :minSynthesisDate AND :maxSynthesisDate");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("minSynthesisDate", minSynthesisDate);
+        q.setParameter("maxSynthesisDate", maxSynthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySynthesisDateGreaterThan(Date synthesisDate) {
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.synthesisDate > :synthesisDate", Lot.class);
+        q.setParameter("synthesisDate", synthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySynthesisDateGreaterThan(Date synthesisDate, String sortFieldName,
+            String sortOrder) {
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.synthesisDate > :synthesisDate");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("synthesisDate", synthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySynthesisDateLessThan(Date synthesisDate) {
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        TypedQuery<Lot> q = em.createQuery("SELECT o FROM Lot AS o WHERE o.synthesisDate < :synthesisDate", Lot.class);
+        q.setParameter("synthesisDate", synthesisDate);
+        return q;
+    }
+
+    public static TypedQuery<Lot> findLotsBySynthesisDateLessThan(Date synthesisDate, String sortFieldName,
+            String sortOrder) {
+        if (synthesisDate == null)
+            throw new IllegalArgumentException("The synthesisDate argument is required");
+        EntityManager em = Lot.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Lot AS o WHERE o.synthesisDate < :synthesisDate");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Lot> q = em.createQuery(queryBuilder.toString(), Lot.class);
+        q.setParameter("synthesisDate", synthesisDate);
+        return q;
+    }
+
+    public String toJson() {
+        return new JSONSerializer()
+                .exclude("*.class").serialize(this);
+    }
+
+    public String toJson(String[] fields) {
+        return new JSONSerializer()
+                .include(fields).exclude("*.class").serialize(this);
+    }
+
+    public static Lot fromJsonToLot(String json) {
+        return new JSONDeserializer<Lot>()
+                .use(null, Lot.class).deserialize(json);
+    }
+
+    public static String toJsonArray(Collection<Lot> collection) {
+        return new JSONSerializer()
+                .exclude("*.class").serialize(collection);
+    }
+
+    public static String toJsonArray(Collection<Lot> collection, String[] fields) {
+        return new JSONSerializer()
+                .include(fields).exclude("*.class").serialize(collection);
+    }
+
+    public static Collection<Lot> fromJsonArrayToLots(String json) {
+        return new JSONDeserializer<List<Lot>>()
+                .use("values", Lot.class).deserialize(json);
+    }
+
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

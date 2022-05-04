@@ -4,15 +4,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.map.MultiValueMap;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.GeneOrthologDTO;
+
 import org.springframework.stereotype.Service;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsTransaction;
-import com.labsynch.labseer.dto.EntrezDbGeneDTO;
-import com.labsynch.labseer.dto.EntrezDiscontinuedGeneDTO;
-import com.labsynch.labseer.dto.GeneOrthologDTO;
 
 @Service
 public interface GeneThingService {
@@ -41,7 +37,7 @@ public interface GeneThingService {
 
 	Collection<GeneOrthologDTO> saveOrthologInteractions(Collection<GeneOrthologDTO> geneOrthologs);
 
-//	void fixDiscontinuedEntrezGeneIDs(String geneHistoryFile, String taxonomyId) throws IOException;
-
+	// void fixDiscontinuedEntrezGeneIDs(String geneHistoryFile, String taxonomyId)
+	// throws IOException;
 
 }

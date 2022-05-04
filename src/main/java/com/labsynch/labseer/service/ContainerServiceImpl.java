@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -20,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
@@ -32,15 +32,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
@@ -85,6 +76,14 @@ import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 import com.labsynch.labseer.utils.SimpleUtil.DbType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONTokener;
 
@@ -178,12 +177,14 @@ public class ContainerServiceImpl implements ContainerService {
 	private Container saveContainer(Container container) {
 		Container newContainer = new Container(container);
 		newContainer.persist();
-		if (logger.isDebugEnabled()) logger.debug("container: " + container.toJson());
+		if (logger.isDebugEnabled())
+			logger.debug("container: " + container.toJson());
 		if (container.getLsLabels() != null) {
 			for (ContainerLabel containerLabel : container.getLsLabels()) {
 				ContainerLabel newContainerLabel = new ContainerLabel(containerLabel);
 				newContainerLabel.setContainer(newContainer);
-				if (logger.isDebugEnabled()) logger.debug("here is the newcontainerLabel before save: " + newContainerLabel.toJson());
+				if (logger.isDebugEnabled())
+					logger.debug("here is the newcontainerLabel before save: " + newContainerLabel.toJson());
 				newContainerLabel.persist();
 			}
 		} else {
@@ -194,24 +195,28 @@ public class ContainerServiceImpl implements ContainerService {
 			for (ContainerState LsState : container.getLsStates()) {
 				ContainerState newLsState = new ContainerState(LsState);
 				newLsState.setContainer(newContainer);
-				if (logger.isDebugEnabled()) logger.debug("here is the newLsState before save: " + newLsState.toJson());
+				if (logger.isDebugEnabled())
+					logger.debug("here is the newLsState before save: " + newLsState.toJson());
 				newLsState.persist();
-				if (logger.isDebugEnabled()) logger.debug("persisted the newLsState: " + newLsState.toJson());
+				if (logger.isDebugEnabled())
+					logger.debug("persisted the newLsState: " + newLsState.toJson());
 				if (LsState.getLsValues() != null) {
 					for (ContainerValue containerValue : LsState.getLsValues()) {
-						if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
+						if (logger.isDebugEnabled())
+							logger.debug("containerValue: " + containerValue.toJson());
 						containerValue.setLsState(newLsState);
 						containerValue.persist();
-						if (logger.isDebugEnabled()) logger.debug("persisted the containerValue: " + containerValue.toJson());
+						if (logger.isDebugEnabled())
+							logger.debug("persisted the containerValue: " + containerValue.toJson());
 					}
 				} else {
-					if (logger.isDebugEnabled()) logger.debug("No container values to save");
+					if (logger.isDebugEnabled())
+						logger.debug("No container values to save");
 				}
 			}
 		}
 		return newContainer;
 	}
-
 
 	@Override
 	public Collection<Container> saveLsContainers(String json) {
@@ -237,7 +242,7 @@ public class ContainerServiceImpl implements ContainerService {
 
 	@Override
 	public Container saveLsContainer(Container container) {
-		if (logger.isDebugEnabled()){
+		if (logger.isDebugEnabled()) {
 			logger.debug("incoming meta container: " + container.toJson() + "\n");
 		}
 		Container newContainer = new Container(container);
@@ -311,7 +316,7 @@ public class ContainerServiceImpl implements ContainerService {
 					}
 					if (itxContainerContainer.getFirstContainer().getId() == null) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("saving new nested Container" 
+							logger.debug("saving new nested Container"
 									+ itxContainerContainer.getFirstContainer().toJson());
 						}
 						Container nestedContainer = saveLsContainer(itxContainerContainer.getFirstContainer());
@@ -465,23 +470,23 @@ public class ContainerServiceImpl implements ContainerService {
 	@Transactional
 	@Override
 	public List<ContainerCodeNameStateDTO> saveContainerCodeNameStateDTOArray(
-			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException{
+			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException {
 		List<ContainerCodeNameStateDTO> savedDTOs = new ArrayList<ContainerCodeNameStateDTO>();
-		//collect all the states to be saved into a List
+		// collect all the states to be saved into a List
 		List<ContainerState> statesToSave = new ArrayList<ContainerState>();
 		for (ContainerCodeNameStateDTO stateDTO : stateDTOs) {
 			statesToSave.add(stateDTO.getLsState());
 		}
-		//save all the states at once
+		// save all the states at once
 		List<Long> savedStateIds = insertContainerStates(statesToSave);
-		//fill in the saved state ids
+		// fill in the saved state ids
 		int i = 0;
 		for (ContainerState state : statesToSave) {
 			state.setId(savedStateIds.get(i));
 			state.setVersion(0);
 			i++;
 		}
-		//collect all the values to be saved into a List
+		// collect all the values to be saved into a List
 		List<ContainerValue> valuesToSave = new ArrayList<ContainerValue>();
 		for (ContainerState savedState : statesToSave) {
 			for (ContainerValue valueToSave : savedState.getLsValues()) {
@@ -489,16 +494,16 @@ public class ContainerServiceImpl implements ContainerService {
 				valuesToSave.add(valueToSave);
 			}
 		}
-		//save all the values at once
+		// save all the values at once
 		List<Long> savedValueIds = insertContainerValues(valuesToSave);
-		//fill in the saved value ids
+		// fill in the saved value ids
 		int j = 0;
 		for (ContainerValue value : valuesToSave) {
 			value.setId(savedValueIds.get(j));
 			value.setVersion(0);
 			j++;
 		}
-		//re-associate the values with the correct states
+		// re-associate the values with the correct states
 		Map<Long, Set<ContainerValue>> stateIdToValuesMap = new HashMap<Long, Set<ContainerValue>>();
 		for (ContainerValue savedValue : valuesToSave) {
 			Long stateId = savedValue.getLsState().getId();
@@ -506,7 +511,7 @@ public class ContainerServiceImpl implements ContainerService {
 				Set<ContainerValue> values = stateIdToValuesMap.get(stateId);
 				values.add(savedValue);
 				stateIdToValuesMap.put(stateId, values);
-			}else {
+			} else {
 				Set<ContainerValue> values = new HashSet<ContainerValue>();
 				values.add(savedValue);
 				stateIdToValuesMap.put(stateId, values);
@@ -515,10 +520,11 @@ public class ContainerServiceImpl implements ContainerService {
 		for (ContainerState savedState : statesToSave) {
 			Set<ContainerValue> savedValues = stateIdToValuesMap.get(savedState.getId());
 			savedState.setLsValues(savedValues);
-			ContainerCodeNameStateDTO savedDTO = new ContainerCodeNameStateDTO(savedState.getContainer().getCodeName(), savedState);
+			ContainerCodeNameStateDTO savedDTO = new ContainerCodeNameStateDTO(savedState.getContainer().getCodeName(),
+					savedState);
 			savedDTOs.add(savedDTO);
 		}
-		
+
 		return savedDTOs;
 	}
 
@@ -607,7 +613,7 @@ public class ContainerServiceImpl implements ContainerService {
 							.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(
 									containerLabel.getLsType(), labelText, true)
 							.getResultList();
-				} catch (EmptyResultDataAccessException e) {
+				} catch (NoResultException e) {
 					// found nothing
 				}
 				if (!foundContainerLabels.isEmpty()) {
@@ -708,7 +714,7 @@ public class ContainerServiceImpl implements ContainerService {
 						if (lsThingValue.getId() == null) {
 							updatedContainerValue = ContainerValue.create(lsThingValue);
 							updatedContainerValue
-							.setLsState(ContainerState.findContainerState(updatedContainerState.getId()));
+									.setLsState(ContainerState.findContainerState(updatedContainerState.getId()));
 							updatedContainerValue.persist();
 							updatedContainerState.getLsValues().add(updatedContainerValue);
 						} else {
@@ -1041,7 +1047,7 @@ public class ContainerServiceImpl implements ContainerService {
 			}
 			requestWellCodeNames.removeAll(foundWellCodeNames);
 			logger.debug(emptyWellResults.size() + " found with no content, " + requestWellCodeNames.size()
-			+ " not found at all");
+					+ " not found at all");
 			for (String notFoundCodeName : requestWellCodeNames) {
 				WellContentDTO notFoundDTO = new WellContentDTO();
 				notFoundDTO.setContainerCodeName(notFoundCodeName);
@@ -1136,7 +1142,7 @@ public class ContainerServiceImpl implements ContainerService {
 					} else {
 						logger.info("Did not find a Container with the requested name: " + request.getRequestName());
 					}
-				} catch (EmptyResultDataAccessException e) {
+				} catch (NoResultException e) {
 					logger.info("Did not find a Container with the requested name: " + request.getRequestName());
 				}
 			}
@@ -2080,7 +2086,7 @@ public class ContainerServiceImpl implements ContainerService {
 			}
 			requestCodeNames.removeAll(foundCodeNames);
 			logger.debug(emptyWellResults.size() + " found with no content, " + requestCodeNames.size()
-			+ " not found at all");
+					+ " not found at all");
 		}
 		if (!requestCodeNames.isEmpty()) {
 			for (String notFoundCodeName : requestCodeNames) {
@@ -2110,7 +2116,7 @@ public class ContainerServiceImpl implements ContainerService {
 		try {
 			PlateStubDTO result = q.getSingleResult();
 			return result;
-		} catch (EmptyResultDataAccessException e) {
+		} catch (NoResultException e) {
 			return null;
 		}
 	}
@@ -2124,7 +2130,7 @@ public class ContainerServiceImpl implements ContainerService {
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.ContainerErrorMessageDTO( " + "container.codeName, "
 				+ "container )" + " FROM Container container ";
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
 		for (Query q : queries) {
@@ -2162,7 +2168,7 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += SimpleUtil.makeInnerJoinHql("container.firstContainers", "itx", "defines",
 				"definition container_container");
 		queryString += SimpleUtil.makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
 		for (Query q : queries) {
@@ -2199,7 +2205,7 @@ public class ContainerServiceImpl implements ContainerService {
 		String queryString = "SELECT new map(container.codeName as containerCodeName, itx.id as itxId)"
 				+ " FROM Container container ";
 		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", itxType, itxKind);
-		queryString += "where ( container.ignored <> true ) and ( ";
+		queryString += "where ( container.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<Map<String, Long>> results = new HashSet<Map<String, Long>>();
 		for (Query q : queries) {
@@ -2224,7 +2230,7 @@ public class ContainerServiceImpl implements ContainerService {
 				+ "well.codeName as wellCodeName )" + " FROM Container container ";
 		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", "has member");
 		queryString += SimpleUtil.makeInnerJoinHql("itx.secondContainer", "well", "well");
-		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ( ";
+		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<Map<String, String>> results = new HashSet<Map<String, String>>();
 		for (Query q : queries) {
@@ -2616,7 +2622,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ps.setString(4, value.getCodeKind());
 				ps.setString(5, value.getCodeOrigin());
 				ps.setString(6, value.getCodeType());
-				ps.setString(7, value.getCodeType()+"_"+value.getCodeKind());
+				ps.setString(7, value.getCodeType() + "_" + value.getCodeKind());
 				ps.setString(8, value.getCodeValue());
 				ps.setString(9, value.getComments());
 				ps.setString(10, value.getConcUnit());
@@ -2634,7 +2640,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ps.setString(16, value.getLsKind());
 				ps.setLong(17, value.getLsTransaction());
 				ps.setString(18, value.getLsType());
-				ps.setString(19, value.getLsType()+"_"+value.getLsKind());
+				ps.setString(19, value.getLsType() + "_" + value.getLsKind());
 				ps.setString(20, value.getModifiedBy());
 				if (value.getModifiedDate() != null)
 					ps.setTimestamp(21, new java.sql.Timestamp(value.getModifiedDate().getTime()));
@@ -2647,7 +2653,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ps.setBigDecimal(23, value.getNumericValue());
 				ps.setString(24, value.getOperatorKind());
 				ps.setString(25, value.getOperatorType());
-				ps.setString(26, value.getOperatorType()+"_"+value.getOperatorKind());
+				ps.setString(26, value.getOperatorType() + "_" + value.getOperatorKind());
 				ps.setBoolean(27, value.getPublicData());
 				ps.setString(28, value.getRecordedBy());
 				if (value.getRecordedDate() != null)
@@ -3517,13 +3523,15 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 
 	@Override
-	public List<ContainerLocationTreeDTO> getLocationTreeByRootCodeName(String rootCodeName, Boolean withContainers) throws SQLException {
+	public List<ContainerLocationTreeDTO> getLocationTreeByRootCodeName(String rootCodeName, Boolean withContainers)
+			throws SQLException {
 		return getLocationTreeDTO(null, rootCodeName, null, withContainers);
 	}
 
 	@Override
 	@Transactional
-	public List<ContainerLocationTreeDTO> getLocationTreeDTO(String rootLabel, String rootCodeName, List<String> breadcrumbList, Boolean withContainers) throws SQLException {
+	public List<ContainerLocationTreeDTO> getLocationTreeDTO(String rootLabel, String rootCodeName,
+			List<String> breadcrumbList, Boolean withContainers) throws SQLException {
 		boolean withRootLabel = (rootLabel != null && rootLabel.length() > 0);
 		boolean withRootCodeName = (rootCodeName != null && rootCodeName.length() > 0);
 		boolean withBreadcrumbList = (breadcrumbList != null && breadcrumbList.size() > 0);
@@ -3557,7 +3565,7 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    FROM \n"
 					+ "        (SELECT \n"
 					+ "        c.code_name, \n"
-					+ "        cl.label_text, \n" 
+					+ "        cl.label_text, \n"
 					+ "        c.ls_type ,\n"
 					+ "        c.ls_kind  \n"
 					+ "    FROM \n"
@@ -3593,8 +3601,8 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "        t1.label_text_bread_crumb \n"
 					+ "         || '>' \n"
 					+ "         || interactions.label_text AS label_text_bread_crumb, \n"
-					+ "        interactions.ls_type, \n" 
-					+"         interactions.ls_kind "
+					+ "        interactions.ls_type, \n"
+					+ "         interactions.ls_kind "
 					+ "    FROM \n"
 					+ "        (SELECT c1.code_name AS code_name, \n"
 					+ "        cl1.label_text AS label_text, \n"
@@ -3659,7 +3667,7 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    ls_kind \n"
 					+ "FROM \n"
 					+ "    t1 ";
-			if (withBreadcrumbList){
+			if (withBreadcrumbList) {
 				queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
 			}
 			queryString += ";";
@@ -3703,7 +3711,7 @@ public class ContainerServiceImpl implements ContainerService {
 			queryString += "),anchors AS ( \n"
 					+ "    SELECT \n"
 					+ "        c.code_name, \n"
-					+ "        cl.label_text, \n"  
+					+ "        cl.label_text, \n"
 					+ "          c.ls_type, \n"
 					+ "          c.ls_kind \n"
 					+ "    FROM \n"
@@ -3715,8 +3723,7 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "        AND \n"
 					+ "            cl.deleted = 0 \n"
 					+ "    WHERE \n"
-					+ "            c.deleted = 0 \n"
-					;
+					+ "            c.deleted = 0 \n";
 			if (withRootLabel) {
 				queryString += "        AND \n"
 						+ "            cl.label_text LIKE :rootLabel ";
@@ -3798,7 +3805,7 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    cycle \n"
 					+ "FROM \n"
 					+ "    t1 ";
-			if (withBreadcrumbList){
+			if (withBreadcrumbList) {
 				queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
 			}
 		}
@@ -3816,7 +3823,5 @@ public class ContainerServiceImpl implements ContainerService {
 		List<ContainerLocationTreeDTO> results = q.getResultList();
 		return results;
 	}
-
-
 
 }

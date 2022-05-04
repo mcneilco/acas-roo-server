@@ -2,17 +2,15 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 
+import com.labsynch.labseer.domain.ItxContainerContainerState;
+import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.ContainerState;
-import com.labsynch.labseer.domain.ContainerValue;
-import com.labsynch.labseer.domain.ItxContainerContainerState;
-import com.labsynch.labseer.domain.ItxContainerContainerValue;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 @Transactional
@@ -24,8 +22,10 @@ public class ItxContainerContainerValueServiceImpl implements ItxContainerContai
 	private PropertiesUtilService propertiesUtilService;
 
 	@Override
-	public ItxContainerContainerValue updateItxContainerContainerValue(ItxContainerContainerValue itxContainerContainerValue) {
-		itxContainerContainerValue.setVersion(ItxContainerContainerValue.findItxContainerContainerValue(itxContainerContainerValue.getId()).getVersion());
+	public ItxContainerContainerValue updateItxContainerContainerValue(
+			ItxContainerContainerValue itxContainerContainerValue) {
+		itxContainerContainerValue.setVersion(ItxContainerContainerValue
+				.findItxContainerContainerValue(itxContainerContainerValue.getId()).getVersion());
 		itxContainerContainerValue.merge();
 		return itxContainerContainerValue;
 	}
@@ -33,15 +33,17 @@ public class ItxContainerContainerValueServiceImpl implements ItxContainerContai
 	@Override
 	public Collection<ItxContainerContainerValue> updateItxContainerContainerValues(
 			Collection<ItxContainerContainerValue> itxContainerContainerValues) {
-		for (ItxContainerContainerValue itxContainerContainerValue : itxContainerContainerValues){
+		for (ItxContainerContainerValue itxContainerContainerValue : itxContainerContainerValues) {
 			itxContainerContainerValue = updateItxContainerContainerValue(itxContainerContainerValue);
 		}
 		return null;
 	}
 
 	@Override
-	public ItxContainerContainerValue saveItxContainerContainerValue(ItxContainerContainerValue itxContainerContainerValue) {
-		itxContainerContainerValue.setLsState(ItxContainerContainerState.findItxContainerContainerState(itxContainerContainerValue.getLsState().getId()));		
+	public ItxContainerContainerValue saveItxContainerContainerValue(
+			ItxContainerContainerValue itxContainerContainerValue) {
+		itxContainerContainerValue.setLsState(ItxContainerContainerState
+				.findItxContainerContainerState(itxContainerContainerValue.getLsState().getId()));
 		itxContainerContainerValue.persist();
 		return itxContainerContainerValue;
 	}
@@ -49,12 +51,10 @@ public class ItxContainerContainerValueServiceImpl implements ItxContainerContai
 	@Override
 	public Collection<ItxContainerContainerValue> saveItxContainerContainerValues(
 			Collection<ItxContainerContainerValue> itxContainerContainerValues) {
-		for (ItxContainerContainerValue itxContainerContainerValue: itxContainerContainerValues) {
+		for (ItxContainerContainerValue itxContainerContainerValue : itxContainerContainerValues) {
 			itxContainerContainerValue = saveItxContainerContainerValue(itxContainerContainerValue);
 		}
 		return itxContainerContainerValues;
 	}
-
-
 
 }

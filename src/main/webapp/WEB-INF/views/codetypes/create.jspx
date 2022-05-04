@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:create id="fc_com_labsynch_labseer_domain_CodeType" modelAttribute="codeType" path="/codetypes" render="${empty dependencies}" z="RkFJVCo2wQvtRiBWJjhWkowgngw=">
-        <field:textarea field="typeName" id="c_com_labsynch_labseer_domain_CodeType_typeName" required="true" z="vb18MtO7s5jnKAFhPfqTXtc1TwI="/>
-    </form:create>
-    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_CodeType" render="${not empty dependencies}" z="5kG0SQQ3H44xvvQ2t22cz7RrkjE="/>
-</div>

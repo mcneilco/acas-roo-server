@@ -9,7 +9,7 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
 @Component
 public class CmpdRegMoleculeFactoryIndigoImpl implements CmpdRegMoleculeFactory {
-	
+
 	public CmpdRegMolecule getCmpdRegMolecule(String molStructure) throws CmpdRegMolFormatException {
 		return new CmpdRegMoleculeIndigoImpl(molStructure);
 	}

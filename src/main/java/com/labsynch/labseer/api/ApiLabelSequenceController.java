@@ -1,18 +1,17 @@
 package com.labsynch.labseer.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.NonUniqueResultException;
+
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
 import com.labsynch.labseer.service.AutoLabelService;
 import com.labsynch.labseer.service.LabelSequenceService;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-//@RooWebJson(jsonObject = LabelSequence.class)
 @Controller
 @RequestMapping("/api/v1/labelsequences")
-//@RooWebFinder
 public class ApiLabelSequenceController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiLabelSequenceController.class);
@@ -43,7 +40,7 @@ public class ApiLabelSequenceController {
 	@Autowired
 	private LabelSequenceService labelSequenceService;
 
-	//CRUD routes
+	// CRUD routes
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<java.lang.String> getById(@PathVariable("id") Long id) {
@@ -53,23 +50,27 @@ public class ApiLabelSequenceController {
 		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
 
-
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		LabelSequence labelSequence = LabelSequence.fromJsonToLabelSequence(json);
-		Collection<LabelSequence> foundLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind(), labelSequence.getLabelPrefix()).getResultList();
+		Collection<LabelSequence> foundLabelSequences = LabelSequence
+				.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(
+						labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind(),
+						labelSequence.getLabelPrefix())
+				.getResultList();
 		if (!foundLabelSequences.isEmpty()) {
-			String message = "LabelSequence already exists! " + labelSequence.getLabelPrefix() +" "+labelSequence.getLabelTypeAndKind() + " " + labelSequence.getThingTypeAndKind();
+			String message = "LabelSequence already exists! " + labelSequence.getLabelPrefix() + " "
+					+ labelSequence.getLabelTypeAndKind() + " " + labelSequence.getThingTypeAndKind();
 			logger.warn(message);
-			return new ResponseEntity<String>(message,headers, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(message, headers, HttpStatus.BAD_REQUEST);
 		}
-		try{
+		try {
 			labelSequence = labelSequence.save();
 			return new ResponseEntity<String>(labelSequence.toJson(), headers, HttpStatus.CREATED);
-		}catch (Exception e){
-			logger.error("Caught exception saving labelSequence",e);
+		} catch (Exception e) {
+			logger.error("Caught exception saving labelSequence", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -79,22 +80,28 @@ public class ApiLabelSequenceController {
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(json);
 			Collection<LabelSequence> savedLabelSequences = new ArrayList<LabelSequence>();
 			for (LabelSequence labelSequence : labelSequences) {
-				Collection<LabelSequence> foundLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind(), labelSequence.getLabelPrefix()).getResultList();
+				Collection<LabelSequence> foundLabelSequences = LabelSequence
+						.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(
+								labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind(),
+								labelSequence.getLabelPrefix())
+						.getResultList();
 				if (!foundLabelSequences.isEmpty()) {
-					String message = "LabelSequence already exists! " + labelSequence.getLabelPrefix() +" "+labelSequence.getLabelTypeAndKind() + " " + labelSequence.getThingTypeAndKind();
+					String message = "LabelSequence already exists! " + labelSequence.getLabelPrefix() + " "
+							+ labelSequence.getLabelTypeAndKind() + " " + labelSequence.getThingTypeAndKind();
 					logger.warn(message);
-				}else {
+				} else {
 					LabelSequence savedLabelSequence = labelSequence.save();
 					savedLabelSequences.add(savedLabelSequence);
-				}	
+				}
 			}
-			return new ResponseEntity<String>(LabelSequence.toJsonArray(savedLabelSequences), headers, HttpStatus.CREATED);
-		}catch (Exception e){
-			logger.error("Caught exception saving labelSequence",e);
+			return new ResponseEntity<String>(LabelSequence.toJsonArray(savedLabelSequences), headers,
+					HttpStatus.CREATED);
+		} catch (Exception e) {
+			logger.error("Caught exception saving labelSequence", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -117,7 +124,7 @@ public class ApiLabelSequenceController {
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		try{
+		try {
 			Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(json);
 			Collection<LabelSequence> updatedLabelSequences = new ArrayList<LabelSequence>();
 			for (LabelSequence labelSequence : labelSequences) {
@@ -125,8 +132,8 @@ public class ApiLabelSequenceController {
 				updatedLabelSequences.add(updatedLabelSequence);
 			}
 			return new ResponseEntity<String>(LabelSequence.toJsonArray(updatedLabelSequences), headers, HttpStatus.OK);
-		}catch (Exception e){
-			logger.error("Caught exception updating labelSequences",e);
+		} catch (Exception e) {
+			logger.error("Caught exception updating labelSequences", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -143,13 +150,16 @@ public class ApiLabelSequenceController {
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 
-	//copied only the custom methods from the LabelSequenceController.java class
+	// copied only the custom methods from the LabelSequenceController.java class
 	@RequestMapping(value = "/getNextLabelSequences", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateLabelSequence(@RequestBody LabelSequenceDTO lsDTO) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		logger.info("incoming label seq: " + lsDTO.toJson());
-		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind()).getResultList();
+		List<LabelSequence> labelSequences = LabelSequence
+				.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(lsDTO.getThingTypeAndKind(),
+						lsDTO.getLabelTypeAndKind())
+				.getResultList();
 		if (labelSequences.size() != 1) {
 			logger.info("did not find the label seq!!! ");
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_ACCEPTABLE);
@@ -174,18 +184,22 @@ public class ApiLabelSequenceController {
 
 	@RequestMapping(headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> listJson(@RequestParam(value="thingTypeAndKind", required=false) String thingTypeAndKind,
-			@RequestParam(value="labelTypeAndKind", required=false) String labelTypeAndKind) {
+	public ResponseEntity<String> listJson(
+			@RequestParam(value = "thingTypeAndKind", required = false) String thingTypeAndKind,
+			@RequestParam(value = "labelTypeAndKind", required = false) String labelTypeAndKind) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<LabelSequence> allLabelSequences;
 		if (thingTypeAndKind != null && labelTypeAndKind != null) {
-			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
-		}else if (thingTypeAndKind != null) {
-			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEquals(thingTypeAndKind).getResultList();
-		}else if (labelTypeAndKind != null) {
-			allLabelSequences = LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(labelTypeAndKind).getResultList();
-		}else {
+			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(
+					thingTypeAndKind, labelTypeAndKind).getResultList();
+		} else if (thingTypeAndKind != null) {
+			allLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEquals(thingTypeAndKind)
+					.getResultList();
+		} else if (labelTypeAndKind != null) {
+			allLabelSequences = LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(labelTypeAndKind)
+					.getResultList();
+		} else {
 			allLabelSequences = LabelSequence.findAllLabelSequences();
 		}
 		return new ResponseEntity<String>(LabelSequence.toJsonArray(allLabelSequences), headers, HttpStatus.OK);
@@ -193,10 +207,15 @@ public class ApiLabelSequenceController {
 
 	@RequestMapping(value = "/getNextLabelSequences", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> jsonFindLabelSequencesByThingAndLabel(@RequestParam("thingTypeAndKind") String thingTypeAndKind, @RequestParam("labelTypeAndKind") String labelTypeAndKind, @RequestParam("numberOfLabels") long numberOfLabels) {
+	public ResponseEntity<java.lang.String> jsonFindLabelSequencesByThingAndLabel(
+			@RequestParam("thingTypeAndKind") String thingTypeAndKind,
+			@RequestParam("labelTypeAndKind") String labelTypeAndKind,
+			@RequestParam("numberOfLabels") long numberOfLabels) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
+		List<LabelSequence> labelSequences = LabelSequence
+				.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind)
+				.getResultList();
 		if (labelSequences.size() != 1) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_ACCEPTABLE);
 		}
@@ -207,14 +226,15 @@ public class ApiLabelSequenceController {
 
 	@RequestMapping(value = "/getAuthorizedLabelSequences", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<java.lang.String> getAuthorizedLabelSequences(@RequestParam(value="thingTypeAndKind", required=false) String thingTypeAndKind, 
-			@RequestParam(value="labelTypeAndKind", required=false) String labelTypeAndKind,
+	public ResponseEntity<java.lang.String> getAuthorizedLabelSequences(
+			@RequestParam(value = "thingTypeAndKind", required = false) String thingTypeAndKind,
+			@RequestParam(value = "labelTypeAndKind", required = false) String labelTypeAndKind,
 			@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<AuthorRole> authorRoles = AuthorRole.fromJsonArrayToAuthorRoles(json);
-		List<LabelSequence> labelSequences = labelSequenceService.getAuthorizedLabelSequences(authorRoles, thingTypeAndKind, labelTypeAndKind);
+		List<LabelSequence> labelSequences = labelSequenceService.getAuthorizedLabelSequences(authorRoles,
+				thingTypeAndKind, labelTypeAndKind);
 		return new ResponseEntity<String>(LabelSequence.toJsonArray(labelSequences), headers, HttpStatus.OK);
 	}
 }
-

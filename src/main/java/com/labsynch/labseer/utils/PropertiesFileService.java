@@ -9,7 +9,4 @@ public interface PropertiesFileService {
 
 	String getUsernameProperty(String propertFilePath, String userName);
 
-
-
-	
 }

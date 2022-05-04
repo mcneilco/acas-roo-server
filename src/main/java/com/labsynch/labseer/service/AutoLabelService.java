@@ -4,20 +4,20 @@ import java.util.List;
 
 import javax.persistence.NonUniqueResultException;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface AutoLabelService {
 
-
 	List<AutoLabelDTO> getAutoLabels(String json) throws NonUniqueResultException;
-	
+
 	List<AutoLabelDTO> getAutoLabels(LabelSequenceDTO lsDTO) throws NonUniqueResultException;
 
-	List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, Long numberOfLabels) throws NonUniqueResultException;
+	List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, Long numberOfLabels)
+			throws NonUniqueResultException;
 
 	String getSubjectCodeName();
 
@@ -45,7 +45,4 @@ public interface AutoLabelService {
 
 	String getLsThingCodeName(String lsTypeAndKind, String labelTypeAndKind);
 
-	
-	
-	
 }

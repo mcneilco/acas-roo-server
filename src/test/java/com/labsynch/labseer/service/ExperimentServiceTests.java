@@ -11,20 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupLabel;
 import com.labsynch.labseer.domain.AnalysisGroupState;
@@ -52,6 +38,20 @@ import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import junit.framework.Assert;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/spring/applicationContext.xml",
@@ -64,7 +64,7 @@ public class ExperimentServiceTests {
 
 	@Autowired
 	private ExperimentService experimentService;
-	
+
 	@Autowired
 	private ExperimentValueService experimentValueService;
 
@@ -87,7 +87,8 @@ public class ExperimentServiceTests {
 		long id = protocol.getId();
 		Assert.assertNotNull(
 				"Find method for 'Protocol' illegally returned null for id '"
-						+ id + "'", id);
+						+ id + "'",
+				id);
 	}
 
 	// @Test
@@ -205,8 +206,8 @@ public class ExperimentServiceTests {
 		String json = "{    \"analysisGroups\": null,    \"codeName\": \"test experiment code name 105\",    \"id\": 3101,    \"ignored\": false,    \"lsKind\": \"default\",    \"lsLabels\": null,    \"lsStates\": null,    \"lsTransaction\": 311,    \"lsType\": \"default\",    \"lsTypeAndKind\": \"default_default\",    \"modifiedBy\": null,    \"modifiedDate\": null,    \"protocol\": {        \"codeName\": \"test protocol code name 105\",        \"id\": 3100,        \"ignored\": false,        \"lsKind\": \"default\",        \"lsTransaction\": 311,        \"lsType\": \"default\",        \"lsTypeAndKind\": \"default_default\",        \"modifiedBy\": null,        \"modifiedDate\": null,        \"recordedBy\": \"testUser\",        \"recordedDate\": 1379479721768,        \"shortDescription\": \"just a test\",        \"version\": 0    },    \"recordedBy\": \"testUser\",    \"recordedDate\": 1379479721768,    \"shortDescription\": \"some short description\",    \"version\": 0}";
 		try {
 			experimentService.updateExperiment(Experiment
-				.fromJsonToExperiment(json));
-		} catch (Exception e){
+					.fromJsonToExperiment(json));
+		} catch (Exception e) {
 			Assert.assertNull(e);
 		}
 	}
@@ -227,7 +228,35 @@ public class ExperimentServiceTests {
 	public void CreateProtocolFromNestedJson()
 			throws UniqueNameException, NotFoundException {
 		// String json =
-		// "{ \"name\": \"\",\"shortDescription\": \"\",\"lsTransaction\": null,\"protocolStates\": [ { \"protocolValues\": [ { \"valueType\": \"stringValue\",\"valueKind\": \"reader instrument\",\"stringValue\": \"Molecular Dynamics FLIPR\",\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\": null,\"sigFigs\": null,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve min\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":                0,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve max\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":              100,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 } ],\"recordedBy\": \"userName\",\"stateType\": \"metadata\",\"stateKind\": \"protocol parameters\",\"comments\": \"\",\"lsTransaction\": null,\"ignored\": false,\"recordedDate\":    1353216427000 } ] }";
+		// "{ \"name\": \"\",\"shortDescription\": \"\",\"lsTransaction\":
+		// null,\"protocolStates\": [ { \"protocolValues\": [ { \"valueType\":
+		// \"stringValue\",\"valueKind\": \"reader instrument\",\"stringValue\":
+		// \"Molecular Dynamics FLIPR\",\"fileValue\": null,\"urlValue\":
+		// null,\"dateValue\": null,\"clobValue\": null,\"blobValue\":
+		// null,\"valueOperator\": null,\"numericValue\": null,\"sigFigs\":
+		// null,\"uncertainty\": null,\"valueUnit\": null,\"concValue\":
+		// null,\"concUnit\": \"\",\"comments\": null,\"ignored\":
+		// false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\":
+		// null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":
+		// 1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve
+		// min\",\"stringValue\": null,\"fileValue\": null,\"urlValue\":
+		// null,\"dateValue\": null,\"clobValue\": null,\"blobValue\":
+		// null,\"valueOperator\": null,\"numericValue\": 0,\"sigFigs\":
+		// 2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\":
+		// \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\":
+		// null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\":
+		// \"\",\"publicData\": false,\"recordedDate\": 1353216427000 },{ \"valueType\":
+		// \"numericValue\",\"valueKind\": \"curve max\",\"stringValue\":
+		// null,\"fileValue\": null,\"urlValue\": null,\"dateValue\":
+		// null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\":
+		// null,\"numericValue\": 100,\"sigFigs\": 2,\"uncertainty\":
+		// null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\":
+		// null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\":
+		// null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\":
+		// false,\"recordedDate\": 1353216427000 } ],\"recordedBy\":
+		// \"userName\",\"stateType\": \"metadata\",\"stateKind\": \"protocol
+		// parameters\",\"comments\": \"\",\"lsTransaction\": null,\"ignored\":
+		// false,\"recordedDate\": 1353216427000 } ] }";
 		String json = "{\"kind\":\"primary analysis\",\"recordedBy\":\"jmcneil\",\"recordedDate\":1363503600000,\"shortDescription\":\"primary 7:34\",\"description\":\"\", \"experimentLabels\":[{\"labelType\":\"name\",\"labelKind\":\"experiment name\",\"labelText\":\"john 7:34\",\"ignored\":false,\"preferred\":true,\"recordedDate\":1363503600000,\"recordedBy\":\"jmcneil\",\"physicallyLabled\":false,\"imageFile\":null}],\"experimentStates\":[], \"protocol\":{\"kind\":\"primary analysis\",\"recordedBy\":\"username\",\"shortDescription\":\"primary analysis\",\"description\":\"\", \"codeName\":\"PROT-00000003\",\"id\":96,\"ignored\":false,\"lsTransaction\":{\"comments\":\"primary analysis protocol transactions\",\"id\":87,\"recordedDate\":1363388477000,\"version\":0},\"modifiedBy\":null,\"modifiedDate\":null,\"recordedDate\":1363388477000,\"version\":1}}";
 		// TODO: fix json
 		Experiment experiment = experimentService.saveLsExperiment(Experiment
@@ -243,9 +272,10 @@ public class ExperimentServiceTests {
 
 	}
 
-	//@Test
+	// @Test
 	@Transactional
-	//TODO: fix this test to either test SEL delete route (real delete) or Browser delete route (soft delete via status)
+	// TODO: fix this test to either test SEL delete route (real delete) or Browser
+	// delete route (soft delete via status)
 	public void RemoveExperimentTest() {
 		Long id = 136951L;
 		Experiment experiment = Experiment.findExperiment(id);
@@ -362,7 +392,7 @@ public class ExperimentServiceTests {
 		// List<TreatmentGroup> treatmentGroups =
 		// TreatmentGroup.findTreatmentGroupsByAnalysisGroup(analysisGroup).getResultList();
 		// logger.debug("found number of treatment group per analyisGroup: " +
-		// analysisGroup.getId() + "  " + treatmentGroups.size());
+		// analysisGroup.getId() + " " + treatmentGroups.size());
 		// treamentGroupSet.addAll(treatmentGroups);
 		// }
 		// logger.debug("total number of treamentGroups: " +
@@ -373,7 +403,7 @@ public class ExperimentServiceTests {
 		// List<Subject> subjectGroups =
 		// Subject.findSubjectsByTreatmentGroup(treamentGroup).getResultList();
 		// logger.debug("found number of subject group per treamentGroup: " +
-		// treamentGroup.getId() + "  " + subjectGroups.size());
+		// treamentGroup.getId() + " " + subjectGroups.size());
 		// subjectSet.addAll(subjectGroups);
 		// }
 		// logger.debug("total number of subjectSet: " + subjectSet.size());
@@ -489,7 +519,7 @@ public class ExperimentServiceTests {
 		List<Experiment> check2 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertFalse(check2.isEmpty());
 	}
-	
+
 	@Test
 	public void findAndSaveExperimentFromJson2() throws NotFoundException {
 		String experimentName = "Test Experiment Brian";
@@ -509,27 +539,27 @@ public class ExperimentServiceTests {
 		List<Experiment> check2 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertEquals(1, check2.size());
 	}
-	
+
 	@Test
-//	@Transactional
+	// @Transactional
 	public void deleteExperimentByName() {
 		String experimentName = "Test Experiment Brian";
 		List<Experiment> check1 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertEquals(1, check1.size());
-		for (Experiment experiment: check1) {
+		for (Experiment experiment : check1) {
 			experiment.logicalDelete();
 		}
 		List<Experiment> check2 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertTrue(check2.isEmpty());
 	}
-	
+
 	@Test
 	public void verifyDeleted() {
 		String experimentName = "Test Experiment Brian";
 		List<Experiment> check1 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertEquals(0, check1.size());
 	}
-	
+
 	@Transactional
 	@Test
 	public void experimentBrowserFilterTest() {
@@ -541,75 +571,78 @@ public class ExperimentServiceTests {
 		String codeName = "EXPT-00000001";
 		String type = "default";
 		String kind = "default";
-		
+
 		Map<String, String> requestParams = new HashMap<String, String>();
 		requestParams.put("protocolName", protocolName);
-		
+
 		Set<Experiment> experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 		experiments.clear();
-		
+
 		requestParams.put("protocolCodeName", protocolCodeName);
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 		experiments.clear();
-		
+
 		requestParams.put("protocolType", protocolType);
 		requestParams.put("protocolKind", protocolKind);
-		
+
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 		experiments.clear();
-		
+
 		requestParams.remove("protocolName");
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
-		
+
 		requestParams.clear();
-		
+
 		requestParams.put("name", name);
-		
+
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 		experiments.clear();
-		
+
 		requestParams.put("codeName", codeName);
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 		experiments.clear();
-		
+
 		requestParams.put("type", type);
 		requestParams.put("kind", kind);
-		
+
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 		experiments.clear();
-		
+
 		requestParams.remove("name");
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
 	}
-	
+
 	@Test
 	public void softDeletedTest() {
 		Long id = 14L;
 		Experiment experiment = Experiment.findExperiment(id);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata",
+				"stringValue", "status", "Deleted");
 		experiment.setIgnored(true);
 		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata",
+				"stringValue", "status", "Approved");
 		experiment.setIgnored(false);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata",
+				"stringValue", "status", "Deleted");
 		experiment.setIgnored(true);
 		experiment.setDeleted(true);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
 
 	}
-	
+
 	@Test
-//	@Transactional
+	// @Transactional
 	public void browserFinderDeleteTest() throws TooManyResultsException {
 		Long id = 2123L;
 		String query = "EXPERIMENT 4 EXPT-00000006";
@@ -618,8 +651,9 @@ public class ExperimentServiceTests {
 		Assert.assertEquals(1, experiments.size());
 		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
 		experiments.clear();
-		
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata",
+				"stringValue", "status", "Deleted");
 		experiment.setIgnored(true);
 		experiment.merge();
 		experiment.flush();
@@ -628,22 +662,23 @@ public class ExperimentServiceTests {
 		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
 		experiments.clear();
 	}
-	
+
 	@Test
-	public void browserFinderDeleteTest2() throws TooManyResultsException{
+	public void browserFinderDeleteTest2() throws TooManyResultsException {
 		Long id = 2123L;
 		String query = "EXPERIMENT 4 EXPT-00000006";
 		Experiment experiment = Experiment.findExperiment(id);
 		experiment.setDeleted(true);
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata",
+				"stringValue", "status", "Deleted");
 		experiment.setIgnored(true);
 		experiment.merge();
 		experiment.flush();
 		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
 		Assert.assertEquals(0, experiments.size());
-		
+
 	}
-	
+
 	@Test
 	public void browserFinderDeleteTest3() {
 		Long id = 2123L;
@@ -653,136 +688,145 @@ public class ExperimentServiceTests {
 		experiment.merge();
 		experiment.flush();
 	}
-	
+
 	@Test
 	@Transactional
-	public void uniqueNameExceptionTest() throws UniqueNameException, NotFoundException{
+	public void uniqueNameExceptionTest() throws UniqueNameException, NotFoundException {
 		String experimentName = "Test Load 102";
 		String json = "{\"codeName\":null,\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"deleted\":false,\"id\":null,\"ignored\":false,\"labelText\":\"Test Load 102\",\"lsKind\":\"experiment name\",\"lsTransaction\":5,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1395708973000,\"version\":null}],\"lsStates\":[],\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000002\",\"deleted\":false,\"id\":1006,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1395708972000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":null},\"recordedBy\":\"nouser\",\"recordedDate\":1395708973000,\"shortDescription\":\"NA\",\"version\":null}";
 		Experiment experiment = Experiment.fromJsonToExperiment(json);
 		try {
 			experimentService.saveLsExperiment(experiment);
-		} catch (UniqueNameException e){
+		} catch (UniqueNameException e) {
 			Assert.assertNotNull(e);
 		}
 	}
-	
+
 	@Transactional
 	@Test
-	public void searchTest2() throws TooManyResultsException{
+	public void searchTest2() throws TooManyResultsException {
 		String query = "EXPT-00000012";
 		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
-		logger.debug("RESULTS: "+"NUMBER OF EXPERIMENTS: "+experiments.size()+experiments.toString());
+		logger.debug("RESULTS: " + "NUMBER OF EXPERIMENTS: " + experiments.size() + experiments.toString());
 	}
-	
+
 	@Test
-//	@Transactional
+	// @Transactional
 	public void createExperimentStatusTest() {
 		Experiment experiment = Experiment.findExperiment(7585L);
-		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "created");
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(),
+				"metadata", "experiment metadata", "codeValue", "experiment status", "created");
 		String createdExperimentStatus = experimentValue.getCodeValue();
-		Assert.assertEquals("created", createdExperimentStatus);		
+		Assert.assertEquals("created", createdExperimentStatus);
 	}
-	
+
 	@Test
 	@Transactional
 	public void updateExperimentStatusTest() {
 		Experiment experiment = Experiment.findExperiment(7585L);
-		ExperimentValue experimentValue = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata", "experiment metadata", "codeValue", "experiment status").getSingleResult();
+		ExperimentValue experimentValue = ExperimentValue
+				.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata",
+						"experiment metadata", "codeValue", "experiment status")
+				.getSingleResult();
 		String originalExperimentStatus = experimentValue.getCodeValue();
 		Assert.assertTrue(!originalExperimentStatus.equals("deleted"));
-		ExperimentValue experimentValue2 = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "deleted");
+		ExperimentValue experimentValue2 = experimentValueService.updateExperimentValue(experiment.getCodeName(),
+				"metadata", "experiment metadata", "codeValue", "experiment status", "deleted");
 		experiment.setIgnored(true);
 		String deletedExperimentStatus = experimentValue2.getCodeValue();
-		ExperimentValue experimentValue3 = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata", "experiment metadata", "codeValue", "experiment status").getSingleResult();
+		ExperimentValue experimentValue3 = ExperimentValue
+				.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata",
+						"experiment metadata", "codeValue", "experiment status")
+				.getSingleResult();
 		String checkDeletedExperimentStatus = experimentValue3.getCodeValue();
 		Assert.assertEquals("deleted", deletedExperimentStatus);
 		Assert.assertEquals("deleted", checkDeletedExperimentStatus);
-		
+
 	}
-	
+
 	@Test
 	@Transactional
-	@Rollback(value=false)
+	@Rollback(value = false)
 	public void deleteChildren() {
 		Experiment experiment = Experiment.findExperiment(203528L);
 		long startTime = new Date().getTime();
 		experimentService.deleteAnalysisGroupsByExperiment(experiment);
 		long endTime = new Date().getTime();
 		long totalTime = endTime - startTime;
-		logger.info("Time to delete "+ totalTime +" ms");
-		
+		logger.info("Time to delete " + totalTime + " ms");
+
 	}
-	
+
 	@Test
 	@Transactional
-	@Rollback(value=false)
-	public void changeProtocol() throws Exception{
-		Experiment experiment  = Experiment.findExperiment(1007L);
+	@Rollback(value = false)
+	public void changeProtocol() throws Exception {
+		Experiment experiment = Experiment.findExperiment(1007L);
 		Protocol newProtocol = Protocol.findProtocol(708326L);
 		Assert.assertFalse(experiment.getProtocol().getId() == newProtocol.getId());
 		Assert.assertFalse(experiment.getProtocol().getCodeName().equals(newProtocol.getCodeName()));
-//		logger.info(newProtocol.toJson());
-//		logger.info(experiment.toJson());
+		// logger.info(newProtocol.toJson());
+		// logger.info(experiment.toJson());
 		experiment.setProtocol(newProtocol);
 		Experiment updatedExperiment = experimentService.updateExperiment(experiment);
-//		logger.info(updatedExperiment.toJson());
+		// logger.info(updatedExperiment.toJson());
 		Assert.assertTrue(updatedExperiment.getProtocol().getId() == newProtocol.getId());
 		Assert.assertTrue(updatedExperiment.getProtocol().getCodeName().equals(newProtocol.getCodeName()));
 	}
 
 	@Transactional
 	@Test
-	public void experimentBrowserSearchTest2() throws Exception{
+	public void experimentBrowserSearchTest2() throws Exception {
 		String query = "EXPERIMENT 5";
-		logger.info("Searching with the query: "+ query);
+		logger.info("Searching with the query: " + query);
 		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
-		logger.info("Found: "+ resultExperiments.toString());
+		logger.info("Found: " + resultExperiments.toString());
 		Assert.assertTrue(resultExperiments.size() > 0);
 		query = "\"EXPERIMENT 5\"";
-		logger.info("Searching with the query: "+ query);
+		logger.info("Searching with the query: " + query);
 		Collection<Experiment> resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query);
-		logger.info("Found: "+ resultExperiments2.toString());
+		logger.info("Found: " + resultExperiments2.toString());
 		Assert.assertTrue(resultExperiments2.size() > 0);
 		Assert.assertTrue(resultExperiments.size() != resultExperiments2.size());
-		
+
 		query = "EXPERIMENT 50";
-		logger.info("Searching with the query: "+ query);
+		logger.info("Searching with the query: " + query);
 		resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
-		logger.info("Found: "+ resultExperiments.toString());
+		logger.info("Found: " + resultExperiments.toString());
 		Assert.assertTrue(resultExperiments.size() > 0);
 		query = "\"EXPERIMENT 50\"";
-		logger.info("Searching with the query: "+ query);
+		logger.info("Searching with the query: " + query);
 		resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query);
-		logger.info("Found: "+ resultExperiments2.toString());
+		logger.info("Found: " + resultExperiments2.toString());
 		Assert.assertTrue(resultExperiments2.size() > 0);
-		Assert.assertEquals(resultExperiments.iterator().next().getCodeName(),resultExperiments2.iterator().next().getCodeName());
+		Assert.assertEquals(resultExperiments.iterator().next().getCodeName(),
+				resultExperiments2.iterator().next().getCodeName());
 	}
-	
+
 	@Transactional
 	@Test
-	public void experimentBrowser_dateSearch() throws Exception{
+	public void experimentBrowser_dateSearch() throws Exception {
 		String query = "2015-05-08";
-		logger.info("Searching with the query: "+ query);
+		logger.info("Searching with the query: " + query);
 		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
-		logger.info("Found: "+ resultExperiments.toString());
+		logger.info("Found: " + resultExperiments.toString());
 		Assert.assertTrue(resultExperiments.size() > 0);
-		
+
 	}
-	
+
 	@Transactional
-	@Rollback(value=false)
+	@Rollback(value = false)
 	@Test
-	public void updateExperiment() throws UniqueNameException{
+	public void updateExperiment() throws UniqueNameException {
 		String json = "{\"id\":1035,\"codeName\":\"EXPT-00000061\",\"lsType\":\"default\",\"lsKind\":\"study\",\"protocol\":{\"codeName\":\"PROT-00000020\",\"deleted\":false,\"id\":1034,\"ignored\":false,\"lsKind\":\"study\",\"lsTransaction\":306,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_study\",\"modifiedDate\":1471906899841,\"recordedBy\":\"bob\",\"recordedDate\":1471906899636,\"shortDescription\":\" \",\"version\":1},\"recordedDate\":1471909718042,\"recordedBy\":\"bob\",\"lsStates\":[{\"ignored\":false,\"lsKind\":\"study steps\",\"lsType\":\"study tracking\",\"lsValues\":[{\"ignored\":false,\"lsKind\":\"step order\",\"lsType\":\"numericValue\",\"numericValue\":0,\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323},{\"ignored\":false,\"lsKind\":\"step category order\",\"lsType\":\"numericValue\",\"numericValue\":2,\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323},{\"ignored\":false,\"lsKind\":\"step category\",\"lsType\":\"stringValue\",\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"stringValue\":\"Uncategorized\",\"lsTransaction\":323},{\"ignored\":false,\"lsKind\":\"step name\",\"lsType\":\"stringValue\",\"stringValue\":\"EXPT-00000068\",\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323}],\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323}],\"lsTransaction\":323}";
 		Experiment exptToUpdate = Experiment.fromJsonToExperiment(json);
 		Experiment updatedExperiment = experimentService.updateExperiment(exptToUpdate);
 		logger.info(updatedExperiment.toJson());
 	}
-	
+
 	@Transactional
 	@Test
-	public void getExperimentsAsCodeTables(){
+	public void getExperimentsAsCodeTables() {
 		List<CodeTableDTO> codeTables = experimentService.getExperimentsAsCodeTables(null, null);
 		Assert.assertFalse(codeTables.isEmpty());
 		logger.info(CodeTableDTO.toJsonArray(codeTables));
@@ -793,24 +837,24 @@ public class ExperimentServiceTests {
 		Assert.assertFalse(codeTables.isEmpty());
 		logger.info(CodeTableDTO.toJsonArray(codeTables));
 	}
-	
+
 	@Test
 	@Transactional
-	public void getExperimentsByDateValueComparison() throws Exception{
+	public void getExperimentsByDateValueComparison() throws Exception {
 		DateValueComparisonRequest request = new DateValueComparisonRequest();
 		request.setStateType("metadata");
 		request.setStateKind("experiment metadata");
 		request.setValueKind("completion date");
 		request.setSecondsDelta(60);
-		
+
 		Collection<String> results = experimentService.getExperimentCodesByDateValueComparison(request);
 		logger.info(results.toString());
-		Assert.assertTrue(results.size()>0);
-		
+		Assert.assertTrue(results.size() > 0);
+
 		request.setNewerThanModified(true);
 		Collection<String> noResults = experimentService.getExperimentCodesByDateValueComparison(request);
 		logger.info(noResults.toString());
-		Assert.assertFalse(noResults.size()>0);
+		Assert.assertFalse(noResults.size() > 0);
 	}
 
 }

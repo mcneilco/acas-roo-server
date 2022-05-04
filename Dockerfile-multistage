@@ -14,6 +14,7 @@ FROM 	dependencies as bbchem
 FROM 	dependencies as indigo
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
+
 ADD 	pom.xml /src/pom.xml
 WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
@@ -35,7 +36,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
 ENV NODE_PATH /usr/lib/node_modules
 
 # Add runner user so we don't run as root
-RUN	useradd -u 1000 -ms /bin/bash runner
+RUN	useradd -u 1000 -ms /bin/bash runner && \
+  chown -R runner:runner /usr/local/tomcat/
 
 # Allow certificates to be added by runner
 RUN chgrp runner /usr/local/openjdk-8/lib/security/cacerts && \

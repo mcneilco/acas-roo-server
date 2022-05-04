@@ -1,9 +1,9 @@
 package com.labsynch.labseer.service;
 
+import com.labsynch.labseer.domain.ItxSubjectContainer;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.ItxSubjectContainer;
 
 @Service
 public interface ItxSubjectContainerService {
@@ -13,7 +13,5 @@ public interface ItxSubjectContainerService {
 
 	ItxSubjectContainer updateItxSubjectContainer(
 			ItxSubjectContainer jsonItxSubjectContainer);
-	
-	
-	
+
 }

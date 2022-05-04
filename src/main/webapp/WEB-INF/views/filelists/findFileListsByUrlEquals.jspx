@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByUrlEquals" id="ff_com_labsynch_labseer_domain_FileList" path="/filelists" z="A6vqfnP04k2Ju/i7FXM8XYn5umw=">
-        <field:input disableFormBinding="true" field="url" id="f_com_labsynch_labseer_domain_FileList_url" required="true" z="kkCrDycpA5xLBan1xlyggzoURts="/>
-    </form:find>
-</div>

@@ -1,41 +1,41 @@
 package com.labsynch.labseer.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Request implements Callable<Response> {
 
     private HttpURLConnection con;
     private URL obj;
     private String response;
-    
+
     private String url;
     private int id;
     private String json;
-    
+
     public Request(int id, String url, String json) {
         this.id = id;
         this.url = url;
         this.json = json;
     }
-    
+
     @Override
     public Response call() {
         try {
             obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
-    		String charset = "UTF-8";
+            String charset = "UTF-8";
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             con.setRequestProperty("Accept", "application/json");
             con.setRequestProperty("Accept-Charset", charset);
-            con.setRequestProperty("Content-Type", "application/json");		
+            con.setRequestProperty("Content-Type", "application/json");
             OutputStream output = con.getOutputStream();
             output.write(json.getBytes());
 

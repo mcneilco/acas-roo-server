@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <page:show id="ps_com_labsynch_labseer_domain_PurityMeasuredBy" object="${puritymeasuredby}" path="/puritymeasuredbys" z="oskCRZOWuhp7Df4k3tzCQTTgEUk=">
-        <field:display field="name" id="s_com_labsynch_labseer_domain_PurityMeasuredBy_name" object="${puritymeasuredby}" z="cO52aoAIDb0yl7iAIp1omAE5b2k="/>
-        <field:display field="code" id="s_com_labsynch_labseer_domain_PurityMeasuredBy_code" object="${puritymeasuredby}" z="AKE21Nm+p6J0WZX24aO+hEIUM4g="/>
-    </page:show>
-</div>

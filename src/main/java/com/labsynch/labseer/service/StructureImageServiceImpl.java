@@ -3,12 +3,6 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
@@ -17,6 +11,10 @@ import com.labsynch.labseer.dto.SearchCompoundReturnDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class StructureImageServiceImpl implements StructureImageService {
@@ -29,17 +27,16 @@ public class StructureImageServiceImpl implements StructureImageService {
 	@Autowired
 	CmpdRegSDFWriterFactory cmpdRegSDFWriterFactory;
 
-
 	@Override
 	public byte[] convertMolToImage(String molStructure, Integer hSize, Integer wSize, String format) {
 
-		if (format == null){
+		if (format == null) {
 			format = "png";
 		}
-		if (hSize == null){
+		if (hSize == null) {
 			hSize = 200;
 		}
-		if (wSize == null){
+		if (wSize == null) {
 			wSize = 200;
 		}
 
@@ -60,11 +57,10 @@ public class StructureImageServiceImpl implements StructureImageService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} //just defaults
+		} // just defaults
 
 		return d4;
 	}
-
 
 	@Override
 	public byte[] displayImage(String molStructure) {
@@ -85,19 +81,20 @@ public class StructureImageServiceImpl implements StructureImageService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} //just defaults
+		} // just defaults
 
 		return d4;
 	}
 
 	@Override
-	public String convertMolfilesToSDFile(String molfileJsonArray){
+	public String convertMolfilesToSDFile(String molfileJsonArray) {
 
-		Collection<SearchCompoundReturnDTO> compounds = SearchCompoundReturnDTO.fromJsonArrayToSearchCompoes(molfileJsonArray);
+		Collection<SearchCompoundReturnDTO> compounds = SearchCompoundReturnDTO
+				.fromJsonArrayToSearchCompoes(molfileJsonArray);
 		CmpdRegSDFWriter molExporter = null;
 		try {
 			molExporter = cmpdRegSDFWriterFactory.getCmpdRegSDFBufferWriter();
-		}catch (IllegalArgumentException e1) {
+		} catch (IllegalArgumentException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e) {
@@ -105,8 +102,7 @@ public class StructureImageServiceImpl implements StructureImageService {
 			e.printStackTrace();
 		}
 
-
-		for (SearchCompoundReturnDTO compound : compounds){
+		for (SearchCompoundReturnDTO compound : compounds) {
 			logger.debug("compound: " + compound.getCorpName());
 			try {
 				CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(compound.getMolStructure());
@@ -136,8 +132,5 @@ public class StructureImageServiceImpl implements StructureImageService {
 		return molExporter.getBufferString();
 
 	}
-
-
-
 
 }

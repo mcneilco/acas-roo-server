@@ -2,39 +2,41 @@ package com.labsynch.labseer.utils;
 
 import java.util.Collection;
 
+import javax.persistence.NoResultException;
+
+import com.labsynch.labseer.domain.Author;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
-import com.labsynch.labseer.domain.Author;
-
 public class SecurityUtil {
 
 	static Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
 
-	public static Author getLoginUser(){
+	public static Author getLoginUser() {
 
 		String chemistName = "BLANK";
 		String userJson = null;
 		Author chemist;
 
 		try {
-			//			SecurityContext context = SecurityContextHolder.getContext();
-			//			logger.debug("context is " + context);
+			// SecurityContext context = SecurityContextHolder.getContext();
+			// logger.debug("context is " + context);
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			logger.debug("authentication: " + auth);
 
-			if (auth != null){
+			if (auth != null) {
 				@SuppressWarnings("unchecked")
-				Collection<GrantedAuthority> auths = (Collection<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-				for (GrantedAuthority ga : auths){
+				Collection<GrantedAuthority> auths = (Collection<GrantedAuthority>) SecurityContextHolder.getContext()
+						.getAuthentication().getAuthorities();
+				for (GrantedAuthority ga : auths) {
 					logger.debug("granted auth: " + ga);
-				}	
-				
+				}
+
 				String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 				Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
 				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -42,8 +44,8 @@ public class SecurityUtil {
 				String principalUserName = null;
 				String userDN = null;
 				if (principal instanceof LdapUserDetails) {
-					principalUserName = ((LdapUserDetails)principal).getUsername();
-					userDN =  ((LdapUserDetails)principal).getDn();
+					principalUserName = ((LdapUserDetails) principal).getUsername();
+					userDN = ((LdapUserDetails) principal).getDn();
 				} else {
 					principalUserName = principal.toString();
 				}
@@ -53,7 +55,7 @@ public class SecurityUtil {
 				logger.debug("principal is " + principal);
 				logger.debug("details is " + details);
 
-				if (userName.equalsIgnoreCase("isoutsource3")){
+				if (userName.equalsIgnoreCase("isoutsource3")) {
 					chemistName = "cchemist";
 				} else {
 					chemistName = userName.toLowerCase();
@@ -64,7 +66,7 @@ public class SecurityUtil {
 			chemist = Author.findAuthorsByUserName(chemistName).getSingleResult();
 			userJson = chemist.toJson();
 
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e) {
 			logger.error("unable to find the user: " + chemistName);
 			chemist = new Author();
 		}
@@ -82,7 +84,7 @@ public class SecurityUtil {
 			chemist = Author.findAuthorsByUserName(loginName).getSingleResult();
 			userJson = chemist.toJson();
 			logger.debug(userJson);
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e) {
 			logger.debug("did not find the new chemist. create the new entry");
 			chemist = createUser(loginName);
 		}
@@ -97,7 +99,7 @@ public class SecurityUtil {
 			chemist = Author.findAuthorsByUserName(loginName).getSingleResult();
 			userJson = chemist.toJson();
 			logger.debug(userJson);
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e) {
 			logger.debug("did not find the new chemist. create the new entry");
 			chemist = createUser(loginName, fullName);
 		}

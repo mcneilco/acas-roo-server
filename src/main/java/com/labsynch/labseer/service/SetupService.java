@@ -8,5 +8,4 @@ public interface SetupService {
 
 	void loadCorpNames() throws FileNotFoundException;
 
-
 }
