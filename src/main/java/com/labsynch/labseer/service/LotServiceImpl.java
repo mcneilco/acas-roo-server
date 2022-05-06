@@ -1,16 +1,22 @@
 package com.labsynch.labseer.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
@@ -19,6 +25,7 @@ import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.slf4j.Logger;
@@ -285,12 +292,23 @@ public class LotServiceImpl implements LotService {
 
 	@Override
 	public String generateParentLotName(Lot lot) {
+
 		logger.debug("generating the new lot corp name");
 		String corpName = lot.getSaltForm().getParent().getCorpName();
 		logger.debug("Parent corpName = " + corpName);
 		int lotNumber = this.generateParentLotNumber(lot);
 		lot.setLotNumber(lotNumber);
 
+		return (generateLotNameFromLot(lot));
+	}
+
+	public String generateLotNameFromLot(Lot lot) {
+		String corpName = lot.getSaltForm().getParent().getCorpName();
+		return generateLotNameFromLotCorpName(corpName, lot);
+	}
+
+	public String generateLotNameFromLotCorpName(String corpName, Lot lot) {
+		int lotNumber = lot.getLotNumber();
 		if (propertiesUtilService.getFormatBatchDigits() == 0) {
 			logger.error("formatBatchDigits is set to " + propertiesUtilService.getFormatBatchDigits());
 		}
@@ -315,6 +333,107 @@ public class LotServiceImpl implements LotService {
 
 		logger.debug("corpName: " + corpName);
 		return corpName;
+	}
+
+	/**
+	 * Takes a string and returns the int value of the longest numeric
+	 * substring, or -1 if the string has no numerals
+	 * 
+	 * @param inputString The input string
+	 * @return the int value of the string parsed
+	 */
+	public int getIntFromString(String inputString) {
+		String longestSub = "";
+		for (String sub : inputString.split("[^0-9]")) {
+			if (sub.length() > longestSub.length()) {
+				longestSub = sub;
+			}
+		}
+		if (longestSub.length() > 0) {
+			return Integer.parseInt(longestSub);
+		} else {
+			return -1;
+		}
+	}
+
+	@Override
+	public LotCorpName splitCorpNameComponents(String inputString) {
+
+		String saltSeperator = propertiesUtilService.getSaltSeparator();
+		String batchSeparator = propertiesUtilService.getBatchSeparator();
+
+		LotCorpName lotCorpName = new LotCorpName();
+
+		if (propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("corp_saltcode_batch")) {
+			List<String> corpNameSaltCode_lotNumber = splitOnSeperator(inputString, batchSeparator);
+			if (corpNameSaltCode_lotNumber == null) {
+				logger.warn("Tried to split string on batch separator " + batchSeparator
+						+ ", but seperator not found for input string "
+						+ corpNameSaltCode_lotNumber);
+				return null;
+			}
+			lotCorpName.setLotNumber(getIntFromString(corpNameSaltCode_lotNumber.get(1)));
+			String corpSaltCode = corpNameSaltCode_lotNumber.get(0);
+			List<String> corpName_saltCode = splitOnSeperator(corpSaltCode, saltSeperator);
+			if (corpName_saltCode == null) {
+				logger.warn("Tried to split string on salt separator " + saltSeperator
+						+ ", but seperator not found for input string "
+						+ corpName_saltCode);
+				return null;
+			}
+			lotCorpName.setParentCorpName(corpName_saltCode.get(0));
+			lotCorpName.setSaltCode(corpName_saltCode.get(1));
+		} else if (propertiesUtilService.getAppendSaltCodeToLotName()
+				&& propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("corp_batch_saltcode")) {
+			List<String> corpNameLotNumber_saltCode = splitOnSeperator(inputString, saltSeperator);
+			if (corpNameLotNumber_saltCode == null) {
+				logger.warn("Tried to split string on salt separator " + saltSeperator
+						+ ", but seperator not found for input string "
+						+ corpNameLotNumber_saltCode);
+				return null;
+			}
+			lotCorpName.setSaltCode(corpNameLotNumber_saltCode.get(1));
+			String corpNameLotNumber = corpNameLotNumber_saltCode.get(0);
+			List<String> corpName_lotNumber = splitOnSeperator(corpNameLotNumber, batchSeparator);
+			if (corpName_lotNumber == null) {
+				logger.warn("Tried to split string on batch separator " + batchSeparator
+						+ ", but seperator not found for input string "
+						+ corpName_lotNumber);
+				return null;
+			}
+			lotCorpName.setParentCorpName(corpName_lotNumber.get(0));
+			lotCorpName.setLotNumber(getIntFromString(corpName_lotNumber.get(1)));
+		} else {
+			List<String> corpName_lotNumber = splitOnSeperator(inputString, batchSeparator);
+			if (corpName_lotNumber == null) {
+				logger.warn("Tried to split string on batch separator, but seperator not found for input string "
+						+ corpName_lotNumber);
+				return null;
+			}
+			lotCorpName.setParentCorpName(corpName_lotNumber.get(0));
+			lotCorpName.setLotNumber(getIntFromString(corpName_lotNumber.get(1)));
+		}
+
+		// We return null here because if the lot number is null, then we can't assume
+		// that the lot corp name is valid
+		if (lotCorpName.getLotNumber() == -1) {
+			logger.warn("Tried to split a lot corp name, but the lot number was not found for input string: "
+					+ inputString);
+			return null;
+		}
+		return lotCorpName;
+	}
+
+	public List<String> splitOnSeperator(String inputString, String delimiter) {
+		// Split the string into 2 parts using the delimiter
+		int i = inputString.lastIndexOf(propertiesUtilService.getBatchSeparator());
+		if (i > -1) {
+			// The delimeter was found so return the two parts
+			return Arrays.asList(inputString.substring(0, i), inputString.substring(i + 1));
+		} else {
+			// The delimeter was not found so return null for this entry
+			return null;
+		}
 	}
 
 	@Override
@@ -434,6 +553,76 @@ public class LotServiceImpl implements LotService {
 		}
 		logger.debug("Lot Number = " + lotNumber);
 		return lotNumber;
+	}
+
+	@Override
+	public Collection<PreferredNameDTO> getPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs) {
+		for (PreferredNameDTO preferredNameDTO : preferredNameDTOs) {
+			String preferredName;
+			try {
+				// First try and search by lot corp name
+				preferredName = Lot.findLotsByCorpNameEquals(preferredNameDTO.getRequestName()).getSingleResult()
+						.getCorpName();
+			} catch (NoResultException e) {
+				// TODO: Check if we want to hide this behind a feature flag
+				// Feature to look up alias name + lot number to get preferred name
+
+				// Split the requested name to get the alias
+				LotCorpName parsedLotCorpName = splitCorpNameComponents(preferredNameDTO.getRequestName());
+				preferredName = "";
+
+				// The split corp name components method returns null if the requested name
+				// doesn't match the corp name format
+				if (parsedLotCorpName != null) {
+					// Get the first element as its the expected parent alias
+					String requestedAliasName = parsedLotCorpName.getParentCorpName();
+
+					// Look up parent aliases that match
+					Collection<ParentAlias> foundAliases = ParentAlias
+							.findParentAliasesByAliasNameEquals(requestedAliasName)
+							.getResultList();
+
+					// Remove ignored or deleted aliases
+					foundAliases.removeIf(alias -> alias.isIgnored() | alias.isDeleted());
+
+					// Get a unique set of parents for the parent aliases
+					Set<Parent> uniqueParents = foundAliases.stream().map(ParentAlias::getParent)
+							.collect(Collectors.toSet());
+
+					if (uniqueParents.size() > 1) {
+						// We don't have a way of passing a message that we found more than one alias
+						// that matches the alias name
+						// so we just pass no match result instead but we can at least log the fact that
+						// we found more than one alias
+						logger.error("Found more than on alias that matched the alias name: \"" + requestedAliasName
+								+ "\".  This alias was parsed from the requested name: \""
+								+ preferredNameDTO.getRequestName() + "\"");
+						preferredName = "";
+					} else {
+						// We don't have multiple matching parents so this is expected to loop just once
+						// or not
+						// at all
+						for (Parent parent : uniqueParents) {
+							Set<SaltForm> saltForms = parent.getSaltForms();
+							for (SaltForm saltForm : saltForms) {
+								Set<Lot> lots = saltForm.getLots();
+								for (Lot lot : lots) {
+									if (lot.getLotNumber() == parsedLotCorpName.getLotNumber()) {
+										logger.info("Found a matching lot for the requested name: \""
+												+ preferredNameDTO.getRequestName() + "\"");
+										preferredName = lot.getCorpName();
+										break;
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}
+			preferredNameDTO.setPreferredName(preferredName);
+		}
+		return preferredNameDTOs;
 	}
 
 }

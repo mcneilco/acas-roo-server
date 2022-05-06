@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.service.LotService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class ApiPreferredIdController {
 
 	Logger logger = LoggerFactory.getLogger(ApiPreferredIdController.class);
 
+	@Autowired
+	private LotService lotService;
+
 	@Transactional
 	@RequestMapping(value = "/getPreferredName", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
@@ -32,7 +37,7 @@ public class ApiPreferredIdController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		Collection<PreferredNameDTO> preferredNameDTOs = PreferredNameDTO.fromJsonArrayToPreferredNameDTO(json);
-		preferredNameDTOs = PreferredNameDTO.getPreferredNames(preferredNameDTOs);
+		preferredNameDTOs = lotService.getPreferredNames(preferredNameDTOs);
 		return new ResponseEntity<String>(PreferredNameDTO.toJsonArray(preferredNameDTOs), headers, HttpStatus.OK);
 	}
 
@@ -63,7 +68,7 @@ public class ApiPreferredIdController {
 		PreferredNameDTO preferredNameDTO = new PreferredNameDTO();
 		preferredNameDTO.setRequestName(requestName);
 		preferredNameDTOs.add(preferredNameDTO);
-		preferredNameDTOs = PreferredNameDTO.getPreferredNames(preferredNameDTOs);
+		preferredNameDTOs = lotService.getPreferredNames(preferredNameDTOs);
 		return new ResponseEntity<String>(PreferredNameDTO.toJsonArray(preferredNameDTOs), headers, HttpStatus.OK);
 	}
 

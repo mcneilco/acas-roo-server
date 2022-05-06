@@ -5,12 +5,10 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -35,21 +33,6 @@ public class PreferredNameDTO {
 	private String preferredName;
 
 	private String referenceName;
-
-	@Transactional
-	public static Collection<PreferredNameDTO> getPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs) {
-		for (PreferredNameDTO preferredNameDTO : preferredNameDTOs) {
-			String preferredName;
-			try {
-				preferredName = Lot.findLotsByCorpNameEquals(preferredNameDTO.getRequestName()).getSingleResult()
-						.getCorpName();
-			} catch (NoResultException e) {
-				preferredName = "";
-			}
-			preferredNameDTO.setPreferredName(preferredName);
-		}
-		return preferredNameDTOs;
-	}
 
 	public static Collection<PreferredNameDTO> getParentPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs) {
 		for (PreferredNameDTO preferredNameDTO : preferredNameDTOs) {
