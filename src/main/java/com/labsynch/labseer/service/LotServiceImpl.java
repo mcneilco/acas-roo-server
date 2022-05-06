@@ -555,6 +555,61 @@ public class LotServiceImpl implements LotService {
 		return lotNumber;
 	}
 
+	private String findPreferredLotNameByParentAliasLotName(String inputString) {
+		// Split the requested name to get the alias
+		LotCorpName parsedLotCorpName = splitCorpNameComponents(inputString);
+		String preferredName = "";
+
+		// The split corp name components method returns null if the requested name
+		// doesn't match the corp name format
+		if (parsedLotCorpName != null) {
+			// Get the first element as its the expected parent alias
+			String requestedAliasName = parsedLotCorpName.getParentCorpName();
+
+			// Look up parent aliases that match
+			Collection<ParentAlias> foundAliases = ParentAlias
+					.findParentAliasesByAliasNameEquals(requestedAliasName)
+					.getResultList();
+
+			// Remove ignored or deleted aliases
+			foundAliases.removeIf(alias -> alias.isIgnored() | alias.isDeleted());
+
+			// Get a unique set of parents for the parent aliases
+			Set<Parent> uniqueParents = foundAliases.stream().map(ParentAlias::getParent)
+					.collect(Collectors.toSet());
+
+			if (uniqueParents.size() > 1) {
+				// We don't have a way of passing a message that we found more than one alias
+				// that matches the alias name
+				// so we just pass no match result instead but we can at least log the fact that
+				// we found more than one alias
+				logger.error("Found more than on alias that matched the alias name: \"" + requestedAliasName
+						+ "\".  This alias was parsed from the requested name: \""
+						+ inputString + "\"");
+				preferredName = "";
+			} else {
+				// We don't have multiple matching parents so this is expected to loop just once
+				// or not
+				// at all
+				for (Parent parent : uniqueParents) {
+					Set<SaltForm> saltForms = parent.getSaltForms();
+					for (SaltForm saltForm : saltForms) {
+						Set<Lot> lots = saltForm.getLots();
+						for (Lot lot : lots) {
+							if (lot.getLotNumber() == parsedLotCorpName.getLotNumber()) {
+								logger.info("Found a matching lot for the requested name: \""
+										+ inputString + "\"");
+								preferredName = lot.getCorpName();
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		return preferredName;
+	}
+
 	@Override
 	public Collection<PreferredNameDTO> getPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs) {
 		for (PreferredNameDTO preferredNameDTO : preferredNameDTOs) {
@@ -564,60 +619,10 @@ public class LotServiceImpl implements LotService {
 				preferredName = Lot.findLotsByCorpNameEquals(preferredNameDTO.getRequestName()).getSingleResult()
 						.getCorpName();
 			} catch (NoResultException e) {
-				// TODO: Check if we want to hide this behind a feature flag
-				// Feature to look up alias name + lot number to get preferred name
-
-				// Split the requested name to get the alias
-				LotCorpName parsedLotCorpName = splitCorpNameComponents(preferredNameDTO.getRequestName());
-				preferredName = "";
-
-				// The split corp name components method returns null if the requested name
-				// doesn't match the corp name format
-				if (parsedLotCorpName != null) {
-					// Get the first element as its the expected parent alias
-					String requestedAliasName = parsedLotCorpName.getParentCorpName();
-
-					// Look up parent aliases that match
-					Collection<ParentAlias> foundAliases = ParentAlias
-							.findParentAliasesByAliasNameEquals(requestedAliasName)
-							.getResultList();
-
-					// Remove ignored or deleted aliases
-					foundAliases.removeIf(alias -> alias.isIgnored() | alias.isDeleted());
-
-					// Get a unique set of parents for the parent aliases
-					Set<Parent> uniqueParents = foundAliases.stream().map(ParentAlias::getParent)
-							.collect(Collectors.toSet());
-
-					if (uniqueParents.size() > 1) {
-						// We don't have a way of passing a message that we found more than one alias
-						// that matches the alias name
-						// so we just pass no match result instead but we can at least log the fact that
-						// we found more than one alias
-						logger.error("Found more than on alias that matched the alias name: \"" + requestedAliasName
-								+ "\".  This alias was parsed from the requested name: \""
-								+ preferredNameDTO.getRequestName() + "\"");
-						preferredName = "";
-					} else {
-						// We don't have multiple matching parents so this is expected to loop just once
-						// or not
-						// at all
-						for (Parent parent : uniqueParents) {
-							Set<SaltForm> saltForms = parent.getSaltForms();
-							for (SaltForm saltForm : saltForms) {
-								Set<Lot> lots = saltForm.getLots();
-								for (Lot lot : lots) {
-									if (lot.getLotNumber() == parsedLotCorpName.getLotNumber()) {
-										logger.info("Found a matching lot for the requested name: \""
-												+ preferredNameDTO.getRequestName() + "\"");
-										preferredName = lot.getCorpName();
-										break;
-									}
-
-								}
-							}
-						}
-					}
+				if (propertiesUtilService.getAllowParentAliasLotNames()) {
+					preferredName = findPreferredLotNameByParentAliasLotName(preferredNameDTO.getRequestName());
+				} else {
+					preferredName = "";
 				}
 			}
 			preferredNameDTO.setPreferredName(preferredName);

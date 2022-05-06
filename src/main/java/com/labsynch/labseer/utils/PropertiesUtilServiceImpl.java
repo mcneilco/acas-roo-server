@@ -893,4 +893,20 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.externalStructureProcessingBatchSize;
 	}
 
+	Boolean allowParentAliasLotNames;
+
+	@Value("${server.service.external.preferred.batchid.allowParentAliasLotNames}")
+	public void setAllowParentAliasLotNames(String allowParentAliasLotNames) {
+		if (allowParentAliasLotNames.startsWith("${")) {
+			this.allowParentAliasLotNames = true;
+		} else {
+			this.allowParentAliasLotNames = Boolean.parseBoolean(allowParentAliasLotNames);
+		}
+	}
+
+	@Override
+	public Boolean getAllowParentAliasLotNames() {
+		return this.allowParentAliasLotNames;
+	}
+
 }
