@@ -895,7 +895,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 
 	Boolean allowDuplicateParentAliases;
 
-	@Value("${server.service.external.preferred.batchid.allowParentAliasLotNames}")
+	@Value("${client.cmpdreg.metaLot.allowDuplicateParentAliases}")
 	public void setAllowDuplicateParentAliases(String allowDuplicateParentAliases) {
 		if (allowDuplicateParentAliases.startsWith("${")) {
 			this.allowDuplicateParentAliases = true;
