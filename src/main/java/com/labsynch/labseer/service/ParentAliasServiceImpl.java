@@ -5,12 +5,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
+import com.labsynch.labseer.exceptions.NonUniqueAliasException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParentAliasServiceImpl implements ParentAliasService {
 
 	Logger logger = LoggerFactory.getLogger(ParentAliasServiceImpl.class);
+
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Override
 	@Transactional
@@ -43,12 +50,55 @@ public class ParentAliasServiceImpl implements ParentAliasService {
 	}
 
 	@Override
+	public void validateParentAliases(Set<ParentAlias> aliasesToBeSaved) throws NonUniqueAliasException {
+
+		// Check for unique parent aliases in what is being passed in
+		if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
+			// Array of alias names in parent aliases
+			List<ParentAlias> duplicates = aliasesToBeSaved.stream()
+					.filter(alias -> !(alias.isIgnored() | alias.isDeleted()))
+					.collect(Collectors.groupingBy(ParentAlias::getAliasName))
+					.entrySet().stream()
+					.filter(e -> e.getValue().size() > 1)
+					.flatMap(e -> e.getValue().stream())
+					.collect(Collectors.toList());
+			if (duplicates.size() > 0) {
+				throw new NonUniqueAliasException("Duplicate parent aliases not allowed");
+			}
+		}
+
+		for (ParentAlias aliasToBeSaved : aliasesToBeSaved) {
+			// Check for unique parent aliases in the database
+			if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
+				if (!aliasToBeSaved.isIgnored() && !aliasToBeSaved.isDeleted()) {
+					// First check local list and throw error if duplicate alias names in the list
+					List<ParentAlias> foundAliases = ParentAlias
+							.findParentAliasesByAliasNameEquals(aliasToBeSaved.getAliasName())
+							.getResultList();
+					foundAliases.removeIf(alias -> alias.isIgnored() | alias.isDeleted());
+					for (ParentAlias foundAlias : foundAliases) {
+						if (aliasToBeSaved.getId() != null
+								&& aliasToBeSaved.getId().equals(foundAlias.getId())) {
+							continue;
+						} else {
+							throw new NonUniqueAliasException(
+									"Duplicate parent alias " + aliasToBeSaved.getAliasName());
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	public Parent updateParentAliases(Parent parent,
-			Set<ParentAlias> parentAliases) {
+			Set<ParentAlias> parentAliases) throws NonUniqueAliasException {
 		Set<ParentAlias> aliasesToBeSaved = parentAliases;
 		Set<ParentAlias> savedAliases = new HashSet<ParentAlias>();
 		if (aliasesToBeSaved != null && !aliasesToBeSaved.isEmpty()) {
+			validateParentAliases(aliasesToBeSaved);
 			for (ParentAlias aliasToBeSaved : aliasesToBeSaved) {
+				// Check for unique parent aliases in the database
 				aliasToBeSaved.setParent(parent);
 				if (aliasToBeSaved.getId() == null)
 					aliasToBeSaved.persist();
