@@ -30,13 +30,4 @@ public class LotCorpName {
         this.saltCode = saltCode;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                " parentCorpName='" + parentCorpName + "'" +
-                ", lotNumber='" + lotNumber + "'" +
-                ", saltCode='" + saltCode + "'" +
-                "}";
-    }
-
 }
