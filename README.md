@@ -59,11 +59,8 @@ jenv global 1.8
 
 #### VSCode Plugins
 
-Extension Pack for Java
 
-[Extension Pack for Java](vscode:extension/vscjava.vscode-java-pack)
-
-https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack
+[Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack)
 
 
 #### Docker build
