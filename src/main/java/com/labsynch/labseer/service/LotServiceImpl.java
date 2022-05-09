@@ -359,25 +359,25 @@ public class LotServiceImpl implements LotService {
 	@Override
 	public LotCorpName splitCorpNameComponents(String inputString) {
 
-		String saltSeperator = propertiesUtilService.getSaltSeparator();
+		String saltSeparator = propertiesUtilService.getSaltSeparator();
 		String batchSeparator = propertiesUtilService.getBatchSeparator();
 
 		LotCorpName lotCorpName = new LotCorpName();
 
 		if (propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("corp_saltcode_batch")) {
-			List<String> corpNameSaltCode_lotNumber = splitOnSeperator(inputString, batchSeparator);
+			List<String> corpNameSaltCode_lotNumber = splitOnSeparator(inputString, batchSeparator);
 			if (corpNameSaltCode_lotNumber == null) {
 				logger.warn("Tried to split string on batch separator " + batchSeparator
-						+ ", but seperator not found for input string "
+						+ ", but separator not found for input string "
 						+ corpNameSaltCode_lotNumber);
 				return null;
 			}
 			lotCorpName.setLotNumber(getIntFromString(corpNameSaltCode_lotNumber.get(1)));
 			String corpSaltCode = corpNameSaltCode_lotNumber.get(0);
-			List<String> corpName_saltCode = splitOnSeperator(corpSaltCode, saltSeperator);
+			List<String> corpName_saltCode = splitOnSeparator(corpSaltCode, saltSeparator);
 			if (corpName_saltCode == null) {
-				logger.warn("Tried to split string on salt separator " + saltSeperator
-						+ ", but seperator not found for input string "
+				logger.warn("Tried to split string on salt separator " + saltSeparator
+						+ ", but separator not found for input string "
 						+ corpName_saltCode);
 				return null;
 			}
@@ -385,28 +385,28 @@ public class LotServiceImpl implements LotService {
 			lotCorpName.setSaltCode(corpName_saltCode.get(1));
 		} else if (propertiesUtilService.getAppendSaltCodeToLotName()
 				&& propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("corp_batch_saltcode")) {
-			List<String> corpNameLotNumber_saltCode = splitOnSeperator(inputString, saltSeperator);
+			List<String> corpNameLotNumber_saltCode = splitOnSeparator(inputString, saltSeparator);
 			if (corpNameLotNumber_saltCode == null) {
-				logger.warn("Tried to split string on salt separator " + saltSeperator
-						+ ", but seperator not found for input string "
+				logger.warn("Tried to split string on salt separator " + saltSeparator
+						+ ", but separator not found for input string "
 						+ corpNameLotNumber_saltCode);
 				return null;
 			}
 			lotCorpName.setSaltCode(corpNameLotNumber_saltCode.get(1));
 			String corpNameLotNumber = corpNameLotNumber_saltCode.get(0);
-			List<String> corpName_lotNumber = splitOnSeperator(corpNameLotNumber, batchSeparator);
+			List<String> corpName_lotNumber = splitOnSeparator(corpNameLotNumber, batchSeparator);
 			if (corpName_lotNumber == null) {
 				logger.warn("Tried to split string on batch separator " + batchSeparator
-						+ ", but seperator not found for input string "
+						+ ", but separator not found for input string "
 						+ corpName_lotNumber);
 				return null;
 			}
 			lotCorpName.setParentCorpName(corpName_lotNumber.get(0));
 			lotCorpName.setLotNumber(getIntFromString(corpName_lotNumber.get(1)));
 		} else {
-			List<String> corpName_lotNumber = splitOnSeperator(inputString, batchSeparator);
+			List<String> corpName_lotNumber = splitOnSeparator(inputString, batchSeparator);
 			if (corpName_lotNumber == null) {
-				logger.warn("Tried to split string on batch separator, but seperator not found for input string "
+				logger.warn("Tried to split string on batch separator, but separator not found for input string "
 						+ corpName_lotNumber);
 				return null;
 			}
@@ -424,7 +424,7 @@ public class LotServiceImpl implements LotService {
 		return lotCorpName;
 	}
 
-	public List<String> splitOnSeperator(String inputString, String delimiter) {
+	public List<String> splitOnSeparator(String inputString, String delimiter) {
 		// Split the string into 2 parts using the delimiter
 		int i = inputString.lastIndexOf(propertiesUtilService.getBatchSeparator());
 		if (i > -1) {
