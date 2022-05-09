@@ -597,7 +597,7 @@ public class LotServiceImpl implements LotService {
 						Set<Lot> lots = saltForm.getLots();
 						for (Lot lot : lots) {
 							if (lot.getLotNumber() == parsedLotCorpName.getLotNumber()) {
-								logger.info("Found a matching lot for the requested name: \""
+								logger.debug("Found a matching lot for the requested name: \""
 										+ inputString + "\"");
 								preferredName = lot.getCorpName();
 								break;
