@@ -1,10 +1,10 @@
 # README
 
-This repo is the java persistence layer for the [ACAS project](/mcneilco/acas) project.  It provides many of the base services that the ACAS project needs to run.
+This repo is the java persistence layer for the [ACAS project](http://github.com/mcneilco/acas) project.  It provides many of the base services that the ACAS project needs to run.
 
 ### Docker development installation
 
-These instructions assume you have a basic docker installation of ACAS running on your machine.  If you don't, you can get a basic installation of docker by following the instructions [here](/mcneilco/acas/README.md#docker-development-installation).
+These instructions assume you have a basic docker installation of ACAS running on your machine. 
 
 These instruction provide a path to doing development to give you a starting point using a Mac machine, there are many ways to setup this project using your own tool choices.
 
