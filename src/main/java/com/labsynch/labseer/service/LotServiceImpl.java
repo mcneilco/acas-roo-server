@@ -585,8 +585,7 @@ public class LotServiceImpl implements LotService {
 			for (Lot lot : lots) {
 				// Get the lot corp name and replace the parent corp name with the requested
 				// parent alias name
-				String parentAliasLotCorpName = lot.getCorpName().replace(parent.getCorpName(),
-						requestedParentAliasName);
+				String parentAliasLotCorpName = generateLotNameFromLotCorpName(requestedParentAliasName, lot);
 				// Check if the input string matches the Parent ALias Lot Corp Name
 				if (parentAliasLotCorpName.equals(inputString)) {
 					logger.debug("Found a matching lot for the requested name: \""
