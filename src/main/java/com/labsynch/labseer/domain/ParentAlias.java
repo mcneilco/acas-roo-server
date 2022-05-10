@@ -276,7 +276,7 @@ public class ParentAlias {
             throw new IllegalArgumentException("The aliasName argument is required");
         EntityManager em = ParentAlias.entityManager();
         TypedQuery<ParentAlias> q = em.createQuery(
-                "SELECT o FROM ParentAlias AS o WHERE :aliasName like o.aliasName || '%'",
+                "SELECT o FROM ParentAlias AS o WHERE o.aliasName is not null and o.aliasName != '' and :aliasName like o.aliasName || '%'",
                 ParentAlias.class);
         q.setParameter("aliasName", aliasName);
         return q;

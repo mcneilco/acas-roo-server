@@ -298,15 +298,10 @@ public class LotServiceImpl implements LotService {
 		int lotNumber = this.generateParentLotNumber(lot);
 		lot.setLotNumber(lotNumber);
 
-		return (generateLotNameFromLot(lot));
+		return generateLotCorpNameFromBaseCorpName(corpName, lot);
 	}
 
-	public String generateLotNameFromLot(Lot lot) {
-		String corpName = lot.getSaltForm().getParent().getCorpName();
-		return generateLotNameFromLotCorpName(corpName, lot);
-	}
-
-	public String generateLotNameFromLotCorpName(String corpName, Lot lot) {
+	public String generateLotCorpNameFromBaseCorpName(String corpName, Lot lot) {
 		int lotNumber = lot.getLotNumber();
 		if (propertiesUtilService.getFormatBatchDigits() == 0) {
 			logger.error("formatBatchDigits is set to " + propertiesUtilService.getFormatBatchDigits());
@@ -585,7 +580,7 @@ public class LotServiceImpl implements LotService {
 			for (Lot lot : lots) {
 				// Generate a the parent alias corp name using the parent alias name instead of
 				// the parent corp name
-				String parentAliasLotCorpName = generateLotNameFromLotCorpName(requestedParentAliasName, lot);
+				String parentAliasLotCorpName = generateLotCorpNameFromBaseCorpName(requestedParentAliasName, lot);
 				// Check if the input string matches the input string
 				if (parentAliasLotCorpName.equals(inputString)) {
 					logger.debug("Found a matching lot for the requested name: \""
