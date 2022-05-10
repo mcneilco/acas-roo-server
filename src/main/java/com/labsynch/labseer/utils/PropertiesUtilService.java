@@ -132,4 +132,6 @@ public interface PropertiesUtilService {
 
 	Boolean getAllowParentAliasLotNames();
 
+	Boolean getAllowDuplicateParentAliases();
+
 }
