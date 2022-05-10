@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.DupeSaltFormCorpNameException;
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.JsonParseException;
+import com.labsynch.labseer.exceptions.NonUniqueAliasException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.exceptions.StandardizerException;
@@ -152,6 +154,12 @@ public class MetalotServiceImpl implements MetalotService {
 			standardizerError.setMessage("Standardizer Error: " + e.getMessage());
 			logger.error(standardizerError.getMessage());
 			errors.add(standardizerError);
+		} catch (NonUniqueAliasException e) {
+			ErrorMessage standardizerError = new ErrorMessage();
+			standardizerError.setLevel("error");
+			standardizerError.setMessage("Parent Aliases must be globally unique.");
+			logger.error(standardizerError.getMessage());
+			errors.add(standardizerError);
 		} catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
@@ -169,7 +177,8 @@ public class MetalotServiceImpl implements MetalotService {
 	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors)
 			throws UniqueNotebookException, DupeParentException, JsonParseException,
 			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException,
-			SaltedCompoundException, IOException, CmpdRegMolFormatException, StandardizerException {
+			SaltedCompoundException, IOException, CmpdRegMolFormatException, StandardizerException,
+			NonUniqueAliasException {
 
 		logger.info("attempting to save the metaLot. ");
 

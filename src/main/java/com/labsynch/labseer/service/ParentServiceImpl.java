@@ -22,6 +22,7 @@ import com.labsynch.labseer.dto.ParentDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.NonUniqueAliasException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -156,7 +157,7 @@ public class ParentServiceImpl implements ParentService {
 	}
 
 	@Override
-	public Collection<CodeTableDTO> updateParent(Parent parent) {
+	public Collection<CodeTableDTO> updateParent(Parent parent) throws NonUniqueAliasException {
 		Set<ParentAlias> parentAliases = parent.getParentAliases();
 		parent = parentStructureService.update(parent);
 		// save parent aliases

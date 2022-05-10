@@ -130,4 +130,6 @@ public interface PropertiesUtilService {
 
 	Integer getExternalStructureProcessingBatchSize();
 
+	Boolean getAllowDuplicateParentAliases();
+
 }

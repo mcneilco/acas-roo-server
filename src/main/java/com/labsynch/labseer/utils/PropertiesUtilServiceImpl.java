@@ -893,4 +893,20 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.externalStructureProcessingBatchSize;
 	}
 
+	Boolean allowDuplicateParentAliases;
+
+	@Value("${client.cmpdreg.metaLot.allowDuplicateParentAliases}")
+	public void setAllowDuplicateParentAliases(String allowDuplicateParentAliases) {
+		if (allowDuplicateParentAliases.startsWith("${")) {
+			this.allowDuplicateParentAliases = true;
+		} else {
+			this.allowDuplicateParentAliases = Boolean.parseBoolean(allowDuplicateParentAliases);
+		}
+	}
+
+	@Override
+	public Boolean getAllowDuplicateParentAliases() {
+		return this.allowDuplicateParentAliases;
+	}
+
 }

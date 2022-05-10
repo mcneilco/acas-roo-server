@@ -68,6 +68,7 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.MissingPropertyException;
+import com.labsynch.labseer.exceptions.NonUniqueAliasException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -108,6 +109,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
+
+	@Autowired
+	private ParentAliasService parentAliasService;
 
 	@Override
 	public BulkLoadPropertiesDTO readSDFPropertiesFromFile(BulkLoadSDFPropertyRequestDTO requestDTO) {
@@ -368,11 +372,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			CmpdRegSDFWriter errorMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(errorSDFName);
 			CmpdRegSDFWriter registeredMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(registeredSDFName);
+			HashMap<String, Integer> allAliasMaps = new HashMap<String, Integer>();
 
 			CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
 			int numNewParentsLoaded = 0;
 			int numNewLotsOldParentsLoaded = 0;
+
 			while ((mol = molReader.readNextMol()) != null) {
 				numRecordsRead++;
 				boolean isNewParent = true;
@@ -463,6 +469,18 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if (validate) {
 					try {
 						parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, results);
+						// Check list of aliases within file being bulkloaded
+						if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
+							for (ParentAlias alias : parent.getParentAliases()) {
+								if (allAliasMaps.get(alias.getAliasName()) == null) {
+									allAliasMaps.put(alias.getAliasName(), numRecordsRead);
+								} else {
+									throw new NonUniqueAliasException(
+											"Within File, Parent Alias " + alias.getAliasName()
+													+ " is not unique");
+								}
+							}
+						}
 						saveDryRunCompound(mol, parent, numRecordsRead, dryRunCompound);
 
 					} catch (TransactionSystemException rollbackException) {
@@ -896,6 +914,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						"Duplicate corp names for different parent structure and stereo category! sdf corp name: "
 								+ parent.getCorpName() + " db corp name: " + foundParent.getCorpName());
 		}
+		// Validate lot aliases locally and in the database
+		parentAliasService.validateParentAliases(parent.getParentAliases());
 
 		return parent;
 	}
@@ -1031,6 +1051,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 		}
+
 		return parent;
 	}
 

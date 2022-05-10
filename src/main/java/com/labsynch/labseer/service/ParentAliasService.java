@@ -4,13 +4,14 @@ import java.util.Set;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
+import com.labsynch.labseer.exceptions.NonUniqueAliasException;
 
 public interface ParentAliasService {
 
-	public Parent updateParentAliases(Parent parent);
+	public Parent updateParentAliases(Parent parent) throws NonUniqueAliasException;
 
 	public Parent updateParentAliases(Parent parent,
-			Set<ParentAlias> parentAliases);
+			Set<ParentAlias> parentAliases) throws NonUniqueAliasException;
 
 	Parent updateParentLiveDesignAlias(Parent parent, String aliasList);
 
@@ -20,4 +21,5 @@ public interface ParentAliasService {
 
 	Parent updateParentAliasByTypeAndKind(Parent parent, String lsType, String lsKind, String aliasList);
 
+	void validateParentAliases(Set<ParentAlias> aliasesToBeSaved) throws NonUniqueAliasException;
 }
