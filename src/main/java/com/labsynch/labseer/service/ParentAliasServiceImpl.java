@@ -28,11 +28,12 @@ public class ParentAliasServiceImpl implements ParentAliasService {
 
 	@Override
 	@Transactional
-	public Parent updateParentAliases(Parent parent) {
+	public Parent updateParentAliases(Parent parent) throws NonUniqueAliasException {
 		Set<ParentAlias> aliasesToBeSaved = parent.getParentAliases();
 		logger.debug(ParentAlias.toJsonArray(aliasesToBeSaved));
 		Set<ParentAlias> savedAliases = new HashSet<ParentAlias>();
 		if (aliasesToBeSaved != null && !aliasesToBeSaved.isEmpty()) {
+			validateParentAliases(aliasesToBeSaved);
 			for (ParentAlias aliasToBeSaved : aliasesToBeSaved) {
 				logger.debug(aliasToBeSaved.toJson());
 				aliasToBeSaved.setParent(parent);
