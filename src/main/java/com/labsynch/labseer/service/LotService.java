@@ -42,6 +42,4 @@ public interface LotService {
 
 	public Collection<PreferredNameDTO> getPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs);
 
-	public LotCorpName splitCorpNameComponents(String inputString);
-
 }
