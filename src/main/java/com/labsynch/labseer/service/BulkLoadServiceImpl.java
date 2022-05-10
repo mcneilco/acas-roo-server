@@ -476,7 +476,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 									allAliasMaps.put(alias.getAliasName(), numRecordsRead);
 								} else {
 									throw new NonUniqueAliasException(
-											"Within File, Parent alias " + alias.getAliasName()
+											"Within File, Parent Alias " + alias.getAliasName()
 													+ " is not unique");
 								}
 							}
