@@ -1,16 +1,21 @@
 package com.labsynch.labseer.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
@@ -19,6 +24,7 @@ import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.slf4j.Logger;
@@ -285,12 +291,18 @@ public class LotServiceImpl implements LotService {
 
 	@Override
 	public String generateParentLotName(Lot lot) {
+
 		logger.debug("generating the new lot corp name");
 		String corpName = lot.getSaltForm().getParent().getCorpName();
 		logger.debug("Parent corpName = " + corpName);
 		int lotNumber = this.generateParentLotNumber(lot);
 		lot.setLotNumber(lotNumber);
 
+		return generateLotCorpNameFromBaseCorpName(corpName, lot);
+	}
+
+	public String generateLotCorpNameFromBaseCorpName(String corpName, Lot lot) {
+		int lotNumber = lot.getLotNumber();
 		if (propertiesUtilService.getFormatBatchDigits() == 0) {
 			logger.error("formatBatchDigits is set to " + propertiesUtilService.getFormatBatchDigits());
 		}
@@ -434,6 +446,71 @@ public class LotServiceImpl implements LotService {
 		}
 		logger.debug("Lot Number = " + lotNumber);
 		return lotNumber;
+	}
+
+	private String findPreferredLotNameByParentAliasLotName(String inputString) {
+
+		// Get parent aliases where the input string starts with an alias name
+		List<ParentAlias> parentAliasesMatchingString = ParentAlias
+				.findParentAliasesByStringStartsWithAliasName(inputString).getResultList();
+
+		// Remove ignored or deleted aliases
+		parentAliasesMatchingString.removeIf(alias -> alias.isIgnored() | alias.isDeleted());
+
+		// Setup the default return value
+		String preferredName = "";
+
+		// If we don't have only 1 parent alais then return ""
+		if (parentAliasesMatchingString.size() != 1) {
+			if (parentAliasesMatchingString.size() == 0) {
+				logger.debug("No parent aliases found for input string: " + inputString);
+			} else {
+				logger.error("More than one parent alias found for input string: " + inputString);
+			}
+			return preferredName;
+		}
+
+		String requestedParentAliasName = parentAliasesMatchingString.get(0).getAliasName();
+		Parent parent = parentAliasesMatchingString.get(0).getParent();
+
+		Set<SaltForm> saltForms = parent.getSaltForms();
+		for (SaltForm saltForm : saltForms) {
+			Set<Lot> lots = saltForm.getLots();
+			for (Lot lot : lots) {
+				// Generate a the parent alias corp name using the parent alias name instead of
+				// the parent corp name
+				String parentAliasLotCorpName = generateLotCorpNameFromBaseCorpName(requestedParentAliasName, lot);
+				// Check if the input string matches the input string
+				if (parentAliasLotCorpName.equals(inputString)) {
+					logger.debug("Found a matching lot for the requested name: \""
+							+ inputString + "\"");
+					preferredName = lot.getCorpName();
+					break;
+				}
+			}
+		}
+
+		return preferredName;
+	}
+
+	@Override
+	public Collection<PreferredNameDTO> getPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs) {
+		for (PreferredNameDTO preferredNameDTO : preferredNameDTOs) {
+			String preferredName;
+			try {
+				// First try and search by lot corp name
+				preferredName = Lot.findLotsByCorpNameEquals(preferredNameDTO.getRequestName()).getSingleResult()
+						.getCorpName();
+			} catch (NoResultException e) {
+				if (propertiesUtilService.getAllowParentAliasLotNames()) {
+					preferredName = findPreferredLotNameByParentAliasLotName(preferredNameDTO.getRequestName());
+				} else {
+					preferredName = "";
+				}
+			}
+			preferredNameDTO.setPreferredName(preferredName);
+		}
+		return preferredNameDTOs;
 	}
 
 }

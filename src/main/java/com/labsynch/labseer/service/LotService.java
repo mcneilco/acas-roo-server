@@ -1,11 +1,14 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
 
 public interface LotService {
 
@@ -36,5 +39,7 @@ public interface LotService {
 	int generateLotNumber(Lot lot);
 
 	int generateParentLotNumber(Lot lot);
+
+	public Collection<PreferredNameDTO> getPreferredNames(Collection<PreferredNameDTO> preferredNameDTOs);
 
 }
