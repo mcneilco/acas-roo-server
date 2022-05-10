@@ -271,6 +271,17 @@ public class ParentAlias {
         return q;
     }
 
+    public static TypedQuery<ParentAlias> findParentAliasesByStringStartsWithAliasName(String aliasName) {
+        if (aliasName == null || aliasName.length() == 0)
+            throw new IllegalArgumentException("The aliasName argument is required");
+        EntityManager em = ParentAlias.entityManager();
+        TypedQuery<ParentAlias> q = em.createQuery(
+                "SELECT o FROM ParentAlias AS o WHERE :aliasName like o.aliasName || '%'",
+                ParentAlias.class);
+        q.setParameter("aliasName", aliasName);
+        return q;
+    }
+
     public static TypedQuery<ParentAlias> findParentAliasesByParentAndLsTypeEqualsAndLsKindEquals(Parent parent,
             String lsType, String lsKind, String sortFieldName, String sortOrder) {
         if (parent == null)
