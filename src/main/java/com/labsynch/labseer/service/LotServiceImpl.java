@@ -583,10 +583,10 @@ public class LotServiceImpl implements LotService {
 		for (SaltForm saltForm : saltForms) {
 			Set<Lot> lots = saltForm.getLots();
 			for (Lot lot : lots) {
-				// Get the lot corp name and replace the parent corp name with the requested
-				// parent alias name
+				// Generate a the parent alias corp name using the parent alias name instead of
+				// the parent corp name
 				String parentAliasLotCorpName = generateLotNameFromLotCorpName(requestedParentAliasName, lot);
-				// Check if the input string matches the Parent ALias Lot Corp Name
+				// Check if the input string matches the input string
 				if (parentAliasLotCorpName.equals(inputString)) {
 					logger.debug("Found a matching lot for the requested name: \""
 							+ inputString + "\"");
