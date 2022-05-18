@@ -185,6 +185,16 @@ public class StereoCategory {
         return q;
     }
 
+    public static TypedQuery<StereoCategory> findStereoCategorysByCodeEqualsIgnoreCase(String code){
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
+        EntityManager em = StereoCategory.entityManager();
+        TypedQuery<StereoCategory> q = em.createQuery("SELECT o FROM StereoCategory AS o WHERE LOWER(o.code) = LOWER(:code)",
+                StereoCategory.class);
+        q.setParameter("code", code);
+        return q;
+    }
+
     public static TypedQuery<StereoCategory> findStereoCategorysByCodeEquals(String code, String sortFieldName,
             String sortOrder) {
         if (code == null || code.length() == 0)

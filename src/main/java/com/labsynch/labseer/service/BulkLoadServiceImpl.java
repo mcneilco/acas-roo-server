@@ -1323,18 +1323,18 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) {
 				try {
-					lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEquals(lookUpString).getSingleResult());
+					lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEqualsIgnoreCase(lookUpString).getSingleResult());
 				} catch (Exception e) {
-					lot.setPhysicalState(PhysicalState.findPhysicalStatesByCodeEquals(lookUpString).getSingleResult());
+					lot.setPhysicalState(PhysicalState.findPhysicalStatesByCodeEqualsIgnoreCase(lookUpString).getSingleResult());
 				}
 			}
 			lookUpProperty = "Lot Vendor";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) {
 				try {
-					lot.setVendor(Vendor.findVendorsByNameEquals(lookUpString).getSingleResult());
+					lot.setVendor(Vendor.findVendorsByNameEqualsIgnoreCase(lookUpString).getSingleResult());
 				} catch (Exception e) {
-					lot.setVendor(Vendor.findVendorsByCodeEquals(lookUpString).getSingleResult());
+					lot.setVendor(Vendor.findVendorsByCodeEqualsIgnoreCase(lookUpString).getSingleResult());
 				}
 			}
 			lookUpProperty = "Lot Purity Operator";
@@ -1593,7 +1593,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0)
 				parent.setStereoCategory(
-						StereoCategory.findStereoCategorysByCodeEquals(lookUpString).getSingleResult());
+						StereoCategory.findStereoCategorysByCodeEqualsIgnoreCase(lookUpString).getSingleResult());
 			lookUpProperty = "Parent Annotation";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0)
