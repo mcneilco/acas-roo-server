@@ -31,16 +31,32 @@ public class ApiStereoCategoryController {
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
-	@RequestMapping(value = "/validate", method = RequestMethod.GET, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<Boolean> validate(@RequestParam(value = "code", required = true) String code) {
-		HttpHeaders headers = new HttpHeaders();
+	private static HttpHeaders getTextHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/text; charset=utf-8");
+        headers.add("Access-Control-Allow-Origin", "*");
+        headers.add("Access-Control-Allow-Headers", "Content-Type");
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
+        headers.setExpires(0); // Expire the cache
+        return headers;
+    }
+
+    private static HttpHeaders getJsonHeaders() {
+        HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Access-Control-Allow-Origin", "*");
 		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
 		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
+        return headers;
+    }
+
+	@RequestMapping(value = "/validate", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<Boolean> validate(@RequestParam(value = "code", required = true) String code) {
+		HttpHeaders headers = getJsonHeaders();
 
 		if (StereoCategory.countFindStereoCategorysByCodeEquals(code) > 0) {
 			return new ResponseEntity<Boolean>(false, headers, HttpStatus.CONFLICT);
@@ -63,17 +79,11 @@ public class ApiStereoCategoryController {
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		// boolean errorsFound = false;
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getJsonHeaders();
 
 		Long stereoCategoryByCodeCount = 0L;
 		List<StereoCategory> queryStereoCategorys = StereoCategory
-				.findStereoCategorysByCodeEquals(queryStereoCategory.getCode()).getResultList();
+				.findStereoCategorysByCodeEqualsIgnoreCase(queryStereoCategory.getCode()).getResultList();
 		for (StereoCategory stereoCategory : queryStereoCategorys) {
 			if (queryStereoCategory.getId() == null
 					|| stereoCategory.getId().longValue() != queryStereoCategory.getId().longValue()) {
@@ -99,14 +109,8 @@ public class ApiStereoCategoryController {
 	@RequestMapping(value = "/findByCodeEquals", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> findByCodeEquals(@RequestParam(value = "code", required = true) String code) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
-		List<StereoCategory> stereoCategorys = StereoCategory.findStereoCategorysByCodeEquals(code).getResultList();
+		HttpHeaders headers = getJsonHeaders();
+		List<StereoCategory> stereoCategorys = StereoCategory.findStereoCategorysByCodeEqualsIgnoreCase(code).getResultList();
 		logger.debug("number of stereoCategorys found: " + stereoCategorys.size());
 		if (stereoCategorys.size() != 1) {
 			return new ResponseEntity<String>("[]", headers, HttpStatus.CONFLICT);
@@ -119,13 +123,7 @@ public class ApiStereoCategoryController {
 	@RequestMapping(value = "/findByCodeLike", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> findByCodeLike(@RequestParam(value = "code", required = true) String code) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getJsonHeaders();
 		return new ResponseEntity<String>(
 				StereoCategory.toJsonArray(StereoCategory.findStereoCategorysByCodeLike(code).getResultList()), headers,
 				HttpStatus.OK);
@@ -135,13 +133,7 @@ public class ApiStereoCategoryController {
 	@ResponseBody
 	public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
 		StereoCategory stereoCategory = StereoCategory.findStereoCategory(id);
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 		if (stereoCategory == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -151,13 +143,7 @@ public class ApiStereoCategoryController {
 	@RequestMapping(headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> listJson() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 
 		if (propertiesUtilService.getOrderSelectLists()) {
 			return new ResponseEntity<String>(
@@ -177,13 +163,7 @@ public class ApiStereoCategoryController {
 			newStereoCategory.setCode(newStereoCategory.getName().toLowerCase());
 		}
 		newStereoCategory.persist();
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 		return new ResponseEntity<String>(newStereoCategory.toJson(), headers, HttpStatus.CREATED);
 	}
 
@@ -196,25 +176,13 @@ public class ApiStereoCategoryController {
 			}
 			stereoCategory.persist();
 		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody String json) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 		if (StereoCategory.fromJsonToStereoCategory(json).merge() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -223,13 +191,7 @@ public class ApiStereoCategoryController {
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 		for (StereoCategory stereoCategory : StereoCategory.fromJsonArrayToStereoCategorys(json)) {
 			if (stereoCategory.merge() == null) {
 				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -241,13 +203,7 @@ public class ApiStereoCategoryController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
 	public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
 		StereoCategory stereoCategory = StereoCategory.findStereoCategory(id);
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getTextHeaders();
 		if (stereoCategory == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -275,13 +231,7 @@ public class ApiStereoCategoryController {
 	@ResponseBody
 	public ResponseEntity<String> searchBySearchTerms(
 			@RequestParam(value = "searchTerm", required = true) String searchTerm) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
-		headers.setExpires(0); // Expire the cache
+		HttpHeaders headers = getJsonHeaders();
 		return new ResponseEntity<String>(
 				StereoCategory.toJsonArray(StereoCategory.findStereoCategoriesBySearchTerm(searchTerm).getResultList()),
 				headers, HttpStatus.OK);

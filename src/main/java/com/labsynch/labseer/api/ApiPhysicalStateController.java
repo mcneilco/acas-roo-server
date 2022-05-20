@@ -153,7 +153,7 @@ public class ApiPhysicalStateController {
 		HttpHeaders headers = getJsonHeaders(); // Expire the cache
 
 		Long physicalStateByCodeCount = 0L;
-		List<PhysicalState> queryPhysicalStates = PhysicalState.findPhysicalStatesByCodeEquals(queryPhysicalState.getCode()).getResultList();
+		List<PhysicalState> queryPhysicalStates = PhysicalState.findPhysicalStatesByCodeEqualsIgnoreCase(queryPhysicalState.getCode()).getResultList();
 		for (PhysicalState physicalState : queryPhysicalStates) {
 			if (queryPhysicalState.getId() == null || physicalState.getId().longValue() != queryPhysicalState.getId().longValue()) {
 				++physicalStateByCodeCount;
