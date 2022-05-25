@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<log4j.version>2.17.2</log4j.version>
 		<spring.version>5.3.19</spring.version>
 		<querydsl.version>3.4.3</querydsl.version>
-		<spring-security.version>5.6.3</spring-security.version>
+		<spring-security.version>5.6.4</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>16.4.25.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
