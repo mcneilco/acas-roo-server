@@ -1323,18 +1323,18 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) {
 				try {
-					lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEquals(lookUpString).getSingleResult());
+					lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEqualsIgnoreCase(lookUpString).getSingleResult());
 				} catch (Exception e) {
-					lot.setPhysicalState(PhysicalState.findPhysicalStatesByCodeEquals(lookUpString).getSingleResult());
+					lot.setPhysicalState(PhysicalState.findPhysicalStatesByCodeEqualsIgnoreCase(lookUpString).getSingleResult());
 				}
 			}
 			lookUpProperty = "Lot Vendor";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) {
 				try {
-					lot.setVendor(Vendor.findVendorsByNameEquals(lookUpString).getSingleResult());
+					lot.setVendor(Vendor.findVendorsByNameEqualsIgnoreCase(lookUpString).getSingleResult());
 				} catch (Exception e) {
-					lot.setVendor(Vendor.findVendorsByCodeEquals(lookUpString).getSingleResult());
+					lot.setVendor(Vendor.findVendorsByCodeEqualsIgnoreCase(lookUpString).getSingleResult());
 				}
 			}
 			lookUpProperty = "Lot Purity Operator";
@@ -1593,7 +1593,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0)
 				parent.setStereoCategory(
-						StereoCategory.findStereoCategorysByCodeEquals(lookUpString).getSingleResult());
+						StereoCategory.findStereoCategorysByCodeEqualsIgnoreCase(lookUpString).getSingleResult());
 			lookUpProperty = "Parent Annotation";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0)
@@ -1693,6 +1693,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			value = value.replaceAll(regexMatch, "");
 		if (value == null)
 			value = mapping.getDefaultVal();
+		String origValue = value;
 		Boolean coerced = false;
 		if (value != null) {
 			String trimmedString = value.trim();
@@ -1700,10 +1701,22 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				value = trimmedString;
 				coerced = true;
 			}
+			// Check if value is part of 'invalidValues' and a coerced change in case will yield one of the 'validValues'
+			if (mapping.getInvalidValues() != null && mapping.getValidValues() != null){
+				if (mapping.getInvalidValues().contains(value)){
+					for (String validValue : mapping.getValidValues()) {
+						if (validValue.toLowerCase().equals(value.toLowerCase())) {
+							// Make the substitution
+							value = validValue;
+							coerced = true;
+						}
+					}
+				}
+			}
 		}
 		if (recordNumber != -1 && coerced)
 			logWarning("TrimmedStringValue", "Trimmed string value for property " + sdfProperty,
-					sdfProperty + " '" + mol.getProperty(sdfProperty) + "' trimmed to '" + value + "'", recordNumber,
+					sdfProperty + " '" + origValue + "' trimmed to '" + value + "'", recordNumber,
 					results);
 		if (value != null)
 			if (logger.isDebugEnabled())
@@ -2330,7 +2343,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if (BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty) == null) {
 					// no mapping found - add a new one with dbProperty = sdfProperty
 					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty,
-							false, null, null, false);
+							false, null, null, null, false);
 					mappings.add(newMapping);
 				} else {
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty)
@@ -2343,7 +2356,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if (BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty) == null) {
 					// no mapping found - add a new one with dbProperty = sdfProperty
 					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty,
-							false, null, null, false);
+							false, null, null, null, false);
 					mappings.add(newMapping);
 				} else {
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty)

@@ -26,6 +26,8 @@ public class BulkLoadPropertyMappingDTO {
 
     private Collection<String> invalidValues;
 
+    private Collection<String> validValues;
+
     private String defaultVal;
 
     private boolean ignored;
@@ -35,12 +37,13 @@ public class BulkLoadPropertyMappingDTO {
     }
 
     public BulkLoadPropertyMappingDTO(String dbProperty, String sdfProperty, boolean required, String defaultVal,
-            Collection<String> invalidValues, boolean ignored) {
+            Collection<String> invalidValues, Collection<String> validValues, boolean ignored) {
         this.dbProperty = dbProperty;
         this.sdfProperty = sdfProperty;
         this.required = required;
         this.defaultVal = defaultVal;
         this.invalidValues = invalidValues;
+        this.validValues = validValues;
         this.ignored = ignored;
     }
 
@@ -134,6 +137,14 @@ public class BulkLoadPropertyMappingDTO {
 
     public void setInvalidValues(Collection<String> invalidValues) {
         this.invalidValues = invalidValues;
+    }
+
+    public Collection<String> getValidValues() {
+        return this.validValues;
+    }
+
+    public void setValidValues(Collection<String> validValues) {
+        this.validValues = validValues;
     }
 
     public String getDefaultVal() {

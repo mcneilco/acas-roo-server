@@ -193,11 +193,31 @@ public class PhysicalState {
         return q;
     }
 
+    public static TypedQuery<PhysicalState> findPhysicalStatesByCodeEqualsIgnoreCase(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
+        EntityManager em = PhysicalState.entityManager();
+        TypedQuery<PhysicalState> q = em.createQuery("SELECT o FROM PhysicalState AS o WHERE LOWER(o.code) = LOWER(:code)",
+                PhysicalState.class);
+        q.setParameter("code", code);
+        return q;
+    }
+
     public static TypedQuery<PhysicalState> findPhysicalStatesByNameEquals(String name) {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("The name argument is required");
         EntityManager em = PhysicalState.entityManager();
         TypedQuery<PhysicalState> q = em.createQuery("SELECT o FROM PhysicalState AS o WHERE o.name = :name",
+                PhysicalState.class);
+        q.setParameter("name", name);
+        return q;
+    }
+
+    public static TypedQuery<PhysicalState> findPhysicalStatesByNameEqualsIgnoreCase(String name) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = PhysicalState.entityManager();
+        TypedQuery<PhysicalState> q = em.createQuery("SELECT o FROM PhysicalState AS o WHERE LOWER(o.name) = LOWER(:name)",
                 PhysicalState.class);
         q.setParameter("name", name);
         return q;

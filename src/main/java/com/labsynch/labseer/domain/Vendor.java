@@ -301,6 +301,16 @@ public class Vendor {
         return q;
     }
 
+    public static TypedQuery<Vendor> findVendorsByCodeEqualsIgnoreCase(String code) {
+        if (code == null || code.length() == 0)
+            throw new IllegalArgumentException("The code argument is required");
+        EntityManager em = Vendor.entityManager();
+        TypedQuery<Vendor> q = em.createQuery("SELECT o FROM Vendor AS o WHERE LOWER(o.code) = LOWER(:code)",
+                Vendor.class);
+        q.setParameter("code", code);
+        return q;
+    }
+
     public static TypedQuery<Vendor> findVendorsByCodeLike(String code) {
         if (code == null || code.length() == 0)
             throw new IllegalArgumentException("The code argument is required");
@@ -363,6 +373,16 @@ public class Vendor {
             }
         }
         TypedQuery<Vendor> q = em.createQuery(queryBuilder.toString(), Vendor.class);
+        q.setParameter("name", name);
+        return q;
+    }
+
+    public static TypedQuery<Vendor> findVendorsByNameEqualsIgnoreCase(String name) {
+        if (name == null || name.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = Vendor.entityManager();
+        TypedQuery<Vendor> q = em.createQuery("SELECT o FROM Vendor AS o WHERE LOWER(o.name) = LOWER(:name)",
+                Vendor.class);
         q.setParameter("name", name);
         return q;
     }
