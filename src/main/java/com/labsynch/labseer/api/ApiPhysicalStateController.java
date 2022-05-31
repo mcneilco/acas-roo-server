@@ -133,7 +133,7 @@ public class ApiPhysicalStateController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-    // validate physicalState before saving
+	// validate physicalState before saving
 	// is physicalState code still unique?
 	// is physicalState name unique? (optional)
 	@RequestMapping(value = "/validateBeforeSave", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -148,8 +148,7 @@ public class ApiPhysicalStateController {
 		logger.info("validateNewPhysicalState -- query physicalState: " + queryPhysicalState.toJson());
 
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-		// boolean errorsFound = false;
-
+        
 		HttpHeaders headers = getJsonHeaders(); // Expire the cache
 
 		Long physicalStateByCodeCount = 0L;
