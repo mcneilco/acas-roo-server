@@ -536,9 +536,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
 				}
 			}
-			// generate summary html, which also writes the report file
+			// generate summary in two formats: HTML and plaintext
 			String summaryHtml = generateSummaryHtml(numRecordsRead, numNewParentsLoaded, numNewLotsOldParentsLoaded,
-					results, errorSDFName, reportOutStream);
+					results);
+			String summaryText = generateSummaryText(numRecordsRead, numNewParentsLoaded, numNewLotsOldParentsLoaded,
+					results);
+			// Write summary text to report file
+			reportOutStream.write(summaryText.getBytes());
 			if (logger.isDebugEnabled())
 				logger.debug(summaryHtml);
 
@@ -1901,10 +1905,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return value;
 	}
 
-	public String generateSummaryHtml(int numRecordsRead,
-			int numNewParentsLoaded, int numNewLotsOldParentsLoaded,
-			Collection<ValidationResponseDTO> validationResponse, String errorSDFName, FileOutputStream reportOutStream)
-			throws IOException {
+	private Map<String, Collection<String>> generateSummaryMap (int numRecordsRead,
+	int numNewParentsLoaded, int numNewLotsOldParentsLoaded, Collection<ValidationResponseDTO> validationResponse) {
+		// Parse the validationResponse to generate maps of errors and warnings
 		int numErrorRecords = 0;
 		int numWarningRecords = 0;
 		Map<String, Integer> errorMap = new HashMap<String, Integer>();
@@ -1931,30 +1934,87 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		for (Integer count : warningMap.values())
 			numWarningRecords += count;
+		// create errors and warnings strings
+		Collection<String> errors = new ArrayList<String>();
+		Collection<String> warnings = new ArrayList<String>();
+		for (String error : errorMap.keySet()) {
+			errors.add(errorMap.get(error) + " entries had: " + error);
+		}
+		for (String warning : warningMap.keySet()) {
+			warnings.add(warningMap.get(warning) + " entries had: " + warning);
+		}
+		// create general summary strings
+		Collection<String> summaries = new ArrayList<String>();
+		summaries.add("Number of entries processed: " + numRecordsRead);
+		summaries.add("Number of entries with error: " + numErrorRecords);
+		summaries.add("Number of warnings: " + numWarningRecords);
+		summaries.add("New compounds: " + numNewParentsLoaded);
+		summaries.add("New lots of existing compounds: " + numNewLotsOldParentsLoaded);
+		summaries.add("New lots of new compounds in the file: " + numNewLotsOldParentsLoaded);
+		// bundle the messages together to return a single object
+		Map<String, Collection<String>> summaryMap = new HashMap<String, Collection<String>>();
+		summaryMap.put("errors", errors);
+		summaryMap.put("warnings", warnings);
+		summaryMap.put("summaries", summaries);
+		return summaryMap;
+	}
 
+	public String generateSummaryHtml(int numRecordsRead,
+			int numNewParentsLoaded, int numNewLotsOldParentsLoaded,
+			Collection<ValidationResponseDTO> validationResponse) {
+		// Parse the validationResponse to generate maps of errors and warnings and summary messages
+		Map<String, Collection<String>> summaryMap = generateSummaryMap(numRecordsRead,
+		numNewParentsLoaded, numNewLotsOldParentsLoaded, validationResponse);
+		// Build the summary HTML
 		String summary = "<div><ul>";
-		summary += "<li>Number of entries processed: " + numRecordsRead + "</li>";
-		summary += "<li>Number of entries with error: " + numErrorRecords + "</li>";
-		summary += "<li>Number of warnings: " + numWarningRecords + "</li>";
-		summary += "<li>New compounds: " + numNewParentsLoaded + "</li>";
-		summary += "<li>New lots of existing compounds: " + numNewLotsOldParentsLoaded + "</li>";
-		summary += "<li>New lots of new compounds in the file: " + numNewLotsOldParentsLoaded + "</li>";
+		for (String summaryMessage : summaryMap.get("summaries")) {
+			summary += "<li>" + summaryMessage + "</li>";
+		}
 		summary += "</div>";
-		if (!errorMap.isEmpty()) {
+		Collection<String> errors = summaryMap.get("errors");
+		if (errors.size() > 0) {
 			summary += "<div><h5>Errors</h5><ul>";
-			for (String error : errorMap.keySet()) {
-				summary += "<li>" + errorMap.get(error) + " entries had: " + error + "</li>";
+			for (String errorMessage : errors) {
+				summary += "<li>" + errorMessage + "</li>";
 			}
 			summary += "</ul></div>";
 		}
-		if (!warningMap.isEmpty()) {
+		Collection<String> warnings = summaryMap.get("warnings");
+		if (warnings.size() > 0) {
 			summary += "<div><h5>Warnings</h5><ul>";
-			for (String warning : warningMap.keySet()) {
-				summary += "<li>" + warningMap.get(warning) + " entries had: " + warning + "</li>";
+			for (String warningMessage : warnings) {
+				summary += "<li>" + warningMessage + "</li>";
 			}
 			summary += "</ul></div>";
 		}
-		reportOutStream.write(summary.getBytes());
+		return summary;
+	}
+
+	public String generateSummaryText(int numRecordsRead,
+			int numNewParentsLoaded, int numNewLotsOldParentsLoaded,
+			Collection<ValidationResponseDTO> validationResponse) {
+		// Parse the validationResponse to generate maps of errors and warnings and summary messages
+		Map<String, Collection<String>> summaryMap = generateSummaryMap(numRecordsRead,
+		numNewParentsLoaded, numNewLotsOldParentsLoaded, validationResponse);
+		// Build the summary
+		String summary = "";
+		for (String summaryMessage : summaryMap.get("summaries")) {
+			summary += summaryMessage + "\n";
+		}
+		Collection<String> errors = summaryMap.get("errors");
+		if (errors.size() > 0) {
+			summary += "Errors:\n";
+			for (String errorMessage : errors) {
+				summary += errorMessage + "\n";
+			}
+		}
+		Collection<String> warnings = summaryMap.get("warnings");
+		if (warnings.size() > 0) {
+			summary += "Warnings:\n";
+			for (String warningMessage : warnings) {
+				summary += warningMessage + "\n";
+			}
+		}
 		return summary;
 	}
 
