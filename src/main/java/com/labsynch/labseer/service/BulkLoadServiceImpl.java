@@ -840,6 +840,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						logWarning("MatchingStructureSameStereoDifferentComment", categoryDescription,
 								categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
 								validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo comment";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("AssigningNewParent", categoryDescription,
+								categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
+								validationResponse);
 						continue;
 					} else if (!sameStereoCategory & sameCorpName & !noCorpName) {
 						logger.error("Mismatched stereo categories for same parent structure and corp name! Corp name: "
@@ -855,6 +860,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						logWarning("MatchingStructureDifferentStereoCategory", categoryDescription,
 								categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
 								validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo category";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("AssigningNewParent", categoryDescription,
+							categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
+							validationResponse);
 						continue;
 					}
 				}
@@ -1008,6 +1018,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
 										+ foundParentCdId + ")",
 								numRecordsRead, validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo comment";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("WithinFileMatchingStructureSameStereoDifferentComment", categoryDescription,
+								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
+								+ foundParentCdId + ")", numRecordsRead, validationResponse);
 						continue;
 					} else if (!sameStereoCategory & sameCorpName & !noCorpName) {
 						logger.error(
@@ -1027,6 +1042,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
 										+ foundParentCdId + ")",
 								numRecordsRead, validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo category";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("WithinFileMatchingStructureDifferentStereoCategory", categoryDescription,
+								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
+								+ foundParentCdId + ")", numRecordsRead, validationResponse);
 						continue;
 					}
 				}
