@@ -19,15 +19,18 @@ public class BulkLoadRegisterSDFResponseDTO {
 
     private Collection<String> reportFiles;
 
+    private Long id;
+
     public BulkLoadRegisterSDFResponseDTO() {
 
     }
 
     public BulkLoadRegisterSDFResponseDTO(String summary, Collection<ValidationResponseDTO> results,
-            Collection<String> reportFiles) {
+            Collection<String> reportFiles, Long id) {
         this.summary = summary;
         this.results = results;
         this.reportFiles = reportFiles;
+        this.id = id;
     }
 
     public String toJson() {
@@ -58,6 +61,14 @@ public class BulkLoadRegisterSDFResponseDTO {
 
     public void setReportFiles(Collection<String> reportFiles) {
         this.reportFiles = reportFiles;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public static BulkLoadRegisterSDFResponseDTO fromJsonToBulkLoadRegisterSDFResponseDTO(String json) {

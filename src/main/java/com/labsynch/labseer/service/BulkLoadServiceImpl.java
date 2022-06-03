@@ -581,11 +581,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			} else {
 				logger.info("Finished bulk loading file: " + bulkLoadFile.toJson());
 			}
-			return new BulkLoadRegisterSDFResponseDTO(summaryHtml, results, reportFiles);
+			return new BulkLoadRegisterSDFResponseDTO(summaryHtml, results, reportFiles, bulkLoadFile.getId());
 		} catch (Exception e) {
 			logger.error("Caught an error in the big loop", e);
 			results.add(new ValidationResponseDTO("error", -1, "Unassigned", e.getMessage(), e.getMessage()));
-			return new BulkLoadRegisterSDFResponseDTO(e.getMessage(), results, null);
+			return new BulkLoadRegisterSDFResponseDTO(e.getMessage(), results, null, null);
 		}
 	}
 
