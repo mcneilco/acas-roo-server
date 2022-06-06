@@ -1970,7 +1970,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		for (String summaryMessage : summaryMap.get("summaries")) {
 			summary += "<li>" + summaryMessage + "</li>";
 		}
-		summary += "</div>";
+		summary += "</ul></div>";
 		Collection<String> errors = summaryMap.get("errors");
 		if (errors.size() > 0) {
 			summary += "<div><h5>Errors</h5><ul>";
