@@ -35,7 +35,7 @@ public class BulkLoadRegisterSDFResponseDTO {
 
     public String toJson() {
         return new JSONSerializer()
-                .include("reportFiles", "results").exclude("*.class").transform(new ExcludeNulls(), void.class)
+                .include("reportFiles", "results", "id").exclude("*.class")
                 .serialize(this);
     }
 
