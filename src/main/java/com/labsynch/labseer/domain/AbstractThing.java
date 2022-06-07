@@ -172,6 +172,7 @@ public abstract class AbstractThing {
     public void logicalDelete() {
         this.setIgnored(true);
         this.setDeleted(true);
+        this.setModifiedDate(new Date());
     }
 
     public String getLsType() {
