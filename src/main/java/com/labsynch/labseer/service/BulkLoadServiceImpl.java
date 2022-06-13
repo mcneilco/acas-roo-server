@@ -386,12 +386,18 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				// Parent
 				Parent parent;
 				SaltForm saltForm;
-				boolean saltStripped = false;
 				Lot lot;
+				boolean saltInStruct = false; 
+				boolean saltInSDF = false;
 				// attempt to strip salts
 				try {
+					// Check mol mappings for salt present
+					StrippedSaltDTO strippedSaltDTO = chemStructureService.stripSalts(inputMol);
+					if (!strippedSaltDTO.getSaltCounts().isEmpty() && strippedSaltDTO.getUnidentifiedFragments().size() == 1)
+					{
+						saltInStruct = true;
+					}
 					mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
-					saltStripped = true;
 				} catch (CmpdRegMolFormatException e) {
 					String emptyMolfile = "\n" +
 							"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" +
@@ -427,12 +433,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					isNewParent = false;
 				try {
 					saltForm = createSaltForm(mol, mappings, results, numRecordsRead);
-					if(saltStripped) 
-					{
+					// Check if salt in sdf 
+					saltInSDF = !saltForm.getIsoSalts().isEmpty();
+					if (saltInStruct && saltInSDF){
 						// Salt(s) has been found in structure and property mapping => not allowed 
 						Exception saltException = new Exception("Salts found in both structure and sdf prop");
-						logError(saltException, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-						continue;
+						throw saltException;
 					}
 				} catch (Exception e) {
 					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
