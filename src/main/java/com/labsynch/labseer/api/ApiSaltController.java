@@ -82,7 +82,7 @@ public class ApiSaltController {
 			@RequestParam(value = "searchTerm", required = true) String searchTerm) {
 		HttpHeaders headers = new HttpHeaders();
 		return new ResponseEntity<String>(
-				Salt.toJsonArray(Salt.findSaltsByAbbrevEquals(searchTerm).getResultList()), headers, HttpStatus.OK);
+				Salt.toJsonArray(Salt.findSaltsBySearchTerm(searchTerm).getResultList()), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
