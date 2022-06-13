@@ -251,6 +251,24 @@ public class Salt {
         return q;
     }
 
+    public static TypedQuery<Salt> findSaltsBySearchTerm(String searchTerm) {
+        if (searchTerm == null || searchTerm.length() == 0)
+            throw new IllegalArgumentException("The searchTerm argument is required");
+        searchTerm = searchTerm.replace('*', '%');
+        if (searchTerm.charAt(0) != '%') {
+            searchTerm = "%" + searchTerm;
+        }
+        if (searchTerm.charAt(searchTerm.length() - 1) != '%') {
+            searchTerm = searchTerm + "%";
+        }
+        EntityManager em = Salt.entityManager();
+        TypedQuery<Salt> q = em.createQuery(
+                "SELECT DISTINCT o FROM Salt AS o WHERE (LOWER(o.abbrev) LIKE LOWER(:searchTerm) OR LOWER(o.name) LIKE LOWER(:searchTerm))",
+                Salt.class);
+        q.setParameter("searchTerm", searchTerm);
+        return q;
+    }
+
     public static TypedQuery<Salt> findSaltsByAbbrevLike(String abbrev, String sortFieldName, String sortOrder) {
         if (abbrev == null || abbrev.length() == 0)
             throw new IllegalArgumentException("The abbrev argument is required");
