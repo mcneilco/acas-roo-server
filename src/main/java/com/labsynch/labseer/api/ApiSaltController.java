@@ -43,6 +43,17 @@ public class ApiSaltController {
 	@Autowired
 	private ChemStructureService chemStructureService;
 
+	private static HttpHeaders getJsonHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+        return headers;
+    }
+
 	@RequestMapping(value = "/load", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> loadSalts(
 			@RequestParam(value = "saltSD_fileName", required = true) String saltSD_fileName) {
@@ -63,6 +74,15 @@ public class ApiSaltController {
 		// curl -i -X POST -H "Accept: application/json"
 		// 'http://localhost:8080/cmpdreg/api/v1/salts/load?saltSD_fileName=/tmp/Initial_Salts.sdf'
 
+	}
+
+	@RequestMapping(value = "/search", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> searchBySearchTerms(
+			@RequestParam(value = "searchTerm", required = true) String searchTerm) {
+		HttpHeaders headers = new HttpHeaders();
+		return new ResponseEntity<String>(
+				Salt.toJsonArray(Salt.findSaltsBySearchTerm(searchTerm).getResultList()), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
