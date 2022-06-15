@@ -1,8 +1,9 @@
 package com.labsynch.labseer.service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -22,6 +23,7 @@ import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -37,9 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LotServiceImpl implements LotService {
 
 	@Autowired
-	private ChemStructureService chemService;
-
-	@Autowired
 	private CorpNameService corpNameService;
 
 	@Autowired
@@ -50,6 +49,9 @@ public class LotServiceImpl implements LotService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+
+	@Autowired
+	private ContainerService containerService;
 
 	private static final Logger logger = LoggerFactory.getLogger(LotServiceImpl.class);
 
@@ -511,6 +513,20 @@ public class LotServiceImpl implements LotService {
 			preferredNameDTO.setPreferredName(preferredName);
 		}
 		return preferredNameDTOs;
+	}
+
+	@Override
+	public CmpdRegBatchCodeDTO checkForDependentData(Set<String> lotCorpNames) {
+		CmpdRegBatchCodeDTO cmpdRegBatchCodeDTO = new CmpdRegBatchCodeDTO(lotCorpNames);
+
+		cmpdRegBatchCodeDTO.checkForDependentData();
+
+		if(cmpdRegBatchCodeDTO.getLinkedDataExists()) {
+			List<String> batchCodeList = new ArrayList<String>();
+			batchCodeList.addAll(lotCorpNames);
+			cmpdRegBatchCodeDTO.setLinkedContainers(containerService.getContainerDTOsByBatchCodes(batchCodeList));
+		}
+		return cmpdRegBatchCodeDTO;
 	}
 
 }

@@ -84,6 +84,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONSerializer;
 
+import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+
 @Service
 public class BulkLoadServiceImpl implements BulkLoadService {
 
@@ -91,7 +93,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-
+ 
 	@Autowired
 	public ChemStructureService chemStructureService;
 
@@ -112,6 +114,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	@Autowired
 	private ParentAliasService parentAliasService;
+
+	@Autowired
+	private ContainerService containerService;
 
 	@Override
 	public BulkLoadPropertiesDTO readSDFPropertiesFromFile(BulkLoadSDFPropertyRequestDTO requestDTO) {
@@ -2047,7 +2052,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					}
 					if (saltForm.getLots() != null) {
 						for (Lot lot : saltForm.getLots()) {
-							acasDependencies.put(lot.getCorpName(), new HashSet<String>());
+							acasDependencies.put(lot.getCorpName(), new HashSet<String>()); 
 							if (lot.getBulkLoadFile() == null) {
 								dependentSingleRegLots.add(lot.getCorpName());
 							} else if (lot.getBulkLoadFile() != bulkLoadFile) {
@@ -2165,11 +2170,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes)
 			throws MalformedURLException, IOException {
-		String url = propertiesUtilService.getAcasURL() + "containers/getContainerDTOsByBatchCodes";
-		String json = (new JSONSerializer()).serialize(batchCodes);
-		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, logger);
-		Collection<ContainerBatchCodeDTO> responseDTOs = ContainerBatchCodeDTO
-				.fromJsonArrayToContainerBatchCoes(responseJson);
+		List<String> batchCodeList = new ArrayList<String>();
+		batchCodeList.addAll(batchCodes);
+		Collection<ContainerBatchCodeDTO> responseDTOs = containerService.getContainerDTOsByBatchCodes(batchCodeList);
 		return responseDTOs;
 
 	}
@@ -2245,19 +2248,14 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	public Map<String, HashSet<String>> checkACASDependencies(
 			Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
-		// here we make an external request to the ACAS Roo server to check for
-		// dependent experimental data
-		String url = propertiesUtilService.getAcasURL() + "compounds/checkBatchDependencies";
-		BatchCodeDependencyDTO request = new BatchCodeDependencyDTO(acasDependencies.keySet());
-		String json = request.toJson();
-		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, logger);
-		BatchCodeDependencyDTO responseDTO = BatchCodeDependencyDTO.fromJsonToBatchCodeDependencyDTO(responseJson);
+		CmpdRegBatchCodeDTO batchDTO = new CmpdRegBatchCodeDTO(acasDependencies.keySet());
+		batchDTO.checkForDependentData();
 		if (logger.isDebugEnabled())
 			if (logger.isDebugEnabled())
-				logger.debug(responseDTO.toJson());
-		if (responseDTO.getLinkedDataExists()) {
+				logger.debug(batchDTO.toJson());
+		if (batchDTO.getLinkedDataExists()) {
 			logger.info("Found experimental data in ACAS for some compounds.");
-			for (CodeTableDTO experimentCodeTable : responseDTO.getLinkedExperiments()) {
+			for (CodeTableDTO experimentCodeTable : batchDTO.getLinkedExperiments()) {
 				String experimentCodeAndName = experimentCodeTable.getCode() + " ( " + experimentCodeTable.getName()
 						+ " )";
 				if (acasDependencies.containsKey(experimentCodeTable.getComments())) {

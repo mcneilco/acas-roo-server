@@ -1,10 +1,12 @@
 package com.labsynch.labseer.dto;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -32,7 +34,11 @@ public class CmpdRegBatchCodeDTO {
 		this.setBatchCodes(batchCodes);
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(CmpdRegBatchCodeDTO.class);
+	public CmpdRegBatchCodeDTO(String corpName) {
+		this.setBatchCodes(Collections.singletonList(corpName));
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(CmpdRegBatchCodeDTO.class);
 
 	private Collection<String> batchCodes;
 
@@ -40,9 +46,12 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> linkedExperiments;
 
+	private Collection<ContainerBatchCodeDTO> linkedContainers;
+
 	private Collection<ErrorMessageDTO> errors;
 
-	@Transactional
+	private String summary;
+
 	public String toJson() {
 		return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "batchCodes.*")
 				.transform(new ExcludeNulls(), void.class).serialize(this);
@@ -82,12 +91,15 @@ public class CmpdRegBatchCodeDTO {
 		}
 		if (countProtocolValueBatchCodes() > 0) {
 			linkedDataExists = true;
+			logger.debug("Found Protocol values referencing provided batch codes.");
 		}
 		if (countLsThingValueBatchCodes() > 0) {
 			linkedDataExists = true;
+			logger.debug("Found LsThing values referencing provided batch codes.");
 		}
 		if (countContainerValueBatchCodes() > 0) {
 			linkedDataExists = true;
+			logger.debug("Found Container values referencing provided batch codes. Retrieving container info.");
 		}
 		// dedupeLinkedExperiments();
 	}
@@ -401,6 +413,14 @@ public class CmpdRegBatchCodeDTO {
 		this.linkedExperiments = linkedExperiments;
 	}
 
+	public Collection<ContainerBatchCodeDTO> getLinkedContainers() {
+		return this.linkedContainers;
+	}
+
+	public void setLinkedContainers(Collection<ContainerBatchCodeDTO> linkedContainers) {
+		this.linkedContainers = linkedContainers;
+	}
+
 	public Collection<ErrorMessageDTO> getErrors() {
 		return this.errors;
 	}
@@ -430,6 +450,22 @@ public class CmpdRegBatchCodeDTO {
 	}
 
 	public String toString() {
+		setSummary(getSummary());
 		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getSummary() {
+		String msg = "";
+		if(getLinkedDataExists()) {
+			msg +=  getLinkedExperiments().size() + " linked experiments: " + getLinkedExperiments().stream().map(e -> e.getCode() + '(' + e.getName() + ")").collect(Collectors.joining(", "));
+			if(getLinkedContainers().size() > 0) {
+				msg += getLinkedContainers().size() + " linked containers: " + getLinkedContainers().stream().map(c -> c.getContainerBarcode()).collect(Collectors.toList());
+			}
+		}
+		return msg;
 	}
 }

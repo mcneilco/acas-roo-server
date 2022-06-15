@@ -1,16 +1,19 @@
 package com.labsynch.labseer.api;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.Metalot;
 import com.labsynch.labseer.dto.MetalotReturn;
-import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.ErrorMessage;
+import com.labsynch.labseer.service.LotService;
 import com.labsynch.labseer.service.MetalotService;
 
 import org.slf4j.Logger;
@@ -38,8 +41,8 @@ public class ApiMetalotController {
 	private MetalotService metalotService;
 
 	@Autowired
-	private ChemStructureService chemStructService;
-
+	private LotService lotService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(ApiMetalotController.class);
 
 	@Transactional
@@ -164,6 +167,99 @@ public class ApiMetalotController {
 		}
 
 		return new ResponseEntity<String>(metaLot.toJson(), headers, HttpStatus.OK);
+	}
+
+	// Method to delete a metalot by corp name
+	@Transactional
+	@RequestMapping(value = "/corpName/{corpName}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteMetalotByCorpName(@PathVariable("corpName") String corpName) {
+		logger.debug("delete lot corpName = " + corpName);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		logger.info("Got delete request for corpName '" + corpName + "'");
+		// Get the lot and check for depdencies
+		Metalot metaLot = new Metalot();
+		List<Lot> lots = Lot.findLotsByCorpNameEquals(corpName).getResultList();
+		System.out.println("Number of lots found = " + lots.size());
+
+		if(lots.size() == 0) {
+			logger.info("Did not find a lot with corpName '" + corpName + "'");
+			// Return a 404 error
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} else {
+			logger.info("Found " + lots.size() + " lots with corpName '" + corpName + "'");
+			Lot lot = lots.get(0);
+			metaLot.setLot(lot);
+			
+			// Check for linked containers
+			Set<String> batchCodeSet = new HashSet<String>();
+			batchCodeSet.add(lot.getCorpName());
+			CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
+
+			// If there are no dependencies, delete the lot
+			if(!batchDTO.getLinkedDataExists()) {
+				logger.info("No linked data found for corpName '" + corpName + "'");
+				lot.remove();
+				// Now check if the parent has no more lots
+				Parent parent = Parent.findParent(lot.getParent().getId());
+				Boolean hasOtherLots = false;
+				for(SaltForm s : parent.getSaltForms()) {
+					if(s.getLots().size() > 0) {
+						hasOtherLots = true;
+					}
+				}
+				if(!hasOtherLots) {
+					parent.remove();
+				}
+				return new ResponseEntity<String>(headers, HttpStatus.OK);
+			} else {
+				// If there are dependencies, return an error message
+				ErrorMessage error = new ErrorMessage();
+				error.setLevel("error");
+				String msg = "Cannot be deleted, linked data dependencies found. ";
+				msg += batchDTO.getSummary();
+				error.setMessage(msg);	
+				
+				// Return a state conflict error
+				return new ResponseEntity<String>(error.toJson(), headers, HttpStatus.CONFLICT);
+			}
+		}
+	}
+
+	@RequestMapping(value = "checkDependencies/corpName/{corpName}", method = RequestMethod.GET)
+	public ResponseEntity<String> getDependenciesByLotCorpName(@PathVariable("corpName") String corpName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		// Get the lot and check for depdencies
+		List<Lot> lots = Lot.findLotsByCorpNameEquals(corpName).getResultList();
+
+		if(lots.size() == 0) {
+			logger.info("Did not find a lot with corpName '" + corpName + "'");
+			// Return a 404 error
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} else {
+			logger.info("Found " + lots.size() + " lots with corpName '" + corpName + "'");
+			Lot lot = lots.get(0);
+			
+			// Check for linked containers
+			Set<String> batchCodeSet = new HashSet<String>();
+			batchCodeSet.add(lot.getCorpName());
+			CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
+
+			//
+			String json = batchDTO.toJson();
+			return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+		}
 	}
 
 	@Transactional
