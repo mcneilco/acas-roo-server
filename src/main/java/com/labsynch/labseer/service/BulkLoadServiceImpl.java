@@ -387,16 +387,10 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				Parent parent;
 				SaltForm saltForm;
 				Lot lot;
-				boolean saltInStruct = false; 
-				boolean saltInSDF = false;
 				// attempt to strip salts
 				try {
 					// Check mol mappings for salt present
-					StrippedSaltDTO strippedSaltDTO = chemStructureService.stripSalts(inputMol);
-					if (!strippedSaltDTO.getSaltCounts().isEmpty() && strippedSaltDTO.getUnidentifiedFragments().size() == 1)
-					{
-						saltInStruct = true;
-					}
+					StrippedSaltDTO strippedSaltDTO = chemStructureService.stripSalts(mol);
 					mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
 				} catch (CmpdRegMolFormatException e) {
 					String emptyMolfile = "\n" +
@@ -433,13 +427,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					isNewParent = false;
 				try {
 					saltForm = createSaltForm(mol, mappings, results, numRecordsRead);
-					// Check if salt in sdf 
-					saltInSDF = !saltForm.getIsoSalts().isEmpty();
-					if (saltInStruct && saltInSDF){
-						// Salt(s) has been found in structure and property mapping => not allowed 
-						Exception saltException = new Exception("Salts found in both structure and sdf prop");
-						throw saltException;
-					}
 				} catch (Exception e) {
 					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
@@ -2355,6 +2342,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				String saltEquivString = "";
 				String saltAbbrevMapping = getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings, results,
 						recordNumber);
+				if (saltAbbrevMapping != null && saltAbbrevMapping.length() > 0) {
+					// Salt(s) has been found in structure and property mapping => not allowed 
+					CmpdRegMolFormatException saltException = new CmpdRegMolFormatException("Salts found in both structure and sdf prop");
+					throw saltException;
+				} 
 				if (saltAbbrevMapping != null) {
 					saltAbbrevString += saltAbbrevMapping;
 					saltAbbrevString += ";";
@@ -2382,7 +2374,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					mappings.add(newMapping);
 				} else {
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty)
-							.getSdfProperty();
+						.getSdfProperty();
 				}
 				inputMol.setProperty(dbProperty, saltAbbrevString);
 
@@ -2394,8 +2386,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							false, null, null, null, false);
 					mappings.add(newMapping);
 				} else {
-					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty)
-							.getSdfProperty();
+					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty).getSdfProperty();
 				}
 				inputMol.setProperty(dbProperty, saltEquivString);
 				return inputMol;
