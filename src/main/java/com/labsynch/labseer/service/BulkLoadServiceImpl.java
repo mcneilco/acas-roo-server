@@ -849,6 +849,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						logWarning("MatchingStructureSameStereoDifferentComment", categoryDescription,
 								categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
 								validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo comment";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("AssigningNewParent", categoryDescription,
+								categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
+								validationResponse);
 						continue;
 					} else if (!sameStereoCategory & sameCorpName & !noCorpName) {
 						logger.error("Mismatched stereo categories for same parent structure and corp name! Corp name: "
@@ -864,6 +869,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						logWarning("MatchingStructureDifferentStereoCategory", categoryDescription,
 								categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
 								validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo category";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("AssigningNewParent", categoryDescription,
+							categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead,
+							validationResponse);
 						continue;
 					}
 				}
@@ -1017,6 +1027,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
 										+ foundParentCdId + ")",
 								numRecordsRead, validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo comment";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("WithinFileMatchingStructureSameStereoDifferentComment", categoryDescription,
+								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
+								+ foundParentCdId + ")", numRecordsRead, validationResponse);
 						continue;
 					} else if (!sameStereoCategory & sameCorpName & !noCorpName) {
 						logger.error(
@@ -1036,6 +1051,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
 										+ foundParentCdId + ")",
 								numRecordsRead, validationResponse);
+						categoryDescription = "New parent will be assigned due to different stereo category";
+						// logWarning will add to validationResponse and pass information to user 
+						logWarning("WithinFileMatchingStructureDifferentStereoCategory", categoryDescription,
+								categoryDescription + ": " + foundDryRunCompound.getCorpName() + "(record number "
+								+ foundParentCdId + ")", numRecordsRead, validationResponse);
 						continue;
 					}
 				}
@@ -2378,6 +2398,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				String saltEquivString = "";
 				String saltAbbrevMapping = getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings, results,
 						recordNumber);
+				if (saltAbbrevMapping != null && saltAbbrevMapping.length() > 0) {
+					// Salt(s) has been found in structure and property mapping => not allowed 
+					CmpdRegMolFormatException saltException = new CmpdRegMolFormatException("Salts found in both structure and SDF Property");
+					throw saltException;
+				} 
 				if (saltAbbrevMapping != null) {
 					saltAbbrevString += saltAbbrevMapping;
 					saltAbbrevString += ";";
@@ -2405,7 +2430,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					mappings.add(newMapping);
 				} else {
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty)
-							.getSdfProperty();
+						.getSdfProperty();
 				}
 				inputMol.setProperty(dbProperty, saltAbbrevString);
 
@@ -2417,8 +2442,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							false, null, null, null, false);
 					mappings.add(newMapping);
 				} else {
-					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty)
-							.getSdfProperty();
+					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty).getSdfProperty();
 				}
 				inputMol.setProperty(dbProperty, saltEquivString);
 				return inputMol;
