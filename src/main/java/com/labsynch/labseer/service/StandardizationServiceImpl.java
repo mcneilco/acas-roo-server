@@ -44,6 +44,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 public class StandardizationServiceImpl implements StandardizationService, ApplicationListener<ContextRefreshedEvent> {
@@ -196,23 +197,18 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
+	@Transactional
 	public int populateStandardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		List<Long> parentIds = Parent.getParentIds();
 
-		Session session = StandardizationDryRunCompound.entityManager().unwrap(Session.class);
 		Long startTime = new Date().getTime();
-		Long currentTime = new Date().getTime();
 
 		int batchSize = propertiesUtilService.getStandardizationBatchSize();
-		Parent parent;
-		StandardizationDryRunCompound stndznCompound;
 		int nonMatchingCmpds = 0;
 		int totalCount = parentIds.size();
 		logger.info("number of parents to check: " + totalCount);
-		Date qcDate = new Date();
-		Integer cdId = 0;
-		List<Lot> queryLots;
+
 		Integer runNumber = StandardizationDryRunCompound.findMaxRunNumber().getSingleResult();
 		if (runNumber == null) {
 			runNumber = 1;
@@ -229,149 +225,153 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 		// Do a bulk standardization
 		for (List<Long> pIdGroup : parentIdGroups) {
-			logger.info("Starting batch of " + pIdGroup.size() + " parents");
-
-			// Create standardization hashmap
-			HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
-			HashMap<String, String> parentIdsToAsDrawnStructs = new HashMap<String, String>();
-			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
-			for (Long parentId : pIdGroup) {
-				parent = Parent.findParent(parentId);
-				parents.put(parentId, parent);
-
-				// Get the as drawn structure
-				String asDrawnStruct = Lot.getOriginallyDrawnAsStructure(parent);
-				if (asDrawnStruct == null) {
-					logger.warn("Parent " + parentId + " has no as drawn structure");
-					parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
-				} else {
-					parentIdsToStructures.put(parentId.toString(parentId), asDrawnStruct);
-					parentIdsToAsDrawnStructs.put(parentId.toString(parentId), asDrawnStruct);
-				}
-
-			}
-
-			// Do standardization
-			logger.info("Starting standardization of " + parentIdsToStructures.size() + " compounds");
-			// Start timer
-			long standardizationStart = new Date().getTime();
-			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService
-					.standardizeStructures(parentIdsToStructures);
-			long standardizationEnd = new Date().getTime();
-			// Convert the ms time to seconds
-			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
-			logger.info("Standardization took " + standardizationTime + " seconds");
-
-			logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
-			long structureSaveStart = new Date().getTime();
-
-			// Save the standardized dry run structures and return the hashmap of String
-			// (parent id) and Integer (cd id). We use the cdIds below
-			// when saving the dry run compounds to the database which links the structures
-			// and compounds together.
-			HashMap<String, Integer> parentIdToStructureId = saveDryRunStructures(standardizationResults);
-			long structureSaveEnd = new Date().getTime();
-			// Convert the ms time to seconds
-			long saveTime = (structureSaveEnd - structureSaveStart) / 1000;
-			logger.info("Saving took " + saveTime + " seconds");
-
-			logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
-			long dryRunCompoundSaveStart = new Date().getTime();
-			for (Long parentId : pIdGroup) {
-				parent = parents.get(parentId);
-				stndznCompound = new StandardizationDryRunCompound();
-				stndznCompound.setRunNumber(runNumber);
-				stndznCompound.setQcDate(qcDate);
-				stndznCompound.setParentId(parent.getId());
-				stndznCompound.setCorpName(parent.getCorpName());
-				stndznCompound.setAlias(getParentAlias(parent));
-				stndznCompound.setStereoCategory(parent.getStereoCategory().getName());
-				stndznCompound.setStereoComment(parent.getStereoComment());
-				stndznCompound.setOldMolWeight(parent.getMolWeight());
-
-				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
-				stndznCompound.setMolStructure(cmpdRegMolecule.getMolStructure());
-				stndznCompound.setStandardizationStatus(cmpdRegMolecule.getStandardizationStatus());
-				stndznCompound.setStandardizationComment(cmpdRegMolecule.getStandardizationComment());
-				stndznCompound.setRegistrationStatus(cmpdRegMolecule.getRegistrationStatus());
-				stndznCompound.setRegistrationComment(cmpdRegMolecule.getRegistrationComment());
-
-				Double newMolWeight = cmpdRegMolecule.getMass();
-				if (newMolWeight != null) {
-					DecimalFormat dMolWeight = new DecimalFormat("#.###");
-					stndznCompound.setNewMolWeight(Double.valueOf(dMolWeight.format(newMolWeight)));
-				} else {
-					stndznCompound.setNewMolWeight(null);
-				}
-
-				if (newMolWeight == null || stndznCompound.getOldMolWeight() == null) {
-					stndznCompound.setDeltaMolWeight(null);
-				} else {
-					DecimalFormat deltaMolFormat = new DecimalFormat("#.###");
-					Double deltaMolWeight = stndznCompound.getOldMolWeight() - stndznCompound.getNewMolWeight();
-					stndznCompound.setDeltaMolWeight(Double.valueOf(deltaMolFormat.format(deltaMolWeight)));
-				}
-
-				boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
-						stndznCompound.getMolStructure());
-
-				if (!displayTheSame) {
-					stndznCompound.setDisplayChange(true);
-					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-					nonMatchingCmpds++;
-				}
-				String asDrawnStruct = parentIdsToAsDrawnStructs.get(parentId.toString(parentId));
-				boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
-						stndznCompound.getMolStructure());
-
-				if (!asDrawnDisplaySame) {
-					stndznCompound.setAsDrawnDisplayChange(true);
-					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-					nonMatchingCmpds++;
-				}
-
-				cdId = parentIdToStructureId.get(parentId.toString());
-
-				if (cdId == -1) {
-					logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
-							+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
-				} else {
-					stndznCompound.setCdId(cdId);
-					stndznCompound.persist();
-				}
-				p++;
-			}
-			// End timer
-			long dryRunCompoundSaveEnd = new Date().getTime();
-			// Convert the ms time to seconds
-			long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
-			logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
-
-			// End loop through parent id group
-			logger.debug("flushing loader session");
-			session.flush();
-			session.clear();
-
-			// Compute your percentage.
-			percent = (float) Math.floor(p * 100f / totalCount);
-			if (percent != previousPercent) {
-				currentTime = new Date().getTime();
-				// Output if different from the last time.
-				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
-						+ totalCount + ") average speed (rows/min):"
-						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
-				currentTime = new Date().getTime();
-				logger.debug("Time Elapsed:" + (currentTime - startTime));
-			}
-			// Update the percentage.
-			previousPercent = percent;
+			dryrunStandardizeBatch(pIdGroup, nonMatchingCmpds, runNumber, startTime, totalCount, p, percent, previousPercent);
 		}
-
-		logger.info(
-				"total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
+		logger.info("total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
 		return (nonMatchingCmpds);
 	}
 
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private void dryrunStandardizeBatch(List<Long> pIdGroup, int nonMatchingCmpds, int runNumber, Long startTime,
+			int totalCount, int p, float percent, float previousPercent) throws StandardizerException, CmpdRegMolFormatException {
+		Parent parent;
+		StandardizationDryRunCompound stndznCompound;
+		Date qcDate = new Date();
+		Integer cdId = 0;
+		Long currentTime = new Date().getTime();
+		logger.info("Starting batch of " + pIdGroup.size() + " parents");
+		// Create standardization hashmap
+		HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
+		HashMap<String, String> parentIdsToAsDrawnStructs = new HashMap<String, String>();
+		HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
+		for (Long parentId : pIdGroup) {
+			parent = Parent.findParent(parentId);
+			parents.put(parentId, parent);
+
+			// Get the as drawn structure
+			String asDrawnStruct = Lot.getOriginallyDrawnAsStructure(parent);
+			if (asDrawnStruct == null) {
+				logger.warn("Parent " + parentId + " has no as drawn structure");
+				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
+			} else {
+				parentIdsToStructures.put(parentId.toString(parentId), asDrawnStruct);
+				parentIdsToAsDrawnStructs.put(parentId.toString(parentId), asDrawnStruct);
+			}
+
+		}
+
+		// Do standardization
+		logger.info("Starting standardization of " + parentIdsToStructures.size() + " compounds");
+		// Start timer
+		long standardizationStart = new Date().getTime();
+		HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService
+				.standardizeStructures(parentIdsToStructures);
+		long standardizationEnd = new Date().getTime();
+		// Convert the ms time to seconds
+		long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
+		logger.info("Standardization took " + standardizationTime + " seconds");
+
+		logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
+		long structureSaveStart = new Date().getTime();
+
+		// Save the standardized dry run structures and return the hashmap of String
+		// (parent id) and Integer (cd id). We use the cdIds below
+		// when saving the dry run compounds to the database which links the structures
+		// and compounds together.
+		HashMap<String, Integer> parentIdToStructureId = saveDryRunStructures(standardizationResults);
+		long structureSaveEnd = new Date().getTime();
+		// Convert the ms time to seconds
+		long saveTime = (structureSaveEnd - structureSaveStart) / 1000;
+		logger.info("Saving took " + saveTime + " seconds");
+
+		logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
+		long dryRunCompoundSaveStart = new Date().getTime();
+		for (Long parentId : pIdGroup) {
+			parent = parents.get(parentId);
+			stndznCompound = new StandardizationDryRunCompound();
+			stndznCompound.setRunNumber(runNumber);
+			stndznCompound.setQcDate(qcDate);
+			stndznCompound.setParentId(parent.getId());
+			stndznCompound.setCorpName(parent.getCorpName());
+			stndznCompound.setAlias(getParentAlias(parent));
+			stndznCompound.setStereoCategory(parent.getStereoCategory().getName());
+			stndznCompound.setStereoComment(parent.getStereoComment());
+			stndznCompound.setOldMolWeight(parent.getMolWeight());
+
+			CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
+			stndznCompound.setMolStructure(cmpdRegMolecule.getMolStructure());
+			stndznCompound.setStandardizationStatus(cmpdRegMolecule.getStandardizationStatus());
+			stndznCompound.setStandardizationComment(cmpdRegMolecule.getStandardizationComment());
+			stndznCompound.setRegistrationStatus(cmpdRegMolecule.getRegistrationStatus());
+			stndznCompound.setRegistrationComment(cmpdRegMolecule.getRegistrationComment());
+
+			Double newMolWeight = cmpdRegMolecule.getMass();
+			if (newMolWeight != null) {
+				DecimalFormat dMolWeight = new DecimalFormat("#.###");
+				stndznCompound.setNewMolWeight(Double.valueOf(dMolWeight.format(newMolWeight)));
+			} else {
+				stndznCompound.setNewMolWeight(null);
+			}
+
+			if (newMolWeight == null || stndznCompound.getOldMolWeight() == null) {
+				stndznCompound.setDeltaMolWeight(null);
+			} else {
+				DecimalFormat deltaMolFormat = new DecimalFormat("#.###");
+				Double deltaMolWeight = stndznCompound.getOldMolWeight() - stndznCompound.getNewMolWeight();
+				stndznCompound.setDeltaMolWeight(Double.valueOf(deltaMolFormat.format(deltaMolWeight)));
+			}
+
+			boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
+					stndznCompound.getMolStructure());
+
+			if (!displayTheSame) {
+				stndznCompound.setDisplayChange(true);
+				logger.debug("the compounds are NOT matching: " + parent.getCorpName());
+				nonMatchingCmpds++;
+			}
+			String asDrawnStruct = parentIdsToAsDrawnStructs.get(parentId.toString(parentId));
+			boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
+					stndznCompound.getMolStructure());
+
+			if (!asDrawnDisplaySame) {
+				stndznCompound.setAsDrawnDisplayChange(true);
+				logger.debug("the compounds are NOT matching: " + parent.getCorpName());
+				nonMatchingCmpds++;
+			}
+
+			cdId = parentIdToStructureId.get(parentId.toString());
+
+			if (cdId == -1) {
+				logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
+						+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
+			} else {
+				stndznCompound.setCdId(cdId);
+				stndznCompound.persist();
+			}
+			p++;
+		}
+		// End timer
+		long dryRunCompoundSaveEnd = new Date().getTime();
+		// Convert the ms time to seconds
+		long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
+		logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
+
+		// Compute your percentage.
+		percent = (float) Math.floor(p * 100f / totalCount);
+		if (percent != previousPercent) {
+			currentTime = new Date().getTime();
+			// Output if different from the last time.
+			logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
+					+ totalCount + ") average speed (rows/min):"
+					+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
+			currentTime = new Date().getTime();
+			logger.debug("Time Elapsed:" + (currentTime - startTime));
+		}
+		// Update the percentage.
+		previousPercent = percent;
+	}
+	
 	private String getParentAlias(Parent parent) {
 		StringBuilder aliasSB = new StringBuilder();
 		Set<ParentAlias> parentAliases = parent.getParentAliases();
