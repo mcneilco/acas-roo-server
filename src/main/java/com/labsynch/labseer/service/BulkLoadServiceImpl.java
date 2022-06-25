@@ -74,13 +74,13 @@ import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import flexjson.JSONSerializer;
 
@@ -265,7 +265,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	@Override
-	// @Transactional
+	@Transactional
 	public BulkLoadRegisterSDFResponseDTO registerSdf(BulkLoadRegisterSDFRequestDTO registerRequestDTO) {
 		// get properties out the request
 		String inputFileName = registerRequestDTO.getFilePath();
@@ -283,8 +283,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			boolean dropTable = chemStructureService.truncateStructureTable(StructureType.DRY_RUN);
 			dryRunCompound.truncateTable();
 		}
-
-		Session session = Parent.entityManager().unwrap(Session.class);
 
 		Collection<BulkLoadPropertyMappingDTO> mappings = registerRequestDTO.getMappings();
 		// instantiate input and output streams
@@ -522,11 +520,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					numNewLotsOldParentsLoaded++;
 				writeRegisteredMol(numRecordsRead, mol, metalotReturn, mappings, registeredMolExporter,
 						registeredCSVOutStream, isNewParent, results);
-				if (numRecordsRead % 100 == 0) {
-					logger.info("flushing bulk loader session");
-					session.flush();
-					session.clear();
-				}
 				currentTime = new Date().getTime();
 				if (currentTime > startTime) {
 					logger.info("SPEED REPORT:");
@@ -745,6 +738,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String warning = categoryCode + ": " + categoryDescription;
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Parent validateParent(Parent parent, Collection<BulkLoadPropertyMappingDTO> mappings, int numRecordsRead,
 			Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
