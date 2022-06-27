@@ -38,7 +38,7 @@ public class ApiStructureServicesController {
 		if (logger.isDebugEnabled())
 			logger.debug("incoming json from molconvert: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		MolConvertInputDTO inputDTO = MolConvertInputDTO.fromJsonToMolConvertInputDTO(json);
 		MolConvertOutputDTO output = new MolConvertOutputDTO();
 		String standardizedMol = "";
@@ -68,7 +68,7 @@ public class ApiStructureServicesController {
 		if (logger.isDebugEnabled())
 			logger.debug("incoming json from molconvert: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		MolConvertInputDTO inputDTO = MolConvertInputDTO.fromJsonToMolConvertInputDTO(json);
 		MolConvertOutputDTO output = null;
 		try {

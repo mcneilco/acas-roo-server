@@ -24,7 +24,7 @@ public class ApiCompoundsController {
 	@RequestMapping(value = "/checkBatchDependencies", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> checkBatchDependencies(@RequestBody CmpdRegBatchCodeDTO batchDTO) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		batchDTO.checkForDependentData();
 		return new ResponseEntity<String>(batchDTO.toJson(), headers, HttpStatus.OK);
 	}

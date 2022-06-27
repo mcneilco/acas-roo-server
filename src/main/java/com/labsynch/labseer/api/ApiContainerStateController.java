@@ -78,7 +78,7 @@ public class ApiContainerStateController {
         }
         logger.debug("number of container States found: " + containerStates.size());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates), headers, HttpStatus.OK);
     }
 
@@ -96,14 +96,14 @@ public class ApiContainerStateController {
             }
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates), headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/jsonFile", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonFile(@RequestBody String jsonFile) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ContainerStateMiniDTO> savedContainerStates = new ArrayList<ContainerStateMiniDTO>();
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
@@ -149,7 +149,7 @@ public class ApiContainerStateController {
     @RequestMapping(value = "/jsonArrayParse", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ContainerStateMiniDTO> savedContainerStates = new ArrayList<ContainerStateMiniDTO>();
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
@@ -188,7 +188,7 @@ public class ApiContainerStateController {
     @RequestMapping(value = "/jsonArrayParse", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
         BufferedReader br = null;
@@ -221,7 +221,7 @@ public class ApiContainerStateController {
     public ResponseEntity<java.lang.String> updateIgnoreFromJsonArrayAndKind(@RequestParam("lsKind") String lsKind,
             @RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         LsTransaction uplogTransaction;
         try {
             uplogTransaction = csService.ignoreByContainer(json, lsKind);
@@ -236,7 +236,7 @@ public class ApiContainerStateController {
     @RequestMapping(value = "/ignore/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateIgnoreFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         LsTransaction lst = new LsTransaction();
         lst.setComments("mark states to ignore");
         lst.setRecordedDate(new Date());

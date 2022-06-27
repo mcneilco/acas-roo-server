@@ -49,7 +49,7 @@ public class ApiAnalysisGroupValueController {
 	public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
 		AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (analysisGroupValue == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -146,7 +146,7 @@ public class ApiAnalysisGroupValueController {
 			logger.error(e.toString());
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (agValues == null || agValues.size() == 0) {
 			return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
 		}
@@ -196,7 +196,7 @@ public class ApiAnalysisGroupValueController {
 		List<AnalysisGroupValue> agValues = AnalysisGroupValue
 				.findAnalysisGroupValuesByIdList(idSet.getIdSet(), onlyPublicDataBoolean).getResultList();
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = analysisGroupValueService.getCsvList(agValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);

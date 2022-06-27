@@ -61,7 +61,7 @@ public class ApiTreatmentGroupController {
         TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
         TreatmentGroup savedTreatmentGroup = treatmentGroupService.saveLsTreatmentGroup(treatmentGroup);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(savedTreatmentGroup.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -69,7 +69,7 @@ public class ApiTreatmentGroupController {
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
         Collection<TreatmentGroup> treatmentGroups = TreatmentGroup.fromJsonArrayToTreatmentGroups(json);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<TreatmentGroup> savedTreatmentGroups = new ArrayList<TreatmentGroup>();
         try {
             for (TreatmentGroup treatmentGroup : treatmentGroups) {
@@ -87,7 +87,7 @@ public class ApiTreatmentGroupController {
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody TreatmentGroup treatmentGroup) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         treatmentGroup = treatmentGroupService.updateTreatmentGroup(treatmentGroup);
         if (treatmentGroup.getId() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -98,7 +98,7 @@ public class ApiTreatmentGroupController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<TreatmentGroup> treatmentGroups) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         for (TreatmentGroup treatmentGroup : treatmentGroups) {
             treatmentGroup = treatmentGroupService.updateTreatmentGroup(treatmentGroup);
             if (treatmentGroup.getId() == null) {

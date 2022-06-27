@@ -43,7 +43,7 @@ public class ApiDDictValueController {
 			@RequestParam(value = "lsKind", required = false) String lsKind) {
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		logger.debug("hit the controller: " + lsType);
 
@@ -164,7 +164,7 @@ public class ApiDDictValueController {
 			createTypeKind = true;
 		dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (dDictValue == null) {
 			return new ResponseEntity<String>("ERROR: Multiple DDictValue already exists", headers,
 					HttpStatus.CONFLICT);
@@ -185,7 +185,7 @@ public class ApiDDictValueController {
 		}
 		List<DDictValue> savedDDictValues = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(DDictValue.toJsonArray(savedDDictValues), headers, HttpStatus.CREATED);
 	}
 
@@ -204,7 +204,7 @@ public class ApiDDictValueController {
 
 		CodeTableDTO codeTableValue = dataDictionaryService.getOrCreateCodeTable(codeTableDTO, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (codeTableValue == null) {
 			return new ResponseEntity<String>("ERROR: unable to create new entry", headers, HttpStatus.BAD_REQUEST);
 		}
@@ -216,7 +216,7 @@ public class ApiDDictValueController {
 	public ResponseEntity<String> createCodeTablesFromJsonArray(@RequestBody List<CodeTableDTO> codeTableDTOs,
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Boolean createTypeKind = false;
 		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true"))
 			createTypeKind = true;
@@ -238,7 +238,7 @@ public class ApiDDictValueController {
 	public ResponseEntity<String> updateCodeTableFromJson(@RequestBody CodeTableDTO codeTableDTO) {
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		CodeTableDTO codeTableValue = dataDictionaryService.updateCodeTableValue(codeTableDTO);
 		if (codeTableValue == null) {
@@ -251,7 +251,7 @@ public class ApiDDictValueController {
 	public ResponseEntity<String> updateCodeTablesFromJsonArray(@RequestBody List<CodeTableDTO> codeTableDTOs) {
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<CodeTableDTO> updatedCodeTableValues = dataDictionaryService.updateCodeTableValueArray(codeTableDTOs);
 		if (updatedCodeTableValues == null) {
@@ -263,7 +263,7 @@ public class ApiDDictValueController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody DDictValue dDictValue) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (dDictValue.merge() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -273,7 +273,7 @@ public class ApiDDictValueController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody List<DDictValue> dDictValues) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
 		for (DDictValue dDictValue : dDictValues) {
 			if (dDictValue.merge() == null) {
@@ -288,7 +288,7 @@ public class ApiDDictValueController {
 	public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
 		DDictValue dDictValue = DDictValue.findDDictValue(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (dDictValue == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}

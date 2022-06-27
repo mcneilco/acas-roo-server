@@ -73,7 +73,7 @@ public class ApiCmpdSearchController {
 	public ResponseEntity<String> jsonArrayCheckParentCorpNameExists(@RequestBody String json) {
 		logger.debug("incoming json from getPreferredName: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<PreferredNameDTO> preferredNameDTOs = PreferredNameDTO.fromJsonArrayToPreferredNameDTO(json);
 		preferredNameDTOs = PreferredNameDTO.getParentPreferredNames(preferredNameDTOs);
 		return new ResponseEntity<String>(PreferredNameDTO.toJsonArray(preferredNameDTOs), headers, HttpStatus.OK);

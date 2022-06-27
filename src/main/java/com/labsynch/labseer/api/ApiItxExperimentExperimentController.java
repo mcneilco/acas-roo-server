@@ -60,7 +60,7 @@ public class ApiItxExperimentExperimentController {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             ItxExperimentExperiment itxExperimentExperiment = ItxExperimentExperiment
                     .fromJsonToItxExperimentExperiment(json);
@@ -79,7 +79,7 @@ public class ApiItxExperimentExperimentController {
         Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment
                 .fromJsonArrayToItxExperimentExperiments(json);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             Collection<ItxExperimentExperiment> savedItxExperimentExperiments = itxExperimentExperimentService
                     .saveLsItxExperiments(itxExperimentExperiments);
@@ -96,7 +96,7 @@ public class ApiItxExperimentExperimentController {
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         ItxExperimentExperiment itxExperimentExperiment = ItxExperimentExperiment
                 .fromJsonToItxExperimentExperiment(json);
         ItxExperimentExperiment updatedItxExperimentExperiment = null;
@@ -113,7 +113,7 @@ public class ApiItxExperimentExperimentController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ItxExperimentExperiment> updatedItxExperimentExperiments = new HashSet<ItxExperimentExperiment>();
         try {
             for (ItxExperimentExperiment itxExperimentExperiment : ItxExperimentExperiment
@@ -135,7 +135,7 @@ public class ApiItxExperimentExperimentController {
     public ResponseEntity<String> findItxExperimentExperimentsByFirstExperiment(
             @PathVariable("id") Long firstExperimentId) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Experiment firstExperiment;
         try {
             firstExperiment = Experiment.findExperiment(firstExperimentId);
@@ -159,7 +159,7 @@ public class ApiItxExperimentExperimentController {
     public ResponseEntity<String> findItxExperimentExperimentsBySecondExperiment(
             @PathVariable("id") Long secondExperimentId) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Experiment secondExperiment;
         try {
             secondExperiment = Experiment.findExperiment(secondExperimentId);

@@ -163,7 +163,7 @@ public class ApiAnalysisGroupController {
 	// AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
 	// analysisGroup.persist();
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	// return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	// }
 
@@ -179,7 +179,7 @@ public class ApiAnalysisGroupController {
 			e.printStackTrace();
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(newAnalysisGroup.toJson(), headers, HttpStatus.CREATED);
 	}
 
@@ -197,7 +197,7 @@ public class ApiAnalysisGroupController {
 			}
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(AnalysisGroup.toJsonArray(savedAnalysisGroups), headers, HttpStatus.CREATED);
 	}
 
@@ -205,7 +205,7 @@ public class ApiAnalysisGroupController {
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody AnalysisGroup analysisGroup) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
 		// if (analysisGroup.merge() == null) {
 		// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -217,7 +217,7 @@ public class ApiAnalysisGroupController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<AnalysisGroup> updatedAnalysisGroups = new HashSet<AnalysisGroup>();
 		for (AnalysisGroup analysisGroup : analysisGroups) {
 			AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
@@ -233,7 +233,7 @@ public class ApiAnalysisGroupController {
 	public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (analysisGroup == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}

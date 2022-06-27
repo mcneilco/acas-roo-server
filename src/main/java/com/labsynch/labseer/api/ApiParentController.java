@@ -35,7 +35,7 @@ public class ApiParentController {
 	@ResponseBody
 	public ResponseEntity<String> validateParent(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Parent queryParent = Parent.fromJsonToParent(json);
 			ParentValidationDTO validationDTO = parentService.validateUniqueParent(queryParent);
@@ -56,7 +56,7 @@ public class ApiParentController {
 	@ResponseBody
 	public ResponseEntity<String> updateParent(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Parent parent = Parent.fromJsonToParent(json);
 			Collection<CodeTableDTO> affectedLots = parentService.updateParent(parent);
@@ -71,7 +71,7 @@ public class ApiParentController {
 	@ResponseBody
 	public ResponseEntity<String> updateParentMetaArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			String results = parentService.updateParentMetaArray(json);
 			return new ResponseEntity<String>(results, headers, HttpStatus.OK);
@@ -86,7 +86,7 @@ public class ApiParentController {
 	@ResponseBody
 	public ResponseEntity<String> updateParentMeta(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ParentEditDTO parentDTO = ParentEditDTO.fromJsonToParentEditDTO(json);
 			Parent parent = parentService.updateParentMeta(parentDTO);

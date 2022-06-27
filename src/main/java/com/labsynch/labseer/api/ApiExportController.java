@@ -31,7 +31,7 @@ public class ApiExportController {
 		if (logger.isDebugEnabled())
 			logger.debug("incoming json from molconvert: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		SearchResultExportRequestDTO searchResultExportRequestDTO = SearchResultExportRequestDTO
 				.fromJsonToSearchResultExportRequestDTO(json);
 		ExportResultDTO resultDTO;
