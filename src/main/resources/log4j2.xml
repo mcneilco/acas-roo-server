@@ -13,6 +13,9 @@
     <Logger name="org.springframework.web" level="info"/>
     <Logger name="org.apache.catalina.core" level="info"/>
     <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost]" level="info"/>
+
+    <!-- Leaving debug transactions here but commented as it can be helpful for knowing when begin/commit of transaction is-->
+    <!-- <Logger name="org.hibernate.engine.transaction.internal.TransactionImpl" level="debug"/> -->
     <Root level="info">
       <AppenderRef ref="STDOUT"/>
     </Root>
