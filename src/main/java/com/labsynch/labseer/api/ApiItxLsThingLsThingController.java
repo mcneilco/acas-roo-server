@@ -70,7 +70,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<ItxLsThingLsThing> itxLsThingLsThings = ItxLsThingLsThing
 				.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
 		if (with != null) {
@@ -103,7 +103,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -157,7 +157,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -212,7 +212,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -271,7 +271,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -330,7 +330,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -391,7 +391,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -453,7 +453,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing firstLsThing = null;
@@ -523,7 +523,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		ItxLsThingLsThing itxLsThingLsThing = ItxLsThingLsThing.fromJsonToItxLsThingLsThing(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ItxLsThingLsThing savedItxLsThingLsThing = itxLsThingLsThingService
 					.saveItxLsThingLsThing(itxLsThingLsThing);
@@ -541,7 +541,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		Collection<ItxLsThingLsThing> itxLsThingLsThings = ItxLsThingLsThing.fromJsonArrayToItxLsThingLsThings(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<ItxLsThingLsThing> savedItxLsThingLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : itxLsThingLsThings) {
@@ -563,7 +563,7 @@ public class ApiItxLsThingLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		ItxLsThingLsThing itxLsThingLsThing = ItxLsThingLsThing.fromJsonToItxLsThingLsThing(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		ItxLsThingLsThing updatedItxLsThingLsThing = null;
@@ -606,7 +606,7 @@ public class ApiItxLsThingLsThingController {
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<ItxLsThingLsThing> itxLsThingLsThings,
 			@RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Collection<ItxLsThingLsThing> updatedItxLsThingLsThings = null;

@@ -41,7 +41,7 @@ public class ApiStandardizationServicesController {
 	@ResponseBody
 	public ResponseEntity<String> reset() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		// reset standardization compound tables if the correct code is sent (basic
 		// guard)
 		logger.info("resetting Dry Run tables");
@@ -56,7 +56,7 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> populateDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		logger.info("checking parent structs and saving to dry run table");
 		int numberOfDisplayChanges = 0;
 		numberOfDisplayChanges = standardizationService.populateStandardizationDryRunTable();
@@ -69,7 +69,7 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> dryRun(@RequestParam(value = "reportOnly", required = false) Boolean reportOnly)
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		boolean onlyReport = true;
 		if (reportOnly != null && reportOnly == false) {
 			onlyReport = false;
@@ -90,7 +90,7 @@ public class ApiStandardizationServicesController {
 		StandardizationDryRunSearchDTO searchCriteria = StandardizationDryRunSearchDTO
 				.fromJsonToStandardizationDryRunSearchDTO(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (countOnly != null && countOnly == true) {
 			return new ResponseEntity<String>("{\"count\":"
 					+ StandardizationDryRunCompound.searchStandardiationDryRunCount(searchCriteria).getSingleResult()
@@ -129,7 +129,7 @@ public class ApiStandardizationServicesController {
 	@ResponseBody
 	public ResponseEntity<String> findDryRunDupeStructs() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		logger.info("checking parent structs and saving to stanardization dryrun compound table");
 		int numberOfDisplayChanges = 0;
 		try {
@@ -149,7 +149,7 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> execute(@RequestParam(value = "username", required = true) String username,
 			@RequestParam(value = "reason", required = true) String reason) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		logger.info("standardizing parent structs");
 		try {
 			String summary = standardizationService.executeStandardization(username, reason);
@@ -177,7 +177,7 @@ public class ApiStandardizationServicesController {
 	@ResponseBody
 	public ResponseEntity<String> getCurrentStandardizationSettings() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		StandardizationSettings stndardizationSettings = standardizationService.getStandardizationSettings();
 		return new ResponseEntity<String>(stndardizationSettings.toJson(), headers, HttpStatus.OK);
 	}
@@ -187,7 +187,7 @@ public class ApiStandardizationServicesController {
 	@ResponseBody
 	public ResponseEntity<String> getStandardizationHistory() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<StandardizationHistory> standardizationHistory = standardizationService.getStandardizationHistory();
 		return new ResponseEntity<String>(StandardizationHistory.toJsonArray(standardizationHistory), headers,
 				HttpStatus.OK);
@@ -198,7 +198,7 @@ public class ApiStandardizationServicesController {
 	@ResponseBody
 	public ResponseEntity<String> getDryRunStats() throws StandardizerException {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		String dryRunStats = standardizationService.getDryRunStats();
 		return new ResponseEntity<String>(dryRunStats, headers, HttpStatus.OK);
 	}

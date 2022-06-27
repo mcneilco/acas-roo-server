@@ -53,7 +53,7 @@ public class ApiLabelSequenceController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		LabelSequence labelSequence = LabelSequence.fromJsonToLabelSequence(json);
 		Collection<LabelSequence> foundLabelSequences = LabelSequence
 				.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(
@@ -79,7 +79,7 @@ public class ApiLabelSequenceController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(json);
 			Collection<LabelSequence> savedLabelSequences = new ArrayList<LabelSequence>();
@@ -112,7 +112,7 @@ public class ApiLabelSequenceController {
 	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
 		LabelSequence labelSequence = LabelSequence.fromJsonToLabelSequence(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		labelSequence = labelSequence.merge();
 		if (labelSequence.getId() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -123,7 +123,7 @@ public class ApiLabelSequenceController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(json);
 			Collection<LabelSequence> updatedLabelSequences = new ArrayList<LabelSequence>();
@@ -142,7 +142,7 @@ public class ApiLabelSequenceController {
 	public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
 		LabelSequence labelSequence = LabelSequence.findLabelSequence(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (labelSequence == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -154,7 +154,7 @@ public class ApiLabelSequenceController {
 	@RequestMapping(value = "/getNextLabelSequences", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateLabelSequence(@RequestBody LabelSequenceDTO lsDTO) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		logger.info("incoming label seq: " + lsDTO.toJson());
 		List<LabelSequence> labelSequences = LabelSequence
 				.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(lsDTO.getThingTypeAndKind(),
@@ -172,7 +172,7 @@ public class ApiLabelSequenceController {
 	@RequestMapping(value = "/getLabels", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> getAutoLabels(@RequestBody LabelSequenceDTO lsDTO) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<AutoLabelDTO> autoLabels;
 		try {
 			autoLabels = autoLabelService.getAutoLabels(lsDTO);

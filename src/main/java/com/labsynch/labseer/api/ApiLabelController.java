@@ -58,7 +58,7 @@ public class ApiLabelController {
     public ResponseEntity<String> createProtocolLabelFromJson(@RequestBody ProtocolLabel ProtocolLabel_) {
         ProtocolLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ProtocolLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -70,14 +70,14 @@ public class ApiLabelController {
             newProtocolLabels.add(ProtocolLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ProtocolLabel.toJsonArray(newProtocolLabels), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/protocollabels/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateProtocolLabelFromJson(@RequestBody ProtocolLabel ProtocolLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ProtocolLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -87,7 +87,7 @@ public class ApiLabelController {
     @RequestMapping(value = "/protocollabels/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateProtocolLabelFromJsonArray(@RequestBody List<ProtocolLabel> protocolLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ProtocolLabel> newProtocolLabels = new ArrayList<ProtocolLabel>();
         for (ProtocolLabel ProtocolLabel_ : protocolLabels) {
             if (ProtocolLabel_.merge() == null) {
@@ -102,7 +102,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteProtocolLabelFromJson(@PathVariable("id") Long id) {
         ProtocolLabel ProtocolLabel_ = ProtocolLabel.findProtocolLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ProtocolLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -135,7 +135,7 @@ public class ApiLabelController {
     public ResponseEntity<String> createExperimentLabelFromJson(@RequestBody ExperimentLabel ExperimentLabel_) {
         ExperimentLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ExperimentLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -148,7 +148,7 @@ public class ApiLabelController {
             newExperimentLabels.add(ExperimentLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ExperimentLabel.toJsonArray(newExperimentLabels), headers,
                 HttpStatus.CREATED);
     }
@@ -156,7 +156,7 @@ public class ApiLabelController {
     @RequestMapping(value = "/experimentlabels/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateExperimentLabelFromJson(@RequestBody ExperimentLabel ExperimentLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ExperimentLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -167,7 +167,7 @@ public class ApiLabelController {
     public ResponseEntity<String> updateExperimentLabelFromJsonArray(
             @RequestBody List<ExperimentLabel> experimentLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ExperimentLabel> newExperimentLabels = new ArrayList<ExperimentLabel>();
         for (ExperimentLabel ExperimentLabel_ : experimentLabels) {
             if (ExperimentLabel_.merge() == null) {
@@ -182,7 +182,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteExperimentLabelFromJson(@PathVariable("id") Long id) {
         ExperimentLabel ExperimentLabel_ = ExperimentLabel.findExperimentLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ExperimentLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -216,7 +216,7 @@ public class ApiLabelController {
             @RequestBody AnalysisGroupLabel AnalysisGroupLabel_) {
         AnalysisGroupLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -229,7 +229,7 @@ public class ApiLabelController {
             newAnalysisGroupLabels.add(AnalysisGroupLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupLabel.toJsonArray(newAnalysisGroupLabels), headers,
                 HttpStatus.CREATED);
     }
@@ -238,7 +238,7 @@ public class ApiLabelController {
     public ResponseEntity<String> updateAnalysisGroupLabelFromJson(
             @RequestBody AnalysisGroupLabel AnalysisGroupLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (AnalysisGroupLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -249,7 +249,7 @@ public class ApiLabelController {
     public ResponseEntity<String> updateAnalysisGroupLabelFromJsonArray(
             @RequestBody List<AnalysisGroupLabel> analysisGroupLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<AnalysisGroupLabel> newAnalysisGroupLabels = new ArrayList<AnalysisGroupLabel>();
         for (AnalysisGroupLabel AnalysisGroupLabel_ : analysisGroupLabels) {
             if (AnalysisGroupLabel_.merge() == null) {
@@ -265,7 +265,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteAnalysisGroupLabelFromJson(@PathVariable("id") Long id) {
         AnalysisGroupLabel AnalysisGroupLabel_ = AnalysisGroupLabel.findAnalysisGroupLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (AnalysisGroupLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -299,7 +299,7 @@ public class ApiLabelController {
             @RequestBody TreatmentGroupLabel TreatmentGroupLabel_) {
         TreatmentGroupLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(TreatmentGroupLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -312,7 +312,7 @@ public class ApiLabelController {
             newTreatmentGroupLabels.add(TreatmentGroupLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(TreatmentGroupLabel.toJsonArray(newTreatmentGroupLabels), headers,
                 HttpStatus.CREATED);
     }
@@ -321,7 +321,7 @@ public class ApiLabelController {
     public ResponseEntity<String> updateTreatmentGroupLabelFromJson(
             @RequestBody TreatmentGroupLabel TreatmentGroupLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (TreatmentGroupLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -332,7 +332,7 @@ public class ApiLabelController {
     public ResponseEntity<String> updateTreatmentGroupLabelFromJsonArray(
             @RequestBody List<TreatmentGroupLabel> treatmentGroupLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<TreatmentGroupLabel> newTreatmentGroupLabels = new ArrayList<TreatmentGroupLabel>();
         for (TreatmentGroupLabel TreatmentGroupLabel_ : treatmentGroupLabels) {
             if (TreatmentGroupLabel_.merge() == null) {
@@ -348,7 +348,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteTreatmentGroupLabelFromJson(@PathVariable("id") Long id) {
         TreatmentGroupLabel TreatmentGroupLabel_ = TreatmentGroupLabel.findTreatmentGroupLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (TreatmentGroupLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -381,7 +381,7 @@ public class ApiLabelController {
     public ResponseEntity<String> createSubjectLabelFromJson(@RequestBody SubjectLabel SubjectLabel_) {
         SubjectLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(SubjectLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -393,14 +393,14 @@ public class ApiLabelController {
             newSubjectLabels.add(SubjectLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(SubjectLabel.toJsonArray(newSubjectLabels), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/subjectlabels/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateSubjectLabelFromJson(@RequestBody SubjectLabel SubjectLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (SubjectLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -410,7 +410,7 @@ public class ApiLabelController {
     @RequestMapping(value = "/subjectlabels/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateSubjectLabelFromJsonArray(@RequestBody List<SubjectLabel> subjectLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<SubjectLabel> newSubjectLabels = new ArrayList<SubjectLabel>();
         for (SubjectLabel SubjectLabel_ : subjectLabels) {
             if (SubjectLabel_.merge() == null) {
@@ -425,7 +425,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteSubjectLabelFromJson(@PathVariable("id") Long id) {
         SubjectLabel SubjectLabel_ = SubjectLabel.findSubjectLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (SubjectLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -458,7 +458,7 @@ public class ApiLabelController {
     public ResponseEntity<String> createLsThingLabelFromJson(@RequestBody LsThingLabel LsThingLabel_) {
         LsThingLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LsThingLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -470,14 +470,14 @@ public class ApiLabelController {
             newLsThingLabels.add(LsThingLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LsThingLabel.toJsonArray(newLsThingLabels), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/lsthinglabels/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateLsThingLabelFromJson(@RequestBody LsThingLabel LsThingLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (LsThingLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -487,7 +487,7 @@ public class ApiLabelController {
     @RequestMapping(value = "/lsthinglabels/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateLsThingLabelFromJsonArray(@RequestBody List<LsThingLabel> lsThingLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<LsThingLabel> newLsThingLabels = new ArrayList<LsThingLabel>();
         for (LsThingLabel LsThingLabel_ : lsThingLabels) {
             if (LsThingLabel_.merge() == null) {
@@ -502,7 +502,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteLsThingLabelFromJson(@PathVariable("id") Long id) {
         LsThingLabel LsThingLabel_ = LsThingLabel.findLsThingLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (LsThingLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -535,7 +535,7 @@ public class ApiLabelController {
     public ResponseEntity<String> createContainerLabelFromJson(@RequestBody ContainerLabel ContainerLabel_) {
         ContainerLabel_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerLabel_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -547,14 +547,14 @@ public class ApiLabelController {
             newContainerLabels.add(ContainerLabel_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerLabel.toJsonArray(newContainerLabels), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/containerlabels/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateContainerLabelFromJson(@RequestBody ContainerLabel ContainerLabel_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ContainerLabel_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -564,7 +564,7 @@ public class ApiLabelController {
     @RequestMapping(value = "/containerlabels/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateContainerLabelFromJsonArray(@RequestBody List<ContainerLabel> containerLabels) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ContainerLabel> newContainerLabels = new ArrayList<ContainerLabel>();
         for (ContainerLabel ContainerLabel_ : containerLabels) {
             if (ContainerLabel_.merge() == null) {
@@ -579,7 +579,7 @@ public class ApiLabelController {
     public ResponseEntity<String> deleteContainerLabelFromJson(@PathVariable("id") Long id) {
         ContainerLabel ContainerLabel_ = ContainerLabel.findContainerLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ContainerLabel_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }

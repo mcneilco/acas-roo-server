@@ -82,7 +82,7 @@ public class ApiItxSubjectContainerController {
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody ItxSubjectContainer itxSubjectContainer) {
         logger.debug("Incoming itxSubjectContainer JSON: " + itxSubjectContainer.toJson());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             ItxSubjectContainer savedItx = itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer);
             return new ResponseEntity<String>(savedItx.toJson(), headers, HttpStatus.CREATED);
@@ -97,7 +97,7 @@ public class ApiItxSubjectContainerController {
     public ResponseEntity<java.lang.String> createFromJsonArray(
             @RequestBody List<ItxSubjectContainer> itxSubjectContainers) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             Collection<ItxSubjectContainer> savedItxSubjectContainers = new ArrayList<ItxSubjectContainer>();
             for (ItxSubjectContainer itxSubjectContainer : itxSubjectContainers) {
@@ -117,7 +117,7 @@ public class ApiItxSubjectContainerController {
     @RequestMapping(value = { "", "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         ItxSubjectContainer itxSubjectContainer = ItxSubjectContainer.fromJsonToItxSubjectContainer(json);
         ItxSubjectContainer updatedItxSubjectContainer = null;
         try {
@@ -132,7 +132,7 @@ public class ApiItxSubjectContainerController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ItxSubjectContainer> updatedItxSubjectContainers = new HashSet<ItxSubjectContainer>();
         try {
             for (ItxSubjectContainer itxSubjectContainer : ItxSubjectContainer
@@ -153,7 +153,7 @@ public class ApiItxSubjectContainerController {
     public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         ItxSubjectContainer itxSubjectContainer = ItxSubjectContainer.findItxSubjectContainer(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (itxSubjectContainer == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }

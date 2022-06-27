@@ -195,7 +195,7 @@ public class ApiProtocolController {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody Protocol protocol) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
         try {
@@ -234,7 +234,7 @@ public class ApiProtocolController {
         IOUtils.closeQuietly(sr);
         IOUtils.closeQuietly(br);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Protocol.toJsonArray(savedProtocols), headers, HttpStatus.CREATED);
     }
 
@@ -242,7 +242,7 @@ public class ApiProtocolController {
     @RequestMapping(value = { "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Protocol protocol) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
         try {
@@ -267,7 +267,7 @@ public class ApiProtocolController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Protocol> protocols) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<Protocol> updatedProtocols = new ArrayList<Protocol>();
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
@@ -295,7 +295,7 @@ public class ApiProtocolController {
     public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         Protocol protocol = Protocol.findProtocol(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (protocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -309,7 +309,7 @@ public class ApiProtocolController {
     public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
         Protocol protocol = Protocol.findProtocol(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (protocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -330,7 +330,7 @@ public class ApiProtocolController {
             throws UniqueNameException {
         protocol = protocolService.saveLsProtocol(protocol);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -510,7 +510,7 @@ public class ApiProtocolController {
     @ResponseBody
     public ResponseEntity<String> experimentCount(@PathVariable String codeName) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         int numberOfExperiments = Protocol.findProtocolsByCodeNameEquals(codeName).getSingleResult().getExperiments()
                 .size();
         String result = new JSONSerializer().serialize(numberOfExperiments);
@@ -552,7 +552,7 @@ public class ApiProtocolController {
     @ResponseBody
     public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
         try {
             Collection<String> results = protocolService.getProtocolCodesByDateValueComparison(requestDTO);

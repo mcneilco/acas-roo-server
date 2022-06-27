@@ -65,7 +65,7 @@ public class ApiLsRoleController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			LsRole lsRole = LsRole.fromJsonToLsRole(json);
 			lsRole.persist();
@@ -80,7 +80,7 @@ public class ApiLsRoleController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LsRole> lsRoles = LsRole.fromJsonArrayToLsRoles(json);
 			Collection<LsRole> savedLsRoles = new ArrayList<LsRole>();
@@ -101,7 +101,7 @@ public class ApiLsRoleController {
 	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
 		LsRole lsRole = LsRole.fromJsonToLsRole(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		lsRole = lsRole.merge();
 		if (lsRole.getId() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -112,7 +112,7 @@ public class ApiLsRoleController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LsRole> lsRoles = LsRole.fromJsonArrayToLsRoles(json);
 			Collection<LsRole> updatedLsRoles = new ArrayList<LsRole>();
@@ -131,7 +131,7 @@ public class ApiLsRoleController {
 	public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
 		LsRole lsRole = LsRole.findLsRole(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (lsRole == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}

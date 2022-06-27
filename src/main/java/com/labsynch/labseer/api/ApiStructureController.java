@@ -112,7 +112,7 @@ public class ApiStructureController {
 	public ResponseEntity<java.lang.String> getByCodeName(
 			@PathVariable("codeName") String codeName) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ChemStructure structure = ChemStructure.findStructureByCodeName(codeName);
 			return new ResponseEntity<String>(structure.toJson(), headers, HttpStatus.OK);
@@ -183,7 +183,7 @@ public class ApiStructureController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ChemStructure structure = ChemStructure.fromJsonToChemStructure(json);
 			structure = structureService.saveStructure(structure);
@@ -199,7 +199,7 @@ public class ApiStructureController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<ChemStructure> structures = ChemStructure.fromJsonArrayToChemStructures(json);
 			Collection<ChemStructure> savedStructures = new ArrayList<ChemStructure>();
@@ -220,7 +220,7 @@ public class ApiStructureController {
 	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
 		ChemStructure structure = ChemStructure.fromJsonToChemStructure(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		structure = structureService.updateStructure(structure);
 		if (structure.getId() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -231,7 +231,7 @@ public class ApiStructureController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<ChemStructure> structures = ChemStructure.fromJsonArrayToChemStructures(json);
 			Collection<ChemStructure> updatedStructures = new ArrayList<ChemStructure>();
@@ -250,7 +250,7 @@ public class ApiStructureController {
 	public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
 		ChemStructure structure = ChemStructure.findChemStructure(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (structure == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -292,7 +292,7 @@ public class ApiStructureController {
 	public ResponseEntity<java.lang.String> convertSmilesToMol(
 			@RequestBody String smiles) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			String molStructure = structureService.convertSmilesToMol(smiles);
 			return new ResponseEntity<String>(molStructure, headers, HttpStatus.OK);
@@ -310,7 +310,7 @@ public class ApiStructureController {
 	public ResponseEntity<java.lang.String> cleanMolStructure(
 			@RequestBody String molStructure) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			String cleanedMolStructure = structureService.cleanMolStructure(molStructure);
 			return new ResponseEntity<String>(cleanedMolStructure, headers, HttpStatus.OK);

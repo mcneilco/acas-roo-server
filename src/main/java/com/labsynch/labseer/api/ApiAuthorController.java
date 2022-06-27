@@ -198,7 +198,7 @@ public class ApiAuthorController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Author author = Author.fromJsonToAuthor(json);
 			author = authorService.saveAuthor(author);
@@ -213,7 +213,7 @@ public class ApiAuthorController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
 			Collection<Author> savedAuthors = new ArrayList<Author>();
@@ -234,7 +234,7 @@ public class ApiAuthorController {
 	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
 		Author author = Author.fromJsonToAuthor(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		author = authorService.updateAuthor(author);
 		if (author.getId() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -245,7 +245,7 @@ public class ApiAuthorController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
 			Collection<Author> updatedAuthors = new ArrayList<Author>();
@@ -264,7 +264,7 @@ public class ApiAuthorController {
 	public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
 		Author author = Author.findAuthor(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (author == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -322,7 +322,7 @@ public class ApiAuthorController {
 		Author author = Author.fromJsonToAuthor(json);
 		author = authorService.getOrCreateAuthor(author);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
 	}
 
@@ -378,7 +378,7 @@ public class ApiAuthorController {
 	@RequestMapping(value = "/signupAuthor", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> signupFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Author author = Author.fromJsonToAuthor(json);
 			author = authorService.signupAuthor(author);

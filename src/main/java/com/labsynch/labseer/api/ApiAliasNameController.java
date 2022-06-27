@@ -37,7 +37,7 @@ public class ApiAliasNameController {
 			@RequestParam String lsKind) {
 		logger.debug("incoming json from getParentByAliasName: " + aliasName);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ParentAliasDTO queryParentAlias = new ParentAliasDTO();
 		queryParentAlias.setAliasName(aliasName);
 		queryParentAlias.setLsType(lsType);
@@ -56,7 +56,7 @@ public class ApiAliasNameController {
 	public ResponseEntity<String> getParentsByAliasName(@RequestBody String json) {
 		logger.debug("incoming json from getParentAliasName: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<ParentAliasDTO> aliasNameDTOs = ParentAliasDTO.fromJsonArrayToParentAliasDTO(json);
 		aliasNameDTOs = ParentAliasDTO.getParentsByAlias(aliasNameDTOs);
 		return new ResponseEntity<String>(ParentAliasDTO.toJsonArray(aliasNameDTOs), headers, HttpStatus.OK);
@@ -67,7 +67,7 @@ public class ApiAliasNameController {
 	@ResponseBody
 	public ResponseEntity<String> getParentAliasTypes() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<ParentAliasType> aliasTypes = ParentAliasType.findAllParentAliasTypes();
 
@@ -83,7 +83,7 @@ public class ApiAliasNameController {
 	@ResponseBody
 	public ResponseEntity<String> getParentAliasKinds() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<ParentAliasKind> aliasKinds = ParentAliasKind.findAllParentAliasKinds();
 
@@ -102,7 +102,7 @@ public class ApiAliasNameController {
 			@RequestParam String lsKind) {
 		logger.debug("incoming json from getLotByAliasName: " + aliasName);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		LotAliasDTO queryLotAlias = new LotAliasDTO();
 		queryLotAlias.setAliasName(aliasName);
 		queryLotAlias.setLsType(lsType);
@@ -121,7 +121,7 @@ public class ApiAliasNameController {
 	public ResponseEntity<String> getLotsByAliasName(@RequestBody String json) {
 		logger.debug("incoming json from getLotAliasName: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<LotAliasDTO> aliasNameDTOs = LotAliasDTO.fromJsonArrayToLoes(json);
 		aliasNameDTOs = LotAliasDTO.getLotsByAlias(aliasNameDTOs);
 		return new ResponseEntity<String>(LotAliasDTO.toJsonArray(aliasNameDTOs), headers, HttpStatus.OK);
@@ -132,7 +132,7 @@ public class ApiAliasNameController {
 	@ResponseBody
 	public ResponseEntity<String> getLotAliasTypes() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<LotAliasType> aliasTypes = LotAliasType.findAllLotAliasTypes();
 
@@ -148,7 +148,7 @@ public class ApiAliasNameController {
 	@ResponseBody
 	public ResponseEntity<String> getLotAliasKinds() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<LotAliasKind> aliasKinds = LotAliasKind.findAllLotAliasKinds();
 

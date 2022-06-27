@@ -99,7 +99,7 @@ public class ApiSubjectController {
 	// public @ResponseBody ResponseEntity<String> saveSubjectFromJson(@RequestBody
 	// SubjectValue subjectValue) {
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	//
 	// return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
 	// new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
@@ -113,7 +113,7 @@ public class ApiSubjectController {
 	// @PathVariable("SubjectValueId") String subjectValueId,
 	// @PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	//
 	// if(subjectValue.getId() == null) {
 	// return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
@@ -131,7 +131,7 @@ public class ApiSubjectController {
 	// @RequestBody SubjectValue subjectValue,
 	// @PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	//
 	// if(subjectValue.getId() == null) {
 	// return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
@@ -175,7 +175,7 @@ public class ApiSubjectController {
 		Subject subject = Subject.fromJsonToSubject(json);
 		subject = subjectService.saveSubject(subject);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.CREATED);
 	}
 
@@ -186,14 +186,14 @@ public class ApiSubjectController {
 			savedSubjects.add(subjectService.saveSubject(subject));
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Subject.toJsonArray(savedSubjects), headers, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = { "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Subject subject = Subject.fromJsonToSubject(json);
 		try {
 			Subject foundSubject = Subject.findSubject(subject.getId());
@@ -208,7 +208,7 @@ public class ApiSubjectController {
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
 		Collection<Subject> updatedSubjects = new HashSet<Subject>();
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		for (Subject subject : Subject.fromJsonArrayToSubjects(json)) {
 			try {
 				Subject foundSubject = Subject.findSubject(subject.getId());
@@ -232,7 +232,7 @@ public class ApiSubjectController {
 			subject = Subject.findSubjectByCodeNameEquals(idOrCodeName);
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (subject == null || (subject.isIgnored() && subject.isDeleted())) {
 			logger.info("Did not find the subject before delete");
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -308,7 +308,7 @@ public class ApiSubjectController {
 	@RequestMapping(value = "/savefromtsv", method = RequestMethod.POST, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> saveSubjectsFromCsv(@RequestBody SubjectCsvDataDTO subjectCsvDataDTO) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		logger.info("loading data from tsv files: " + subjectCsvDataDTO.toJson());
 

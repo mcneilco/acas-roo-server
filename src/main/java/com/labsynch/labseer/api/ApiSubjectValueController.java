@@ -31,7 +31,7 @@ public class ApiSubjectValueController {
             @PathVariable("id") Long id) {
         logger.info("in updateSubjectValue");
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
         subjectValue.setStringValue(lsValue);
         if (subjectValue.merge() == null) {
@@ -44,7 +44,7 @@ public class ApiSubjectValueController {
     public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
         SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (subjectValue == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }

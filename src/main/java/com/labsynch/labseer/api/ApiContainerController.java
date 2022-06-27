@@ -158,7 +158,7 @@ public class ApiContainerController {
 			foundContainers.add(container);
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArray(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -171,7 +171,7 @@ public class ApiContainerController {
 			foundContainers.add(Container.findContainer(container.getId()));
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArray(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -185,7 +185,7 @@ public class ApiContainerController {
 			foundContainers.add(container);
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArrayStub(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -199,7 +199,7 @@ public class ApiContainerController {
 			foundContainers.add(container);
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArrayStatesStub(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -217,7 +217,7 @@ public class ApiContainerController {
 			}
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(IdCollectionDTO.toJsonArray(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -233,7 +233,7 @@ public class ApiContainerController {
 			}
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArray(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -249,7 +249,7 @@ public class ApiContainerController {
 			}
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArray(foundContainers), headers, HttpStatus.OK);
 	}
 
@@ -259,7 +259,7 @@ public class ApiContainerController {
 		Container container = Container.fromJsonToContainer(json);
 		container = containerService.saveLsContainer(container);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(container.toJson(), headers, HttpStatus.CREATED);
 	}
 
@@ -269,7 +269,7 @@ public class ApiContainerController {
 		Collection<Container> containers = Container.fromJsonArrayToContainers(json);
 		Collection<Container> savedContainers = containerService.saveLsContainers(containers);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(Container.toJsonArray(savedContainers), headers, HttpStatus.CREATED);
 	}
 
@@ -281,7 +281,7 @@ public class ApiContainerController {
 	// Container container = Container.fromJsonToContainer(json);
 	// container = containerService.saveLsContainer(container);
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	// return new ResponseEntity<String>(container.toJson(), headers,
 	// HttpStatus.CREATED);
 	// }
@@ -302,7 +302,7 @@ public class ApiContainerController {
 	// IOUtils.closeQuietly(sr);
 	// IOUtils.closeQuietly(br);
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	// return new ResponseEntity<String>(Container.toJsonArray(savedContainers),
 	// headers, HttpStatus.CREATED);
 	// }
@@ -312,7 +312,7 @@ public class ApiContainerController {
 	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
 		Container container = Container.fromJsonToContainer(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		container = containerService.updateContainer(container);
 		if (container.getId() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -325,7 +325,7 @@ public class ApiContainerController {
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		Collection<Container> containers = Container.fromJsonArrayToContainers(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<Container> updatedContainers = new ArrayList<Container>();
 		for (Container container : containers) {
 			updatedContainers.add(containerService.updateContainer(container));
@@ -343,7 +343,7 @@ public class ApiContainerController {
 			container = Container.findContainerByCodeNameEquals(idOrCodeName);
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (container == null || (container.isIgnored() && container.isDeleted())) {
 			logger.info("Did not find the container before delete");
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -382,7 +382,7 @@ public class ApiContainerController {
 	@RequestMapping(value = "/checkDependencies/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
 	public ResponseEntity<String> checkDependencies(@PathVariable("idOrCodeName") String idOrCodeName) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Container container;

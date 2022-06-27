@@ -66,7 +66,7 @@ public class ApiItxContainerContainerValueController {
                 .fromJsonToItxContainerContainerValue(json);
         itxContainerContainerValue.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(itxContainerContainerValue.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -74,7 +74,7 @@ public class ApiItxContainerContainerValueController {
     @RequestMapping(value = "/jsonFile", method = RequestMethod.POST, headers = "Accept=text/plain")
     public ResponseEntity<java.lang.String> createFromJsonFile(@RequestBody String jsonFile) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
         logger.debug("jsonFile is : " + jsonFile);
@@ -112,7 +112,7 @@ public class ApiItxContainerContainerValueController {
     @RequestMapping(value = "/jsonArrayParseOld", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArrayParse(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
         try {
@@ -149,7 +149,7 @@ public class ApiItxContainerContainerValueController {
             "/jsonArrayParse" }, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
         BufferedReader br = null;
@@ -180,7 +180,7 @@ public class ApiItxContainerContainerValueController {
     @RequestMapping(value = { "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue
                 .fromJsonToItxContainerContainerValue(json);
         if (itxContainerContainerValue.merge() == null) {
@@ -193,7 +193,7 @@ public class ApiItxContainerContainerValueController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         for (ItxContainerContainerValue itxContainerContainerValue : ItxContainerContainerValue
                 .fromJsonArrayToItxContainerContainerValues(json)) {
             if (itxContainerContainerValue.merge() == null) {
@@ -209,7 +209,7 @@ public class ApiItxContainerContainerValueController {
         ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue
                 .findItxContainerContainerValue(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (itxContainerContainerValue == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
