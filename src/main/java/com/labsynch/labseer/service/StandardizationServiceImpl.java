@@ -489,8 +489,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 								newDuplicateCorpNames = newDuplicateCorpNames.concat(";");
 							newDuplicateCorpNames = newDuplicateCorpNames.concat(searchResult.getCorpName());
 							firstNewDuplicateHit = false;
-							logger.info("found new dupe parents - query: " + dryRunCompound.getCorpName() + "     dupe: "
-									+ searchResult.getCorpName());
+							logger.info("found new dupe parents - query: '" + dryRunCompound.getCorpName() + "' dupe: '"
+									+ searchResult.getCorpName() + "'");
 							totalNewDuplicateCount++;
 						} else {
 							newDupeCount = newDupeCount - 1;
@@ -518,8 +518,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 								oldDuplicateCorpNames = oldDuplicateCorpNames.concat(";");
 							oldDuplicateCorpNames = oldDuplicateCorpNames.concat(searchResult.getCorpName());
 							firstOldDuplicateHit = false;
-							logger.info("found old dupe parents - query: " + dryRunCompound.getCorpName() + "     dupe: "
-									+ searchResult.getCorpName());
+							logger.info("found old dupe parents - query: '" + dryRunCompound.getCorpName() + "' dupe: "
+									+ searchResult.getCorpName() + "'");
 							// totalExistingDuplicateCount++;
 						} else {
 							oldDuplicateCount = oldDuplicateCount - 1;
