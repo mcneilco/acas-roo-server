@@ -39,7 +39,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	@Override
 	public String getProperty(String key) {
 		String prop = this.molecule.getProperties().get(key);
-		if (prop.equals("")) {
+		if (prop == null || prop.equals("")) {
 			return null;
 		} else {
 			return prop;
