@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -276,7 +277,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 			return hitList;
 
-		} catch (JpaSystemException sqlException) {
+		} catch (JpaSystemException | PersistenceException sqlException) {
 			logger.error("Caught search error", sqlException);
 			Exception rootCause = new Exception(ExceptionUtils.getRootCause(sqlException).getMessage(),
 					ExceptionUtils.getRootCause(sqlException));

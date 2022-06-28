@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
@@ -80,6 +81,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONSerializer;
@@ -270,7 +272,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		// get properties out the request
 		String inputFileName = registerRequestDTO.getFilePath();
 		Long startTime = new Date().getTime();
-		Long currentTime = new Date().getTime();
 		String chemist = registerRequestDTO.getUserName();
 		Collection<ValidationResponseDTO> results = new ArrayList();
 		Boolean validate = registerRequestDTO.getValidate();
@@ -381,155 +382,16 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			while ((mol = molReader.readNextMol()) != null) {
 				numRecordsRead++;
-				boolean isNewParent = true;
-				// We are building up a Metalot, which will have a nested Lot, SaltForm, and
-				// Parent
-				Parent parent;
-				SaltForm saltForm;
-				Lot lot;
-				// attempt to strip salts
-				try {
-					mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
-				} catch (CmpdRegMolFormatException e) {
-					String emptyMolfile = "\n" +
-							"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" +
-							"\n" +
-							"  0  0  0     0  0            999 V2000\n" +
-							"M  END\n" +
-							"";
-					CmpdRegMolecule emptyMol = mol.replaceStructure(emptyMolfile);
-					logError(e, numRecordsRead, emptyMol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-				try {
-					parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results,
-							numRecordsRead);
-				} catch (Exception e) {
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-				try {
-					parent = validateParent(parent, mappings, numRecordsRead, results);
-				} catch (TransactionSystemException rollbackException) {
-					logger.error("Rollback exception", rollbackException.getApplicationException());
-					Exception causeException = new Exception(rollbackException.getApplicationException().getMessage(),
-							rollbackException.getApplicationException());
-					logError(causeException, numRecordsRead, mol, mappings, errorMolExporter, results,
-							errorCSVOutStream);
-					continue;
-				} catch (Exception e) {
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-				if (parent.getId() != null)
-					isNewParent = false;
-				try {
-					saltForm = createSaltForm(mol, mappings, results, numRecordsRead);
-				} catch (Exception e) {
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-				saltForm.setParent(parent);
-				try {
-					saltForm = validateSaltForm(saltForm, mappings);
-				} catch (Exception e) {
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-
-				try {
-					lot = createLot(mol, numRecordsRead, mappings, results, bulkLoadFile.getFileDate(), chemist);
-				} catch (Exception e) {
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-				lot.setSaltForm(saltForm);
-				lot.setParent(parent);
-
-				if (lot.getId() == null)
-					lot.setBulkLoadFile(bulkLoadFile);
-				if (saltForm.getId() == null)
-					saltForm.setBulkLoadFile(bulkLoadFile);
-				if (parent.getId() == null)
-					parent.setBulkLoadFile(bulkLoadFile);
-
-				try {
-					lot = validateLot(lot, mappings, results);
-				} catch (Exception e) {
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-					continue;
-				}
-
-				Metalot metalot = new Metalot();
-				metalot.setLot(lot);
-				metalot.setIsosalts(lot.getSaltForm().getIsoSalts());
-				metalot.setSkipParentDupeCheck(true);
-				MetalotReturn metalotReturn = null;
-
-				if (validate) {
-					try {
-						parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, results);
-						// Check list of aliases within file being bulkloaded
-						if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
-							for (ParentAlias alias : parent.getParentAliases()) {
-								if (allAliasMaps.get(alias.getAliasName()) == null) {
-									allAliasMaps.put(alias.getAliasName(), numRecordsRead);
-								} else {
-									throw new NonUniqueAliasException(
-											"Within File, Parent Alias " + alias.getAliasName()
-													+ " is not unique");
-								}
-							}
-						}
-						saveDryRunCompound(mol, parent, numRecordsRead, dryRunCompound);
-
-					} catch (TransactionSystemException rollbackException) {
-						logger.error("Rollback exception", rollbackException.getApplicationException());
-						Exception causeException = new Exception(
-								rollbackException.getApplicationException().getMessage(),
-								rollbackException.getApplicationException());
-						logError(causeException, numRecordsRead, mol, mappings, errorMolExporter, results,
-								errorCSVOutStream);
-						continue;
-					} catch (Exception e) {
-						logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-						continue;
+				try{
+					Boolean isNewParent = registerMol(mol, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
+					if(isNewParent != null) {
+						if (isNewParent)
+							numNewParentsLoaded++;
+						else
+							numNewLotsOldParentsLoaded++;
 					}
-
-				}
-				if (!validate) {
-					try {
-						metalotReturn = metalotService.save(metalot);
-						if (!metalotReturn.getErrors().isEmpty()) {
-							for (ErrorMessage errorMessage : metalotReturn.getErrors()) {
-								Exception e = new Exception(errorMessage.getMessage());
-								logError(e, numRecordsRead, mol, mappings, errorMolExporter, results,
-										errorCSVOutStream);
-							}
-							continue;
-						}
-					} catch (Exception e) {
-						logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
-						continue;
-					}
-				}
-
-				// Successful registration/validation: update summary and write
-				// registered/validated record
-				if (isNewParent)
-					numNewParentsLoaded++;
-				else
-					numNewLotsOldParentsLoaded++;
-				writeRegisteredMol(numRecordsRead, mol, metalotReturn, mappings, registeredMolExporter,
-						registeredCSVOutStream, isNewParent, results);
-
-				currentTime = new Date().getTime();
-				if (currentTime > startTime) {
-					logger.info("SPEED REPORT:");
-					logger.info("Time Elapsed:" + (currentTime - startTime));
-					logger.info("Rows Handled:" + numRecordsRead);
-					logger.info("Average speed (rows/min):"
-							+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
+				} catch (Exception e) {
+					logger.error("Error error on record " + numRecordsRead + ": " + e.getMessage());
 				}
 			}
 			// generate summary in two formats: HTML and plaintext
@@ -587,6 +449,159 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			results.add(new ValidationResponseDTO("error", -1, "Unassigned", e.getMessage(), e.getMessage()));
 			return new BulkLoadRegisterSDFResponseDTO(e.getMessage(), results, null, null);
 		}
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public Boolean registerMol(CmpdRegMolecule mol, BulkLoadFile bulkLoadFile,Collection<BulkLoadPropertyMappingDTO> mappings,
+			FileOutputStream errorCSVOutStream, FileOutputStream registeredCSVOutStream,
+			CmpdRegSDFWriter errorMolExporter, CmpdRegSDFWriter registeredMolExporter,
+			HashMap<String, Integer> allAliasMaps, int numRecordsRead, Collection<ValidationResponseDTO> results, boolean validate, String chemist, 
+			BulkLoadRegisterSDFRequestDTO registerRequestDTO, DryRunCompound dryRunCompound, Long startTime) throws IOException, CmpdRegMolFormatException{
+		boolean isNewParent = true;
+		// We are building up a Metalot, which will have a nested Lot, SaltForm, and
+		// Parent
+		Parent parent;
+		SaltForm saltForm;
+		Lot lot;
+		// attempt to strip salts
+		try {
+			mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
+		} catch (CmpdRegMolFormatException e) {
+			String emptyMolfile = "\n" +
+					"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" +
+					"\n" +
+					"  0  0  0     0  0            999 V2000\n" +
+					"M  END\n" +
+					"";
+			CmpdRegMolecule emptyMol = mol.replaceStructure(emptyMolfile);
+			logError(e, numRecordsRead, emptyMol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+		try {
+			parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results,
+					numRecordsRead);
+		} catch (Exception e) {
+			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+		try {
+			parent = validateParent(parent, mappings, numRecordsRead, results);
+		} catch (PersistenceException rollbackException) {
+			logError(rollbackException, numRecordsRead, mol, mappings, errorMolExporter, results,
+					errorCSVOutStream);
+					return null;
+		} catch (Exception e) {
+			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+		if (parent.getId() != null)
+			isNewParent = false;
+		try {
+			saltForm = createSaltForm(mol, mappings, results, numRecordsRead);
+		} catch (Exception e) {
+			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+		saltForm.setParent(parent);
+		try {
+			saltForm = validateSaltForm(saltForm, mappings);
+		} catch (Exception e) {
+			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+
+		try {
+			lot = createLot(mol, numRecordsRead, mappings, results, bulkLoadFile.getFileDate(), chemist);
+		} catch (Exception e) {
+			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+		lot.setSaltForm(saltForm);
+		lot.setParent(parent);
+
+		if (lot.getId() == null)
+			lot.setBulkLoadFile(bulkLoadFile);
+		if (saltForm.getId() == null)
+			saltForm.setBulkLoadFile(bulkLoadFile);
+		if (parent.getId() == null)
+			parent.setBulkLoadFile(bulkLoadFile);
+
+		try {
+			lot = validateLot(lot, mappings, results);
+		} catch (Exception e) {
+			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+			return null;
+		}
+
+		Metalot metalot = new Metalot();
+		metalot.setLot(lot);
+		metalot.setIsosalts(lot.getSaltForm().getIsoSalts());
+		metalot.setSkipParentDupeCheck(true);
+		MetalotReturn metalotReturn = null;
+
+		if (validate) {
+			try {
+				parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, results);
+				// Check list of aliases within file being bulkloaded
+				if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
+					for (ParentAlias alias : parent.getParentAliases()) {
+						if (allAliasMaps.get(alias.getAliasName()) == null) {
+							allAliasMaps.put(alias.getAliasName(), numRecordsRead);
+						} else {
+							throw new NonUniqueAliasException(
+									"Within File, Parent Alias " + alias.getAliasName()
+											+ " is not unique");
+						}
+					}
+				}
+				saveDryRunCompound(mol, parent, numRecordsRead, dryRunCompound);
+
+			} catch (TransactionSystemException rollbackException) {
+				logger.error("Rollback exception", rollbackException.getApplicationException());
+				Exception causeException = new Exception(
+						rollbackException.getApplicationException().getMessage(),
+						rollbackException.getApplicationException());
+				logError(causeException, numRecordsRead, mol, mappings, errorMolExporter, results,
+						errorCSVOutStream);
+				return null;
+			} catch (Exception e) {
+				logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+				return null;
+			}
+
+		}
+		if (!validate) {
+			try {
+				metalotReturn = metalotService.save(metalot);
+				if (!metalotReturn.getErrors().isEmpty()) {
+					for (ErrorMessage errorMessage : metalotReturn.getErrors()) {
+						Exception e = new Exception(errorMessage.getMessage());
+						logError(e, numRecordsRead, mol, mappings, errorMolExporter, results,
+								errorCSVOutStream);
+					}
+					return null;
+				}
+			} catch (Exception e) {
+				logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+				return null;
+			}
+		}
+
+		// Successful registration/validation: update summary and write
+		// registered/validated record
+		writeRegisteredMol(numRecordsRead, mol, metalotReturn, mappings, registeredMolExporter,
+				registeredCSVOutStream, isNewParent, results);
+
+		Long currentTime = new Date().getTime();
+		if (currentTime > startTime) {
+			logger.info("SPEED REPORT:");
+			logger.info("Time Elapsed:" + (currentTime - startTime));
+			logger.info("Rows Handled:" + numRecordsRead);
+			logger.info("Average speed (rows/min):"
+					+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
+		}
+
+		return isNewParent;
 	}
 
 	public void writeRegisteredMol(int numRecordsRead, CmpdRegMolecule mol, MetalotReturn metalotReturn,
