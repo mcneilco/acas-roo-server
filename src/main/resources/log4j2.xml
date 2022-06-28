@@ -7,7 +7,6 @@
   </Appenders>
   <Loggers>
     <Logger name="com.labsynch.labseer" level="info"/>
-    <Logger name="com.mangofactory.swagger" level="error"/>
     <Logger name="org.springframework" level="info"/>
     <Logger name="org.springframework.orm" level="info"/>
     <Logger name="org.springframework.security" level="info"/>
