@@ -522,11 +522,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					numNewLotsOldParentsLoaded++;
 				writeRegisteredMol(numRecordsRead, mol, metalotReturn, mappings, registeredMolExporter,
 						registeredCSVOutStream, isNewParent, results);
-				if (numRecordsRead % 100 == 0) {
-					logger.info("flushing bulk loader session");
-					session.flush();
-					session.clear();
-				}
+
 				currentTime = new Date().getTime();
 				if (currentTime > startTime) {
 					logger.info("SPEED REPORT:");

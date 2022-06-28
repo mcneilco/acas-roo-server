@@ -347,11 +347,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
 			logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
 
-			// End loop through parent id group
-			logger.debug("flushing loader session");
-			session.flush();
-			session.clear();
-
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
@@ -506,11 +501,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					dryRunCompound.merge();
 					newDuplicateCorpNames = "";
 					oldDuplicateCorpNames = "";
-				}
-				if (p % 100 == 0) {
-					logger.debug("flushing loader session");
-					session.flush();
-					session.clear();
 				}
 
 				// Compute your percentage.
@@ -758,10 +748,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// Convert the ms time to seconds
 			long savingTime = (savingEnd - savingStart) / 1000;
 			logger.info("Saving took " + savingTime + " seconds");
-
-			logger.debug("flushing loader session");
-			session.flush();
-			session.clear();
 
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
