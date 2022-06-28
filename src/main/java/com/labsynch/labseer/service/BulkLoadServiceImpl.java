@@ -75,7 +75,6 @@ import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -284,8 +283,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			boolean dropTable = chemStructureService.truncateStructureTable(StructureType.DRY_RUN);
 			dryRunCompound.truncateTable();
 		}
-
-		Session session = Parent.entityManager().unwrap(Session.class);
 
 		Collection<BulkLoadPropertyMappingDTO> mappings = registerRequestDTO.getMappings();
 		// instantiate input and output streams
