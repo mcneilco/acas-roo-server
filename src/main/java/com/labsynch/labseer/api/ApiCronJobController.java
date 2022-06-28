@@ -71,7 +71,7 @@ public class ApiCronJobController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody CronJob cronJob) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			CronJob savedCronJob = cronJobService.saveCronJob(cronJob);
 			return new ResponseEntity<String>(savedCronJob.toJson(), headers, HttpStatus.CREATED);
@@ -84,7 +84,7 @@ public class ApiCronJobController {
 	public ResponseEntity<String> createFromJsonArray(
 			@RequestBody List<CronJob> cronJobs) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<CronJob> savedCronJobs = new ArrayList<CronJob>();
 		try {
 			for (CronJob cronJob : cronJobs) {
@@ -100,7 +100,7 @@ public class ApiCronJobController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody CronJob cronJob) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			CronJob updatedCronJob = cronJobService.updateCronJob(cronJob);
 			return new ResponseEntity<String>(updatedCronJob.toJson(), headers, HttpStatus.OK);
@@ -112,7 +112,7 @@ public class ApiCronJobController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody List<CronJob> cronJobs) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<CronJob> updatedCronJobs = new ArrayList<CronJob>();
 		try {
 			for (CronJob cronJob : cronJobs) {

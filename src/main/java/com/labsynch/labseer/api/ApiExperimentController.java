@@ -121,7 +121,7 @@ public class ApiExperimentController {
 	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(
 			@RequestBody ExperimentCsvDataDTO experimentCsvDataDTO) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		logger.info("loading data from csv files: " + experimentCsvDataDTO.toJson());
 
@@ -778,7 +778,7 @@ public class ApiExperimentController {
 	// public @ResponseBody ResponseEntity<String>
 	// saveExperimentFromJson(@RequestBody String json) {
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	//
 	// ExperimentValue experimentValue =
 	// ExperimentValue.fromJsonToExperimentValue(json);
@@ -797,7 +797,7 @@ public class ApiExperimentController {
 	// @PathVariable("Id") String Id,
 	// @PathVariable("IdOrCodeName") String IdOrCodeName) {
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	//
 	// ExperimentValue experimentValue =
 	// ExperimentValue.fromJsonToExperimentValue(json);
@@ -820,7 +820,7 @@ public class ApiExperimentController {
 	// @RequestBody String json,
 	// @PathVariable("IdOrCodeName") String IdOrCodeName) {
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	//
 	// ExperimentValue experimentValue =
 	// ExperimentValue.fromJsonToExperimentValue(json);
@@ -862,7 +862,7 @@ public class ApiExperimentController {
 		Experiment experiment = Experiment.fromJsonToExperiment(json);
 		logger.debug("----from the Experiment POST controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Experiment savedExperiment = null;
@@ -947,7 +947,7 @@ public class ApiExperimentController {
 	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		Collection<Experiment> experiments = Experiment.fromJsonArrayToExperiments(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<Experiment> savedExperiments = experimentService.saveLsExperiments(experiments);
 			return new ResponseEntity<String>(Experiment.toJsonArrayStub(savedExperiments), headers,
@@ -967,7 +967,7 @@ public class ApiExperimentController {
 	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
 		Experiment experiment = Experiment.fromJsonToExperiment(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		try {
@@ -995,7 +995,7 @@ public class ApiExperimentController {
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
 		Collection<Experiment> experiments = Experiment.fromJsonArrayToExperiments(json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<Experiment> updatedExperiments = new ArrayList<Experiment>();
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
@@ -1023,7 +1023,7 @@ public class ApiExperimentController {
 	// public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
 	// Experiment experiment = Experiment.findExperiment(id);
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	// if (experiment == null) {
 	// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 	// }
@@ -1036,7 +1036,7 @@ public class ApiExperimentController {
 	// public ResponseEntity<String> trueDeleteById(@PathVariable("id") Long id) {
 	// Experiment experiment = Experiment.findExperiment(id);
 	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json");
+	// headers.add("Content-Type", "application/json; charset=utf-8");
 	// if (experiment == null) {
 	// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 	// }
@@ -1052,7 +1052,7 @@ public class ApiExperimentController {
 	public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
 		Experiment experiment = Experiment.findExperiment(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (experiment == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
@@ -1134,7 +1134,7 @@ public class ApiExperimentController {
 			logger.error(e.toString());
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (agValues == null || agValues.size() == 0) {
 			return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
 		}
@@ -1172,7 +1172,7 @@ public class ApiExperimentController {
 	@RequestMapping(value = "/filters/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> getExperimentFilters(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<String> experimentCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class)
 				.use("values", String.class).deserialize(json);
 		Collection<ExperimentFilterDTO> results = experimentService.getExperimentFilters(experimentCodes);
@@ -1183,7 +1183,7 @@ public class ApiExperimentController {
 	@RequestMapping(value = "/get/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> getExperimentFiltersNew(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<String> experimentCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class)
 				.use("values", String.class).deserialize(json);
 		Collection<ExperimentFilterDTO> results = experimentService.getExperimentFilters(experimentCodes);
@@ -1195,7 +1195,7 @@ public class ApiExperimentController {
 	public ResponseEntity<java.lang.String> getJsTreeNodes(@RequestBody List<BatchCodeDTO> batchCodes) {
 		logger.debug("getting tree nodes: " + BatchCodeDTO.toJsonArray(batchCodes));
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<String> codeValues = new HashSet<String>();
 		for (BatchCodeDTO batchCode : batchCodes) {
 			codeValues.add(batchCode.getBatchCode());
@@ -1234,7 +1234,7 @@ public class ApiExperimentController {
 
 		List<ExperimentDataDTO> experimentData = experimentService.getExperimentData(batchCode, showOnlyPublicData);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Cache-Control", "no-store, max-age=0, no-cache, must-revalidate"); // HTTP 1.1
 		return new ResponseEntity<String>(ExperimentDataDTO.toJsonArray(experimentData), headers, HttpStatus.OK);
 	}
@@ -1252,7 +1252,7 @@ public class ApiExperimentController {
 		batchCode = batchCode.trim();
 		List<ExperimentDataDTO> experimentData = experimentService.getExperimentData(batchCode, showOnlyPublicData);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		headers.add("Cache-Control", "no-store, max-age=0, no-cache, must-revalidate"); // HTTP 1.1
 		return new ResponseEntity<String>(ExperimentDataDTO.toJsonArray(experimentData), headers, HttpStatus.OK);
 	}
@@ -1282,7 +1282,7 @@ public class ApiExperimentController {
 			logger.error(e.toString());
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (agValues == null || agValues.size() == 0) {
 			return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
 		}
@@ -1403,7 +1403,7 @@ public class ApiExperimentController {
 			@RequestParam(value = "with", required = false) String with) {
 		Experiment experiment = Experiment.findExperiment(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (experiment == null) {
 			logger.info("Did not find the experiment before delete");
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -1425,7 +1425,7 @@ public class ApiExperimentController {
 	public ResponseEntity<String> deleteAnalysisGroupsByExperiment(@PathVariable("id") Long id) {
 		Experiment experiment = Experiment.findExperiment(id);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		if (experiment == null) {
 			logger.info("Did not find the experiment before delete");
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -1723,7 +1723,7 @@ public class ApiExperimentController {
 	@ResponseBody
 	public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
 		try {
 			Collection<String> results = experimentService.getExperimentCodesByDateValueComparison(requestDTO);

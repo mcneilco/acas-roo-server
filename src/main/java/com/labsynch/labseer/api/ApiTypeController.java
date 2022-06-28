@@ -62,7 +62,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createDDictTypeFromJson(@RequestBody DDictType DDictType_) {
         DDictType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(DDictType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -74,14 +74,14 @@ public class ApiTypeController {
             newDDictTypes.add(DDictType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(DDictType.toJsonArray(newDDictTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/ddicttypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateDDictTypeFromJson(@RequestBody DDictType DDictType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (DDictType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -91,7 +91,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/ddicttypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateDDictTypeFromJsonArray(@RequestBody List<DDictType> dDictTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<DDictType> newDDictTypes = new ArrayList<DDictType>();
         for (DDictType DDictType_ : dDictTypes) {
             if (DDictType_.merge() == null) {
@@ -106,7 +106,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteDDictTypeFromJson(@PathVariable("id") Long id) {
         DDictType DDictType_ = DDictType.findDDictType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (DDictType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -139,7 +139,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createContainerTypeFromJson(@RequestBody ContainerType ContainerType_) {
         ContainerType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -151,14 +151,14 @@ public class ApiTypeController {
             newContainerTypes.add(ContainerType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerType.toJsonArray(newContainerTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/containertypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateContainerTypeFromJson(@RequestBody ContainerType ContainerType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ContainerType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -168,7 +168,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/containertypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateContainerTypeFromJsonArray(@RequestBody List<ContainerType> containerTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ContainerType> newContainerTypes = new ArrayList<ContainerType>();
         for (ContainerType ContainerType_ : containerTypes) {
             if (ContainerType_.merge() == null) {
@@ -183,7 +183,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteContainerTypeFromJson(@PathVariable("id") Long id) {
         ContainerType ContainerType_ = ContainerType.findContainerType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ContainerType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -216,7 +216,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createExperimentTypeFromJson(@RequestBody ExperimentType ExperimentType_) {
         ExperimentType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ExperimentType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -228,14 +228,14 @@ public class ApiTypeController {
             newExperimentTypes.add(ExperimentType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ExperimentType.toJsonArray(newExperimentTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/experimenttypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateExperimentTypeFromJson(@RequestBody ExperimentType ExperimentType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ExperimentType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -245,7 +245,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/experimenttypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateExperimentTypeFromJsonArray(@RequestBody List<ExperimentType> experimentTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ExperimentType> newExperimentTypes = new ArrayList<ExperimentType>();
         for (ExperimentType ExperimentType_ : experimentTypes) {
             if (ExperimentType_.merge() == null) {
@@ -260,7 +260,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteExperimentTypeFromJson(@PathVariable("id") Long id) {
         ExperimentType ExperimentType_ = ExperimentType.findExperimentType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ExperimentType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -293,7 +293,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createLabelTypeFromJson(@RequestBody LabelType LabelType_) {
         LabelType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LabelType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -305,14 +305,14 @@ public class ApiTypeController {
             newLabelTypes.add(LabelType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LabelType.toJsonArray(newLabelTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/labeltypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateLabelTypeFromJson(@RequestBody LabelType LabelType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (LabelType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -322,7 +322,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/labeltypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateLabelTypeFromJsonArray(@RequestBody List<LabelType> labelTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<LabelType> newLabelTypes = new ArrayList<LabelType>();
         for (LabelType LabelType_ : labelTypes) {
             if (LabelType_.merge() == null) {
@@ -337,7 +337,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteLabelTypeFromJson(@PathVariable("id") Long id) {
         LabelType LabelType_ = LabelType.findLabelType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (LabelType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -370,7 +370,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createOperatorTypeFromJson(@RequestBody OperatorType OperatorType_) {
         OperatorType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(OperatorType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -382,14 +382,14 @@ public class ApiTypeController {
             newOperatorTypes.add(OperatorType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(OperatorType.toJsonArray(newOperatorTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/operatortypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateOperatorTypeFromJson(@RequestBody OperatorType OperatorType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (OperatorType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -399,7 +399,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/operatortypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateOperatorTypeFromJsonArray(@RequestBody List<OperatorType> operatorTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<OperatorType> newOperatorTypes = new ArrayList<OperatorType>();
         for (OperatorType OperatorType_ : operatorTypes) {
             if (OperatorType_.merge() == null) {
@@ -414,7 +414,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteOperatorTypeFromJson(@PathVariable("id") Long id) {
         OperatorType OperatorType_ = OperatorType.findOperatorType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (OperatorType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -447,7 +447,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createProtocolTypeFromJson(@RequestBody ProtocolType ProtocolType_) {
         ProtocolType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ProtocolType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -459,14 +459,14 @@ public class ApiTypeController {
             newProtocolTypes.add(ProtocolType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ProtocolType.toJsonArray(newProtocolTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/protocoltypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateProtocolTypeFromJson(@RequestBody ProtocolType ProtocolType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ProtocolType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -476,7 +476,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/protocoltypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateProtocolTypeFromJsonArray(@RequestBody List<ProtocolType> protocolTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ProtocolType> newProtocolTypes = new ArrayList<ProtocolType>();
         for (ProtocolType ProtocolType_ : protocolTypes) {
             if (ProtocolType_.merge() == null) {
@@ -491,7 +491,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteProtocolTypeFromJson(@PathVariable("id") Long id) {
         ProtocolType ProtocolType_ = ProtocolType.findProtocolType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ProtocolType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -524,7 +524,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createStateTypeFromJson(@RequestBody StateType StateType_) {
         StateType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(StateType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -536,14 +536,14 @@ public class ApiTypeController {
             newStateTypes.add(StateType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(StateType.toJsonArray(newStateTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/statetypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateStateTypeFromJson(@RequestBody StateType StateType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (StateType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -553,7 +553,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/statetypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateStateTypeFromJsonArray(@RequestBody List<StateType> stateTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<StateType> newStateTypes = new ArrayList<StateType>();
         for (StateType StateType_ : stateTypes) {
             if (StateType_.merge() == null) {
@@ -568,7 +568,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteStateTypeFromJson(@PathVariable("id") Long id) {
         StateType StateType_ = StateType.findStateType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (StateType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -601,7 +601,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createThingTypeFromJson(@RequestBody ThingType ThingType_) {
         ThingType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ThingType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -613,14 +613,14 @@ public class ApiTypeController {
             newThingTypes.add(ThingType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ThingType.toJsonArray(newThingTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/thingtypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateThingTypeFromJson(@RequestBody ThingType ThingType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ThingType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -630,7 +630,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/thingtypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateThingTypeFromJsonArray(@RequestBody List<ThingType> thingTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ThingType> newThingTypes = new ArrayList<ThingType>();
         for (ThingType ThingType_ : thingTypes) {
             if (ThingType_.merge() == null) {
@@ -645,7 +645,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteThingTypeFromJson(@PathVariable("id") Long id) {
         ThingType ThingType_ = ThingType.findThingType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ThingType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -678,7 +678,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createUnitTypeFromJson(@RequestBody UnitType UnitType_) {
         UnitType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(UnitType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -690,14 +690,14 @@ public class ApiTypeController {
             unitTypes.add(UnitType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(UnitType.toJsonArray(newUnitTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/unittypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateUnitTypeFromJson(@RequestBody UnitType UnitType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (UnitType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -707,7 +707,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/unittypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateUnitTypeFromJsonArray(@RequestBody List<UnitType> unitTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<UnitType> newUnitTypes = new ArrayList<UnitType>();
         for (UnitType UnitType_ : unitTypes) {
             if (UnitType_.merge() == null) {
@@ -722,7 +722,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteUnitTypeFromJson(@PathVariable("id") Long id) {
         UnitType UnitType_ = UnitType.findUnitType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (UnitType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -755,7 +755,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createValueTypeFromJson(@RequestBody ValueType ValueType_) {
         ValueType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ValueType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -767,14 +767,14 @@ public class ApiTypeController {
             newValueTypes.add(ValueType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ValueType.toJsonArray(newValueTypes), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/valuetypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateValueTypeFromJson(@RequestBody ValueType ValueType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ValueType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -784,7 +784,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/valuetypes/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateValueTypeFromJsonArray(@RequestBody List<ValueType> valueTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ValueType> newValueTypes = new ArrayList<ValueType>();
         for (ValueType ValueType_ : valueTypes) {
             if (ValueType_.merge() == null) {
@@ -799,7 +799,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteValueTypeFromJson(@PathVariable("id") Long id) {
         ValueType ValueType_ = ValueType.findValueType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (ValueType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -832,7 +832,7 @@ public class ApiTypeController {
     public ResponseEntity<String> createInteractionTypeFromJson(@RequestBody InteractionType InteractionType_) {
         InteractionType_.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(InteractionType_.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -845,7 +845,7 @@ public class ApiTypeController {
             interactionTypes.add(InteractionType_);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(InteractionType.toJsonArray(newInteractionTypes), headers,
                 HttpStatus.CREATED);
     }
@@ -853,7 +853,7 @@ public class ApiTypeController {
     @RequestMapping(value = "/interactiontypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateInteractionTypeFromJson(@RequestBody InteractionType InteractionType_) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (InteractionType_.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -864,7 +864,7 @@ public class ApiTypeController {
     public ResponseEntity<String> updateInteractionTypeFromJsonArray(
             @RequestBody List<InteractionType> interactionTypes) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<InteractionType> newInteractionTypes = new ArrayList<InteractionType>();
         for (InteractionType InteractionType_ : interactionTypes) {
             if (InteractionType_.merge() == null) {
@@ -879,7 +879,7 @@ public class ApiTypeController {
     public ResponseEntity<String> deleteInteractionTypeFromJson(@PathVariable("id") Long id) {
         InteractionType InteractionType_ = InteractionType.findInteractionType(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (InteractionType_ == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }

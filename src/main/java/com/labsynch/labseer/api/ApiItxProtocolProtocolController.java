@@ -56,7 +56,7 @@ public class ApiItxProtocolProtocolController {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
             itxProtocolProtocol = itxProtocolProtocolService.saveLsItxProtocol(itxProtocolProtocol);
@@ -74,7 +74,7 @@ public class ApiItxProtocolProtocolController {
         Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol
                 .fromJsonArrayToItxProtocolProtocols(json);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             Collection<ItxProtocolProtocol> savedItxProtocolProtocols = itxProtocolProtocolService
                     .saveLsItxProtocols(itxProtocolProtocols);
@@ -91,7 +91,7 @@ public class ApiItxProtocolProtocolController {
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
         ItxProtocolProtocol updatedItxProtocolProtocol = null;
         try {
@@ -106,7 +106,7 @@ public class ApiItxProtocolProtocolController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ItxProtocolProtocol> updatedItxProtocolProtocols = new HashSet<ItxProtocolProtocol>();
         try {
             for (ItxProtocolProtocol itxProtocolProtocol : ItxProtocolProtocol
@@ -127,7 +127,7 @@ public class ApiItxProtocolProtocolController {
     public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.findItxProtocolProtocol(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (itxProtocolProtocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -151,7 +151,7 @@ public class ApiItxProtocolProtocolController {
     @RequestMapping(value = "/findByFirstProtocol/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> findItxProtocolProtocolsByFirstProtocol(@PathVariable("id") Long firstProtocolId) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             Collection<ItxProtocolProtocol> itxProtocolProtocols = itxProtocolProtocolService
                     .findItxProtocolProtocolsByFirstProtocol(firstProtocolId);
@@ -167,7 +167,7 @@ public class ApiItxProtocolProtocolController {
     @RequestMapping(value = "/findBySecondProtocol/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> findItxProtocolProtocolsBySecondProtocol(@PathVariable("id") Long secondProtocolId) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         Protocol secondProtocol;
         try {
             secondProtocol = Protocol.findProtocol(secondProtocolId);

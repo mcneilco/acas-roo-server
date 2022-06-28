@@ -44,7 +44,7 @@ public class ApiParentLotController {
 	public ResponseEntity<String> getParentByAliasName(@RequestParam String parentCorpName,
 			@RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			boolean fullObject = false;
 			if (with != null) {
@@ -70,7 +70,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> getLotCodesByParentAlias(@RequestBody Collection<ParentLotCodeDTO> requestDTOs) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<ParentLotCodeDTO> responseDTO = parentLotService.getLotCodesByParentAlias(requestDTOs);
 			return new ResponseEntity<String>(ParentLotCodeDTO.toJsonArray(responseDTO), headers, HttpStatus.OK);
@@ -85,7 +85,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> updateLotAndParent(@RequestBody Collection<ParentLotCodeDTO> requestDTOs) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<ParentLotCodeDTO> responseDTO = parentLotService.getLotCodesByParentAlias(requestDTOs);
 			return new ResponseEntity<String>(ParentLotCodeDTO.toJsonArray(responseDTO), headers, HttpStatus.OK);
@@ -100,7 +100,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> updateLotMetadata(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			LotDTO lotDTO = LotDTO.fromJsonToLotDTO(json);
 			Lot lot = lotService.updateLotMeta(lotDTO);
@@ -116,7 +116,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> updateLotMetaArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			String results = lotService.updateLotMetaArray(json);
 			return new ResponseEntity<String>(results, headers, HttpStatus.OK);
@@ -131,7 +131,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> reparentLot(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ReparentLotDTO lotDTO = ReparentLotDTO.fromJsonToReparentLotDTO(json);
 			Lot lot = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(),
@@ -148,7 +148,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> reparentLotArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		int lotCount = 0;
 		try {
 			Collection<ReparentLotDTO> lotDTOs = ReparentLotDTO.fromJsonArrayToReparentLoes(json);
@@ -168,7 +168,7 @@ public class ApiParentLotController {
 	@ResponseBody
 	public ResponseEntity<String> getLotsByProjectsList(@RequestBody List<String> allowedProjects) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LotsByProjectDTO> lots = lotService.getLotsByProjectsList(allowedProjects);
 			return new ResponseEntity<String>(LotsByProjectDTO.toJsonArray(lots), headers, HttpStatus.OK);

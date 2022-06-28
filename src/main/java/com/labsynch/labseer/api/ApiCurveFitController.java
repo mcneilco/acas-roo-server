@@ -35,7 +35,7 @@ public class ApiCurveFitController {
 	public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<String> curveIds,
 			@RequestParam(value = "format", required = false) String format) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			// This route will not pull back the correct data if a mix of rendering hints is
 			// expected. It will handle mixed existence of rendering hints.
@@ -89,7 +89,7 @@ public class ApiCurveFitController {
 			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(curveIds,
 					responseName);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(filledRawCurveDataDTOs, format);
 				outFileString = outFileString.replaceAll("\"\"", "\\\"");
@@ -117,7 +117,7 @@ public class ApiCurveFitController {
 			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveDataAgonist(curveIds,
 					responseName);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(filledRawCurveDataDTOs, format);
 				outFileString = outFileString.replaceAll("\"\"", "\\\"");
@@ -140,7 +140,7 @@ public class ApiCurveFitController {
 		try {
 			Collection<TgDataDTO> filledTgDataDTOs = TgDataDTO.getTgData(curveIds);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = TgDataDTO.getCsvList(filledTgDataDTOs, format);
 				outFileString = outFileString.replaceAll("\"\"", "\\\"");
@@ -163,7 +163,7 @@ public class ApiCurveFitController {
 			@RequestParam(value = "modelFitType", required = true) String renderingHint,
 			@RequestParam(value = "format", required = false) String format) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			List<String> curveIds = (List<String>) CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
 			if (renderingHint.equalsIgnoreCase("4 parameter D-R")) {
@@ -213,7 +213,7 @@ public class ApiCurveFitController {
 			Collection<RawCurveDataDTO> rawCurveDataDTOs = RawCurveDataDTO
 					.getRawAgonistCurveDataByExperiment(experimentIdOrCodeName, responseName);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
 				outFileString = outFileString.replaceAll("\"\"", "\\\"");
@@ -239,7 +239,7 @@ public class ApiCurveFitController {
 			Collection<RawCurveDataDTO> rawCurveDataDTOs = RawCurveDataDTO
 					.getRawCurveDataByExperiment(experimentIdOrCodeName, responseName);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
 				outFileString = outFileString.replaceAll("\"\"", "\\\"");
@@ -263,7 +263,7 @@ public class ApiCurveFitController {
 		try {
 			Collection<TgDataDTO> tgDataDTOs = TgDataDTO.getTgDataByExperiment(experimentIdOrCodeName);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = TgDataDTO.getCsvList(tgDataDTOs, format);
 				outFileString = outFileString.replaceAll("\"\"", "\\\"");
@@ -285,7 +285,7 @@ public class ApiCurveFitController {
 		try {
 			CurveFitDTO.updateFitData(curveFitDTOs);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			return new ResponseEntity<String>(headers, HttpStatus.OK);
 		} catch (Exception e) {
 			// String error = e.getMessage() + e.getStackTrace();
@@ -302,7 +302,7 @@ public class ApiCurveFitController {
 		try {
 			KiCurveFitDTO.updateFitData(curveFitDTOs);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			return new ResponseEntity<String>(headers, HttpStatus.OK);
 		} catch (Exception e) {
 			// String error = e.getMessage() + e.getStackTrace();
@@ -318,7 +318,7 @@ public class ApiCurveFitController {
 		try {
 			FlagWellDTO.updateWellFlags(flagWellDTOs);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			return new ResponseEntity<String>(headers, HttpStatus.OK);
 		} catch (Exception e) {
 			// String error = e.getMessage() + e.getStackTrace();
@@ -338,7 +338,7 @@ public class ApiCurveFitController {
 			Collection<ProtocolValue> protocolValues = CurveFitDTO.findDisplayMinMaxByCurveId(curveId);
 			// logger.debug("Found: "+ ProtocolValue.toJsonArray(protocolValues));
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
+			headers.add("Content-Type", "application/json; charset=utf-8");
 			return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues), headers, HttpStatus.OK);
 		} catch (Exception e) {
 			// String error = e.getMessage() + e.getStackTrace();

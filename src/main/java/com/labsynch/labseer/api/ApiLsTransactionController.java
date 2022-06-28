@@ -59,7 +59,7 @@ public class ApiLsTransactionController {
         logger.info(inputLsTransaction.toJson());
         inputLsTransaction.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(inputLsTransaction.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -69,7 +69,7 @@ public class ApiLsTransactionController {
             lsTransaction.persist();
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LsTransaction.toJsonArray(lsTransactions), headers, HttpStatus.CREATED);
     }
 
@@ -81,7 +81,7 @@ public class ApiLsTransactionController {
         logger.info(inputLsTransaction.toJson());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (inputLsTransaction.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -91,7 +91,7 @@ public class ApiLsTransactionController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<LsTransaction> lsTransactions) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         List<LsTransaction> updatedLsTransactions = new ArrayList<LsTransaction>();
         for (LsTransaction lsTransaction : lsTransactions) {
             LsTransaction updatedLsTransaction = lsTransaction.merge();
@@ -107,7 +107,7 @@ public class ApiLsTransactionController {
     public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         LsTransaction lsTransaction = LsTransaction.findLsTransaction(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (lsTransaction == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -118,7 +118,7 @@ public class ApiLsTransactionController {
     @RequestMapping(value = "/search", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> searchLsTransactions(@RequestBody LsTransactionQueryDTO query) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         try {
             LsTransactionQueryDTO response = lsTransactionService.searchLsTransactions(query);
             return new ResponseEntity<String>(response.toJson(), headers, HttpStatus.OK);

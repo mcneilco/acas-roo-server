@@ -57,7 +57,7 @@ public class ApiAuthorRoleController {
         Collection<AuthorRoleDTO> authorRoleDTOs = AuthorRoleDTO.fromJsonArrayToAuthorRoes(json);
         authorRoleService.saveAuthorRoleDTOs(authorRoleDTOs);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
@@ -65,7 +65,7 @@ public class ApiAuthorRoleController {
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody AuthorRole authorRole) {
         authorRole.persist();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
@@ -75,14 +75,14 @@ public class ApiAuthorRoleController {
             authorRole.persist();
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody AuthorRole authorRole) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (authorRole.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -92,7 +92,7 @@ public class ApiAuthorRoleController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<AuthorRole> authorRoles) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         for (AuthorRole authorRole : authorRoles) {
             if (authorRole.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -106,7 +106,7 @@ public class ApiAuthorRoleController {
         Collection<AuthorRoleDTO> authorRoleDTOs = AuthorRoleDTO.fromJsonArrayToAuthorRoes(json);
         authorRoleService.deleteAuthorRoleDTOs(authorRoleDTOs);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
@@ -114,7 +114,7 @@ public class ApiAuthorRoleController {
     public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         AuthorRole authorRole = AuthorRole.findAuthorRole(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json; charset=utf-8");
         if (authorRole == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }

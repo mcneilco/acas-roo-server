@@ -74,7 +74,7 @@ public class ApiLsThingController {
 			@RequestParam(value = "lsKind", required = false) String lsKind,
 			@RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LsThing> results = lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType,
 					lsKind);
@@ -106,7 +106,7 @@ public class ApiLsThingController {
 	public ResponseEntity<String> projectSearch(@RequestParam(value = "userName", required = true) String userName,
 			@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			Collection<LsThing> results = lsThingService.findLsThingProjectsByGenericMetaDataSearch(searchQuery,
 					userName);
@@ -255,7 +255,7 @@ public class ApiLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the LsThing GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -299,7 +299,7 @@ public class ApiLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the LsThing get by codeName Array controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Collection<LsThing> lsThings;
@@ -343,7 +343,7 @@ public class ApiLsThingController {
 			@PathVariable("idOrCodeName") String idOrCodeName) {
 		logger.debug("----from the LsThing DELETE controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -393,7 +393,7 @@ public class ApiLsThingController {
 
 		logger.debug("----from the LsThing GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing parent;
@@ -451,7 +451,7 @@ public class ApiLsThingController {
 			@RequestParam(value = "with", required = false) String with) {
 		logger.debug("----from the LsThing GET controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing component;
@@ -500,7 +500,7 @@ public class ApiLsThingController {
 		// headers and setup
 		logger.debug("----from the LsThing POST controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Long parentId = null;
@@ -573,7 +573,7 @@ public class ApiLsThingController {
 		// headers and setup
 		logger.debug("----from the LsThing POST controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
@@ -639,7 +639,7 @@ public class ApiLsThingController {
 		if (logger.isDebugEnabled())
 			logger.debug("incoming JSON: " + json);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing = null;
@@ -683,7 +683,7 @@ public class ApiLsThingController {
 		// headers and setup
 		logger.debug("----from the LsThing PUT jsonArray controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
@@ -759,7 +759,7 @@ public class ApiLsThingController {
 			@PathVariable("idOrCodeName") String idOrCodeName) {
 		logger.debug("----from the LsThing DELETE controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -814,7 +814,7 @@ public class ApiLsThingController {
 			@PathVariable("idOrCodeName") String idOrCodeName) {
 		logger.debug("----from the LsThing DELETE controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -869,7 +869,7 @@ public class ApiLsThingController {
 			@PathVariable("idOrCodeName") String idOrCodeName) {
 		logger.debug("----from the LsThing Dependency Check controller----");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 		boolean errorsFound = false;
 		LsThing lsThing;
@@ -1262,7 +1262,7 @@ public class ApiLsThingController {
 	@RequestMapping(value = "/documentmanagersearch", method = RequestMethod.GET)
 	public ResponseEntity<java.lang.String> documentManagerSearch(@RequestParam Map<String, String> searchParamsMap) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<LsThing> results = new HashSet<LsThing>();
 		String with = searchParamsMap.get("with");
 		try {
@@ -1290,7 +1290,7 @@ public class ApiLsThingController {
 	@ResponseBody
 	public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
 		try {
 			Collection<String> results = lsThingService.getLsThingCodesByDateValueComparison(requestDTO);
