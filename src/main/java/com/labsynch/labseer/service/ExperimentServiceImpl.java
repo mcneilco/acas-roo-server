@@ -69,7 +69,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
-	private AnalysisGroupService analysisGroupService;
+	private AnalysisGroupValueService analysisGroupValueService;
 
 	@Autowired
 	private ProtocolService protocolService;
@@ -79,6 +79,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Autowired
 	private ExperimentValueService experimentValueService;
+
 
 	@Autowired
 	private AuthorService authorService;
@@ -1576,6 +1577,33 @@ public class ExperimentServiceImpl implements ExperimentService {
 		// experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
 		// }
 		// return isSoftDeleted;
+	}
+
+	@Override
+	@Transactional
+	public String deleteExperimentDataByBatchCode(String experimentCode, String batchCode) {
+		Experiment experiment = Experiment.findExperimentsByCodeNameEquals(experimentCode).getSingleResult();
+		String csvString = null;
+		if (experiment != null) {
+			//Find analysis group values with this batch code
+			//Set with batch code
+			Set<String> batchCodes = new HashSet<String>();
+			batchCodes.add(batchCode);
+
+			// Set with experimentCode
+			Set<String> experimentCodes = new HashSet<String>();
+			experimentCodes.add(experimentCode);
+			
+			// Logical delete analysis groups
+			List<AnalysisGroupValueDTO> analysisGroupValueDTOs = AnalysisGroupValue.findAnalysisGroupValueDTO(batchCodes, experimentCodes).getResultList();
+			csvString = AnalysisGroupValueDTO.toCsv(analysisGroupValueDTOs);
+			// Delete analysis group values
+			for (AnalysisGroupValueDTO analysisGroupValueDTO : analysisGroupValueDTOs) {
+				logger.info("Logically deleting analysis group: " + analysisGroupValueDTO.getAgId());
+				AnalysisGroup.findAnalysisGroup(analysisGroupValueDTO.getAgId()).logicalDelete();
+			}
+		}
+		return csvString;
 	}
 
 	@Override

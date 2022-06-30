@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.NoResultException;
 
@@ -14,6 +15,7 @@ import com.labsynch.labseer.dto.ParentLotCodeDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParentLotServiceImpl implements ParentLotService {
 
 	Logger logger = LoggerFactory.getLogger(ParentLotServiceImpl.class);
+
+	@Autowired
+	private ParentService parentService;
+
+	@Autowired
+	private SaltFormService saltFormService;
+
+	@Autowired
+	private LotService lotService;
 
 	@Override
 	@Transactional
@@ -104,4 +115,42 @@ public class ParentLotServiceImpl implements ParentLotService {
 
 	}
 
+	@Override
+	public void deleteLot(Lot lot) {
+		// Deletes lot and orphan salt forms and orphan parents of the lot
+		Parent parent = Parent.findParent(lot.getParent().getId());
+		Boolean canDeleteSaltForm = true;
+		Boolean canDeleteParent = true;
+		for(SaltForm saltForm : parent.getSaltForms()) {
+			if(saltForm.getId().equals(lot.getSaltForm().getId())) {
+				Set<Lot> lots = saltForm.getLots();
+				for(Lot lotToDelete : lots) {
+					if(!lotToDelete.getId().equals(lot.getId())) {
+						canDeleteSaltForm = false;
+						canDeleteParent = false;
+						logger.info("Found dependent lot ("+lot.getCorpName()+") on salt form (corpName:'"+saltForm.getCorpName()+"', id:"+saltForm.getId()+")");
+					}
+				}
+			} else {
+				canDeleteParent = false;
+				logger.info("Found dependent salt form ("+saltForm.getCorpName()+") on parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
+			}
+		}
+		if(canDeleteParent) {
+			// Delete parent (including salt forms and lots and all dependencies)
+			logger.info("Deleting parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
+			parentService.deleteParent(parent);
+		} else {
+			logger.info("Not deleting parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
+			if(canDeleteSaltForm) {
+				// Delete the salt form (including lots and all dependencies)
+				logger.info("Deleting salt form (corpName:'"+lot.getSaltForm().getCorpName()+"', id:"+lot.getSaltForm().getId()+")");
+				saltFormService.deleteSaltForm(lot.getSaltForm());
+			} else {
+				// Delete just the lot (including all dependencies)
+				logger.info("Not deleting salt form (corpName:'"+lot.getSaltForm().getCorpName()+"', id:"+lot.getSaltForm().getId()+")");
+				lotService.deleteLot(lot);
+			}
+		}
+	}
 }

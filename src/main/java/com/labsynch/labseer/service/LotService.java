@@ -44,4 +44,9 @@ public interface LotService {
 
 	public CmpdRegBatchCodeDTO checkForDependentData(Set<String> lotCorpNames);
 
+	public void deleteLots(Collection<Lot> lots );
+
+	public void deleteLot(Lot lot );
+	
+
 }

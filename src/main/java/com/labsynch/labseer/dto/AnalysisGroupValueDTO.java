@@ -1,5 +1,7 @@
 package com.labsynch.labseer.dto;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -14,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -279,6 +284,33 @@ public class AnalysisGroupValueDTO {
 
 	public String toPrettyJson() {
 		return new JSONSerializer().exclude("*.class").prettyPrint(true).serialize(this);
+	}
+
+	public static String toCsv(Collection<AnalysisGroupValueDTO> collection) {
+		StringWriter outFile = new StringWriter();
+		ICsvBeanWriter beanWriter = null;
+		try {
+			beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
+			final String[] header = AnalysisGroupValueDTO.getColumns();
+			final CellProcessor[] processors = AnalysisGroupValueDTO.getProcessors();
+			beanWriter.writeHeader(header);
+			for (final AnalysisGroupValueDTO agValue : collection) {
+				beanWriter.write(agValue, header, processors);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (beanWriter != null) {
+				try {
+					beanWriter.close();
+					outFile.flush();
+					outFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return beanWriter.toString();
 	}
 
 	public static AnalysisGroupValueDTO fromJsonToAnalysisGroupValueDTO(String json) {
