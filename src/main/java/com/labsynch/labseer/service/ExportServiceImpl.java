@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,20 @@ public class ExportServiceImpl implements ExportService {
 		}
 		ExportResultDTO exportResult = exportLots(searchResultExportRequestDTO.getFilePath(), lotCorpNames);
 		return exportResult;
+	}
+	
+	@Override
+	public File exportLots(List<String> lotCorpNames) throws IllegalArgumentException, IOException, CmpdRegMolFormatException {
+		Collection<Lot> foundLots = getLotsByCorpNames(lotCorpNames);
+		Collection<LotDTO> lotDTOs = new HashSet<LotDTO>();
+		for (Lot foundLot : foundLots) {
+			LotDTO lotDTO = new LotDTO(foundLot);
+			lotDTOs.add(lotDTO);
+		}
+		logger.debug("Attempting to export " + lotDTOs.size() + " lots");
+		File tempFile = File.createTempFile("export-lots-", ".sdf");
+		writeLotsToSDF(tempFile.getAbsolutePath().toString(), lotDTOs);
+		return tempFile;
 	}
 
 	@Override
