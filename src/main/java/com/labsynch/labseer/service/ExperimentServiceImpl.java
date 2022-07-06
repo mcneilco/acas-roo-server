@@ -1596,7 +1596,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 			
 			// Logical delete analysis groups
 			List<AnalysisGroupValueDTO> analysisGroupValueDTOs = AnalysisGroupValue.findAnalysisGroupValueDTO(batchCodes, experimentCodes).getResultList();
-			csvString = AnalysisGroupValueDTO.toCsv(analysisGroupValueDTOs);
 
 			// Get unique set of analsyis group ids
 			Set<Long> analysisGroupIds = new HashSet<Long>();
