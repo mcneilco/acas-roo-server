@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -215,13 +216,13 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
-		// Get the standardization actions and options
+		// Get the process options
 		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
 
-		// We do not want standardization here but the route requires a standardization
-		// object to be sent in.
-		// Adding an empty standardizer actions so to avoid any standardization
-		options.put("standardizer_actions", mapper.createObjectNode());
+		// Get the standardizer actions
+		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+
+		options.put("standardizer_actions", standardizerActions);
 		requestData.put("options", options);
 
 		// Split the list of structures into chunks for processing
@@ -303,112 +304,6 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public HashMap<String, Entry<String, String>> getPreprocessedStructures(HashMap<String, String> structures)
-			throws CmpdRegMolFormatException, IOException {
-		// Return a hashmap of the preprocessed structures
-		// HashMap<OriginalKey, Entry<PreprocessorStatus, PreprocessedStructure>>
-
-		// Returns standardized mols
-		String url = getUrlFromPreprocessorSettings("preprocessURL");
-
-		JsonNode jsonNode = getPreprocessorSettings();
-
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode requestData = mapper.createObjectNode();
-		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
-		requestData.put("config", standardizerActions);
-		requestData.put("output_format", "MOL");
-
-		// Split the list of structures into chunks of
-		// propertiesUtilService.getExternalStructureProcessingBatchSize()
-		List<HashMap<String, String>> structureGroups = new ArrayList<HashMap<String, String>>();
-		HashMap<String, String> structureGroup = new HashMap<String, String>();
-		Object[] structuresArray = structures.keySet().toArray();
-		for (String structure : structures.keySet()) {
-			structureGroup.put(structure, structures.get(structure));
-			if (structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize()
-					|| structure == structuresArray[structuresArray.length - 1]) {
-				structureGroups.add(structureGroup);
-				structureGroup = new HashMap<String, String>();
-			}
-		}
-
-		Collection<Callable<Response>> tasks = new ArrayList<>();
-		// Create the tasks and include an id for the task
-		for (int i = 0; i < structureGroups.size(); i++) {
-			HashMap<String, String> structureGroupList = structureGroups.get(i);
-
-			// Add the structures to the request
-			ObjectNode structuresNode = mapper.createObjectNode();
-
-			// Create a "structures": { "structure-id": "molfile" } object and add it to the
-			// request
-			for (String structureId : structureGroupList.keySet()) {
-				String structure = structureGroupList.get(structureId);
-				structuresNode.put(structureId, structure);
-			}
-			requestData.put("structures", structuresNode);
-
-			// Post to the service and parse the response
-			String requestString = requestData.toString();
-			logger.debug("requestString: " + requestString);
-			tasks.add(new Request(i, url, requestString));
-		}
-
-		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " preprocess tasks");
-		List<Future<Response>> results = pool.invokeAll(tasks);
-		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
-		for (Future<Response> response : results) {
-			String responseBody;
-			int responseCode;
-			Integer responseId;
-			try {
-				responseBody = response.get().getResponseBody();
-				responseCode = response.get().getResponseCode();
-				responseId = response.get().getId();
-			} catch (InterruptedException | ExecutionException e) {
-				throw new IOException("Error posting to process service: " + e.getMessage());
-			}
-
-			if (responseCode != 200) {
-				logger.error("Response Body: " + responseBody);
-				logger.error("URL was: " + url);
-				throw new IOException("Error posting to preprocess service: " + responseBody);
-			}
-
-			// Parse the response json to get the standardized mol
-			ObjectMapper responseMapper = new ObjectMapper();
-			JsonNode responseNode = responseMapper.readTree(responseBody);
-			responseMap.put(responseId, responseNode);
-		}
-		logger.info("Got response for all " + tasks.size() + " preprocess tasks");
-
-		// Sort the response hashmap by the keys
-		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
-		Collections.sort(responseIds);
-		// Empty hashmap
-		HashMap<String, Entry<String, String>> standardizedStructures = new HashMap<String, Entry<String, String>>();
-		for (Integer responseId : responseIds) {
-			logger.debug("Response ID: " + responseId);
-			// Combine the json nodes
-			JsonNode responseNode = responseMap.get(responseId);
-			JsonNode structuresResponseNode = responseNode.get("structures");
-
-			// Add the standardized structures to the hashmap
-			structuresResponseNode.fieldNames().forEachRemaining(structureId -> {
-				JsonNode node = structuresResponseNode.get(structureId);
-				String status = node.get("status").asText();
-				String structure = node.get("structure").asText();
-				Map.Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(status, structure);
-				standardizedStructures.put(structureId, entry);
-			});
-		}
-
-		return standardizedStructures;
-	}
-
-	@Override
 	public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures,
 			Boolean includeFingerprints) throws CmpdRegMolFormatException {
 
@@ -448,6 +343,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 					String msg = responseJsonNode.get("error_msg").asText();
 					if (errorCode.equals("4004")) {
 						logger.warn("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
+						bbChemStructure.setStandardizationStatus(StandardizationStatus.SUCCESS);
 						bbChemStructure.setReg(EMPTY_STRUCTURE);
 						bbChemStructure.setPreReg(EMPTY_STRUCTURE);
 						bbChemStructure.setMol(structures.get(structureKey));
@@ -460,6 +356,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 					} else {
 						// Print the structures
 						logger.error("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
+						bbChemStructure.setStandardizationStatus(StandardizationStatus.ERROR);
 						bbChemStructure.setReg(ERROR_STRUCTURE);
 						bbChemStructure.setPreReg(ERROR_STRUCTURE);
 						bbChemStructure.setMol(structures.get(structureKey));
@@ -496,6 +393,8 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 					bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.SUCCESS);
 					bbChemStructure.setRegistrationComment(null);
 
+					bbChemStructure.setStandardizationStatus(StandardizationStatus.SUCCESS);
+					
 				}
 
 				// Set recorded date todays date. This simplifies the code when we need to
