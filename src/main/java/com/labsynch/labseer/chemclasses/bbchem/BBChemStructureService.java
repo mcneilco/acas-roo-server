@@ -24,10 +24,6 @@ public interface BBChemStructureService {
     public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures,
             Boolean includeFingerprints) throws CmpdRegMolFormatException;
 
-    // HashMap<OriginalKey, Entry<PreprocessorStatus, PreprocessorStructure>>
-    public HashMap<String, Entry<String, String>> getPreprocessedStructures(HashMap<String, String> structures)
-            throws CmpdRegMolFormatException, IOException;
-
     public String getSDF(BBChemParentStructure structure) throws IOException;
 
     public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException;

@@ -700,51 +700,14 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures)
 			throws CmpdRegMolFormatException {
 
-		// Get preprocessed structures (standardized mol structures)
-		HashMap<String, Entry<String, String>> preprocessedStructures = new HashMap<String, Entry<String, String>>();
-		try {
-			preprocessedStructures = bbChemStructureService.getPreprocessedStructures(structures);
-		} catch (IOException e) {
-			logger.error("Error getting preprocessed structures: " + e.getMessage());
-			throw new CmpdRegMolFormatException("Error getting preprocessed structures: " + e.getMessage());
-		}
-
-		// Filling in preprocessor failures with their original structure
-		// Loop through the preprocessStructures and remove any structures that have an
-		// error
-		HashMap<String, String> structuresToProcess = new HashMap<String, String>();
-		for (String structureKey : preprocessedStructures.keySet()) {
-			Entry<String, String> preprocessedStructure = preprocessedStructures.get(structureKey);
-			if (!preprocessedStructure.getKey().equals("SUCCESS")) {
-				logger.error("Got unexpected status '" + preprocessedStructure.getKey()
-						+ "' when preprocessing structure for id:'" + structureKey + "' molstruture: '"
-						+ structures.get(structureKey) + "'");
-				// Just add the original structure to the list of structures to process
-				// We will add the error message to the structure later
-				structuresToProcess.put(structureKey, structures.get(structureKey));
-			} else {
-				structuresToProcess.put(structureKey, preprocessedStructure.getValue());
-			}
-
-		}
-
 		// Get processed structures (hashes and include fingerprints)
 		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService
-				.getProcessedStructures(structuresToProcess, true);
+				.getProcessedStructures(structures, true);
 
 		// Return hashmap
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
 		for (String key : standardizedStructures.keySet()) {
 			BBChemParentStructure bbchemStructure = standardizedStructures.get(key);
-
-			// Fill in the standardization status and standardization comments
-			Entry<String, String> preprocessedStructure = preprocessedStructures.get(key);
-			if (preprocessedStructure.getKey().equals("SUCCESS")) {
-				bbchemStructure.setStandardizationStatus(StandardizationStatus.SUCCESS);
-			} else {
-				bbchemStructure.setStandardizationStatus(StandardizationStatus.ERROR);
-			}
-
 			CmpdRegMolecule molStructure = new CmpdRegMoleculeBBChemImpl(bbchemStructure, bbChemStructureService);
 			result.put(key, molStructure);
 		}
