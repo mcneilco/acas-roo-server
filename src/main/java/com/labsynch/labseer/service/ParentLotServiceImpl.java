@@ -115,9 +115,14 @@ public class ParentLotServiceImpl implements ParentLotService {
 
 	}
 
+	/**
+	 * Deletes a lot from the database including it's children and any orphaned iso salts, saltforms and parents.
+	 * @param lot The lot to delete
+	 * @return
+	 */
 	@Override
 	public void deleteLot(Lot lot) {
-		// Deletes lot and orphan salt forms and orphan parents of the lot
+
 		Parent parent = Parent.findParent(lot.getParent().getId());
 		Boolean canDeleteSaltForm = true;
 		Boolean canDeleteParent = true;

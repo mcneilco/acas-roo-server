@@ -179,7 +179,11 @@ public class ApiMetalotController {
 		return new ResponseEntity<String>(metaLot.toJson(), headers, HttpStatus.OK);
 	}
 
-	// Method to delete a metalot by corp name
+	/**
+	 * Deletes a lot from the database by corp name.  This includes all depedencies such as file lists, experiment data, aliases, orphan iso salts, orphan salt forms and orphan parents.
+	 * @param corpName
+	 * @return
+	 */
 	@Transactional
 	@RequestMapping(value = "/corpName/{corpName}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteMetalotByCorpName(@PathVariable("corpName") String corpName) {
@@ -211,6 +215,11 @@ public class ApiMetalotController {
 		}
 	}
 
+	/**  
+	 * Gets dependencies for the lot with the given lot corp name. This includes experimental data (analysis, subject or treatment), containers, protocol values...etc.
+	 * @param corpName
+	 * @return
+	 */
 	@RequestMapping(value = "checkDependencies/corpName/{corpName}", method = RequestMethod.GET)
 	public ResponseEntity<String> getDependenciesByLotCorpName(@PathVariable("corpName") String corpName) {
 		HttpHeaders headers = new HttpHeaders();

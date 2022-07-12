@@ -555,9 +555,15 @@ public class LotServiceImpl implements LotService {
 		
 	}
 
+	/**
+	 * Delete the lot and all of its children. This method is specific for the lot and does not clean up the orphaned salt forms , iso salts or parents. See ParentLotServiceImpl.deleteLot for the recursive delete of the parent lot.
+	 * 
+	 * @param lot
+	 */
 	@Override
 	@Transactional
 	public void deleteLot(Lot lot) {
+
 
 		// Check for dependent data
 		Set<String> batchCodeSet = new HashSet<String>();

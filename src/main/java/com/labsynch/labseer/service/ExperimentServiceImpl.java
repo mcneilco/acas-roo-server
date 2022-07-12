@@ -1579,6 +1579,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 		// return isSoftDeleted;
 	}
 
+	/** 
+	 * Given an experiment code and batch code, deletes the experimental data associated with the experiment and batch and returns a string representation of the data that was deleted.
+	 * @param experimentCode
+	 * @param batchCode
+	**/
 	@Override
 	@Transactional
 	public String deleteExperimentDataByBatchCode(String experimentCode, String batchCode) {

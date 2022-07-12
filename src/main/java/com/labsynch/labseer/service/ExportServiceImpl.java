@@ -55,6 +55,11 @@ public class ExportServiceImpl implements ExportService {
 		return exportResult;
 	}
 	
+	/** 
+	 * Exports an SDF file of the lot corp names provided. The SDF file is written to a file.
+	 * @param lotCorpNames
+	 * @return File of the SDF data representing the lots
+	**/
 	@Override
 	public File exportLots(List<String> lotCorpNames) throws IllegalArgumentException, IOException, CmpdRegMolFormatException {
 		Collection<Lot> foundLots = getLotsByCorpNames(lotCorpNames);
