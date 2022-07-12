@@ -236,7 +236,7 @@ public class ApiMetalotController {
 			batchCodeSet.add(lot.getCorpName());
 			CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
 
-			//
+			// Return json
 			String json = batchDTO.toJson();
 			return new ResponseEntity<String>(json, headers, HttpStatus.OK);
 		}
