@@ -199,14 +199,14 @@ public class ApiMetalotController {
 		// Get the lot and check for depdencies
 		List<Lot> lots = Lot.findLotsByCorpNameEquals(corpName).getResultList();
 
-		System.out.println("Number of lots found = " + lots.size());		
+		logger.debug("Number of lots found = " + lots.size());		
 
 		if(lots.size() == 0) {
 			logger.info("Did not find a lot with corpName '" + corpName + "'");
 			// Return a 404 error
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		} else {
-			logger.info("Found " + lots.size() + " lots with corpName '" + corpName + "'");
+			logger.debug("Found " + lots.size() + " lots with corpName '" + corpName + "'");
 
 			Lot lot = lots.get(0);
 			parentLotService.deleteLot(lot);
