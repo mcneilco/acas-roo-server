@@ -37,7 +37,7 @@ public class CmpdRegBatchCodeDTO {
 		this.setBatchCodes(Collections.singletonList(corpName));
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(CmpdRegBatchCodeDTO.class);
+	private static final Logger logger = LoggerFactory.getLogger(CmpdRegBatchCodeDTO.class);
 
 	private Collection<String> batchCodes;
 
