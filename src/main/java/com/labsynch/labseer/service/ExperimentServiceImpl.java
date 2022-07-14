@@ -1600,14 +1600,15 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentCodes.add(experimentCode);
 			
 			// Logical delete analysis groups
+			//First find the analysis groups that have this experiment code and batch code
 			List<AnalysisGroupValueDTO> analysisGroupValueDTOs = AnalysisGroupValue.findAnalysisGroupValueDTO(batchCodes, experimentCodes).getResultList();
 
-			// Get unique set of analsyis group ids
+			// Second, get unique set of analsyis group ids
 			Set<Long> analysisGroupIds = new HashSet<Long>();
 			for (AnalysisGroupValueDTO analysisGroupValueDTO : analysisGroupValueDTOs) {
 				analysisGroupIds.add(analysisGroupValueDTO.getAgId());
 			}
-			// Delete analysis group values
+			// Finally, delete analysis group values
 			for (Long analysisGroupId : analysisGroupIds) {
 				logger.info("Logically deleting analysis group: " + analysisGroupId);
 				AnalysisGroup.findAnalysisGroup(analysisGroupId).logicalDelete();
