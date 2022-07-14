@@ -116,7 +116,8 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND es.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
-				+ "AND ev.codeValue IN :batchCodes";
+				+ "AND ev.codeValue IN :batchCodes "
+				+ "GROUP BY e.codeName, el.labelText, ev.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -222,7 +223,8 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
-				+ "AND tgv.codeValue IN :batchCodes";
+				+ "AND tgv.codeValue IN :batchCodes "
+				+ "GROUP BY e.codeName, el.labelText, tgv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
