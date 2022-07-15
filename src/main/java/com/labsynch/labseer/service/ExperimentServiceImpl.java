@@ -69,7 +69,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
-	private AnalysisGroupService analysisGroupService;
+	private AnalysisGroupValueService analysisGroupValueService;
 
 	@Autowired
 	private ProtocolService protocolService;
@@ -79,6 +79,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Autowired
 	private ExperimentValueService experimentValueService;
+
 
 	@Autowired
 	private AuthorService authorService;
@@ -1576,6 +1577,44 @@ public class ExperimentServiceImpl implements ExperimentService {
 		// experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
 		// }
 		// return isSoftDeleted;
+	}
+
+	/** 
+	 * Given an experiment code and batch code, deletes the experimental data associated with the experiment and batch and returns a string representation of the data that was deleted.
+	 * @param experimentCode
+	 * @param batchCode
+	**/
+	@Override
+	@Transactional
+	public String deleteExperimentDataByBatchCode(String experimentCode, String batchCode) {
+		Experiment experiment = Experiment.findExperimentsByCodeNameEquals(experimentCode).getSingleResult();
+		String csvString = null;
+		if (experiment != null) {
+			//Find analysis group values with this batch code
+			//Set with batch code
+			Set<String> batchCodes = new HashSet<String>();
+			batchCodes.add(batchCode);
+
+			// Set with experimentCode
+			Set<String> experimentCodes = new HashSet<String>();
+			experimentCodes.add(experimentCode);
+			
+			// Logical delete analysis groups
+			//First find the analysis groups that have this experiment code and batch code
+			List<AnalysisGroupValueDTO> analysisGroupValueDTOs = AnalysisGroupValue.findAnalysisGroupValueDTO(batchCodes, experimentCodes).getResultList();
+
+			// Second, get unique set of analsyis group ids
+			Set<Long> analysisGroupIds = new HashSet<Long>();
+			for (AnalysisGroupValueDTO analysisGroupValueDTO : analysisGroupValueDTOs) {
+				analysisGroupIds.add(analysisGroupValueDTO.getAgId());
+			}
+			// Finally, delete analysis group values
+			for (Long analysisGroupId : analysisGroupIds) {
+				logger.info("Logically deleting analysis group: " + analysisGroupId);
+				AnalysisGroup.findAnalysisGroup(analysisGroupId).logicalDelete();
+			}
+		}
+		return csvString;
 	}
 
 	@Override

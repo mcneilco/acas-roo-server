@@ -12,9 +12,11 @@ import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CompoundType;
+import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.ParentAnnotation;
+import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ParentAliasDTO;
@@ -57,6 +59,12 @@ public class ParentServiceImpl implements ParentService {
 
 	@Autowired
 	public CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
+
+	@Autowired
+	public LotService lotService;
+
+	@Autowired
+	public SaltFormService saltFormService;
 
 	@Override
 	@Transactional
@@ -319,6 +327,20 @@ public class ParentServiceImpl implements ParentService {
 		parent.setParentAliases(newParentAliases);
 
 		return parent;
+	}
+
+	@Override
+	@Transactional
+	public void deleteParent(Parent parent) {
+		for(SaltForm s : parent.getSaltForms()) {
+			saltFormService.deleteSaltForm(s);
+		}
+
+		chemStructureService.deleteStructure(StructureType.PARENT, parent.getCdId());
+		for (ParentAlias alias : parent.getParentAliases()) {
+			alias.remove();
+		}
+		parent.remove();
 	}
 
 }

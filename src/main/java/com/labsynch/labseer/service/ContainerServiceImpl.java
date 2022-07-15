@@ -3511,6 +3511,15 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 
 	@Override
+	@Transactional
+	public void logicalDeleteContainerCodesArray(List<String> containerCodes) {
+		for(String containerCode : containerCodes) {
+			Container container = Container.findContainerByCodeNameEquals(containerCode);
+			container.logicalDelete();
+		}
+	}
+
+	@Override
 	public List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers)
 			throws SQLException {
 		return getLocationTreeDTO(rootLabel, null, null, withContainers);

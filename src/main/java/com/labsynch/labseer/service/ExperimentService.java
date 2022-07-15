@@ -69,6 +69,8 @@ public interface ExperimentService {
 
 	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment);
 
+	public String deleteExperimentDataByBatchCode(String experimentCode, String batchCode);
+
 	public Collection<ExperimentErrorMessageDTO> findExperimentsByCodeNames(List<String> codeNames);
 
 	public Collection<Experiment> saveLsExperiments(

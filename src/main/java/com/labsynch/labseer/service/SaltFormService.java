@@ -19,4 +19,6 @@ public interface SaltFormService {
 			throws SaltFormMolFormatException, DupeSaltFormStructureException;
 
 	public double calculateSaltWeight(SaltForm saltForm);
+
+	public void deleteSaltForm(SaltForm saltForm);
 }

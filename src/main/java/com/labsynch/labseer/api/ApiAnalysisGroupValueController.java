@@ -151,30 +151,7 @@ public class ApiAnalysisGroupValueController {
 			return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
 		}
 		if (format != null && format.equalsIgnoreCase("csv")) {
-			StringWriter outFile = new StringWriter();
-			ICsvBeanWriter beanWriter = null;
-			try {
-				beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
-				final String[] header = AnalysisGroupValueDTO.getColumns();
-				final CellProcessor[] processors = AnalysisGroupValueDTO.getProcessors();
-				beanWriter.writeHeader(header);
-				for (final AnalysisGroupValueDTO agValue : agValues) {
-					beanWriter.write(agValue, header, processors);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (beanWriter != null) {
-					try {
-						beanWriter.close();
-						outFile.flush();
-						outFile.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			return new ResponseEntity<String>(outFile.toString(), headers, HttpStatus.OK);
+			return new ResponseEntity<String>(AnalysisGroupValueDTO.toCsv(agValues), headers, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>(AnalysisGroupValueDTO.toJsonArray(agValues), headers, HttpStatus.OK);
 		}

@@ -21,4 +21,6 @@ public interface ParentService {
 
 	String updateParentMetaArray(String jsonInput);
 
+	public void deleteParent(Parent parent );
+
 }

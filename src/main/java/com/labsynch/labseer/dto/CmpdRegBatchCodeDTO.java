@@ -1,10 +1,11 @@
 package com.labsynch.labseer.dto;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -32,6 +33,10 @@ public class CmpdRegBatchCodeDTO {
 		this.setBatchCodes(batchCodes);
 	}
 
+	public CmpdRegBatchCodeDTO(String corpName) {
+		this.setBatchCodes(Collections.singletonList(corpName));
+    }
+
 	private static final Logger logger = LoggerFactory.getLogger(CmpdRegBatchCodeDTO.class);
 
 	private Collection<String> batchCodes;
@@ -40,9 +45,12 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> linkedExperiments;
 
+	private Collection<ContainerBatchCodeDTO> linkedContainers;
+
 	private Collection<ErrorMessageDTO> errors;
 
-	@Transactional
+	private String summary;
+
 	public String toJson() {
 		return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "batchCodes.*")
 				.transform(new ExcludeNulls(), void.class).serialize(this);
@@ -57,7 +65,7 @@ public class CmpdRegBatchCodeDTO {
 			if (countExperimentValueBatchCodes() > 0) {
 				linkedDataExists = true;
 				logger.debug("Found Experiment values referencing provided batch codes. Retrieving experiment info.");
-				linkedExperiments.addAll(findExperimentCodeTableDTOsFromExperimentValueBatchCodes());
+				addUniqueExperiments(findExperimentCodeTableDTOsFromExperimentValueBatchCodes());
 			}
 		} catch (Exception e) {
 			ErrorMessageDTO error = new ErrorMessageDTO();
@@ -65,36 +73,39 @@ public class CmpdRegBatchCodeDTO {
 			error.setMessage(e.getMessage());
 			errors.add(error);
 		}
-		if (countTreatmentGroupValueBatchCodes() > 0) {
-			linkedDataExists = true;
-			logger.debug("Found TreatmentGroup values referencing provided batch codes. Retrieving experiment info.");
-			linkedExperiments.addAll(findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes());
-		}
 		if (countAnalysisGroupValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found AnalysisGroup values referencing provided batch codes. Retrieving experiment info.");
-			linkedExperiments.addAll(findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes());
+			addUniqueExperiments(findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes());
+		}
+		if (countTreatmentGroupValueBatchCodes() > 0) {
+			linkedDataExists = true;
+			logger.debug("Found TreatmentGroup values referencing provided batch codes. Retrieving experiment info.");
+			addUniqueExperiments(findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes());
 		}
 		if (countSubjectValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found Subject values referencing provided batch codes. Retrieving experiment info.");
-			linkedExperiments.addAll(findExperimentCodeTableDTOsFromSubjectValueBatchCodes());
+			addUniqueExperiments(findExperimentCodeTableDTOsFromSubjectValueBatchCodes());
 		}
 		if (countProtocolValueBatchCodes() > 0) {
 			linkedDataExists = true;
+			logger.debug("Found Protocol values referencing provided batch codes.");
 		}
 		if (countLsThingValueBatchCodes() > 0) {
 			linkedDataExists = true;
+			logger.debug("Found LsThing values referencing provided batch codes.");
 		}
 		if (countContainerValueBatchCodes() > 0) {
 			linkedDataExists = true;
+			logger.debug("Found Container values referencing provided batch codes. Retrieving container info.");
 		}
 		// dedupeLinkedExperiments();
 	}
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, ev.codeValue as comments) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, ev.codeValue as comments, count(ev.id) as description) "
 				+ "FROM ExperimentValue ev "
 				+ "JOIN ev.lsState as es "
 				+ "JOIN es.experiment as e "
@@ -105,7 +116,8 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND es.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
-				+ "AND ev.codeValue IN :batchCodes";
+				+ "AND ev.codeValue IN :batchCodes "
+				+ "GROUP BY e.codeName, el.labelText, ev.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -116,6 +128,7 @@ public class CmpdRegBatchCodeDTO {
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
 			codeTable.setComments(map.get("comments"));
+			codeTable.setDescription(map.get("description"));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;
@@ -123,12 +136,13 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, agv.codeValue as comments) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, agv.codeValue as comments, count(agv2.id) || ' results' as description) "
 				+ "FROM AnalysisGroupValue agv "
 				+ "JOIN agv.lsState as ags "
 				+ "JOIN ags.analysisGroup as ag "
 				+ "JOIN ag.experiments as e "
-				+ "LEFT OUTER JOIN e.lsLabels as el "
+				+ "LEFT OUTER JOIN e.lsLabels as el ON el.ignored = false "
+				+ "LEFT OUTER JOIN ags.lsValues agv2 ON agv2.lsKind <> 'batch code' AND agv2.ignored = false "
 				+ "WHERE el.lsKind = 'experiment name' "
 				+ "AND agv.lsType = 'codeValue' "
 				+ "AND agv.lsKind = 'batch code' "
@@ -136,8 +150,8 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND ags.ignored = false "
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
-				+ "AND el.ignored = false "
-				+ "AND agv.codeValue IN :batchCodes";
+				+ "AND agv.codeValue IN :batchCodes "
+				+ "GROUP BY e.codeName, el.labelText, agv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -148,6 +162,7 @@ public class CmpdRegBatchCodeDTO {
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
 			codeTable.setComments(map.get("comments"));
+			codeTable.setDescription(String.valueOf(map.get("description")));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;
@@ -155,14 +170,15 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromSubjectValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, sv.codeValue as comments) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, sv.codeValue as comments, count(sv2.id) || ' raw results' as description) "
 				+ "FROM SubjectValue sv "
 				+ "JOIN sv.lsState as ss "
 				+ "JOIN ss.subject as s "
 				+ "JOIN s.treatmentGroups as tg "
 				+ "JOIN tg.analysisGroups as ag "
 				+ "JOIN ag.experiments as e "
-				+ "LEFT OUTER JOIN e.lsLabels as el "
+				+ "LEFT OUTER JOIN e.lsLabels as el ON el.ignored = false "
+				+ "LEFT OUTER JOIN ss.lsValues as sv2 ON sv2.lsKind <> 'batch code' AND sv2.ignored = false AND ss.lsType = 'data' and ss.lsKind = 'results' "
 				+ "WHERE el.lsKind = 'experiment name' "
 				+ "AND sv.lsKind = 'batch code' "
 				+ "AND sv.ignored = false "
@@ -171,8 +187,8 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND tg.ignored = false "
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
-				+ "AND el.ignored = false "
-				+ "AND sv.codeValue IN :batchCodes";
+				+ "AND sv.codeValue IN :batchCodes "
+				+ "GROUP BY e.codeName, el.labelText, sv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -183,6 +199,7 @@ public class CmpdRegBatchCodeDTO {
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
 			codeTable.setComments(map.get("comments"));
+			codeTable.setDescription(map.get("description"));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;
@@ -206,7 +223,8 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
-				+ "AND tgv.codeValue IN :batchCodes";
+				+ "AND tgv.codeValue IN :batchCodes "
+				+ "GROUP BY e.codeName, el.labelText, tgv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -360,21 +378,28 @@ public class CmpdRegBatchCodeDTO {
 		return q.getSingleResult().intValue();
 	}
 
-	private void dedupeLinkedExperiments() {
-		HashMap<String, String> experimentMap = new HashMap<String, String>();
-		logger.debug("Incoming size: " + linkedExperiments.size());
-		for (CodeTableDTO codeTable : linkedExperiments) {
-			experimentMap.put(codeTable.getCode(), codeTable.getName());
+	private void addUniqueExperiments(Collection<CodeTableDTO> codeTablesToAdd) {
+		for (CodeTableDTO codeTable : codeTablesToAdd) {
+			Boolean addIt = true;
+			for(CodeTableDTO experimentCodeTable : linkedExperiments) {
+				if(codeTable.getCode().equals(experimentCodeTable.getCode())) {
+					addIt = false;
+					if(codeTable.getDescription() != null) {
+						if(experimentCodeTable.getDescription() == null) {
+							// Just set the description
+							experimentCodeTable.setDescription(codeTable.getDescription());
+						} else {
+							// Add the description to the existing description
+							experimentCodeTable.setDescription(experimentCodeTable.getDescription() + " and " + codeTable.getDescription());
+						}
+					}
+					break;
+				}
+			}
+			if(addIt) {
+				linkedExperiments.add(codeTable);
+			}
 		}
-		HashSet<CodeTableDTO> dedupedExperimentSet = new HashSet<CodeTableDTO>();
-		for (String key : experimentMap.keySet()) {
-			CodeTableDTO experimentCodeTable = new CodeTableDTO();
-			experimentCodeTable.setCode(key);
-			experimentCodeTable.setName(experimentMap.get(key));
-			dedupedExperimentSet.add(experimentCodeTable);
-		}
-		linkedExperiments = dedupedExperimentSet;
-		logger.debug("Deduped size: " + linkedExperiments.size());
 	}
 
 	public Collection<String> getBatchCodes() {
@@ -399,6 +424,14 @@ public class CmpdRegBatchCodeDTO {
 
 	public void setLinkedExperiments(Collection<CodeTableDTO> linkedExperiments) {
 		this.linkedExperiments = linkedExperiments;
+	}
+
+	public Collection<ContainerBatchCodeDTO> getLinkedContainers() {
+		return this.linkedContainers;
+	}
+
+	public void setLinkedContainers(Collection<ContainerBatchCodeDTO> linkedContainers) {
+		this.linkedContainers = linkedContainers;
 	}
 
 	public Collection<ErrorMessageDTO> getErrors() {
@@ -430,6 +463,22 @@ public class CmpdRegBatchCodeDTO {
 	}
 
 	public String toString() {
+		setSummary(getSummary());
 		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getSummary() {
+		String msg = "";
+		if(getLinkedDataExists()) {
+			msg +=  getLinkedExperiments().size() + " linked experiments: " + getLinkedExperiments().stream().map(e -> e.getCode() + '(' + e.getName() + ")").collect(Collectors.joining(", "));
+			if(getLinkedContainers().size() > 0) {
+				msg += getLinkedContainers().size() + " linked containers: " + getLinkedContainers().stream().map(c -> c.getContainerBarcode()).collect(Collectors.toList());
+			}
+		}
+		return msg;
 	}
 }

@@ -352,7 +352,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
-				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, ag.id as agId, ags.id as agStateId, agv.lsType as lsType, agv.lsKind as lsKind, "
 				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, "
 				+ "agv2.codeValue AS testedLot "
 				+ ", agv2.codeValue as geneId  "
