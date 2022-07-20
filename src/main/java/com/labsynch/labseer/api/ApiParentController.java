@@ -4,9 +4,13 @@ import java.util.Collection;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ParentDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
+import com.labsynch.labseer.dto.ParentSwapStructuresDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
 import com.labsynch.labseer.service.ParentService;
+import com.labsynch.labseer.service.ParentStructureService;
+import com.labsynch.labseer.service.ParentSwapStructuresService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,9 @@ public class ApiParentController {
 
 	@Autowired
 	public ParentService parentService;
+
+	@Autowired
+	public ParentSwapStructuresService parentSwapStructuresService;
 
 	@Transactional
 	@RequestMapping(value = "/validateParent", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -63,6 +70,31 @@ public class ApiParentController {
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(affectedLots), headers, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Caught error trying to update parent", e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/swapParentStructures", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> swapParentStructures(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		ParentSwapStructuresDTO parentSwapStructuresDTO = ParentSwapStructuresDTO.fromJSONToParentSwapStructuresDTO(json);
+
+		String msg = String.format(
+			"corpName1=%s & corpName2=%s swap: ",
+			parentSwapStructuresDTO.getCorpName1(),
+			parentSwapStructuresDTO.getCorpName2());
+		try {
+			if (parentSwapStructuresService.swapParentStructures(parentSwapStructuresDTO)) {
+				logger.info(msg + "success");
+				return new ResponseEntity<String>(headers, HttpStatus.OK);
+			} else {
+				logger.info(msg + "failure");
+				return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Caught error while trying to swap parent structures", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

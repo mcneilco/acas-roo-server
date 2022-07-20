@@ -60,6 +60,10 @@ public class ParentValidationDTO {
         this.dupeParents = dupeParents;
     }
 
+    public boolean hasErrors() {
+        return !(this.errors.isEmpty());
+    }
+
     public Collection<ErrorMessage> getErrors() {
         return this.errors;
     }
