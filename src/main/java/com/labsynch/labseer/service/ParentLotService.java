@@ -14,4 +14,6 @@ public interface ParentLotService {
 
 	public Collection<Lot> getLotsByParentCorpName(String parentCorpName);
 
+	public void deleteLot(Lot lot);
+
 }

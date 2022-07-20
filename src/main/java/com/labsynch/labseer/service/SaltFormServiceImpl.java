@@ -1,10 +1,13 @@
 package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.transaction.Transactional;
 
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -308,6 +311,31 @@ public class SaltFormServiceImpl implements SaltFormService {
 			logger.debug("current totalSaltWeigth: " + totalSaltWeight);
 		}
 		return totalSaltWeight;
+	}
+
+	@Override
+	@Transactional
+	public void deleteSaltForm(SaltForm saltForm) {
+		
+		// Deletes lot and all dependent objects (experiments, containers, etc.)
+		for(Lot lot : saltForm.getLots()) {
+			lotService.deleteLot(lot);
+		}
+
+		// Delete iso salts
+		Collection<IsoSalt> isoSalts = saltForm.getIsoSalts();
+		isoSalts.addAll(IsoSalt.findIsoSaltsBySaltForm(saltForm).getResultList());
+		if (isoSalts != null) {
+			for (IsoSalt isoSalt : isoSalts) {
+				isoSalt.remove();
+			}
+		}
+
+		// Delete salt form structure
+		chemService.deleteStructure(StructureType.SALT_FORM, saltForm.getCdId());
+
+		// Delete salt form
+		saltForm.remove();
 	}
 
 }

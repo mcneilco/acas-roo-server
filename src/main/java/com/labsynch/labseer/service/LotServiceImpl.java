@@ -1,8 +1,9 @@
 package com.labsynch.labseer.service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -11,8 +12,11 @@ import java.util.regex.Pattern;
 import javax.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
@@ -22,9 +26,15 @@ import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
+import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.slf4j.Logger;
@@ -37,9 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LotServiceImpl implements LotService {
 
 	@Autowired
-	private ChemStructureService chemService;
-
-	@Autowired
 	private CorpNameService corpNameService;
 
 	@Autowired
@@ -50,6 +57,15 @@ public class LotServiceImpl implements LotService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+
+	@Autowired
+	private ContainerService containerService;
+
+	@Autowired
+	private ExperimentService experimentService;
+
+	@Autowired
+	private ChemStructureService chemStructureService;
 
 	private static final Logger logger = LoggerFactory.getLogger(LotServiceImpl.class);
 
@@ -511,6 +527,85 @@ public class LotServiceImpl implements LotService {
 			preferredNameDTO.setPreferredName(preferredName);
 		}
 		return preferredNameDTOs;
+	}
+
+	@Override
+	public CmpdRegBatchCodeDTO checkForDependentData(Set<String> lotCorpNames) {
+		CmpdRegBatchCodeDTO cmpdRegBatchCodeDTO = new CmpdRegBatchCodeDTO(lotCorpNames);
+
+		cmpdRegBatchCodeDTO.checkForDependentData();
+
+		if(cmpdRegBatchCodeDTO.getLinkedDataExists()) {
+			List<String> batchCodeList = new ArrayList<String>();
+			batchCodeList.addAll(lotCorpNames);
+			cmpdRegBatchCodeDTO.setLinkedContainers(containerService.getContainerDTOsByBatchCodes(batchCodeList));
+		}
+		return cmpdRegBatchCodeDTO;
+	}
+
+	@Override
+	@Transactional
+	public void deleteLots(Collection<Lot> lots ) {
+
+		//
+		// Delete the lots
+		for (Lot lot : lots) {
+			deleteLot(lot);
+		}
+		
+	}
+
+	/**
+	 * Delete the lot and all of its children. This method is specific for the lot and does not clean up the orphaned salt forms , iso salts or parents. See ParentLotServiceImpl.deleteLot for the recursive delete of the parent lot.
+	 * 
+	 * @param lot
+	 */
+	@Override
+	@Transactional
+	public void deleteLot(Lot lot) {
+
+
+		// Check for dependent data
+		Set<String> batchCodeSet = new HashSet<String>();
+		batchCodeSet.add(lot.getCorpName());
+		CmpdRegBatchCodeDTO batchDTO = checkForDependentData(batchCodeSet);
+
+		//Containers
+		if (batchDTO.getLinkedContainers() != null && batchDTO.getLinkedContainers().size() > 0) {
+			List<String> containerCodeNameList = new ArrayList<String>();
+			for (ContainerBatchCodeDTO containerBatchCodeDTO : batchDTO.getLinkedContainers()) {
+				containerCodeNameList.add(containerBatchCodeDTO.getContainerCodeName());
+			}
+			containerService.logicalDeleteContainerCodesArray(containerCodeNameList);
+		}
+
+		// Experiments
+		if (batchDTO.getLinkedExperiments() != null && batchDTO.getLinkedExperiments().size() > 0) {
+			for (CodeTableDTO experimentCodeTableDTO : batchDTO.getLinkedExperiments()) {
+				experimentService.deleteExperimentDataByBatchCode(experimentCodeTableDTO.getCode(), lot.getCorpName());
+			}
+		}
+
+
+		// Lot files
+		Collection<FileList> fileLists = lot.getFileLists();
+		fileLists.addAll(FileList.findFileListsByLot(lot).getResultList());
+		if (fileLists != null) {
+			for (FileList fileList : fileLists) {
+				fileList.remove();
+			}
+		}
+
+		// Lot Aliases
+		Set<LotAlias> lotAliases = lot.getLotAliases();
+		if (lotAliases != null) {
+			for (LotAlias lotAlias : lotAliases) {
+				lotAlias.remove();
+			}
+		}
+
+		// Lot
+		lot.remove();
 	}
 
 }

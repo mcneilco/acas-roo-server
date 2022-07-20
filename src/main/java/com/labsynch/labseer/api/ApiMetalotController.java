@@ -1,17 +1,26 @@
 package com.labsynch.labseer.api;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.Metalot;
 import com.labsynch.labseer.dto.MetalotReturn;
-import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.ErrorMessage;
+import com.labsynch.labseer.service.ExperimentService;
+import com.labsynch.labseer.service.LotService;
 import com.labsynch.labseer.service.MetalotService;
+import com.labsynch.labseer.service.ParentLotService;
+import com.labsynch.labseer.service.ParentService;
+import com.labsynch.labseer.service.SaltFormService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +47,12 @@ public class ApiMetalotController {
 	private MetalotService metalotService;
 
 	@Autowired
-	private ChemStructureService chemStructService;
+	private LotService lotService;
 
+	@Autowired
+	private ParentLotService parentLotService;
+
+	
 	private static final Logger logger = LoggerFactory.getLogger(ApiMetalotController.class);
 
 	@Transactional
@@ -164,6 +177,78 @@ public class ApiMetalotController {
 		}
 
 		return new ResponseEntity<String>(metaLot.toJson(), headers, HttpStatus.OK);
+	}
+
+	/**
+	 * Deletes a lot from the database by corp name.  This includes all depedencies such as file lists, experiment data, aliases, orphan iso salts, orphan salt forms and orphan parents.
+	 * @param corpName
+	 * @return
+	 */
+	@Transactional
+	@RequestMapping(value = "/corpName/{corpName}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deleteMetalotByCorpName(@PathVariable("corpName") String corpName) {
+		logger.debug("delete lot corpName = " + corpName);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		logger.info("Got delete request for corpName '" + corpName + "'");
+		// Get the lot and check for depdencies
+		List<Lot> lots = Lot.findLotsByCorpNameEquals(corpName).getResultList();
+
+		logger.debug("Number of lots found = " + lots.size());		
+
+		if(lots.size() == 0) {
+			logger.info("Did not find a lot with corpName '" + corpName + "'");
+			// Return a 404 error
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} else {
+			logger.debug("Found " + lots.size() + " lots with corpName '" + corpName + "'");
+
+			Lot lot = lots.get(0);
+			parentLotService.deleteLot(lot);
+			return new ResponseEntity<String>(headers, HttpStatus.OK);
+
+		}
+	}
+
+	/**  
+	 * Gets dependencies for the lot with the given lot corp name. This includes experimental data (analysis, subject or treatment), containers, protocol values...etc.
+	 * @param corpName
+	 * @return
+	 */
+	@RequestMapping(value = "checkDependencies/corpName/{corpName}", method = RequestMethod.GET)
+	public ResponseEntity<String> getDependenciesByLotCorpName(@PathVariable("corpName") String corpName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		// Get the lot and check for depdencies
+		List<Lot> lots = Lot.findLotsByCorpNameEquals(corpName).getResultList();
+
+		if(lots.size() == 0) {
+			logger.info("Did not find a lot with corpName '" + corpName + "'");
+			// Return a 404 error
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} else {
+			logger.info("Found " + lots.size() + " lots with corpName '" + corpName + "'");
+			Lot lot = lots.get(0);
+			
+			// Check for linked containers
+			Set<String> batchCodeSet = new HashSet<String>();
+			batchCodeSet.add(lot.getCorpName());
+			CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
+
+			// Return json
+			String json = batchDTO.toJson();
+			return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+		}
 	}
 
 	@Transactional
