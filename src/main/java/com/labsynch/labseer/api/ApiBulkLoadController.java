@@ -15,8 +15,7 @@ import com.labsynch.labseer.dto.BulkLoadSDFValidationPropertiesResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileDependencyCheckResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 import com.labsynch.labseer.service.BulkLoadService;
-import com.labsynch.labseer.service.ExportService;
-import com.labsynch.labseer.service.ExportServiceImpl;
+
 
 import flexjson.JSONSerializer;
 
@@ -41,8 +40,7 @@ public class ApiBulkLoadController {
     @Autowired
     private BulkLoadService bulkLoadService;
 
-    @Autowired
-    private ExportService exportService;
+
 
     @RequestMapping(value = "/templates", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> getAllTemplates() {
