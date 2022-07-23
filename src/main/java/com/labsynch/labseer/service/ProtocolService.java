@@ -42,4 +42,6 @@ public interface ProtocolService {
 	Collection<String> getProtocolCodesByDateValueComparison(
 			DateValueComparisonRequest requestDTO) throws Exception;
 
+	int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
+
 }

@@ -680,4 +680,35 @@ public class TreatmentGroupValue extends AbstractValue {
 		return entityManager().createQuery(jpaQuery, TreatmentGroupValue.class).setFirstResult(firstResult)
 				.setMaxResults(maxResults).getResultList();
 	}
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByLsKindEqualsAndCodeValueEquals(
+			String valueKind, String codeValue) {
+
+		if (valueKind == null || valueKind.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
+		if (codeValue == null || codeValue.length() == 0)
+			throw new IllegalArgumentException("The valueKind argument is required");
+
+		// Join through protocol to only fetch where top level protocol is not ignored
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
+				"JOIN tgv.lsState tgs " +
+				"JOIN tgs.treatmentGroup tg " +
+				"JOIN tg.analysisGroups ag " +
+				"JOIN ag.experiments e " +
+				"JOIN e.protocol p " +
+				"WHERE tgv.codeValue = :codeValue AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
+				"AND tgs.ignored IS NOT :ignored " +
+				"AND tg.ignored IS NOT :ignored " +
+				"AND ag.ignored IS NOT :ignored " +
+				"AND e.ignored IS NOT :ignored " +
+				"AND p.ignored IS NOT :ignored ";
+
+		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
+		q.setParameter("valueType", "codeValue");
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("codeValue", codeValue);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

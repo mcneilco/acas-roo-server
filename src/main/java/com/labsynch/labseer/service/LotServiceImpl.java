@@ -34,6 +34,7 @@ import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.ReparentLotResponseDTO;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -59,13 +60,19 @@ public class LotServiceImpl implements LotService {
 	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
+	private AssayService assayService;
+
+	@Autowired
 	private ContainerService containerService;
 
 	@Autowired
 	private ExperimentService experimentService;
 
 	@Autowired
-	private ChemStructureService chemStructureService;
+	private LotService lotService;
+
+	@Autowired
+	private ParentService parentService;
 
 	private static final Logger logger = LoggerFactory.getLogger(LotServiceImpl.class);
 
@@ -82,7 +89,7 @@ public class LotServiceImpl implements LotService {
 
 	@Override
 	@Transactional
-	public Lot reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser) {
+	public ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData) {
 
 		// incoming lot
 		// name of new adoptive parent
@@ -91,12 +98,36 @@ public class LotServiceImpl implements LotService {
 		// note -- need to refactor to deal with more complicated parent/SaltForm/lot
 		// setups versus simpler parent/lot
 
-		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
+		logger.info("Got request to reparent lot: " + lotCorpName + " to parent: " + parentCorpName);
+		
+		ReparentLotResponseDTO reparentLotResponseDTO = new ReparentLotResponseDTO();
+		reparentLotResponseDTO.setOriginalLotCorpName(lotCorpName);
+		reparentLotResponseDTO.setModifiedBy(modifiedByUser);
+
+		Lot queryLot = Lot.findLotsByCorpNameEquals(lotCorpName).getSingleResult();
+
+		LotOrphanLevel lotOrphanLevel = lotService.checkLotOrphanLevel(queryLot);
+
+		Boolean deleteOriginalParentAfterReparent = false;
+		Long originalParentId = queryLot.getParent().getId();
+		if (lotOrphanLevel.equals(LotOrphanLevel.Parent)) {
+			deleteOriginalParentAfterReparent = true;
+		}
+
+
+		Parent adoptiveParent = null;
+		try{
+			adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
+		} catch (NoResultException e) {
+			logger.error("No parent found for parentCorpName: " + parentCorpName);
+			return reparentLotResponseDTO;
+		}
+		
 		// renumber lot -- just increment to next number
 		Integer newLotNumber = Lot.getMaxParentLotNumber(adoptiveParent) + 1;
 		logger.debug("next lot number for adoptive parent: " + newLotNumber);
 
-		Lot queryLot = Lot.findLotsByCorpNameEquals(lotCorpName).getSingleResult();
+		reparentLotResponseDTO.setOriginalParentCorpName(queryLot.getParent().getCorpName());
 
 		// associate saltForm to new adoptive parent
 		SaltForm saltForm = queryLot.getSaltForm();
@@ -124,8 +155,23 @@ public class LotServiceImpl implements LotService {
 		queryLot.setModifiedBy(modifiedByUser);
 		queryLot.setModifiedDate(new Date());
 		queryLot.merge();
+		
+		reparentLotResponseDTO.setNewLot(queryLot);
 
-		return queryLot;
+		if(deleteOriginalParentAfterReparent) {
+			Parent originalParent = Parent.findParent(originalParentId);
+			Parent.entityManager().refresh(originalParent);
+			parentService.deleteParent(originalParent);
+		}
+
+		if (updateAssayData) {
+			assayService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+		}
+		if (updateInventory) {
+			// containerService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+		}
+	
+		return reparentLotResponseDTO;
 	}
 
 	@Override
@@ -606,6 +652,41 @@ public class LotServiceImpl implements LotService {
 
 		// Lot
 		lot.remove();
+	}
+
+	public enum LotOrphanLevel {
+		Parent, SaltForm, NONE
+	}
+
+	@Override
+	public LotOrphanLevel checkLotOrphanLevel(Lot lot) {
+		// Checks to see if the lot would be orphaned and if so, returns the level of the orphan.
+		Parent parent = Parent.findParent(lot.getParent().getId());
+		Boolean canDeleteSaltForm = true;
+		Boolean canDeleteParent = true;
+		for(SaltForm saltForm : parent.getSaltForms()) {
+			if(saltForm.getId().equals(lot.getSaltForm().getId())) {
+				Set<Lot> lots = saltForm.getLots();
+				for(Lot lotToDelete : lots) {
+					if(!lotToDelete.getId().equals(lot.getId())) {
+						canDeleteSaltForm = false;
+						canDeleteParent = false;
+						logger.info("Found dependent lot ("+lot.getCorpName()+") on salt form (corpName:'"+saltForm.getCorpName()+"', id:"+saltForm.getId()+")");
+					}
+				}
+			} else {
+				canDeleteParent = false;
+				logger.info("Found dependent salt form ("+saltForm.getCorpName()+") on parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
+			}
+		}
+
+		if(canDeleteParent) {
+			return LotOrphanLevel.Parent;
+		} else if(canDeleteSaltForm) {
+			return LotOrphanLevel.SaltForm;
+		} else {
+			return LotOrphanLevel.NONE;
+		}
 	}
 
 }

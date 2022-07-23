@@ -69,4 +69,6 @@ public interface SubjectService {
 
 	void deleteSubjectLeaveStub(Subject subject, Long lsTransaction);
 
+	int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
+
 }

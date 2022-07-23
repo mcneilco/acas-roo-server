@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
+
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
@@ -532,5 +534,38 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		}
 		return treatmentGroup;
 	}
+
+	@Override
+	@Transactional
+	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId) {
+		// Finds all values with the old code, ignores them and creates a new one one with the new code
+		TypedQuery<TreatmentGroupValue> valueQuery = TreatmentGroupValue.findTreatmentGroupValuesByLsKindEqualsAndCodeValueEquals("batch code", oldCode);
+
+		List<TreatmentGroupValue> values = valueQuery.getResultList();
+		logger.info("Found " + values.size() + " treatment group values with batch code " + oldCode);
+		// Loop through each code value, ignore it and create a new one with the new code
+		for (TreatmentGroupValue value : values) {
+			value.setIgnored(true);
+			value.setModifiedBy(modifiedByUser);
+			value.setModifiedDate(new Date());
+			value.setLsTransaction(transactionId);
+			value.persist();
+			TreatmentGroupValue newValue = new TreatmentGroupValue();
+			newValue.setLsType(value.getLsType());
+			newValue.setLsKind(value.getLsKind());
+			newValue.setCodeValue(newCode);
+			newValue.setRecordedBy(modifiedByUser);
+			newValue.setCodeType(value.getCodeType());
+			newValue.setCodeKind(value.getCodeKind());
+			newValue.setCodeOrigin(value.getCodeOrigin());
+			newValue.setLsState(value.getLsState());
+			newValue.setLsTransaction(transactionId);
+			newValue.persist();
+			logger.info("Ignored treatment group value " + value.getId() + " and created new treatment group value " + newValue.getId() + " with batch code " + newCode);
+		}
+
+		return values.size();
+	}
+
 
 }

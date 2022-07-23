@@ -485,4 +485,28 @@ public class ProtocolValue extends AbstractValue {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+
+    public static TypedQuery<ProtocolValue> findProtocolValuesByLsKindEqualsAndCodeValueEquals(
+            String valueKind, String codeValue) {
+
+        if (valueKind == null || valueKind.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+        if (codeValue == null || codeValue.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+
+        EntityManager em = entityManager();
+        String hsqlQuery = "SELECT pv FROM ProtocolValue AS pv " +
+                "JOIN pv.lsState ps " +
+                "JOIN ps.protocol p " +
+                "WHERE ps.ignored IS NOT :ignored " +
+                "AND pv.codeValue = :codeValue AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
+                "AND p.ignored IS NOT :ignored ";
+        TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
+        q.setParameter("valueType", "codeValue");
+        q.setParameter("valueKind", valueKind);
+        q.setParameter("codeValue", codeValue);
+        q.setParameter("ignored", true);
+        return q;
+    }
+
 }

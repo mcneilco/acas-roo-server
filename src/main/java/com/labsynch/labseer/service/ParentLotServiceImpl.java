@@ -12,6 +12,7 @@ import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ParentLotCodeDTO;
+import com.labsynch.labseer.service.LotServiceImpl.LotOrphanLevel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,31 +124,14 @@ public class ParentLotServiceImpl implements ParentLotService {
 	@Override
 	public void deleteLot(Lot lot) {
 
-		Parent parent = Parent.findParent(lot.getParent().getId());
-		Boolean canDeleteSaltForm = true;
-		Boolean canDeleteParent = true;
-		for(SaltForm saltForm : parent.getSaltForms()) {
-			if(saltForm.getId().equals(lot.getSaltForm().getId())) {
-				Set<Lot> lots = saltForm.getLots();
-				for(Lot lotToDelete : lots) {
-					if(!lotToDelete.getId().equals(lot.getId())) {
-						canDeleteSaltForm = false;
-						canDeleteParent = false;
-						logger.info("Found dependent lot ("+lot.getCorpName()+") on salt form (corpName:'"+saltForm.getCorpName()+"', id:"+saltForm.getId()+")");
-					}
-				}
-			} else {
-				canDeleteParent = false;
-				logger.info("Found dependent salt form ("+saltForm.getCorpName()+") on parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
-			}
-		}
-		if(canDeleteParent) {
+		LotOrphanLevel orphanLevel = lotService.checkLotOrphanLevel(lot);
+		if(orphanLevel == LotOrphanLevel.Parent) {
 			// Delete parent (including salt forms and lots and all dependencies)
-			logger.info("Deleting parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
-			parentService.deleteParent(parent);
+			logger.info("Deleting parent (corpName:'"+lot.getParent().getCorpName()+"', id:"+lot.getParent().getId()+")");
+			parentService.deleteParent(lot.getParent());
 		} else {
-			logger.info("Not deleting parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
-			if(canDeleteSaltForm) {
+			logger.info("Not deleting parent (corpName:'"+lot.getParent().getCorpName()+"', id:"+lot.getParent().getId()+")");
+			if(orphanLevel == LotOrphanLevel.SaltForm) {
 				// Delete the salt form (including lots and all dependencies)
 				logger.info("Deleting salt form (corpName:'"+lot.getSaltForm().getCorpName()+"', id:"+lot.getSaltForm().getId()+")");
 				saltFormService.deleteSaltForm(lot.getSaltForm());
@@ -157,5 +141,5 @@ public class ParentLotServiceImpl implements ParentLotService {
 				lotService.deleteLot(lot);
 			}
 		}
-	}
+	}	
 }

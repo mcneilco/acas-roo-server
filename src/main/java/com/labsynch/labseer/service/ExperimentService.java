@@ -91,4 +91,6 @@ public interface ExperimentService {
 	public Collection<String> getExperimentCodesByDateValueComparison(
 			DateValueComparisonRequest requestDTO) throws Exception;
 
+	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
+
 }

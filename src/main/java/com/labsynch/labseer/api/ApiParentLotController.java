@@ -9,6 +9,7 @@ import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.ParentLotCodeDTO;
 import com.labsynch.labseer.dto.ReparentLotDTO;
+import com.labsynch.labseer.dto.ReparentLotResponseDTO;
 import com.labsynch.labseer.service.LotService;
 import com.labsynch.labseer.service.ParentLotService;
 
@@ -126,7 +127,6 @@ public class ApiParentLotController {
 		}
 	}
 
-	@Transactional
 	@RequestMapping(value = "/reparentLot", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> reparentLot(@RequestBody String json) {
@@ -134,9 +134,9 @@ public class ApiParentLotController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ReparentLotDTO lotDTO = ReparentLotDTO.fromJsonToReparentLotDTO(json);
-			Lot lot = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(),
-					lotDTO.getModifiedBy());
-			return new ResponseEntity<String>(lot.toJsonIncludeAliases(), headers, HttpStatus.OK);
+			ReparentLotResponseDTO reparentLotDTO = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(),
+					lotDTO.getModifiedBy(), true, true);
+			return new ResponseEntity<String>(reparentLotDTO.toJson(), headers, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Caught exception updating lot metadata", e);
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -153,7 +153,7 @@ public class ApiParentLotController {
 		try {
 			Collection<ReparentLotDTO> lotDTOs = ReparentLotDTO.fromJsonArrayToReparentLoes(json);
 			for (ReparentLotDTO lotDTO : lotDTOs) {
-				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), lotDTO.getModifiedBy());
+				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), lotDTO.getModifiedBy(), true, true);
 				lotCount++;
 			}
 			return new ResponseEntity<String>("number of lots reparented: " + lotCount, headers, HttpStatus.OK);
