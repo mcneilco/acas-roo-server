@@ -164,11 +164,13 @@ public class LotServiceImpl implements LotService {
 			parentService.deleteParent(originalParent);
 		}
 
+		// Null transaction id which gets populated if used
+		Long transactionId = null;
 		if (updateAssayData) {
-			assayService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+			transactionId = assayService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
 		}
 		if (updateInventory) {
-			// containerService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+			containerService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser, transactionId);
 		}
 	
 		return reparentLotResponseDTO;

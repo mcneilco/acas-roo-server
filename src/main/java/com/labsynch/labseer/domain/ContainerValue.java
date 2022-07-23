@@ -472,4 +472,28 @@ public class ContainerValue extends AbstractValue {
         return entityManager().createQuery(jpaQuery, ContainerValue.class).setFirstResult(firstResult)
                 .setMaxResults(maxResults).getResultList();
     }
+
+    public static TypedQuery<ContainerValue> findContainerValuesByLsKindEqualsAndCodeValueEquals(
+        String valueKind, String codeValue) {
+
+        if (valueKind == null || valueKind.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+        if (codeValue == null || codeValue.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+
+        EntityManager em = entityManager();
+        String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
+            "JOIN cv.lsState cs " +
+            "JOIN cs.container c " +
+            "WHERE cs.ignored IS NOT :ignored " +
+            "AND cv.codeValue = :codeValue AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
+            "AND c.ignored IS NOT :ignored ";
+
+        TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
+        q.setParameter("valueType", "codeValue");
+        q.setParameter("valueKind", valueKind);
+        q.setParameter("codeValue", codeValue);
+        q.setParameter("ignored", true);
+        return q;
+    }
 }

@@ -29,7 +29,7 @@ public class AssayServiceImpl implements AssayService {
 
 	@Override
 	@Transactional
-	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser) {
+	public Long renameBatchCode(String oldCode, String newCode, String modifiedByUser) {
 		
 		// Create an LS transaction for this
 		LsTransaction lsTransaction = new LsTransaction();
@@ -44,7 +44,7 @@ public class AssayServiceImpl implements AssayService {
 		int treatmentGroupValuesAffected = treatmentGroupService.renameBatchCode(oldCode, newCode, modifiedByUser, lsTransaction.getId());
 		int subjectValuesAffected = subjectService.renameBatchCode(oldCode, newCode, modifiedByUser, lsTransaction.getId());
 		
-		return protocolValuesAffected + experimentValuesAffected + analysisGroupValuesAffected + treatmentGroupValuesAffected + subjectValuesAffected;
+		return lsTransaction.getId();
 	}
 
 }
