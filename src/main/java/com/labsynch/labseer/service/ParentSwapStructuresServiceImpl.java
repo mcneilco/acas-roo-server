@@ -1,15 +1,18 @@
 package com.labsynch.labseer.service;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.dto.ParentDTO;
 import com.labsynch.labseer.dto.ParentSwapStructuresDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 
 @Service
 public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresService {
@@ -18,6 +21,9 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 
     @Autowired
     public ParentService parentService;
+
+	@Autowired
+	public ChemStructureService chemStructureService;
 
     @Override
     public boolean swapParentStructures(ParentSwapStructuresDTO parentSwapStructuresDTO) {
@@ -34,58 +40,78 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
             return false;
 		}
 
+		// Check if there are existing errors or duplicates.
 		ParentValidationDTO validationDTO1;
 		ParentValidationDTO validationDTO2;
 		try {
 			validationDTO1 = parentService.validateUniqueParent(parent1);
 			validationDTO2 = parentService.validateUniqueParent(parent2);
 		} catch (Exception e) {
-			logger.error("Caught error trying to validate parent", e);
+			logger.error("Caught error while trying to validate parent", e);
 			return false;
 		}
-
-		// In case of any valdation errors, abort.
 		if (validationDTO1.hasErrors()) {
-			logger.error("validationDTO1 has errors", validationDTO1.getErrors());
+			logger.error(String.format("%s has existing errors: %s", corpName1, validationDTO1.getErrors()));
 			return false;
 		} else if (validationDTO2.hasErrors()) {
-			logger.error("validationDTO2 has errors", validationDTO2.getErrors());
+			logger.error(String.format("%s has existing errors: %s", corpName2, validationDTO2.getErrors()));
+			return false;
+		} else if (!validationDTO1.isParentUnique() || !validationDTO2.isParentUnique()) {
+			logger.error(String.format("%s or %s have existing duplicates.", corpName1, corpName2));
 			return false;
 		}
 
-		// Check if they are duplicates of each other.
-		Collection<ParentDTO> dupeParents1 = validationDTO1.getDupeParents();
-		Collection<ParentDTO> dupeParents2 = validationDTO1.getDupeParents();
-
-		boolean canSwap = false;
-		if (validationDTO1.isParentUnique() && validationDTO2.isParentUnique()) {
-			canSwap = true;
-		} else if (
-			dupeParents1.size() == 1 &&
-			dupeParents2.size() == 1 &&
-			dupeParents1.iterator().next().getCorpName() == dupeParents2.iterator().next().getCorpName()) {
-			canSwap = true;
+		// Check if duplicates get introduced on swapping the structures.
+		HashSet<String> dupeParents1;
+		HashSet<String> dupeParents2;
+		try {
+			dupeParents1 = getParents(parent2.getMolStructure(), parent1.getStereoCategory().getCode(), parent1.getStereoComment());
+			dupeParents2 = getParents(parent1.getMolStructure(), parent2.getStereoCategory().getCode(), parent2.getStereoComment());
+		} catch (Exception e) {
+			// In case of any exceptions, abort the swapping.
+			logger.error("Error finding parents to check for duplication", e);
+			return false;
 		}
-
-		if (canSwap) {
+		// Duplicate with the items being swapped is okay.
+		dupeParents1.remove(corpName1);
+		dupeParents1.remove(corpName2);
+		dupeParents2.remove(corpName1);
+		dupeParents2.remove(corpName2);
+		if (dupeParents1.size() == 0 && dupeParents2.size() == 0) {
 			String mol = parent1.getMolStructure();
 			parent1.setMolStructure(parent2.getMolStructure());
 			parent2.setMolStructure(mol);
+			logger.info(String.format("Swapping corpName1=%s & corpName2=%s swap successful.", corpName1, corpName2));
+			return true;
 		} else {
-			logger.error(String.format("corpName1=%s & corpName2=%s have other duplicates.", corpName1, corpName2));
+			logger.error(String.format("Swapping corpName1=%s & corpName2=%s creates duplicates.", corpName1, corpName2));
 			return false;
 		}
-
-		if (canSwap) {
-			try {
-				parentService.updateParent(parent1);
-				parentService.updateParent(parent2);
-			} catch (Exception e) {
-				logger.error("Caught error trying to update parents", e);
-				return false;
-			}
-		}
-		return canSwap;
     }
 
+	private HashSet<String> getParents(String molStructure, String stereoCategory, String stereoComment) throws CmpdRegMolFormatException {
+		ArrayList<Parent> matchingParents = new ArrayList<Parent>();
+		int[] parentCdIds = chemStructureService.checkDupeMol(molStructure, StructureType.PARENT);
+		for (int parentCdId : parentCdIds) {
+			for (Parent parent : Parent.findParentsByCdId(parentCdId).getResultList()) {
+				String parentStereoCategory = parent.getStereoCategory().getCode();
+				if (!parentStereoCategory.equalsIgnoreCase(stereoCategory)) {
+					continue;
+				}
+				String parentStereoComment = parent.getStereoComment();
+				if (parentStereoComment == null && stereoComment == null) {
+					matchingParents.add(parent);
+				} else if (parentStereoComment == null || stereoComment == null) {
+					continue;
+				} else if (parentStereoComment.equalsIgnoreCase(stereoComment)) {
+					matchingParents.add(parent);
+				}
+			}
+		}
+		HashSet<String> matchingParentCorpNames = new HashSet<String>();
+		for (Parent parent : matchingParents) {
+			matchingParentCorpNames.add(parent.getCorpName());
+		}
+		return matchingParentCorpNames;
+	}
 }
