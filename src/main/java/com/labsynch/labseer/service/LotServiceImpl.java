@@ -162,6 +162,9 @@ public class LotServiceImpl implements LotService {
 			Parent originalParent = Parent.findParent(originalParentId);
 			Parent.entityManager().refresh(originalParent);
 			parentService.deleteParent(originalParent);
+			reparentLotResponseDTO.setOriginalParentDeleted(true);
+		} else {
+			reparentLotResponseDTO.setOriginalParentDeleted(false);
 		}
 
 		// Null transaction id which gets populated if used

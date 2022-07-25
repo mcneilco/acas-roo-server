@@ -15,6 +15,20 @@ public class ReparentLotResponseDTO {
 
     private Lot newLot;
 
+    private Boolean originalParentDeleted;
+
+    public Boolean isOriginalParentDeleted() {
+        return this.originalParentDeleted;
+    }
+
+    public Boolean getOriginalParentDeleted() {
+        return this.originalParentDeleted;
+    }
+
+    public void setOriginalParentDeleted(Boolean originalParentDeleted) {
+        this.originalParentDeleted = originalParentDeleted;
+    }
+
     private String originalLotCorpName;
 
     private String originalParentCorpName;
