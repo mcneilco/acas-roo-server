@@ -52,7 +52,7 @@ public class CmpdRegBatchCodeDTO {
 	private String summary;
 
 	public String toJson() {
-		return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "batchCodes.*")
+		return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "batchCodes.*", "linkedContainers.*")
 				.transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
