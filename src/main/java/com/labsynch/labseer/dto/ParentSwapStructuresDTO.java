@@ -9,6 +9,8 @@ public class ParentSwapStructuresDTO {
 
     private String corpName2;
 
+    private String username;
+
     public String getCorpName1() {
         return this.corpName1;
     }
@@ -25,8 +27,16 @@ public class ParentSwapStructuresDTO {
         this.corpName2 = corpName2;
     }
 
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String toJson() {
-        return new JSONSerializer().include("corpName1", "corpName2").serialize(this);
+        return new JSONSerializer().include("corpName1", "corpName2", "username").serialize(this);
     }
 
     public static ParentSwapStructuresDTO fromJSONToParentSwapStructuresDTO(String json) {

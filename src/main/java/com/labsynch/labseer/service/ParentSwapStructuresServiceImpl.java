@@ -82,8 +82,10 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 			String mol = parent1.getMolStructure();
 			parent1.setMolStructure(parent2.getMolStructure());
 			parent1.setModifiedDate(new Date());
+			parent1.setModifiedBy(parentSwapStructuresDTO.getUsername());
 			parent2.setMolStructure(mol);
 			parent2.setModifiedDate(new Date());
+			parent2.setModifiedBy(parentSwapStructuresDTO.getUsername());
 			logger.info(String.format("Swapping corpName1=%s & corpName2=%s swap successful.", corpName1, corpName2));
 			return true;
 		} else {
