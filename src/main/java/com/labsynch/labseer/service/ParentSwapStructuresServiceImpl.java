@@ -77,7 +77,7 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 		dupeParents1.remove(corpName2);
 		dupeParents2.remove(corpName1);
 		dupeParents2.remove(corpName2);
-		if (dupeParents1.size() == 0 && dupeParents2.size() == 0) {
+		if (dupeParents1.isEmpty() && dupeParents2.isEmpty()) {
 			String mol = parent1.getMolStructure();
 			parent1.setMolStructure(parent2.getMolStructure());
 			parent2.setMolStructure(mol);
@@ -90,7 +90,7 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
     }
 
 	private HashSet<String> getParents(String molStructure, String stereoCategory, String stereoComment) throws CmpdRegMolFormatException {
-		ArrayList<Parent> matchingParents = new ArrayList<Parent>();
+		ArrayList<Parent> matchingParents = new ArrayList<>();
 		int[] parentCdIds = chemStructureService.checkDupeMol(molStructure, StructureType.PARENT);
 		for (int parentCdId : parentCdIds) {
 			for (Parent parent : Parent.findParentsByCdId(parentCdId).getResultList()) {
@@ -99,16 +99,15 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 					continue;
 				}
 				String parentStereoComment = parent.getStereoComment();
-				if (parentStereoComment == null && stereoComment == null) {
-					matchingParents.add(parent);
-				} else if (parentStereoComment == null || stereoComment == null) {
-					continue;
-				} else if (parentStereoComment.equalsIgnoreCase(stereoComment)) {
+				if (
+					(parentStereoComment == null || parentStereoComment.isEmpty()) &&
+					(stereoComment == null || stereoComment.isEmpty()) ||
+					(parentStereoComment != null && stereoComment != null && parentStereoComment.equalsIgnoreCase(stereoComment))) {
 					matchingParents.add(parent);
 				}
 			}
 		}
-		HashSet<String> matchingParentCorpNames = new HashSet<String>();
+		HashSet<String> matchingParentCorpNames = new HashSet<>();
 		for (Parent parent : matchingParents) {
 			matchingParentCorpNames.add(parent.getCorpName());
 		}
