@@ -1,6 +1,9 @@
 package com.labsynch.labseer.api;
 
 import java.util.Collection;
+import java.util.HashMap;
+
+import flexjson.JSONSerializer;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.dto.CodeTableDTO;
@@ -79,23 +82,23 @@ public class ApiParentController {
 		HttpHeaders headers = new HttpHeaders();
 		ParentSwapStructuresDTO parentSwapStructuresDTO = ParentSwapStructuresDTO.fromJSONToParentSwapStructuresDTO(json);
 
-		String msg = String.format(
-			"corpName1=%s & corpName2=%s swap: ",
-			parentSwapStructuresDTO.getCorpName1(),
-			parentSwapStructuresDTO.getCorpName2());
+		String errorMessage;
 		try {
-			if (parentSwapStructuresService.swapParentStructures(parentSwapStructuresDTO)) {
-				logger.info(msg + "success");
-				return new ResponseEntity<String>(headers, HttpStatus.OK);
-			} else {
-				logger.info(msg + "failure");
-				return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			errorMessage = parentSwapStructuresService.swapParentStructures(parentSwapStructuresDTO);
 		} catch (Exception e) {
-			logger.error("Caught error while trying to swap parent structures", e);
+			logger.error("Caught error trying to swap parent structures", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+
+		boolean hasError = !errorMessage.isEmpty();
+		HashMap<String,Object> response = new HashMap<>();
+		response.put("hasError", hasError);
+		response.put("errorMessage", errorMessage);
+		HttpStatus status = (hasError)? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK;
+		
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		return new ResponseEntity<String>(new JSONSerializer().serialize(response), headers, status);
+}
 
 	@RequestMapping(value = "/updateParent/metadata/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody

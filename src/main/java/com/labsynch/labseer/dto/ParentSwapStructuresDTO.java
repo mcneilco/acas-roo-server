@@ -36,7 +36,7 @@ public class ParentSwapStructuresDTO {
     }
 
     public String toJson() {
-        return new JSONSerializer().include("corpName1", "corpName2", "username").serialize(this);
+        return new JSONSerializer().serialize(this);
     }
 
     public static ParentSwapStructuresDTO fromJSONToParentSwapStructuresDTO(String json) {

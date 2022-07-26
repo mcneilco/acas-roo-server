@@ -27,8 +27,8 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 	public ChemStructureService chemStructureService;
 
     @Override
-    public boolean swapParentStructures(ParentSwapStructuresDTO parentSwapStructuresDTO) {
-        String corpName1 = parentSwapStructuresDTO.getCorpName1();
+    public String swapParentStructures(ParentSwapStructuresDTO parentSwapStructuresDTO) {
+		String corpName1 = parentSwapStructuresDTO.getCorpName1();
 		String corpName2 = parentSwapStructuresDTO.getCorpName2();
 
 		Parent parent1;
@@ -37,8 +37,9 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 			parent1 = Parent.findParentsByCorpNameEquals(corpName1).getSingleResult();
 			parent2 = Parent.findParentsByCorpNameEquals(corpName2).getSingleResult();
 		} catch (Exception e) {
-			logger.error("Caught error while fetching parent", e);
-            return false;
+			String msg = "Caught error while fetching parent";
+			logger.error(msg, e);
+			return msg;
 		}
 
 		// Check if there are existing errors or duplicates.
@@ -48,18 +49,17 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 			validationDTO1 = parentService.validateUniqueParent(parent1);
 			validationDTO2 = parentService.validateUniqueParent(parent2);
 		} catch (Exception e) {
-			logger.error("Caught error while trying to validate parent", e);
-			return false;
+			String msg = "Caught error while trying to validate parent";
+			logger.error(msg, e);
+			return msg;
 		}
+
 		if (validationDTO1.hasErrors()) {
-			logger.error(String.format("%s has existing errors: %s", corpName1, validationDTO1.getErrors()));
-			return false;
+			return String.format("%s has existing errors: %s", corpName1, validationDTO1.getErrors());
 		} else if (validationDTO2.hasErrors()) {
-			logger.error(String.format("%s has existing errors: %s", corpName2, validationDTO2.getErrors()));
-			return false;
+			return String.format("%s has existing errors: %s", corpName2, validationDTO2.getErrors());
 		} else if (!validationDTO1.isParentUnique() || !validationDTO2.isParentUnique()) {
-			logger.error(String.format("%s or %s have existing duplicates.", corpName1, corpName2));
-			return false;
+			return String.format("%s or %s have existing duplicates.", corpName1, corpName2);
 		}
 
 		// Check if duplicates get introduced on swapping the structures.
@@ -70,8 +70,9 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 			dupeParents2 = getParents(parent1.getMolStructure(), parent2.getStereoCategory().getCode(), parent2.getStereoComment());
 		} catch (Exception e) {
 			// In case of any exceptions, abort the swapping.
-			logger.error("Error finding parents to check for duplication", e);
-			return false;
+			String msg = "Error finding parents to check for duplication";
+			logger.error(msg, e);
+			return msg;
 		}
 		// Duplicate with the items being swapped is okay.
 		dupeParents1.remove(corpName1);
@@ -87,10 +88,11 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 			parent2.setModifiedDate(new Date());
 			parent2.setModifiedBy(parentSwapStructuresDTO.getUsername());
 			logger.info(String.format("Swapping corpName1=%s & corpName2=%s swap successful.", corpName1, corpName2));
-			return true;
+			return "";
 		} else {
-			logger.error(String.format("Swapping corpName1=%s & corpName2=%s creates duplicates.", corpName1, corpName2));
-			return false;
+			String msg = String.format("Swapping corpName1=%s & corpName2=%s creates duplicates.", corpName1, corpName2);
+			logger.error(msg);
+			return msg;
 		}
     }
 

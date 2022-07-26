@@ -4,6 +4,6 @@ import com.labsynch.labseer.dto.ParentSwapStructuresDTO;
 
 public interface ParentSwapStructuresService {
 
-    public boolean swapParentStructures(ParentSwapStructuresDTO parentSwapStructuresDTO);
+    public String swapParentStructures(ParentSwapStructuresDTO parentSwapStructuresDTO);
 
 }
