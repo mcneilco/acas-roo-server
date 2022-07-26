@@ -10,9 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -29,15 +30,14 @@ import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
-import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
-import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.ReparentLotResponseDTO;
-import com.labsynch.labseer.service.ChemStructureService.StructureType;
+import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,15 +88,8 @@ public class LotServiceImpl implements LotService {
 	}
 
 	@Override
-	@Transactional
-	public ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData) {
-
-		// incoming lot
-		// name of new adoptive parent
-		// logic to deal with lot numbering -- just increment existing lot number of
-		// adoptive parent
-		// note -- need to refactor to deal with more complicated parent/SaltForm/lot
-		// setups versus simpler parent/lot
+	@Transactional(rollbackFor = DupeLotException.class)
+	public ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData) throws DupeLotException{
 
 		logger.info("Got request to reparent lot: " + lotCorpName + " to parent: " + parentCorpName);
 		
@@ -114,7 +107,6 @@ public class LotServiceImpl implements LotService {
 			deleteOriginalParentAfterReparent = true;
 		}
 
-
 		Parent adoptiveParent = null;
 		try{
 			adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
@@ -124,7 +116,12 @@ public class LotServiceImpl implements LotService {
 		}
 		
 		// renumber lot -- just increment to next number
-		Integer newLotNumber = Lot.getMaxParentLotNumber(adoptiveParent) + 1;
+		Integer newLotNumber;
+		if(propertiesUtilService.getMaxAutoLotNumber() != null && queryLot.getLotNumber() > propertiesUtilService.getMaxAutoLotNumber()){
+			newLotNumber = queryLot.getLotNumber();
+		} else {
+			newLotNumber = Lot.getMaxParentLotNumber(adoptiveParent) + 1;
+		}
 		logger.debug("next lot number for adoptive parent: " + newLotNumber);
 
 		reparentLotResponseDTO.setOriginalParentCorpName(queryLot.getParent().getCorpName());
@@ -134,6 +131,7 @@ public class LotServiceImpl implements LotService {
 		saltForm.setParent(adoptiveParent);
 		saltForm.setCorpName(
 				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), saltForm.getIsoSalts()));
+
 		saltForm.merge();
 
 		// recalculate salt form weight
@@ -145,16 +143,23 @@ public class LotServiceImpl implements LotService {
 
 		// rename lot corp name if not cas style
 		if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")) {
+			String newCorpName = this.generateCorpName(queryLot);
+			if(Lot.findLotsByCorpNameEquals(newCorpName).getResultList().size() > 0){
+				logger.error("Lot corp name already exists: " + newCorpName);
+				throw new DupeLotException("Lot corp name already exists: " + newCorpName);
+			}
 			queryLot.setCorpName(this.generateCorpName(queryLot));
 			// TODO: may want to save the old name as an alias
-			// also need to deal with data that may be registered to the old corp name
 		}
 		logger.info("new lot corp name: " + queryLot.getCorpName());
+
 		// recalculate lot weight
 		queryLot.setLotMolWeight(Lot.calculateLotMolWeight(queryLot));
 		queryLot.setModifiedBy(modifiedByUser);
 		queryLot.setModifiedDate(new Date());
+
 		queryLot.merge();
+
 		
 		reparentLotResponseDTO.setNewLot(queryLot);
 

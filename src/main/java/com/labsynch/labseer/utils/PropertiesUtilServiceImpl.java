@@ -925,4 +925,25 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.allowDuplicateParentAliases;
 	}
 
+
+	Integer maxAutoLotNumber;
+
+	@Value("${client.cmpdreg.metaLot.maxAutoLotNumber}")
+	public void setMaxAutoLotNumber(String maxAutoLotNumber) {
+		if (maxAutoLotNumber.startsWith("${")) {
+			this.maxAutoLotNumber = null;
+		} else {
+			try {
+				this.maxAutoLotNumber = Integer.parseInt(maxAutoLotNumber);
+			} catch (NumberFormatException e) {
+				this.maxAutoLotNumber = null;
+			}
+		}
+	}
+
+	@Override
+	public Integer getMaxAutoLotNumber() {
+		return this.maxAutoLotNumber;
+	}
+
 }

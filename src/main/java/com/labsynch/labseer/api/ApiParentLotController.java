@@ -10,6 +10,7 @@ import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.ParentLotCodeDTO;
 import com.labsynch.labseer.dto.ReparentLotDTO;
 import com.labsynch.labseer.dto.ReparentLotResponseDTO;
+import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.service.LotService;
 import com.labsynch.labseer.service.ParentLotService;
 
@@ -112,7 +113,6 @@ public class ApiParentLotController {
 		}
 	}
 
-	@Transactional
 	@RequestMapping(value = "/updateLot/metadata/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateLotMetaArray(@RequestBody String json) {
@@ -137,9 +137,12 @@ public class ApiParentLotController {
 			ReparentLotResponseDTO reparentLotDTO = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(),
 					lotDTO.getModifiedBy(), true, true);
 			return new ResponseEntity<String>(reparentLotDTO.toJson(), headers, HttpStatus.OK);
+		} catch (DupeLotException e) {
+			logger.error("Error saving lot with duplicate name", e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.CONFLICT);
 		} catch (Exception e) {
 			logger.error("Caught exception updating lot metadata", e);
-			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

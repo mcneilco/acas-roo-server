@@ -134,4 +134,6 @@ public interface PropertiesUtilService {
 
 	Boolean getAllowDuplicateParentAliases();
 
+	Integer getMaxAutoLotNumber();
+
 }
