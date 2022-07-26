@@ -4,12 +4,10 @@ import java.util.Collection;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ParentDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
 import com.labsynch.labseer.dto.ParentSwapStructuresDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
 import com.labsynch.labseer.service.ParentService;
-import com.labsynch.labseer.service.ParentStructureService;
 import com.labsynch.labseer.service.ParentSwapStructuresService;
 
 import org.slf4j.Logger;
