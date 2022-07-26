@@ -3,10 +3,15 @@ package com.labsynch.labseer.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java.util.List;
+
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
+import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
+import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
+
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
@@ -32,6 +37,12 @@ public class SaltServiceImpl implements SaltService {
 
 	@Autowired
 	CmpdRegSDFReaderFactory cmpdRegSDFReaderFactory;
+
+	@Autowired
+	public CmpdRegSDFWriterFactory cmpdRegSDFWriterFactory;
+
+	@Autowired
+	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
 	@Transactional
 	@Override
@@ -97,6 +108,45 @@ public class SaltServiceImpl implements SaltService {
 		} else {
 			logger.error("Could not save the salt: " + salt.getAbbrev());
 		}
+	}
+
+	@Transactional
+	public String exportSalts() {
+		CmpdRegSDFWriter sdfWriter = null;
+		try {
+			sdfWriter = sdfWriterFactory.getCmpdRegSDFBufferWriter();
+		} catch (IllegalArgumentException e1) {
+			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// Get List of Salts 
+		List<Salt> allSaltList = Salt.findAllSalts();
+
+		for (Salt salt : allSaltList) {
+			try {
+				CmpdRegMolecule currSalt = cmpdRegMoleculeFactory.getCmpdRegMolecule(salt.getMolStructure());
+				currSalt.setProperty("name", salt.getName());
+				currSalt.setProperty("abbrev", salt.getAbbrev());
+				currSalt.setProperty("formula", salt.getFormula());
+				currSalt.setProperty("molWeight", String.valueOf(salt.getMolWeight()));
+				currSalt.setProperty("charge", String.valueOf(salt.getCharge()));
+				sdfWriter.writeMol(currSalt);
+			} catch (CmpdRegMolFormatException e) {
+				logger.error("bad structure error: " + salt.getMolStructure());
+			} catch (IOException e) {
+				logger.error("IO error reading in molfile");
+				e.printStackTrace();
+			}
+
+		}
+		try {
+			sdfWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		logger.debug("output SDF: " + sdfWriter.getBufferString());
+		return sdfWriter.getBufferString();
 	}
 
 }

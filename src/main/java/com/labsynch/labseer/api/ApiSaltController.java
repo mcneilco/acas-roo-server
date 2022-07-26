@@ -11,6 +11,10 @@ import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.SaltService;
 import com.labsynch.labseer.service.SaltStructureService;
+import com.labsynch.labseer.service.StandardizationService;
+import com.labsynch.labseer.service.StructureImageServiceImpl; 
+
+import com.labsynch.labseer.dto.PurgeSaltDependencyCheckResponseDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,20 @@ public class ApiSaltController {
 	@Autowired
 	private ChemStructureService chemStructureService;
 
+	@Autowired
+	private StandardizationService standardizationService;
+
+	private static HttpHeaders getJsonHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+        return headers;
+    }
+
 	@RequestMapping(value = "/load", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> loadSalts(
 			@RequestParam(value = "saltSD_fileName", required = true) String saltSD_fileName) {
@@ -65,6 +83,15 @@ public class ApiSaltController {
 
 	}
 
+	@RequestMapping(value = "/search", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> searchBySearchTerms(
+			@RequestParam(value = "searchTerm", required = true) String searchTerm) {
+		HttpHeaders headers = new HttpHeaders();
+		return new ResponseEntity<String>(
+				Salt.toJsonArray(Salt.findSaltsBySearchTerm(searchTerm).getResultList()), headers, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
@@ -82,6 +109,41 @@ public class ApiSaltController {
 		return new ResponseEntity<String>(salt.toJson(), headers, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> deleteSalt(@PathVariable("id") Long id) {
+		Salt salt = Salt.findSalt(id);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/text; charset=utf-8");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		if (salt == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		else
+		{
+			// Need to Do Validation Of No Lot Association Before Final Removal
+			boolean lotDependency = false; 
+			PurgeSaltDependencyCheckResponseDTO dependencyReport  = salt.checkDependentData();
+			lotDependency = ! dependencyReport.isCanPurge();
+			// Need to Get Dependency Bool From Report JSON String
+
+			// Query to See If Lot Depends on This Salt ID 
+			if(lotDependency){
+				return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
+			}
+			else
+			{
+				String saltJSON = salt.toJson(); 
+				salt.remove(); // This needs to be a hard deletion 
+				return new ResponseEntity<String>(saltJSON, headers, HttpStatus.OK);
+			}
+		}
+	}
+	
 	@RequestMapping(headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> listJson() {
@@ -93,6 +155,24 @@ public class ApiSaltController {
 		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(Salt.toJsonArray(Salt.findAllSalts()), headers, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/sdf", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> listSDF() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/text; charset=utf-8");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		String SaltJSONStr = saltService.exportSalts(); 
+		// Need to Convert JSON Str to SDF Str 
+			// Consider Using convertMolfilesToSDFile
+			// Though This Might Not Export Properties Fully Desired 
+		
+		return new ResponseEntity<String>(SaltJSONStr, headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
@@ -175,7 +255,18 @@ public class ApiSaltController {
 			if (updatedSalt == null) {
 				return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
 			} else {
-				return new ResponseEntity<String>(updatedSalt.toJson(), headers, HttpStatus.OK);
+				try
+				{
+					// Attempt to Restandardize 
+					String saltMol = updatedSalt.toJson();
+					standardizationService.standardizeSingleMol(saltMol); 
+					return new ResponseEntity<String>(saltMol, headers, HttpStatus.OK);
+				}
+				catch (Exception e)
+				{
+					return new ResponseEntity<String>("ERROR: Restandardization Issue:" + e.getMessage(), headers,
+					HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 			}
 		} catch (CmpdRegMolFormatException e) {
 			return new ResponseEntity<String>("ERROR: Bad molfile:" + e.getMessage(), headers,

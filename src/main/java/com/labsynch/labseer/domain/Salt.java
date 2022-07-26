@@ -1,8 +1,16 @@
 package com.labsynch.labseer.domain;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import java.net.MalformedURLException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +26,17 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.Size;
+
+import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
+import com.labsynch.labseer.service.BulkLoadService;
+import com.labsynch.labseer.dto.PurgeSaltDependencyCheckResponseDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -55,6 +74,8 @@ public class Salt {
     private Boolean ignore;
 
     private int charge;
+
+    private PropertiesUtilService propertiesUtilService;
 
     public static TypedQuery<Salt> findSaltsByAbbrevEquals(String abbrev) {
         if (abbrev == null || abbrev.length() == 0)
@@ -157,6 +178,24 @@ public class Salt {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public static TypedQuery<Salt> findSaltsBySearchTerm(String searchTerm) {
+        if (searchTerm == null || searchTerm.length() == 0)
+            throw new IllegalArgumentException("The searchTerm argument is required");
+        searchTerm = searchTerm.replace('*', '%');
+        if (searchTerm.charAt(0) != '%') {
+            searchTerm = "%" + searchTerm;
+        }
+        if (searchTerm.charAt(searchTerm.length() - 1) != '%') {
+            searchTerm = searchTerm + "%";
+        }
+        EntityManager em = Salt.entityManager();
+        TypedQuery<Salt> q = em.createQuery(
+                "SELECT DISTINCT o FROM Salt AS o WHERE (LOWER(o.abbrev) LIKE LOWER(:searchTerm) OR LOWER(o.name) LIKE LOWER(:searchTerm))",
+                Salt.class);
+        q.setParameter("searchTerm", searchTerm);
+        return q;
     }
 
     public static Long countFindSaltsByAbbrevEquals(String abbrev) {
@@ -363,6 +402,172 @@ public class Salt {
         }
         return entityManager().createQuery(jpaQuery, Salt.class).setFirstResult(firstResult).setMaxResults(maxResults)
                 .getResultList();
+    }
+
+    public Map<String, HashSet<String>> checkACASDependencies(
+			Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
+		// here we make an external request to the ACAS Roo server to check for
+		// dependent experimental data
+		String url = propertiesUtilService.getAcasURL() + "compounds/checkBatchDependencies";
+		BatchCodeDependencyDTO request = new BatchCodeDependencyDTO(acasDependencies.keySet());
+		String json = request.toJson();
+		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
+		BatchCodeDependencyDTO responseDTO = BatchCodeDependencyDTO.fromJsonToBatchCodeDependencyDTO(responseJson);
+		if (responseDTO.getLinkedDataExists()) {
+			for (CodeTableDTO experimentCodeTable : responseDTO.getLinkedExperiments()) {
+				String experimentCodeAndName = experimentCodeTable.getCode() + " ( " + experimentCodeTable.getName()
+						+ " )";
+				if (acasDependencies.containsKey(experimentCodeTable.getComments())) {
+					acasDependencies.get(experimentCodeTable.getComments()).add(experimentCodeAndName);
+				} else {
+					HashSet<String> codes = new HashSet<String>();
+					codes.add(experimentCodeAndName);
+					acasDependencies.put(experimentCodeTable.getComments(), codes);
+				}
+			}
+		}
+		return acasDependencies;
+	}
+
+    private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes)
+			throws MalformedURLException, IOException {
+		String url = propertiesUtilService.getAcasURL() + "containers/getContainerDTOsByBatchCodes";
+		String json = (new JSONSerializer()).serialize(batchCodes);
+		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
+		Collection<ContainerBatchCodeDTO> responseDTOs = ContainerBatchCodeDTO
+				.fromJsonArrayToContainerBatchCoes(responseJson);
+		return responseDTOs;
+
+	}
+
+	// Method to Check for Dependent Data 
+    public PurgeSaltDependencyCheckResponseDTO checkDependentData()
+    {
+        Map<String, HashSet<String>> acasDependencies = new HashMap<String, HashSet<String>>();
+		Map<String, HashSet<String>> cmpdRegDependencies = new HashMap<String, HashSet<String>>();
+		HashSet<String> dependentSingleRegLots = new HashSet<String>();
+		int numberOfParents = 0;
+		int numberOfSaltForms = 0;
+		int numberOfLots = 0;
+		Collection<Parent> parents = Parent.findParentsByCdId(this.getCdId()).getResultList();
+		numberOfParents = parents.size();
+		String manuallyRegistered = "Manually Registered";
+		for (Parent parent : parents) {
+			acasDependencies.put(parent.getCorpName(), new HashSet<String>());
+			if (parent.getSaltForms() != null) {
+				for (SaltForm saltForm : parent.getSaltForms()) {
+					acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
+					if (saltForm.getCdId() != this.getCdId()) {
+						if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
+							cmpdRegDependencies.get(parent.getCorpName()).add(String.valueOf(saltForm.getCdId()));
+						} else {
+							HashSet<String> dependentSalts = new HashSet<String>();
+							dependentSalts.add(String.valueOf(saltForm.getCdId()));
+							cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
+						}
+					}
+					if (saltForm.getLots() != null) {
+						for (Lot lot : saltForm.getLots()) {
+							acasDependencies.put(lot.getCorpName(), new HashSet<String>());
+							if (lot.getSaltForm() == null) {
+								dependentSingleRegLots.add(lot.getCorpName());
+							} else if (lot.getSaltForm().getCdId() != this.getCdId()) {
+								if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
+									cmpdRegDependencies.get(parent.getCorpName())
+											.add(String.valueOf(lot.getSaltForm().getCdId()));
+								} else {
+									HashSet<String> dependentSalts = new HashSet<String>();
+									dependentSalts.add(String.valueOf(lot.getSaltForm().getCdId()));
+									cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		parents.clear();
+
+		Collection<SaltForm> saltForms = SaltForm.findSaltFormsByCdId(this.getCdId()).getResultList();
+		numberOfSaltForms = saltForms.size();
+		for (SaltForm saltForm : saltForms) {
+			acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
+			if (saltForm.getLots() != null) {
+				for (Lot lot : saltForm.getLots()) {
+					acasDependencies.put(lot.getCorpName(), new HashSet<String>());
+					if (lot.getSaltForm() == null) {
+						dependentSingleRegLots.add(lot.getCorpName());
+					} else if (lot.getSaltForm().getCdId() != this.getCdId()) {
+						if (cmpdRegDependencies.containsKey(saltForm.getCorpName())) {
+							cmpdRegDependencies.get(saltForm.getCorpName()).add(String.valueOf(lot.getSaltForm().getCdId()));
+						} else {
+							HashSet<String> dependentSalts = new HashSet<String>();
+							dependentSalts.add(String.valueOf(lot.getSaltForm().getCdId()));
+							cmpdRegDependencies.put(saltForm.getCorpName(), dependentSalts);
+						}
+					}
+				}
+			}
+		}
+		saltForms.clear();
+
+		// Check for all the vials in ACAS that reference lots being purged
+		Integer numberOfDependentContainers = null;
+		Collection<ContainerBatchCodeDTO> dependentContainers = null;
+		if (!acasDependencies.isEmpty()) {
+			try {
+				dependentContainers = checkDependentACASContainers(acasDependencies.keySet());
+				numberOfDependentContainers = dependentContainers.size();
+			} catch (Exception e) {
+			}
+		}
+		// Then check for data dependencies in ACAS.
+		if (!acasDependencies.isEmpty()) {
+			// check dependencies differently if config to check by barcode is enabled
+			if (propertiesUtilService.getCheckACASDependenciesByContainerCode()) {
+				try {
+					Map<String, HashSet<String>> acasContainerDependencies = new HashMap<String, HashSet<String>>();
+					for (ContainerBatchCodeDTO container : dependentContainers) {
+						acasContainerDependencies.put(container.getContainerCodeName(), new HashSet<String>());
+					}
+					acasContainerDependencies = checkACASDependencies(acasContainerDependencies);
+					for (ContainerBatchCodeDTO containerBatchDTO : dependentContainers) {
+						HashSet<String> currentDependencies = acasDependencies.get(containerBatchDTO.getBatchCode());
+						currentDependencies
+								.addAll(acasContainerDependencies.get(containerBatchDTO.getContainerCodeName()));
+						acasDependencies.put(containerBatchDTO.getBatchCode(), currentDependencies);
+					}
+				} catch (Exception e) {
+				}
+			} else {
+				try {
+					acasDependencies = checkACASDependencies(acasDependencies);
+				} catch (Exception e) {
+				}
+			}
+		}
+
+		HashSet<String> dependentFiles = new HashSet<String>();
+		for (HashSet<String> dependentSet : cmpdRegDependencies.values()) {
+			for (String dependent : dependentSet) {
+				dependentFiles.add(dependent);
+			}
+		}
+		HashSet<String> dependentExperiments = new HashSet<String>();
+		for (HashSet<String> dependentSet : acasDependencies.values()) {
+			for (String dependent : dependentSet) {
+				dependentExperiments.add(dependent);
+			}
+		}
+
+		if (!dependentFiles.isEmpty() || !dependentExperiments.isEmpty() || !dependentSingleRegLots.isEmpty()) {
+			String summary = "There were dependencies!";
+			return new PurgeSaltDependencyCheckResponseDTO(summary, false);
+		} else {
+			String summary = "There were not dependencies!";
+			return new PurgeSaltDependencyCheckResponseDTO(summary, true);
+		}
+
     }
 
     @Transactional
