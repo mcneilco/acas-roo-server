@@ -87,9 +87,20 @@ public class LotServiceImpl implements LotService {
 		return Lot.findLot(lot.getId());
 	}
 
+	public Integer predictReparentLotNumber(Parent parent, Lot lot) {
+		// With a lot and parent, predict what the lot number would be
+		Integer newLotNumber;
+		if(propertiesUtilService.getMaxAutoLotNumber() != null && lot.getLotNumber() > propertiesUtilService.getMaxAutoLotNumber()){
+			newLotNumber = lot.getLotNumber();
+		} else {
+			newLotNumber = Lot.getMaxParentLotNumber(parent) + 1;
+		}
+		return newLotNumber;
+	}
+
 	@Override
-	@Transactional(rollbackFor = DupeLotException.class)
-	public ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData) throws DupeLotException{
+	@Transactional
+	public ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData, Boolean dryRun) throws DupeLotException{
 
 		logger.info("Got request to reparent lot: " + lotCorpName + " to parent: " + parentCorpName);
 		
@@ -98,6 +109,15 @@ public class LotServiceImpl implements LotService {
 		reparentLotResponseDTO.setModifiedBy(modifiedByUser);
 
 		Lot queryLot = Lot.findLotsByCorpNameEquals(lotCorpName).getSingleResult();
+		SaltForm saltForm = queryLot.getSaltForm();
+		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
+		Set isoSalts = saltForm.getIsoSalts();
+		isoSalts.size();
+		if(dryRun) {
+			Lot.entityManager().detach(queryLot);
+			SaltForm.entityManager().detach(saltForm);
+			Parent.entityManager().detach(adoptiveParent);
+		}
 
 		LotOrphanLevel lotOrphanLevel = lotService.checkLotOrphanLevel(queryLot);
 
@@ -106,38 +126,18 @@ public class LotServiceImpl implements LotService {
 		if (lotOrphanLevel.equals(LotOrphanLevel.Parent)) {
 			deleteOriginalParentAfterReparent = true;
 		}
-
-		Parent adoptiveParent = null;
-		try{
-			adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
-		} catch (NoResultException e) {
-			logger.error("No parent found for parentCorpName: " + parentCorpName);
-			return reparentLotResponseDTO;
-		}
 		
 		// renumber lot -- just increment to next number
-		Integer newLotNumber;
-		if(propertiesUtilService.getMaxAutoLotNumber() != null && queryLot.getLotNumber() > propertiesUtilService.getMaxAutoLotNumber()){
-			newLotNumber = queryLot.getLotNumber();
-		} else {
-			newLotNumber = Lot.getMaxParentLotNumber(adoptiveParent) + 1;
-		}
+		Integer newLotNumber = predictReparentLotNumber(adoptiveParent, queryLot);
 		logger.debug("next lot number for adoptive parent: " + newLotNumber);
 
 		reparentLotResponseDTO.setOriginalParentCorpName(queryLot.getParent().getCorpName());
 
 		// associate saltForm to new adoptive parent
-		SaltForm saltForm = queryLot.getSaltForm();
 		saltForm.setParent(adoptiveParent);
 		saltForm.setCorpName(
-				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), saltForm.getIsoSalts()));
+				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), isoSalts));
 
-		saltForm.merge();
-
-		// recalculate salt form weight
-		saltFormService.updateSaltWeight(saltForm);
-
-		logger.debug("new lot number before merge: " + newLotNumber);
 		queryLot.setLotNumber(newLotNumber);
 		logger.debug("new lot number: " + queryLot.getLotNumber());
 
@@ -148,7 +148,7 @@ public class LotServiceImpl implements LotService {
 				logger.error("Lot corp name already exists: " + newCorpName);
 				throw new DupeLotException("Lot corp name already exists: " + newCorpName);
 			}
-			queryLot.setCorpName(this.generateCorpName(queryLot));
+			queryLot.setCorpName(newCorpName);
 			// TODO: may want to save the old name as an alias
 		}
 		logger.info("new lot corp name: " + queryLot.getCorpName());
@@ -158,29 +158,33 @@ public class LotServiceImpl implements LotService {
 		queryLot.setModifiedBy(modifiedByUser);
 		queryLot.setModifiedDate(new Date());
 
-		queryLot.merge();
-
-		
 		reparentLotResponseDTO.setNewLot(queryLot);
 
 		if(deleteOriginalParentAfterReparent) {
-			Parent originalParent = Parent.findParent(originalParentId);
-			Parent.entityManager().refresh(originalParent);
-			parentService.deleteParent(originalParent);
 			reparentLotResponseDTO.setOriginalParentDeleted(true);
 		} else {
 			reparentLotResponseDTO.setOriginalParentDeleted(false);
 		}
 
-		// Null transaction id which gets populated if used
-		Long transactionId = null;
-		if (updateAssayData) {
-			transactionId = assayService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+		if(!dryRun) {
+			saltForm.merge();
+			saltFormService.updateSaltWeight(saltForm);
+			// recalculate salt form weight
+			queryLot.merge();
+			if(deleteOriginalParentAfterReparent) {
+				Parent originalParent = Parent.findParent(originalParentId);
+				Parent.entityManager().refresh(originalParent);
+				parentService.deleteParent(originalParent);
+			}
+			// Null transaction id which gets populated if used
+			Long transactionId = null;
+			if (updateAssayData) {
+				transactionId = assayService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+			}
+			if (updateInventory) {
+				containerService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser, transactionId);
+			}
 		}
-		if (updateInventory) {
-			containerService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser, transactionId);
-		}
-	
 		return reparentLotResponseDTO;
 	}
 

@@ -21,7 +21,7 @@ public interface LotService {
 
 	String updateLotMetaArray(String jsonArray);
 
-	ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData) throws DupeLotException;
+	ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData, Boolean dryRun) throws DupeLotException;
 
 	public Collection<LotsByProjectDTO> getLotsByProjectsList(List<String> projects);
 

@@ -1,6 +1,6 @@
 package com.labsynch.labseer.exceptions;
 
-public class DupeLotException extends Exception {
+public class DupeLotException extends RuntimeException {
 
     public DupeLotException() {
         // TODO Auto-generated constructor stub

@@ -129,13 +129,14 @@ public class ApiParentLotController {
 
 	@RequestMapping(value = "/reparentLot", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> reparentLot(@RequestBody String json) {
+	public ResponseEntity<String> reparentLot(@RequestBody String json, @RequestParam(value = "dryRun", required = false, defaultValue = "true") Boolean dryRun) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			ReparentLotDTO lotDTO = ReparentLotDTO.fromJsonToReparentLotDTO(json);
 			ReparentLotResponseDTO reparentLotDTO = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(),
-					lotDTO.getModifiedBy(), true, true);
+				lotDTO.getModifiedBy(), true, true, dryRun);
+
 			return new ResponseEntity<String>(reparentLotDTO.toJson(), headers, HttpStatus.OK);
 		} catch (DupeLotException e) {
 			logger.error("Error saving lot with duplicate name", e);
@@ -149,14 +150,14 @@ public class ApiParentLotController {
 	@Transactional
 	@RequestMapping(value = "/reparentLot/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> reparentLotArray(@RequestBody String json) {
+	public ResponseEntity<String> reparentLotArray(@RequestBody String json, @RequestParam(value = "dryRun", required = false, defaultValue = "true") Boolean dryRun) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		int lotCount = 0;
 		try {
 			Collection<ReparentLotDTO> lotDTOs = ReparentLotDTO.fromJsonArrayToReparentLoes(json);
 			for (ReparentLotDTO lotDTO : lotDTOs) {
-				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), lotDTO.getModifiedBy(), true, true);
+				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), lotDTO.getModifiedBy(), true, true, dryRun);
 				lotCount++;
 			}
 			return new ResponseEntity<String>("number of lots reparented: " + lotCount, headers, HttpStatus.OK);
