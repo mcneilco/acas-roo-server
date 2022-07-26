@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 
 import org.slf4j.Logger;
@@ -80,7 +81,9 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 		if (dupeParents1.isEmpty() && dupeParents2.isEmpty()) {
 			String mol = parent1.getMolStructure();
 			parent1.setMolStructure(parent2.getMolStructure());
+			parent1.setModifiedDate(new Date());
 			parent2.setMolStructure(mol);
+			parent2.setModifiedDate(new Date());
 			logger.info(String.format("Swapping corpName1=%s & corpName2=%s swap successful.", corpName1, corpName2));
 			return true;
 		} else {
