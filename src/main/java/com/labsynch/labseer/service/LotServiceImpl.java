@@ -113,8 +113,7 @@ public class LotServiceImpl implements LotService {
 
 		SaltForm saltForm = queryLot.getSaltForm();
 		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
-		Set isoSalts = saltForm.getIsoSalts();
-		isoSalts.size();
+		Set<IsoSalt> isoSalts = saltForm.getIsoSalts();
 		if(dryRun) {
 			// Detaching an entity closes it's session and detaches it from the persistence context, allowing us to query and modify the item but the changes will not be reflected
 			// to the database.
