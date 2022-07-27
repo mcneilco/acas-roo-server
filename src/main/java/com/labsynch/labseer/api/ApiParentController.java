@@ -1,12 +1,17 @@
 package com.labsynch.labseer.api;
 
 import java.util.Collection;
+import java.util.HashMap;
+
+import flexjson.JSONSerializer;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
+import com.labsynch.labseer.dto.ParentSwapStructuresDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
 import com.labsynch.labseer.service.ParentService;
+import com.labsynch.labseer.service.ParentSwapStructuresService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +34,9 @@ public class ApiParentController {
 
 	@Autowired
 	public ParentService parentService;
+
+	@Autowired
+	public ParentSwapStructuresService parentSwapStructuresService;
 
 	@Transactional
 	@RequestMapping(value = "/validateParent", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -66,6 +74,31 @@ public class ApiParentController {
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@Transactional
+	@RequestMapping(value = "/swapParentStructures", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> swapParentStructures(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		ParentSwapStructuresDTO parentSwapStructuresDTO = ParentSwapStructuresDTO.fromJSONToParentSwapStructuresDTO(json);
+
+		String errorMessage;
+		try {
+			errorMessage = parentSwapStructuresService.swapParentStructures(parentSwapStructuresDTO);
+		} catch (Exception e) {
+			logger.error("Caught error trying to swap parent structures", e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		boolean hasError = !errorMessage.isEmpty();
+		HashMap<String,Object> response = new HashMap<>();
+		response.put("hasError", hasError);
+		response.put("errorMessage", errorMessage);
+		HttpStatus status = (hasError)? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK;
+		
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		return new ResponseEntity<String>(new JSONSerializer().serialize(response), headers, status);
+}
 
 	@RequestMapping(value = "/updateParent/metadata/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
