@@ -121,6 +121,11 @@ public class LotServiceImpl implements LotService {
 			Parent.entityManager().detach(adoptiveParent);
 		}
 
+		// LotService.checkLotOrphanLevel function calculates what level of the compound would be orphaned if the lot were to be removed.
+		// It will return Parent if the lot is moved, and there are no other SaltForms on the Parent that have lots (leaving Parnent as an orphan)
+		// It will return SaltForm if the lot is moved, and there are other SaltForms on the Parent (leaving SaltForm as an orphan)
+		// We only need to take action if the LotOrphanLevel is Parent because this tells us we should also delete the Parent.
+		// We don't  need to take action if the LotOrphanLevel is SaltForm, because reparent lot also moves the lot salt form.
 		LotOrphanLevel lotOrphanLevel = lotService.checkLotOrphanLevel(queryLot);
 
 		Boolean deleteOriginalParentAfterReparent = false;
