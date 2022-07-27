@@ -29,6 +29,8 @@ public interface StandardizationService {
 	String executeStandardization(String username, String reason)
 			throws IOException, CmpdRegMolFormatException, StandardizerException;
 
+	public int restandardizeLots(List<Long> parentIds);
+
 	int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, IOException, StandardizerException;
 

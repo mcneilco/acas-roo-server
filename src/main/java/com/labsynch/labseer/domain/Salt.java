@@ -27,16 +27,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.Size;
 
-import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.DependencyCheckDTO;
-import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
-import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
-import com.labsynch.labseer.service.BulkLoadService;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+// import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
+// import com.labsynch.labseer.dto.CodeTableDTO;
+// import com.labsynch.labseer.dto.DependencyCheckDTO;
+// import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+// import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
+// import com.labsynch.labseer.service.BulkLoadService;
 import com.labsynch.labseer.dto.PurgeSaltDependencyCheckResponseDTO;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
-
+// import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+// import com.labsynch.labseer.utils.PropertiesUtilService;
+// import com.labsynch.labseer.utils.SimpleUtil;
+// import com.labsynch.labseer.service.ChemStructureService.StructureType;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -74,8 +76,6 @@ public class Salt {
     private Boolean ignore;
 
     private int charge;
-
-    private PropertiesUtilService propertiesUtilService;
 
     public static TypedQuery<Salt> findSaltsByAbbrevEquals(String abbrev) {
         if (abbrev == null || abbrev.length() == 0)
@@ -404,41 +404,41 @@ public class Salt {
                 .getResultList();
     }
 
-    public Map<String, HashSet<String>> checkACASDependencies(
-			Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
-		// here we make an external request to the ACAS Roo server to check for
-		// dependent experimental data
-		String url = propertiesUtilService.getAcasURL() + "compounds/checkBatchDependencies";
-		BatchCodeDependencyDTO request = new BatchCodeDependencyDTO(acasDependencies.keySet());
-		String json = request.toJson();
-		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
-		BatchCodeDependencyDTO responseDTO = BatchCodeDependencyDTO.fromJsonToBatchCodeDependencyDTO(responseJson);
-		if (responseDTO.getLinkedDataExists()) {
-			for (CodeTableDTO experimentCodeTable : responseDTO.getLinkedExperiments()) {
-				String experimentCodeAndName = experimentCodeTable.getCode() + " ( " + experimentCodeTable.getName()
-						+ " )";
-				if (acasDependencies.containsKey(experimentCodeTable.getComments())) {
-					acasDependencies.get(experimentCodeTable.getComments()).add(experimentCodeAndName);
-				} else {
-					HashSet<String> codes = new HashSet<String>();
-					codes.add(experimentCodeAndName);
-					acasDependencies.put(experimentCodeTable.getComments(), codes);
-				}
-			}
-		}
-		return acasDependencies;
-	}
+    // public Map<String, HashSet<String>> checkACASDependencies(
+	// 		Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
+	// 	// here we make an external request to the ACAS Roo server to check for
+	// 	// dependent experimental data
+	// 	String url = propertiesUtilService.getAcasURL() + "compounds/checkBatchDependencies";
+	// 	BatchCodeDependencyDTO request = new BatchCodeDependencyDTO(acasDependencies.keySet());
+	// 	String json = request.toJson();
+	// 	String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
+	// 	BatchCodeDependencyDTO responseDTO = BatchCodeDependencyDTO.fromJsonToBatchCodeDependencyDTO(responseJson);
+	// 	if (responseDTO.getLinkedDataExists()) {
+	// 		for (CodeTableDTO experimentCodeTable : responseDTO.getLinkedExperiments()) {
+	// 			String experimentCodeAndName = experimentCodeTable.getCode() + " ( " + experimentCodeTable.getName()
+	// 					+ " )";
+	// 			if (acasDependencies.containsKey(experimentCodeTable.getComments())) {
+	// 				acasDependencies.get(experimentCodeTable.getComments()).add(experimentCodeAndName);
+	// 			} else {
+	// 				HashSet<String> codes = new HashSet<String>();
+	// 				codes.add(experimentCodeAndName);
+	// 				acasDependencies.put(experimentCodeTable.getComments(), codes);
+	// 			}
+	// 		}
+	// 	}
+	// 	return acasDependencies;
+	// }
 
-    private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes)
-			throws MalformedURLException, IOException {
-		String url = propertiesUtilService.getAcasURL() + "containers/getContainerDTOsByBatchCodes";
-		String json = (new JSONSerializer()).serialize(batchCodes);
-		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
-		Collection<ContainerBatchCodeDTO> responseDTOs = ContainerBatchCodeDTO
-				.fromJsonArrayToContainerBatchCoes(responseJson);
-		return responseDTOs;
+    // private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes)
+	// 		throws MalformedURLException, IOException {
+	// 	String url = propertiesUtilService.getAcasURL() + "containers/getContainerDTOsByBatchCodes";
+	// 	String json = (new JSONSerializer()).serialize(batchCodes);
+	// 	String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
+	// 	Collection<ContainerBatchCodeDTO> responseDTOs = ContainerBatchCodeDTO
+	// 			.fromJsonArrayToContainerBatchCoes(responseJson);
+	// 	return responseDTOs;
 
-	}
+	// }
 
 	// Method to Check for Dependent Data 
     public PurgeSaltDependencyCheckResponseDTO checkDependentData()
@@ -512,40 +512,40 @@ public class Salt {
 		saltForms.clear();
 
 		// Check for all the vials in ACAS that reference lots being purged
-		Integer numberOfDependentContainers = null;
-		Collection<ContainerBatchCodeDTO> dependentContainers = null;
-		if (!acasDependencies.isEmpty()) {
-			try {
-				dependentContainers = checkDependentACASContainers(acasDependencies.keySet());
-				numberOfDependentContainers = dependentContainers.size();
-			} catch (Exception e) {
-			}
-		}
+		Integer numberOfDependentContainers = 0;
+		// Collection<ContainerBatchCodeDTO> dependentContainers = null;
+		// if (!acasDependencies.isEmpty()) {
+		// 	try {
+		// 		dependentContainers = checkDependentACASContainers(acasDependencies.keySet());
+		// 		numberOfDependentContainers = dependentContainers.size();
+		// 	} catch (Exception e) {
+		// 	}
+		// }
 		// Then check for data dependencies in ACAS.
-		if (!acasDependencies.isEmpty()) {
-			// check dependencies differently if config to check by barcode is enabled
-			if (propertiesUtilService.getCheckACASDependenciesByContainerCode()) {
-				try {
-					Map<String, HashSet<String>> acasContainerDependencies = new HashMap<String, HashSet<String>>();
-					for (ContainerBatchCodeDTO container : dependentContainers) {
-						acasContainerDependencies.put(container.getContainerCodeName(), new HashSet<String>());
-					}
-					acasContainerDependencies = checkACASDependencies(acasContainerDependencies);
-					for (ContainerBatchCodeDTO containerBatchDTO : dependentContainers) {
-						HashSet<String> currentDependencies = acasDependencies.get(containerBatchDTO.getBatchCode());
-						currentDependencies
-								.addAll(acasContainerDependencies.get(containerBatchDTO.getContainerCodeName()));
-						acasDependencies.put(containerBatchDTO.getBatchCode(), currentDependencies);
-					}
-				} catch (Exception e) {
-				}
-			} else {
-				try {
-					acasDependencies = checkACASDependencies(acasDependencies);
-				} catch (Exception e) {
-				}
-			}
-		}
+		// if (!acasDependencies.isEmpty()) {
+		// 	// check dependencies differently if config to check by barcode is enabled
+		// 	if (propertiesUtilService.getCheckACASDependenciesByContainerCode()) {
+		// 		try {
+		// 			Map<String, HashSet<String>> acasContainerDependencies = new HashMap<String, HashSet<String>>();
+		// 			for (ContainerBatchCodeDTO container : dependentContainers) {
+		// 				acasContainerDependencies.put(container.getContainerCodeName(), new HashSet<String>());
+		// 			}
+		// 			acasContainerDependencies = checkACASDependencies(acasContainerDependencies);
+		// 			for (ContainerBatchCodeDTO containerBatchDTO : dependentContainers) {
+		// 				HashSet<String> currentDependencies = acasDependencies.get(containerBatchDTO.getBatchCode());
+		// 				currentDependencies
+		// 						.addAll(acasContainerDependencies.get(containerBatchDTO.getContainerCodeName()));
+		// 				acasDependencies.put(containerBatchDTO.getBatchCode(), currentDependencies);
+		// 			}
+		// 		} catch (Exception e) {
+		// 		}
+		// 	} else {
+		// 		try {
+		// 			acasDependencies = checkACASDependencies(acasDependencies);
+		// 		} catch (Exception e) {
+		// 		}
+		// 	}
+		// }
 
 		HashSet<String> dependentFiles = new HashSet<String>();
 		for (HashSet<String> dependentSet : cmpdRegDependencies.values()) {
@@ -561,10 +561,11 @@ public class Salt {
 		}
 
 		if (!dependentFiles.isEmpty() || !dependentExperiments.isEmpty() || !dependentSingleRegLots.isEmpty()) {
-			String summary = "There were dependencies!";
-			return new PurgeSaltDependencyCheckResponseDTO(summary, false);
+			String summary = "This salt is referenced by " + String.valueOf(dependentExperiments.size()) + " experiments and " + String.valueOf(dependentSingleRegLots.size()) + " lots. ";
+			summary = summary + "This salt cannot be deleted. ";
+            return new PurgeSaltDependencyCheckResponseDTO(summary, false);
 		} else {
-			String summary = "There were not dependencies!";
+			String summary = "There were no lot dependencies found for this salt.";
 			return new PurgeSaltDependencyCheckResponseDTO(summary, true);
 		}
 
