@@ -109,6 +109,83 @@ public class ApiSaltController {
 		return new ResponseEntity<String>(salt.toJson(), headers, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/edit/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json) {
+		Salt oldSalt = Salt.findSalt(id);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/text; charset=utf-8");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+		headers.add("Pragma", "no-cache"); // HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		if (oldSalt == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		else
+		{
+			try {
+				Salt newSalt = Salt.fromJsonToSalt(json);
+				newSalt.setAbbrev(newSalt.getAbbrev().trim());
+				newSalt.setName(newSalt.getName().trim());
+				ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+				boolean validSalt = true;
+				List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
+				if (saltsByName.size() > 1) {
+					logger.error("Number of salts found: " + saltsByName.size());
+					validSalt = false;
+					ErrorMessage error = new ErrorMessage();
+					error.setLevel("error");
+					error.setMessage("Duplicate salt name. Another salt exist with the same name.");
+					errors.add(error);
+				}
+				List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
+				if (saltsByAbbrev.size() > 1) {
+					logger.error("Number of salts found: " + saltsByAbbrev.size());
+					validSalt = false;
+					ErrorMessage error = new ErrorMessage();
+					error.setLevel("error");
+					error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
+					errors.add(error);
+				}
+				if (validSalt) {
+					try {
+						oldSalt = saltStructureService.edit(oldSalt, newSalt);
+					} catch (Exception e) {
+						logger.error("Error updating salt: " + e.getMessage());
+						validSalt = false;
+						ErrorMessage error = new ErrorMessage();
+						error.setLevel("error");
+						error.setMessage("Error updating salt: " + e.getMessage());
+						errors.add(error);
+						return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
+					}
+				}
+				try
+				{
+					// Attempt to Restandardize 
+					List<Long> saltID= new ArrayList<Long>();
+					saltID.add(oldSalt.getId());
+					standardizationService.restandardizeLots(saltID);
+					// Return Response
+					String saltMol = oldSalt.toJson();
+					return new ResponseEntity<String>(saltMol, headers, HttpStatus.OK);
+				}
+				catch (Exception e)
+				{
+					return new ResponseEntity<String>("ERROR: Restandardization Issue:" + e.getMessage(), headers,
+					HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			} catch (Exception e) {
+				return new ResponseEntity<String>("ERROR: Bad Salt:" + e.getMessage(), headers,
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+	}
+
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> deleteSalt(@PathVariable("id") Long id) {
@@ -133,13 +210,12 @@ public class ApiSaltController {
 
 			// Query to See If Lot Depends on This Salt ID 
 			if(lotDependency){
-				return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
+				return new ResponseEntity<String>(dependencyReport.getSummary(), headers, HttpStatus.EXPECTATION_FAILED);
 			}
 			else
 			{
-				String saltJSON = salt.toJson(); 
 				salt.remove(); // This needs to be a hard deletion 
-				return new ResponseEntity<String>(saltJSON, headers, HttpStatus.OK);
+				return new ResponseEntity<String>(dependencyReport.getSummary(), headers, HttpStatus.OK);
 			}
 		}
 	}
@@ -268,7 +344,7 @@ public class ApiSaltController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
-		} catch (CmpdRegMolFormatException e) {
+		} catch (Exception e) {
 			return new ResponseEntity<String>("ERROR: Bad molfile:" + e.getMessage(), headers,
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
