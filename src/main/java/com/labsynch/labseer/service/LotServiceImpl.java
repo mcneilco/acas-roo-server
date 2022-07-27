@@ -119,8 +119,15 @@ public class LotServiceImpl implements LotService {
 			// Detaching an entity closes it's session and detaches it from the persistence context, allowing us to query and modify the item but the changes will not be reflected
 			// to the database.
 			Lot.entityManager().detach(queryLot);
+
+			// Before detaching saltForm in dry run mode, we need to initialize the iso salt collection.  Calling ".size()" is the easiest way I found to do this.
+			// Without initializing the iso salts they can't be used to generateSaltFormCorpName and give the error:
+			//    org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.labsynch.labseer.domain.SaltForm.isoSalts, could not initialize proxy - no Session
+			isoSalts.size();
+
 			SaltForm.entityManager().detach(saltForm);
 			Parent.entityManager().detach(adoptiveParent);
+
 		}
 
 		// LotService.checkLotOrphanLevel function calculates what level of the compound would be orphaned if the lot were to be removed.
