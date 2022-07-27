@@ -17,6 +17,14 @@ public class ReparentLotResponseDTO {
 
     private Boolean originalParentDeleted;
 
+    private Integer originalLotNumber;
+
+    private String originalLotCorpName;
+
+    private String originalParentCorpName;
+
+    private String modifiedBy;
+
     public Boolean isOriginalParentDeleted() {
         return this.originalParentDeleted;
     }
@@ -29,11 +37,13 @@ public class ReparentLotResponseDTO {
         this.originalParentDeleted = originalParentDeleted;
     }
 
-    private String originalLotCorpName;
+    public Integer getOriginalLotNumber() {
+        return this.originalLotNumber;
+    }
 
-    private String originalParentCorpName;
-
-    private String modifiedBy;
+    public void setOriginalLotNumber(Integer originalLotNumber) {
+        this.originalLotNumber = originalLotNumber;
+    }
 
     public Lot getNewLot() {
         return this.newLot;
@@ -66,7 +76,7 @@ public class ReparentLotResponseDTO {
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
-    
+
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }

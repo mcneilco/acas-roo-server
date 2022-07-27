@@ -109,6 +109,8 @@ public class LotServiceImpl implements LotService {
 		reparentLotResponseDTO.setModifiedBy(modifiedByUser);
 
 		Lot queryLot = Lot.findLotsByCorpNameEquals(lotCorpName).getSingleResult();
+		reparentLotResponseDTO.setOriginalLotNumber(queryLot.getLotNumber());
+
 		SaltForm saltForm = queryLot.getSaltForm();
 		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
 		Set isoSalts = saltForm.getIsoSalts();
