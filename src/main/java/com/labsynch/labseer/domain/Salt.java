@@ -155,6 +155,21 @@ public class Salt {
         return q;
     }
 
+    public static TypedQuery<Salt> findSaltsByFormulaEquals(String formula) {
+        if (formula == null || formula.length() == 0)
+            throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = Salt.entityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Salt> criteria = criteriaBuilder.createQuery(Salt.class);
+        Root<Salt> saltRoot = criteria.from(Salt.class);
+        criteria.select(saltRoot);
+        Predicate predicate = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("formula")),
+                formula.toUpperCase().trim());
+        criteria.where(criteriaBuilder.and(predicate));
+        TypedQuery<Salt> q = em.createQuery(criteria);
+        return q;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

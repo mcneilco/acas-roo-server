@@ -149,9 +149,38 @@ public class ApiSaltController {
 					error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
 					errors.add(error);
 				}
+				List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
+				if (saltsByFormula.size() > 1) {
+					logger.error("Number of salts found: " + saltsByName.size());
+					validSalt = false;
+					ErrorMessage error = new ErrorMessage();
+					error.setLevel("error");
+					error.setMessage("Duplicate salt formula. Another salt exist with the same formula.");
+					errors.add(error);
+				}
 				if (validSalt) {
 					try {
 						oldSalt = saltStructureService.edit(oldSalt, newSalt);
+						try
+							{
+								// Attempt to Restandardize 
+								List<Long> saltID= new ArrayList<Long>();
+								saltID.add(oldSalt.getId());
+								// Need to Add Changes in Dependency Here 
+								// Need to Get Validations
+								// Need to Check Changes in Name, Formula, Weight, and Associations
+								standardizationService.restandardizeLots(saltID);
+								// Do I need more restandardizations? See Validation section in ACAS-6 Confluence 
+								
+								// Return Response
+								String saltMol = oldSalt.toJson();
+								return new ResponseEntity<String>(saltMol, headers, HttpStatus.OK);
+							}
+						catch (Exception e)
+							{
+								return new ResponseEntity<String>("ERROR: Restandardization Issue:" + e.getMessage(), headers,
+								HttpStatus.INTERNAL_SERVER_ERROR);
+							}
 					} catch (Exception e) {
 						logger.error("Error updating salt: " + e.getMessage());
 						validSalt = false;
@@ -162,20 +191,10 @@ public class ApiSaltController {
 						return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
 					}
 				}
-				try
+				else 
 				{
-					// Attempt to Restandardize 
-					List<Long> saltID= new ArrayList<Long>();
-					saltID.add(oldSalt.getId());
-					standardizationService.restandardizeLots(saltID);
-					// Return Response
-					String saltMol = oldSalt.toJson();
-					return new ResponseEntity<String>(saltMol, headers, HttpStatus.OK);
-				}
-				catch (Exception e)
-				{
-					return new ResponseEntity<String>("ERROR: Restandardization Issue:" + e.getMessage(), headers,
-					HttpStatus.INTERNAL_SERVER_ERROR);
+					return new ResponseEntity<>(ErrorMessage.toJsonArray(errors), headers,
+					HttpStatus.EXPECTATION_FAILED);
 				}
 			} catch (Exception e) {
 				return new ResponseEntity<String>("ERROR: Bad Salt:" + e.getMessage(), headers,
