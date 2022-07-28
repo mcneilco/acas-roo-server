@@ -152,7 +152,7 @@ public class LotServiceImpl implements LotService {
 		saltForm.setParent(adoptiveParent);
 		saltForm.setCorpName(
 				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), isoSalts));
-
+		saltFormService.updateSaltWeight(saltForm);
 		queryLot.setLotNumber(newLotNumber);
 		logger.debug("new lot number: " + queryLot.getLotNumber());
 
@@ -183,8 +183,7 @@ public class LotServiceImpl implements LotService {
 
 		if(!dryRun) {
 			saltForm.merge();
-			saltFormService.updateSaltWeight(saltForm);
-			// recalculate salt form weight
+
 			queryLot.merge();
 			if(deleteOriginalParentAfterReparent) {
 				Parent originalParent = Parent.findParent(originalParentId);
