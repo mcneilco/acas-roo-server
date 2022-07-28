@@ -157,7 +157,7 @@ public class Salt {
 
     public static TypedQuery<Salt> findSaltsByFormulaEquals(String formula) {
         if (formula == null || formula.length() == 0)
-            throw new IllegalArgumentException("The name argument is required");
+            throw new IllegalArgumentException("The formula provided is emptpy or null");
         EntityManager em = Salt.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Salt> criteria = criteriaBuilder.createQuery(Salt.class);
