@@ -113,6 +113,7 @@ public class ApiParentLotController {
 		}
 	}
 
+	@Transactional
 	@RequestMapping(value = "/updateLot/metadata/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> updateLotMetaArray(@RequestBody String json) {
