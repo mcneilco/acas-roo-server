@@ -186,6 +186,8 @@ public class LotServiceImpl implements LotService {
 
 			queryLot.merge();
 			if(deleteOriginalParentAfterReparent) {
+				// Without fetching a fresh copy of the parent, the delete parent failed as it still had it's salt form attached
+				// This delete would fail because a conflict.
 				Parent originalParent = Parent.findParent(originalParentId);
 				Parent.entityManager().refresh(originalParent);
 				parentService.deleteParent(originalParent);
