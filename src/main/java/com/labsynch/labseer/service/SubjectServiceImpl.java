@@ -1240,7 +1240,6 @@ public class SubjectServiceImpl implements SubjectService {
 			value.setModifiedBy(modifiedByUser);
 			value.setModifiedDate(new Date());
 			value.setLsTransaction(transactionId);
-			value.persist();
 			SubjectValue newValue = new SubjectValue();
 			newValue.setLsType(value.getLsType());
 			newValue.setLsKind(value.getLsKind());

@@ -3847,7 +3847,6 @@ public class ContainerServiceImpl implements ContainerService {
 			value.setModifiedBy(modifiedByUser);
 			value.setModifiedDate(new Date());
 			value.setLsTransaction(transactionId);
-			value.persist();
 			ContainerValue newValue = new ContainerValue();
 			newValue.setLsType(value.getLsType());
 			newValue.setLsKind(value.getLsKind());

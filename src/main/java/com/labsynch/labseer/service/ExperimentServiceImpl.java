@@ -1923,7 +1923,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 			value.setModifiedBy(modifiedByUser);
 			value.setModifiedDate(new Date());
 			value.setLsTransaction(transactionId);
-			value.persist();
 			ExperimentValue newValue = new ExperimentValue();
 			newValue.setLsType(value.getLsType());
 			newValue.setLsKind(value.getLsKind());

@@ -745,7 +745,6 @@ public class ProtocolServiceImpl implements ProtocolService {
 			value.setModifiedBy(modifiedByUser);
 			value.setModifiedDate(new Date());
 			value.setLsTransaction(transactionId);
-			value.persist();
 			ProtocolValue newValue = new ProtocolValue();
 			newValue.setLsType(value.getLsType());
 			newValue.setLsKind(value.getLsKind());

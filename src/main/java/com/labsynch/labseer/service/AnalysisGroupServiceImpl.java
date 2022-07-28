@@ -556,7 +556,6 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			value.setModifiedBy(modifiedByUser);
 			value.setModifiedDate(new Date());
 			value.setLsTransaction(transactionId);
-			value.persist();
 			AnalysisGroupValue newValue = new AnalysisGroupValue();
 			newValue.setLsType(value.getLsType());
 			newValue.setLsKind(value.getLsKind());

@@ -549,7 +549,6 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			value.setModifiedBy(modifiedByUser);
 			value.setModifiedDate(new Date());
 			value.setLsTransaction(transactionId);
-			value.persist();
 			TreatmentGroupValue newValue = new TreatmentGroupValue();
 			newValue.setLsType(value.getLsType());
 			newValue.setLsKind(value.getLsKind());
