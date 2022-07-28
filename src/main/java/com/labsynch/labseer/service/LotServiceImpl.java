@@ -37,7 +37,6 @@ import com.labsynch.labseer.dto.ReparentLotResponseDTO;
 import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +78,9 @@ public class LotServiceImpl implements LotService {
 	// updates saltForm weight and lot weight
 	@Override
 	public Lot updateLotWeight(Lot lot) {
-		saltFormService.updateSaltWeight(lot.getSaltForm());
+		SaltForm saltForm = lot.getSaltForm();
+		saltFormService.updateSaltWeight(saltForm);
+		saltForm.merge();
 		lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));
 		lot.setModifiedDate(new Date());
 		lot.merge();
@@ -152,7 +153,7 @@ public class LotServiceImpl implements LotService {
 		saltForm.setParent(adoptiveParent);
 		saltForm.setCorpName(
 				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), isoSalts));
-
+		saltFormService.updateSaltWeight(saltForm);
 		queryLot.setLotNumber(newLotNumber);
 		logger.debug("new lot number: " + queryLot.getLotNumber());
 
@@ -183,8 +184,7 @@ public class LotServiceImpl implements LotService {
 
 		if(!dryRun) {
 			saltForm.merge();
-			saltFormService.updateSaltWeight(saltForm);
-			// recalculate salt form weight
+
 			queryLot.merge();
 			if(deleteOriginalParentAfterReparent) {
 				// Without fetching a fresh copy of the parent, the delete parent failed as it still had it's salt form attached

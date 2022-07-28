@@ -71,8 +71,6 @@ public class SaltFormServiceImpl implements SaltFormService {
 			logger.debug("current totalSaltWeigth: " + totalSaltWeight);
 		}
 		saltForm.setSaltWeight(totalSaltWeight);
-		saltForm.merge();
-
 	}
 
 	public SaltForm updateSaltForm(Parent parent, SaltForm saltForm, Set<IsoSalt> isoSalts, Lot lot,
