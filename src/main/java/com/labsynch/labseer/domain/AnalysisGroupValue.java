@@ -1970,4 +1970,33 @@ public class AnalysisGroupValue extends AbstractValue {
 	public AnalysisGroupValue() {
 		super();
 	}
+
+    public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsKindEqualsAndCodeValueEquals(
+            String valueKind, String codeValue) {
+
+        if (valueKind == null || valueKind.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+        if (codeValue == null || codeValue.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+
+	    // Join through protocol to only fetch where top level protocol is not ignored
+        EntityManager em = entityManager();
+        String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
+				"JOIN agv.lsState ags " +
+				"JOIN ags.analysisGroup ag " +
+				"JOIN ag.experiments e " +
+                "JOIN e.protocol p " +
+                "WHERE agv.codeValue = :codeValue AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
+                "AND ags.ignored IS NOT :ignored " +
+                "AND ag.ignored IS NOT :ignored " +
+                "AND e.ignored IS NOT :ignored " +
+				"AND p.ignored IS NOT :ignored ";
+
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+        q.setParameter("valueType", "codeValue");
+        q.setParameter("valueKind", valueKind);
+        q.setParameter("codeValue", codeValue);
+        q.setParameter("ignored", true);
+        return q;
+    }
 }

@@ -21,4 +21,7 @@ public interface AnalysisGroupService {
 
 	TsvLoaderResponseDTO saveLsAnalysisGroupFromCsv(String analysisGroupFilePath,
 			String treatmentGroupFilePath, String subjectFilePath) throws IOException;
+
+	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
+
 }

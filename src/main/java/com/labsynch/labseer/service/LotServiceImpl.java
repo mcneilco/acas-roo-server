@@ -10,9 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -29,12 +30,11 @@ import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
-import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
-import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.service.ChemStructureService.StructureType;
+import com.labsynch.labseer.dto.ReparentLotResponseDTO;
+import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.slf4j.Logger;
@@ -59,20 +59,28 @@ public class LotServiceImpl implements LotService {
 	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
+	private AssayService assayService;
+
+	@Autowired
 	private ContainerService containerService;
 
 	@Autowired
 	private ExperimentService experimentService;
 
 	@Autowired
-	private ChemStructureService chemStructureService;
+	private LotService lotService;
+
+	@Autowired
+	private ParentService parentService;
 
 	private static final Logger logger = LoggerFactory.getLogger(LotServiceImpl.class);
 
 	// updates saltForm weight and lot weight
 	@Override
 	public Lot updateLotWeight(Lot lot) {
-		saltFormService.updateSaltWeight(lot.getSaltForm());
+		SaltForm saltForm = lot.getSaltForm();
+		saltFormService.updateSaltWeight(saltForm);
+		saltForm.merge();
 		lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));
 		lot.setModifiedDate(new Date());
 		lot.merge();
@@ -80,52 +88,121 @@ public class LotServiceImpl implements LotService {
 		return Lot.findLot(lot.getId());
 	}
 
+	public Integer predictReparentLotNumber(Parent parent, Lot lot) {
+		// With a lot and parent, predict what the lot number would be
+		Integer newLotNumber;
+		if(propertiesUtilService.getMaxAutoLotNumber() != null && lot.getLotNumber() > propertiesUtilService.getMaxAutoLotNumber()){
+			newLotNumber = lot.getLotNumber();
+		} else {
+			newLotNumber = Lot.getMaxParentLotNumber(parent) + 1;
+		}
+		return newLotNumber;
+	}
+
 	@Override
 	@Transactional
-	public Lot reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser) {
+	public ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData, Boolean dryRun) throws DupeLotException{
 
-		// incoming lot
-		// name of new adoptive parent
-		// logic to deal with lot numbering -- just increment existing lot number of
-		// adoptive parent
-		// note -- need to refactor to deal with more complicated parent/SaltForm/lot
-		// setups versus simpler parent/lot
-
-		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
-		// renumber lot -- just increment to next number
-		Integer newLotNumber = Lot.getMaxParentLotNumber(adoptiveParent) + 1;
-		logger.debug("next lot number for adoptive parent: " + newLotNumber);
+		logger.info("Got request to reparent lot: " + lotCorpName + " to parent: " + parentCorpName);
+		
+		ReparentLotResponseDTO reparentLotResponseDTO = new ReparentLotResponseDTO();
+		reparentLotResponseDTO.setOriginalLotCorpName(lotCorpName);
+		reparentLotResponseDTO.setModifiedBy(modifiedByUser);
 
 		Lot queryLot = Lot.findLotsByCorpNameEquals(lotCorpName).getSingleResult();
+		reparentLotResponseDTO.setOriginalLotNumber(queryLot.getLotNumber());
+
+		SaltForm saltForm = queryLot.getSaltForm();
+		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
+		Set<IsoSalt> isoSalts = saltForm.getIsoSalts();
+		if(dryRun) {
+			// Detaching an entity closes it's session and detaches it from the persistence context, allowing us to query and modify the item but the changes will not be reflected
+			// to the database.
+			Lot.entityManager().detach(queryLot);
+
+			// Before detaching saltForm in dry run mode, we need to initialize the iso salt collection.  Calling ".size()" is the easiest way I found to do this.
+			// Without initializing the iso salts they can't be used to generateSaltFormCorpName and give the error:
+			//    org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.labsynch.labseer.domain.SaltForm.isoSalts, could not initialize proxy - no Session
+			isoSalts.size();
+
+			SaltForm.entityManager().detach(saltForm);
+			Parent.entityManager().detach(adoptiveParent);
+
+		}
+
+		// LotService.checkLotOrphanLevel function calculates what level of the compound would be orphaned if the lot were to be removed.
+		// It will return Parent if the lot is moved, and there are no other SaltForms on the Parent that have lots (leaving Parnent as an orphan)
+		// It will return SaltForm if the lot is moved, and there are other SaltForms on the Parent (leaving SaltForm as an orphan)
+		// We only need to take action if the LotOrphanLevel is Parent because this tells us we should also delete the Parent.
+		// We don't  need to take action if the LotOrphanLevel is SaltForm, because reparent lot also moves the lot salt form.
+		LotOrphanLevel lotOrphanLevel = lotService.checkLotOrphanLevel(queryLot);
+
+		Boolean deleteOriginalParentAfterReparent = false;
+		Long originalParentId = queryLot.getParent().getId();
+		if (lotOrphanLevel.equals(LotOrphanLevel.Parent)) {
+			deleteOriginalParentAfterReparent = true;
+		}
+		
+		// renumber lot -- just increment to next number
+		Integer newLotNumber = predictReparentLotNumber(adoptiveParent, queryLot);
+		logger.debug("next lot number for adoptive parent: " + newLotNumber);
+
+		reparentLotResponseDTO.setOriginalParentCorpName(queryLot.getParent().getCorpName());
 
 		// associate saltForm to new adoptive parent
-		SaltForm saltForm = queryLot.getSaltForm();
 		saltForm.setParent(adoptiveParent);
 		saltForm.setCorpName(
-				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), saltForm.getIsoSalts()));
-		saltForm.merge();
-
-		// recalculate salt form weight
+				corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), isoSalts));
 		saltFormService.updateSaltWeight(saltForm);
-
-		logger.debug("new lot number before merge: " + newLotNumber);
 		queryLot.setLotNumber(newLotNumber);
 		logger.debug("new lot number: " + queryLot.getLotNumber());
 
 		// rename lot corp name if not cas style
 		if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")) {
-			queryLot.setCorpName(this.generateCorpName(queryLot));
+			String newCorpName = this.generateCorpName(queryLot);
+			if(Lot.findLotsByCorpNameEquals(newCorpName).getResultList().size() > 0){
+				logger.error("Lot corp name already exists: " + newCorpName);
+				throw new DupeLotException("Lot corp name already exists: " + newCorpName);
+			}
+			queryLot.setCorpName(newCorpName);
 			// TODO: may want to save the old name as an alias
-			// also need to deal with data that may be registered to the old corp name
 		}
 		logger.info("new lot corp name: " + queryLot.getCorpName());
+
 		// recalculate lot weight
 		queryLot.setLotMolWeight(Lot.calculateLotMolWeight(queryLot));
 		queryLot.setModifiedBy(modifiedByUser);
 		queryLot.setModifiedDate(new Date());
-		queryLot.merge();
 
-		return queryLot;
+		reparentLotResponseDTO.setNewLot(queryLot);
+
+		if(deleteOriginalParentAfterReparent) {
+			reparentLotResponseDTO.setOriginalParentDeleted(true);
+		} else {
+			reparentLotResponseDTO.setOriginalParentDeleted(false);
+		}
+
+		if(!dryRun) {
+			saltForm.merge();
+
+			queryLot.merge();
+			if(deleteOriginalParentAfterReparent) {
+				// Without fetching a fresh copy of the parent, the delete parent failed as it still had it's salt form attached
+				// This delete would fail because a conflict.
+				Parent originalParent = Parent.findParent(originalParentId);
+				Parent.entityManager().refresh(originalParent);
+				parentService.deleteParent(originalParent);
+			}
+			// Null transaction id which gets populated if used
+			Long transactionId = null;
+			if (updateAssayData) {
+				transactionId = assayService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser);
+			}
+			if (updateInventory) {
+				containerService.renameBatchCode(lotCorpName, queryLot.getCorpName(), modifiedByUser, transactionId);
+			}
+		}
+		return reparentLotResponseDTO;
 	}
 
 	@Override
@@ -606,6 +683,41 @@ public class LotServiceImpl implements LotService {
 
 		// Lot
 		lot.remove();
+	}
+
+	public enum LotOrphanLevel {
+		Parent, SaltForm, NONE
+	}
+
+	@Override
+	public LotOrphanLevel checkLotOrphanLevel(Lot lot) {
+		// Checks to see if the lot would be orphaned and if so, returns the level of the orphan.
+		Parent parent = Parent.findParent(lot.getParent().getId());
+		Boolean canDeleteSaltForm = true;
+		Boolean canDeleteParent = true;
+		for(SaltForm saltForm : parent.getSaltForms()) {
+			if(saltForm.getId().equals(lot.getSaltForm().getId())) {
+				Set<Lot> lots = saltForm.getLots();
+				for(Lot lotToDelete : lots) {
+					if(!lotToDelete.getId().equals(lot.getId())) {
+						canDeleteSaltForm = false;
+						canDeleteParent = false;
+						logger.info("Found dependent lot ("+lot.getCorpName()+") on salt form (corpName:'"+saltForm.getCorpName()+"', id:"+saltForm.getId()+")");
+					}
+				}
+			} else {
+				canDeleteParent = false;
+				logger.info("Found dependent salt form ("+saltForm.getCorpName()+") on parent (corpName:'"+parent.getCorpName()+"', id:"+parent.getId()+")");
+			}
+		}
+
+		if(canDeleteParent) {
+			return LotOrphanLevel.Parent;
+		} else if(canDeleteSaltForm) {
+			return LotOrphanLevel.SaltForm;
+		} else {
+			return LotOrphanLevel.NONE;
+		}
 	}
 
 }

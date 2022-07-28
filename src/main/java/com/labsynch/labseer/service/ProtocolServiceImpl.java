@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.LsTag;
@@ -48,6 +49,9 @@ public class ProtocolServiceImpl implements ProtocolService {
 
 	@Autowired
 	private AuthorService authorService;
+
+	@Autowired
+	private ProtocolValueService protocolValueService;
 
 	// @PostConstruct
 	// public void init(){
@@ -727,4 +731,34 @@ public class ProtocolServiceImpl implements ProtocolService {
 		return protocolCodes;
 	}
 
+	@Override
+	@Transactional
+	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId) {
+		// Finds all values with the old code, ignores them and creates a new one one with the new code
+		TypedQuery<ProtocolValue> valueQuery = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueEquals("batch code", oldCode);
+
+		List<ProtocolValue> values = valueQuery.getResultList();
+		logger.info("Found " + values.size() + " protocol values with batch code " + oldCode);
+		// Loop through each code value, ignore it and create a new one with the new code
+		for (ProtocolValue value : values) {
+			value.setIgnored(true);
+			value.setModifiedBy(modifiedByUser);
+			value.setModifiedDate(new Date());
+			value.setLsTransaction(transactionId);
+			ProtocolValue newValue = new ProtocolValue();
+			newValue.setLsType(value.getLsType());
+			newValue.setLsKind(value.getLsKind());
+			newValue.setCodeValue(newCode);
+			newValue.setRecordedBy(modifiedByUser);
+			newValue.setCodeType(value.getCodeType());
+			newValue.setCodeKind(value.getCodeKind());
+			newValue.setCodeOrigin(value.getCodeOrigin());
+			newValue.setLsState(value.getLsState());
+			newValue.setLsTransaction(transactionId);
+			newValue.persist();
+			logger.info("Ignored protocol value " + value.getId() + " and created new protocol value " + newValue.getId());
+		}
+
+		return values.size();
+	}
 }

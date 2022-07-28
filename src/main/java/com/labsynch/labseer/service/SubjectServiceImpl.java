@@ -1226,4 +1226,35 @@ public class SubjectServiceImpl implements SubjectService {
 		return results;
 	}
 
+	@Override
+	@Transactional
+	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId) {
+		// Finds all values with the old code, ignores them and creates a new one one with the new code
+		TypedQuery<SubjectValue> valueQuery = SubjectValue.findSubjectValuesByLsKindEqualsAndCodeValueEquals("batch code", oldCode);
+
+		List<SubjectValue> values = valueQuery.getResultList();
+		logger.info("Found " + values.size() + " subject values with batch code " + oldCode);
+		// Loop through each code value, ignore it and create a new one with the new code
+		for (SubjectValue value : values) {
+			value.setIgnored(true);
+			value.setModifiedBy(modifiedByUser);
+			value.setModifiedDate(new Date());
+			value.setLsTransaction(transactionId);
+			SubjectValue newValue = new SubjectValue();
+			newValue.setLsType(value.getLsType());
+			newValue.setLsKind(value.getLsKind());
+			newValue.setCodeValue(newCode);
+			newValue.setRecordedBy(modifiedByUser);
+			newValue.setCodeType(value.getCodeType());
+			newValue.setCodeKind(value.getCodeKind());
+			newValue.setCodeOrigin(value.getCodeOrigin());
+			newValue.setLsState(value.getLsState());
+			newValue.setLsTransaction(transactionId);
+			newValue.persist();
+			logger.info("Ignored subject value " + value.getId() + " and created new subject value " + newValue.getId() + " with batch code " + newCode);
+		}
+
+		return values.size();
+	}
+
 }

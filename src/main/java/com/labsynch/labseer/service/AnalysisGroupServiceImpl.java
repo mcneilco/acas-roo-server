@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.persistence.TypedQuery;
+
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupLabel;
 import com.labsynch.labseer.domain.AnalysisGroupState;
@@ -538,6 +540,37 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		}
 
 		return analysisGroup;
+	}
+
+	@Override
+	@Transactional
+	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId) {
+		// Finds all values with the old code, ignores them and creates a new one one with the new code
+		TypedQuery<AnalysisGroupValue> valueQuery = AnalysisGroupValue.findAnalysisGroupValuesByLsKindEqualsAndCodeValueEquals("batch code", oldCode);
+
+		List<AnalysisGroupValue> values = valueQuery.getResultList();
+		logger.info("Found " + values.size() + " analysis group values with batch code " + oldCode);
+		// Loop through each code value, ignore it and create a new one with the new code
+		for (AnalysisGroupValue value : values) {
+			value.setIgnored(true);
+			value.setModifiedBy(modifiedByUser);
+			value.setModifiedDate(new Date());
+			value.setLsTransaction(transactionId);
+			AnalysisGroupValue newValue = new AnalysisGroupValue();
+			newValue.setLsType(value.getLsType());
+			newValue.setLsKind(value.getLsKind());
+			newValue.setCodeValue(newCode);
+			newValue.setRecordedBy(modifiedByUser);
+			newValue.setCodeType(value.getCodeType());
+			newValue.setCodeKind(value.getCodeKind());
+			newValue.setCodeOrigin(value.getCodeOrigin());
+			newValue.setLsState(value.getLsState());
+			newValue.setLsTransaction(transactionId);
+			newValue.persist();
+			logger.info("Ignored analysis group value " + value.getId() + " and created new analysis group value " + newValue.getId() + " with batch code " + newCode);
+		}
+
+		return values.size();
 	}
 
 }

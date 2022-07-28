@@ -30,4 +30,5 @@ public interface TreatmentGroupService {
 	HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
 			String treatmentGroupFilePath, HashMap<String, TempThingDTO> output) throws IOException;
 
+	int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
 }

@@ -179,4 +179,6 @@ public interface ContainerService {
 	List<ContainerCodeNameStateDTO> saveContainerCodeNameStateDTOArray(
 			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException;
 
+	int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
+
 }

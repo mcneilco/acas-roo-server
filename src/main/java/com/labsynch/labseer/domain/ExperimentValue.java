@@ -174,6 +174,29 @@ public class ExperimentValue extends AbstractValue {
         return q;
     }
 
+    public static TypedQuery<com.labsynch.labseer.domain.ExperimentValue> findExperimentValuesByStateTypeKindAndValueTypeKind(
+        String stateType, String stateKind, String valueType, String valueKind) {
+        if (stateType == null || stateKind.length() == 0)
+            throw new IllegalArgumentException("The stateType argument is required");
+        if (stateKind == null || stateKind.length() == 0)
+            throw new IllegalArgumentException("The stateKind argument is required");
+        if (valueType == null || valueType.length() == 0)
+            throw new IllegalArgumentException("The valueType argument is required");
+        if (valueKind == null || valueKind.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+        EntityManager em = entityManager();
+        String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " + "JOIN ev.lsState evs " + "JOIN evs.experiment exp "
+                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored "
+                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored ";
+        TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
+        q.setParameter("stateType", stateType);
+        q.setParameter("stateKind", stateKind);
+        q.setParameter("valueType", valueType);
+        q.setParameter("valueKind", valueKind);
+        q.setParameter("ignored", true);
+        return q;
+    }
+
     public static TypedQuery<com.labsynch.labseer.domain.ExperimentValue> findExperimentValuesByExperimentCodeNameAndStateTypeKindAndValueTypeKind(
             String experimentCodeName, String stateType, String stateKind, String valueType, String valueKind) {
         if (stateType == null || stateKind.length() == 0)
@@ -642,5 +665,30 @@ public class ExperimentValue extends AbstractValue {
 
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public static TypedQuery<ExperimentValue> findExperimentValuesByLsKindEqualsAndCodeValueEquals(
+            String valueKind, String codeValue) {
+
+        if (valueKind == null || valueKind.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+        if (codeValue == null || codeValue.length() == 0)
+            throw new IllegalArgumentException("The valueKind argument is required");
+
+        EntityManager em = entityManager();
+        String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " +
+                "JOIN ev.lsState es " +
+                "JOIN es.experiment e " +
+                "JOIN e.protocol p " +
+                "WHERE ev.codeValue = :codeValue AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored " +
+                "AND es.ignored IS NOT :ignored " +
+                "AND p.ignored IS NOT :ignored " +
+                "AND e.ignored IS NOT :ignored ";
+        TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
+        q.setParameter("valueType", "codeValue");
+        q.setParameter("valueKind", valueKind);
+        q.setParameter("codeValue", codeValue);
+        q.setParameter("ignored", true);
+        return q;
     }
 }

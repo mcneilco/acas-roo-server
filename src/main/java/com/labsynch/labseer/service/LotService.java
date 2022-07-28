@@ -9,6 +9,9 @@ import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.ReparentLotResponseDTO;
+import com.labsynch.labseer.exceptions.DupeLotException;
+import com.labsynch.labseer.service.LotServiceImpl.LotOrphanLevel;
 
 public interface LotService {
 
@@ -18,7 +21,7 @@ public interface LotService {
 
 	String updateLotMetaArray(String jsonArray);
 
-	Lot reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser);
+	ReparentLotResponseDTO reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser, Boolean updateInventory, Boolean updateAssayData, Boolean dryRun) throws DupeLotException;
 
 	public Collection<LotsByProjectDTO> getLotsByProjectsList(List<String> projects);
 
@@ -47,5 +50,7 @@ public interface LotService {
 	public void deleteLots(Collection<Lot> lots);
 
 	public void deleteLot(Lot lot);
+
+	public LotOrphanLevel checkLotOrphanLevel(Lot lot);
 
 }
