@@ -79,7 +79,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 			logger.debug("salt structure: " + salt.getMolStructure());
 
 			boolean updated = chemStructureService.updateStructure(mol, StructureType.SALT, salt.getCdId());
-			// salt.merge();
+			salt.merge();
 
 			if (updated) {
 				return Salt.findSalt(salt.getId());
@@ -90,7 +90,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		catch (Exception e)
         {
 			e.printStackTrace();
-			return salt;
+			return null;
         }
 
 	}
@@ -100,11 +100,6 @@ public class SaltStructureServiceImpl implements SaltStructureService {
         {
             oldSalt.setAbbrev(newSalt.getAbbrev());
             oldSalt.setName(newSalt.getName());
-
-			String saltStruct = newSalt.getMolStructure();
-			System.out.println(newSalt.toString());
-			System.out.println("================");
-			System.out.println(saltStruct);
 
             oldSalt.setOriginalStructure(newSalt.getMolStructure());
         	oldSalt.setMolStructure(newSalt.getMolStructure());
@@ -140,7 +135,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
     }
 
 	public String calculateFormula(Salt salt) {
-        String formula = "UNDEFINED";
+        String formula = "UNDEFINED"; 
         try
         {
             CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
@@ -155,7 +150,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
     }
 
     public int calculateCharge(Salt salt) {
-        int charge = -1000;
+        int charge = -1000; 
         try
         {
             CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
