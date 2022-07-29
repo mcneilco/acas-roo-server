@@ -225,6 +225,17 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		options.put("standardizer_actions", standardizerActions);
 		requestData.put("options", options);
 
+		// Set timeout (default to 900)
+		JsonNode timeoutNode = jsonNode.get("timeout");
+		int timeout;
+		if(timeoutNode == null) {
+			timeout = 900;
+			logger.info("Timeout not set in preprocessor settings, using default of " + String.valueOf(timeout));
+		} else {
+			timeout = timeoutNode.asInt();
+		}
+		requestData.put("timeout", timeout);
+
 		// Split the list of structures into chunks for processing
 		List<List<String>> structureGroups = splitIntoListOfLists(structures);
 
