@@ -54,6 +54,7 @@ jobs:
       #     platforms: linux/amd64,linux/arm64/v8
       #     build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
       - uses: actions/github-script@v6
+        if: "${{ matrix.chemistry_package == 'indigo' }}"
         with:
           github-token: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
           script: |
