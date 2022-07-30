@@ -6,6 +6,7 @@ on:
     # branches: [ release/* ]
   create:
     tags: "**"
+  workflow_dispatch:
 jobs:
   acas-roo-server:
     runs-on: ubuntu-latest
