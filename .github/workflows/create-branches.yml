@@ -1,6 +1,8 @@
 name: Create matching base branches
 
 on:
+  push:
+    branches: [ "**" ]
   create:
     tags: "**"
   workflow_dispatch:
