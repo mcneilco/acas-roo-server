@@ -1,0 +1,22 @@
+name: Create matching base branches
+
+on:
+  create:
+    tags: "**"
+  workflow_dispatch:
+jobs:
+  acas-roo-server:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        acas-repo: [ acas, rservices, acasclient ]
+    steps:
+      - name: Set ACAS_REF to the current branch ${{ github.ref }}
+        run: |
+          echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
+      - name: Checkout ACAS
+        uses: actions/checkout@v3
+        with:
+          repository: mcneilco/${{ matrix.acas-repo }}
+          path: acas
+          ref: ${{ env.ACAS_REF }}
