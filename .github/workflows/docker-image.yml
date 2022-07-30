@@ -55,6 +55,7 @@ jobs:
       #     build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
       - uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: 'mcneilco',
