@@ -61,5 +61,5 @@ jobs:
               owner: 'mcneilco',
               repo: 'acas',
               workflow_id: 'docker-image.yml',
-              ref: '${{ steps.meta.outputs.tags }}'
+              ref: '${GITHUB_REF}'
             })
