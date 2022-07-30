@@ -57,6 +57,6 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: 'mcneilco',
               repo: 'acas',
-              workflow_id: 'docker-image.yml,
+              workflow_id: 'docker-image.yml',
               ref: '${{ steps.meta.outputs.tags }}'
             })
