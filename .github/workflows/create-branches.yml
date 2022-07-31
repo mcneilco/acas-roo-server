@@ -19,27 +19,28 @@ jobs:
       - name: Check if branch exists
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
-        run: |
-          response = await github.rest.issues.getRef({
-            owner: 'mcneilco',
-            repo: "${{ matrix.acas-repo }}",
-            ref: "${{ github.ref }}"
-          });
-          console.log(response);
-
+        uses: actions/github-script@v6
+        with:
+          script: |
+            response = await github.rest.actions.getRef({
+              owner: 'mcneilco',
+              repo: "${{ matrix.acas-repo }}",
+              ref: "${{ github.ref }}"
+            })
+            console.log(response);
         continue-on-error: true
       - name: Checkout ACAS
         uses: actions/checkout@v3
         with:
           repository: mcneilco/${{ matrix.acas-repo }}
           path: acas
-      - name: Create new branch in 
-        env: 
-          GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
-        run: |
-          octokit.rest.git.createRef({
-              owner: 'mcneilco',
-              repo: 'acas',
-              ref: "${{ github.ref }}",
-              sha,
-          });
+      # - name: Create new branch in 
+      #   env: 
+      #     GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
+      #   run: |
+      #     octokit.rest.git.createRef({
+      #         owner: 'mcneilco',
+      #         repo: 'acas',
+      #         ref: "${{ github.ref }}",
+      #         sha,
+      #     });
