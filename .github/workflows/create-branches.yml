@@ -22,10 +22,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            response = await github.git.getRef({
+            response = await github.rest.git.getRef({
               owner: 'mcneilco',
               repo: "${{ matrix.acas-repo }}",
-              ref: "master"
+              ref: "${{ github.ref }}"
             })
             console.log(response);
         continue-on-error: true
