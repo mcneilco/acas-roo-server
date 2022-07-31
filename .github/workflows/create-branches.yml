@@ -20,7 +20,7 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
         run: |
-          response = await octokit.rest.git.getRef({
+          response = await github.rest.issues.getRef({
             owner: 'mcneilco',
             repo: "${{ matrix.acas-repo }}",
             ref: "${{ github.ref }}"
