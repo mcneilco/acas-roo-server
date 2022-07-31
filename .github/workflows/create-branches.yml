@@ -25,7 +25,7 @@ jobs:
             response = await github.git.getRef({
               owner: 'mcneilco',
               repo: "${{ matrix.acas-repo }}",
-              ref: "${{ github.ref }}"
+              ref: "master"
             })
             console.log(response);
         continue-on-error: true
