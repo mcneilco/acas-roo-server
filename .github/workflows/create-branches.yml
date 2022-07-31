@@ -22,7 +22,7 @@ jobs:
         run: |
           response = await octokit.rest.git.getRef({
             owner: 'mcneilco',
-            repo: {{ matrix.acas-repo }},
+            repo: "${{ matrix.acas-repo }}",
             ref: "${{ github.ref }}"
           });
           console.log(response);
