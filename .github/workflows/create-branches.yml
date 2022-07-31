@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
       - name: Check if branch exists
-      - uses: actions/github-script@v6
+        uses: actions/github-script@v6
         id: get_branch_otherrepo
         with:
           route: GET /repos/cneilco/${{ matrix.acas-repo }}/${{ env.ACAS_REF }}
