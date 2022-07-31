@@ -7,11 +7,11 @@ on:
     tags: "**"
   workflow_dispatch:
 jobs:
-  acas-roo-server:
+  base-branches:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        acas-repo: [ acas, rservices, acasclient ]
+        acas-repo: [ acas, acasclient, racas ]
     steps:
       - name: Set ACAS_REF to the current branch ${{ github.ref }}
         run: |
