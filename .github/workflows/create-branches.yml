@@ -17,12 +17,16 @@ jobs:
         run: |
           echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
       - name: Check if branch exists
-        uses: actions/github-script@v6
-        id: get_branch_otherrepo
-        with:
-          route: GET /repos/cneilco/${{ matrix.acas-repo }}/${{ env.ACAS_REF }}
-        env:
+        env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
+        run: |
+          response = await octokit.rest.git.getRef({
+            owner: 'mcneilco',
+            repo: {{ matrix.acas-repo }},
+            ref: "${{ github.ref }}"
+          });
+          console.log(response);
+
         continue-on-error: true
       - name: Checkout ACAS
         uses: actions/checkout@v3
@@ -31,12 +35,11 @@ jobs:
           path: acas
       - name: Create new branch in 
         env: 
-          gITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
         run: |
-          if [[ '${{ steps.get_branch_otherrepo.outputs.status }}' = '200' ]]; then
-            OTHERREPO_BRANCH="${{ steps.extract-branch.outputs.branch }}"
-          else
-            OTHERREPO_BRANCH=master
-          fi
-          echo "Otherrepo branch for checkout: $OTHERREPO_BRANCH"
-          echo "OTHERREPO_BRANCH=$OTHERREPO_BRANCH" >> $GITHUB_ENV
+          octokit.rest.git.createRef({
+              owner: 'mcneilco',
+              repo: 'acas',
+              ref: "${{ github.ref }}",
+              sha,
+          });
