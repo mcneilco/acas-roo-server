@@ -38,6 +38,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       - name: Get closest release branch name
+        working-directory: acas-roo-server
         # if: ${{steps.branch-exists.outputs.result == false}}
         run: |
           search="release"
