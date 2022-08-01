@@ -62,9 +62,9 @@ jobs:
             | sed  "s~$match~~g")
 
           # If more than one release matches commit then sort by semver (desc) e.g. 2023.1.0, 2023.0.0, 2022.0.0 and pick 20223.1.0
-          name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
-          echo "Closest release branch: $name"
-          echo ::set-output release-branch-name=$name
+          release_name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
+          echo "Closest release branch: $release_name"
+          echo ::set-output name=release-branch-name::$release_name
       - name: Create new branch in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ steps.get-closest-release-branch.outputs.release-branch-name}}
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
