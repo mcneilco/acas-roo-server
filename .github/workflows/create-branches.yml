@@ -82,11 +82,9 @@ jobs:
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
                 ref: "heads/${{ env.ACAS_REF }}",
-                sha: releaseBranchRef.object.sha
+                sha: releaseBranchRef.data.object.sha
               })
             } catch (e) {
-                console.log("BLAH")
-                console.log(releaseBranchRef)
                 console.log(e)
             }
             return true
