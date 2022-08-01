@@ -16,6 +16,9 @@ jobs:
       - name: Set ACAS_REF to the current branch ${{ github.ref }}
         run: |
           echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
+      -
+        name: Checkout
+        uses: actions/checkout@v2
       - name: Check if branch exists
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
@@ -37,7 +40,7 @@ jobs:
       - name: Get closest release branch name
         # if: ${{steps.branch-exists.outputs.result == false}}
         run: |
-          search="${1:-release}"
+          search="release"
 
           # Get most recent commit with a release branch
           commit=$(git log --decorate \
