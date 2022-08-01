@@ -66,10 +66,9 @@ jobs:
           echo "Closest release branch: $release_name"
           echo ::set-output name=release-branch-name::$release_name
       - name: Create new branch in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ steps.get-closest-release-branch.outputs.release-branch-name}}
-        env: 
-          GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
           script: |
             try {
               releaseBranchRef = await github.rest.git.getRef({
