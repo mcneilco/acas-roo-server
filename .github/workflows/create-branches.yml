@@ -64,9 +64,9 @@ jobs:
         with:
           repository: mcneilco/${{ matrix.acas-repo }}
           path: ${{ matrix.acas-repo }}
-      - name: Create new branch in 
-        env: 
-          GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
-        working-directory: acas
-        run: |
-          git checkout -b ${{env.ACAS_REF}}
+      # - name: Create new branch in 
+      #   env: 
+      #     GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
+      #   working-directory: acas
+      #   run: |
+      #     git checkout -b ${{env.ACAS_REF}}
