@@ -52,18 +52,18 @@ jobs:
             | awk '{ print $2 }' \
             | tr -d "\n")
           echo $commit
-          # # Fetch the release by matching the search pattern, grabbing the branch names
-          # match=refs/remotes/origin/$search/
-          # release_refs_with_commit=$(git show-ref \
-          #   | grep $commit \
-          #   | grep $match \
-          #   | awk '{ print $2 }' \
-          #   | sed  "s~$match~~g")
-          # echo $release_refs_with_commit
-          # # If more than one release matches commit then sort by semver (desc) e.g. 2023.1.0, 2023.0.0, 2022.0.0 and pick 20223.1.0
-          # name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
-          # echo $name
-          echo ::set-output name=$commit
+          # Fetch the release by matching the search pattern, grabbing the branch names
+          match=refs/remotes/origin/$search/
+          release_refs_with_commit=$(git show-ref \
+            | grep $commit \
+            | grep $match \
+            | awk '{ print $2 }' \
+            | sed  "s~$match~~g")
+          echo $release_refs_with_commit
+          # If more than one release matches commit then sort by semver (desc) e.g. 2023.1.0, 2023.0.0, 2022.0.0 and pick 20223.1.0
+          name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
+          echo $name
+          # echo ::set-output name=$name
       - name: Create branch 
         uses: actions/checkout@v3
         with:
