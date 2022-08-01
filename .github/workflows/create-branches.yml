@@ -78,7 +78,7 @@ jobs:
                 ref: "/heads/${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
               })
               console.log(releaseBranchRef)
-              response = await github.rest.git.getRef({
+              response = await github.rest.git.createRef({
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
                 ref: "heads/${{ env.ACAS_REF }}",
