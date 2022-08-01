@@ -20,6 +20,7 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
         uses: actions/github-script@v6
+        id: branch-exists
         with:
           script: |
             response = await github.rest.git.getRef({
@@ -28,12 +29,13 @@ jobs:
               ref: "heads/${{ env.ACAS_REF }}"
             })
             if(response.status == 200) {
-              echo ::set-output name=branch_exists::true
+              return true
             } else {
-              echo ::set-output name=branch_exists::false
+              return false
             }
         continue-on-error: true
       - name: Get closest release branch name
+        if: ${{steps.branch-exists.outputs.result == false}}
         run: |
           # outputs: release/2022.1.x
           search=release
