@@ -61,7 +61,7 @@ jobs:
           # # If more than one release matches commit then sort by semver (desc) e.g. 2023.1.0, 2023.0.0, 2022.0.0 and pick 20223.1.0
           # name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
           # echo $name
-          # echo ::set-output name=$commit
+          echo ::set-output name=$commit
       - name: Create branch 
         uses: actions/checkout@v3
         with:
