@@ -85,7 +85,7 @@ jobs:
                 sha: releaseBranchRef.object.sha
               })
             } catch (e) {
-                console.log "BLAH"
+                console.log("BLAH")
                 console.log(releaseBranchRef)
                 console.log(e)
             }
