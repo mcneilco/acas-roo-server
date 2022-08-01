@@ -75,7 +75,7 @@ jobs:
               response = await github.rest.git.getRef({
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
-                ref: "${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
+                ref: "/heads/${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
               })
             } catch (e) {
                 console.log(e)
