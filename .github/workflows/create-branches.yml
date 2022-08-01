@@ -81,7 +81,7 @@ jobs:
               response = await github.rest.git.createRef({
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
-                ref: "heads/${{ env.ACAS_REF }}",
+                ref: "${{ github.ref }}",
                 sha: releaseBranchRef.data.object.sha
               })
             } catch (e) {
