@@ -23,16 +23,16 @@ jobs:
         id: branch-exists
         with:
           script: |
-            response = await github.rest.git.getRef({
-              owner: 'mcneilco',
-              repo: "${{ matrix.acas-repo }}",
-              ref: "heads/${{ env.ACAS_REF }}"
-            })
-            if(response.status == 200) {
-              return true
-            } else {
-              return false
+            try {
+              response = await github.rest.git.getRef({
+                owner: 'mcneilco',
+                repo: "${{ matrix.acas-repo }}",
+                ref: "heads/${{ env.ACAS_REF }}"
+              })
+            } catch (e) {
+                return false
             }
+            return true
         continue-on-error: true
       - name: Get closest release branch name
         if: ${{steps.branch-exists.outputs.result == false}}
