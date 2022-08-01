@@ -35,7 +35,7 @@ jobs:
             return true
         continue-on-error: true
       - name: Get closest release branch name
-        if: ${{steps.branch-exists.outputs.result == false}}
+        # if: ${{steps.branch-exists.outputs.result == false}}
         run: |
           # outputs: release/2022.1.x
           search=release
