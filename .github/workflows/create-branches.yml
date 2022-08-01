@@ -72,10 +72,16 @@ jobs:
         with:
           script: |
             try {
-              response = await github.rest.git.getRef({
+              releaseBranchRef = await github.rest.git.getRef({
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
                 ref: "/heads/${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
+              })
+              response = await github.rest.git.getRef({
+                owner: 'mcneilco',
+                repo: "${{ matrix.acas-repo }}",
+                ref: "heads/${{ env.ACAS_REF }}",
+                sha: releaseBranchRef.object.sha
               })
             } catch (e) {
                 console.log(e)
