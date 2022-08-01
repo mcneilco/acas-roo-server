@@ -64,16 +64,34 @@ jobs:
           # If more than one release matches commit then sort by semver (desc) e.g. 2023.1.0, 2023.0.0, 2022.0.0 and pick 20223.1.0
           name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
           echo "Closest release branch: $name"
-          # echo ::set-output release-branch-name=$name
-      - name: Create branch 
-        uses: actions/checkout@v3
+          echo ::set-output release-branch-name=$name
+      - name: Create new branch in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ steps.get-closest-release-branch.outputs.release-branch-name}}
+        env: 
+          GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
+        uses: actions/github-script@v6
         with:
-          repository: mcneilco/${{ matrix.acas-repo }}
-          path: ${{ matrix.acas-repo }}
-          ref: "${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
-      # - name: Create new branch in 
-      #   env: 
-      #     GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
-      #   working-directory: acas
-      #   run: |
-      #     git checkout -b ${{env.ACAS_REF}}
+          script: |
+            try {
+              response = await github.rest.git.getRef({
+                owner: 'mcneilco',
+                repo: "${{ matrix.acas-repo }}",
+                ref: "${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
+              })
+            } catch (e) {
+                console.log(e)
+            }
+            return true
+        continue-on-error: true
+
+      # - name: Create branch 
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: mcneilco/${{ matrix.acas-repo }}
+      #     path: ${{ matrix.acas-repo }}
+      #     ref: "${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
+      # # - name: Create new branch in 
+      # #   env: 
+      # #     GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
+      # #   working-directory: acas
+      # #   run: |
+      # #     git checkout -b ${{env.ACAS_REF}}
