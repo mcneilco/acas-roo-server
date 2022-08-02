@@ -3,9 +3,14 @@ name: Create mirrored base branches
 on:
   push:
     branches: ["**"]
+  workflow_dispatch:
+    inputs:
+      branch-name:
+        description: 'A branch to create'
+        required: false
+        type: string
   create:
     tags: "**"
-  workflow_dispatch:
 jobs:
   mirror-base-branch:
     runs-on: ubuntu-latest
@@ -13,10 +18,16 @@ jobs:
       matrix:
         acas-repo: [ acas, acasclient, racas ]
     steps:
-      - name: Set ACAS_REF to the current to ${{ github.ref }}
+      - name: Set ACAS_REF to the current to input branch or github.ref
         run: |
-          echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
-      - name: Check if branch exists in repo mcneilco/${{ matrix.acas-repo }}
+          INPUT_BRANCH_NAME=${{ github.event.inputs.branch-name }}
+          NAME=${INPUT_BRANCH_NAME:-"${{ github.ref }}"}
+          if [ -z "$${{ github.event.inputs.branch-name }}" ]; then
+            echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
+          else
+            echo "ACAS_REF=$(echo ${{ github.event.inputs.branch-name }} >> $GITHUB_ENV
+          fi          
+      - name: Check if branch already exists in repo mcneilco/${{ matrix.acas-repo }}
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
         uses: actions/github-script@v6
@@ -37,7 +48,7 @@ jobs:
       -
         name: Checkout repo mcneilco/${{ matrix.acas-repo }}
         uses: actions/checkout@v3
-        if: ${{steps.branch-exists.outputs.result == 'false' }}
+        if: ${{ steps.branch-exists.outputs.result == 'false' }}
         with:
           fetch-depth: 0
       - name: Get name of closest "release" branch from ${{ env.ACAS_REF }} in this repo (${{ github.event.repository.name }})
@@ -82,7 +93,7 @@ jobs:
               response = await github.rest.git.createRef({
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
-                ref: "${{ github.ref }}",
+                ref: "ref/heads/${{ env.ACAS_REF }}",
                 sha: releaseBranchRef.data.object.sha
               })
             } catch (e) {
