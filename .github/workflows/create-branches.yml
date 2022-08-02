@@ -6,8 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       branch-name:
-        description: 'A branch to create'
-        required: false
+        description: 'A branch to create in the dependent repos'
+        required: true
+        type: string
+      base-branch-name:
+        description: 'Base branch to branch from'
+        required: true
         type: string
   create:
     tags: "**"
@@ -16,16 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        acas-repo: [ acas, acasclient, racas ]
+        acas-repo: [ acas, acasclient, racas, acas-roo-server ]
     steps:
       - name: Set ACAS_REF to the current to input branch or github.ref
         run: |
           INPUT_BRANCH_NAME=${{ github.event.inputs.branch-name }}
+          INPUT_BASE_BRANCH_NAME=${{ github.event.inputs.base-branch-name }}
           NAME=${INPUT_BRANCH_NAME:-"${{ github.ref }}"}
           if [ -z "${{ github.event.inputs.branch-name }}" ]; then
             echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
           else
             echo "ACAS_REF=$(echo $INPUT_BRANCH_NAME)" >> $GITHUB_ENV
+            echo "BASE_BRANCH_NAME=$(echo $INPUT_BASE_BRANCH_NAME)" >> $GITHUB_ENV
           fi          
       - name: Check if branch already exists in repo mcneilco/${{ matrix.acas-repo }}
         env: 
@@ -48,11 +54,11 @@ jobs:
       -
         name: Checkout repo mcneilco/${{ matrix.acas-repo }}
         uses: actions/checkout@v3
-        if: ${{ steps.branch-exists.outputs.result == 'false' }}
+        if: ${{ steps.branch-exists.outputs.result == 'false' && github.event.inputs.base-branch-name == '' }}
         with:
           fetch-depth: 0
       - name: Get name of closest "release" branch from ${{ env.ACAS_REF }} in this repo (${{ github.event.repository.name }})
-        if: ${{steps.branch-exists.outputs.result == 'false' }}
+        if: ${{steps.branch-exists.outputs.result == 'false'  && github.event.inputs.base-branch-name == '' }}
         id: get-closest-release-branch
         run: |
           search="release"
@@ -76,8 +82,9 @@ jobs:
           # If more than one release matches commit then sort by semver (desc) e.g. 2023.1.0, 2023.0.0, 2022.0.0 and pick 20223.1.0
           release_name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
           echo "Closest release branch: $release_name"
-          echo ::set-output name=release-branch-name::$release_name
-      - name: Create new branch ${{ env.ACAS_REF }} in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ steps.get-closest-release-branch.outputs.release-branch-name}}
+          # echo ::set-output name=release-branch-name::$release_name
+          echo "BASE_BRANCH_NAME=$(echo $release_name)" >> $GITHUB_ENV
+      - name: Create new branch ${{ env.ACAS_REF }} in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ env.BASE_BRANCH_NAME }}
         if: ${{steps.branch-exists.outputs.result == 'false' }}
         uses: actions/github-script@v6
         with:
@@ -87,7 +94,7 @@ jobs:
               releaseBranchRef = await github.rest.git.getRef({
                 owner: 'mcneilco',
                 repo: "${{ matrix.acas-repo }}",
-                ref: "/heads/${{ steps.get-closest-release-branch.outputs.release-branch-name}}"
+                ref: "/heads/${{ env.BASE_BRANCH_NAME }}"
               })
               console.log(releaseBranchRef)
               response = await github.rest.git.createRef({
