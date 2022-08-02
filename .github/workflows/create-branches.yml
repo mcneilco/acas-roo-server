@@ -38,7 +38,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Get closest release branch name
-        if: ${{steps.branch-exists.outputs.result == false}}
+        if: ${{steps.branch-exists.outputs.result == 'false' }}
         id: get-closest-release-branch
         run: |
           search="release"
@@ -63,7 +63,8 @@ jobs:
           release_name=$search/$(echo "$release_refs_with_commit" | sort -t. -k 1,1nr -k 2,2nr -k 3,3nr -k 4,4nr | head -n1)
           echo "Closest release branch: $release_name"
           echo ::set-output name=release-branch-name::$release_name
-      - name: Create new branch ${{ env.ACAS_REF }}in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ steps.get-closest-release-branch.outputs.release-branch-name}}
+      - name: Create new branch ${{ env.ACAS_REF }} in repo mcneilco/${{ matrix.acas-repo }} from branch ${{ steps.get-closest-release-branch.outputs.release-branch-name}}
+        if: ${{steps.branch-exists.outputs.result == 'false' }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
