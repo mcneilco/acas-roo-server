@@ -1,6 +1,8 @@
 name: Create mirrored base branches
 
 on:
+  push:
+    branches: ["**"]
   create:
     tags: "**"
   workflow_dispatch:
@@ -11,10 +13,10 @@ jobs:
       matrix:
         acas-repo: [ acas, acasclient, racas ]
     steps:
-      - name: Set ACAS_REF to the current branch ${{ github.ref }}
+      - name: Set ACAS_REF to the current to ${{ github.ref }}
         run: |
           echo "ACAS_REF=$(echo ${{ github.ref }} | sed 's/refs\/heads\///g')" >> $GITHUB_ENV
-      - name: Check if branch exists
+      - name: Check if branch exists in repo mcneilco/${{ matrix.acas-repo }}
         env: 
           GITHUB_TOKEN: ${{ secrets.ACAS_WORKFLOWS_TOKEN }}
         uses: actions/github-script@v6
@@ -33,11 +35,11 @@ jobs:
             return true
         continue-on-error: true
       -
-        name: Checkout
+        name: Checkout repo mcneilco/${{ matrix.acas-repo }}
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Get closest release branch name
+      - name: Get name of closest "release" branch from ${{ env.ACAS_REF }} in this repo (${{ github.event.repository.name }})
         if: ${{steps.branch-exists.outputs.result == 'false' }}
         id: get-closest-release-branch
         run: |
