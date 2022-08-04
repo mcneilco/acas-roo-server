@@ -667,6 +667,24 @@ public class Parent {
         return q;
     }
 
+    public static TypedQuery<Parent> findParentsByAnySaltForms(Set<SaltForm> saltForms) {
+        if (saltForms == null)
+            throw new IllegalArgumentException("The saltForms argument is required");
+        EntityManager em = Parent.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Parent AS o WHERE");
+        for (int i = 0; i < saltForms.size(); i++) {
+            if (i > 0)
+                queryBuilder.append(" OR");
+            queryBuilder.append(" :saltForms_item").append(i).append(" MEMBER OF o.saltForms");
+        }
+        TypedQuery<Parent> q = em.createQuery(queryBuilder.toString(), Parent.class);
+        int saltFormsIndex = 0;
+        for (SaltForm _saltform : saltForms) {
+            q.setParameter("saltForms_item" + saltFormsIndex++, _saltform);
+        }
+        return q;
+    }
+
     public static TypedQuery<Parent> findParentsBySaltForms(Set<SaltForm> saltForms, String sortFieldName,
             String sortOrder) {
         if (saltForms == null)

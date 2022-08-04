@@ -17,6 +17,8 @@ import java.util.Set;
 
 import java.net.MalformedURLException;
 
+import javax.persistence.TypedQuery;
+
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
@@ -25,6 +27,7 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 
 import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.LotAliasKind;
@@ -52,6 +55,7 @@ import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +68,7 @@ public class SaltServiceImpl implements SaltService {
 	Logger logger = LoggerFactory.getLogger(SaltServiceImpl.class);
 
 	@Autowired
-	private ChemStructureService saltStructServ;
+	private ChemStructureService chemStructServ;
 
 	@Autowired
 	CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
@@ -74,6 +78,12 @@ public class SaltServiceImpl implements SaltService {
 
 	@Autowired
 	public CmpdRegSDFWriterFactory cmpdRegSDFWriterFactory;
+
+	@Autowired
+	private SaltService saltService;
+
+	@Autowired
+	private SaltStructureService saltStructureService;
 
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
@@ -130,13 +140,13 @@ public class SaltServiceImpl implements SaltService {
 		logger.debug("salt name: " + salt.getName());
 		logger.debug("salt structure: " + salt.getMolStructure());
 
-		int[] queryHits = saltStructServ.searchMolStructures(salt.getMolStructure(), StructureType.SALT,
+		int[] queryHits = chemStructServ.searchMolStructures(salt.getMolStructure(), StructureType.SALT,
 				SearchType.DUPLICATE_NO_TAUTOMER);
 		Integer cdId = 0;
 		if (queryHits.length > 0) {
 			cdId = 0;
 		} else {
-			cdId = saltStructServ.saveStructure(salt.getMolStructure(), StructureType.SALT);
+			cdId = chemStructServ.saveStructure(salt.getMolStructure(), StructureType.SALT);
 		}
 		salt.setCdId(cdId);
 
@@ -186,6 +196,144 @@ public class SaltServiceImpl implements SaltService {
 		return sdfWriter.getBufferString();
 	}
 
+	public boolean isValidSaltEdit(Salt oldSalt, Salt newSalt)
+	{
+		boolean validSalt = true;
+		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
+		if (saltsByName.size() > 1) {
+			validSalt = false;
+		}
+		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
+		if (saltsByAbbrev.size() > 1) {
+			validSalt = false;
+		}
+		return validSalt;
+	}
+
+	public ArrayList<ErrorMessage> validateSaltEdit(Salt oldSalt, Salt newSalt)
+	{
+		ArrayList<ErrorMessage> warnings = new ArrayList<ErrorMessage>();
+
+		if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
+			ErrorMessage warning = new ErrorMessage();
+			warning.setLevel("warning");
+			warning.setMessage("The abbreviation of this salt will be changed.");
+			warnings.add(warning);
+		}
+		if(!newSalt.getName().equals(oldSalt.getName())){
+			ErrorMessage warning = new ErrorMessage();
+			warning.setLevel("warning");
+			warning.setMessage("The name of this salt will be changed.");
+			warnings.add(warning);
+		}
+
+		newSalt.setAbbrev(newSalt.getAbbrev().trim());
+		newSalt.setName(newSalt.getName().trim());
+		newSalt.setFormula(saltStructureService.calculateFormula(newSalt));
+		newSalt.setMolWeight(saltStructureService.calculateWeight(newSalt));
+		newSalt.setCharge(saltStructureService.calculateCharge(newSalt));
+
+		if(newSalt.getMolWeight() != oldSalt.getMolWeight()){
+			ErrorMessage warning = new ErrorMessage();
+			warning.setLevel("warning");
+			warning.setMessage("The weight of this salt has changed.");
+			warnings.add(warning);
+		}
+
+		if(newSalt.getCharge() != oldSalt.getCharge()){
+			ErrorMessage warning = new ErrorMessage();
+			warning.setLevel("warning");
+			warning.setMessage("The charge of this salt has changed.");
+			warnings.add(warning);
+		}
+
+		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
+		if (saltsByName.size() > 1) {
+			logger.error("Number of salts found: " + saltsByName.size());
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("error");
+			error.setMessage("Duplicate salt name. Another salt exist with the same name.");
+			warnings.add(error);
+		}
+		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
+		if (saltsByAbbrev.size() > 1) {
+			logger.error("Number of salts found: " + saltsByAbbrev.size());
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("error");
+			error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
+			warnings.add(error);
+		}
+		List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
+		if (saltsByFormula.size() > 1) {
+			logger.error("Number of salts found: " + saltsByName.size());
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("warning");
+			error.setMessage("Duplicate salt formula. Another salt exist with the same formula.");
+			warnings.add(error);
+		}
+			
+		PurgeSaltDependencyCheckResponseDTO dependencyReport  = saltService.checkDependentData(oldSalt);
+		boolean hasDependencies = ! dependencyReport.isCanPurge();
+		if(hasDependencies){
+			ErrorMessage warning = new ErrorMessage();
+			warning.setLevel("warning");
+			warning.setMessage("This salt has experiment/lot dependencies. An attempt will be made to restandardize.");
+			warnings.add(warning);
+			// Need to Iterate Through Dependency Report and Individually Add As Warnings
+		}
+
+		return warnings;
+	}
+
+	public ArrayList<Long> getAllParentIDs(Salt salt)
+	{
+		Set<Salt> saltSet = new HashSet<Salt>();
+		saltSet.add(salt);
+
+		ArrayList<Long> parentIDs = new ArrayList<Long>();
+		Collection<Parent> parents = new HashSet<Parent>();
+
+		try
+		{
+			// Get All IsoSalts From Salt
+			if(IsoSalt.countIsoSalts() > 0){
+				TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalts(saltSet);
+				Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
+				Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
+				
+				if(SaltForm.countSaltForms() > 0)
+				{
+					// Get All SaltFormsFrom IsoSalts 
+					TypedQuery<SaltForm> saltFormQuery = SaltForm.findSaltFormsByAnyIsoSalts(isoSaltsSet);
+					Collection<SaltForm> saltForms = saltFormQuery.getResultList();
+					Set<SaltForm> saltFormsSet = new HashSet<SaltForm>(saltForms);
+
+					if(Parent.countParents() > 0)
+					{
+						// findParentsBySaltForms(Set<SaltForm> saltForms)
+						TypedQuery<Parent> parentQuery = Parent.findParentsByAnySaltForms(saltFormsSet);
+						parents = parentQuery.getResultList();
+					}
+				}
+				
+			}
+			// Returns a List of All Parents 
+
+			for (Parent parent : parents)
+			{
+				parentIDs.add(parent.getId());
+			}
+	
+			return parentIDs;
+		}
+		catch (NullPointerException e)
+		{
+			// Query Result Empty
+			e.printStackTrace();
+			return new ArrayList<Long>();
+		}
+	}
+
 	// Helper Method Used to Check Dependencies Within ACAS
 	private Map<String, HashSet<String>> checkACASDependencies(
 		Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
@@ -227,38 +375,43 @@ public class SaltServiceImpl implements SaltService {
 		Map<String, HashSet<String>> acasDependencies = new HashMap<String, HashSet<String>>();
 		Map<String, HashSet<String>> cmpdRegDependencies = new HashMap<String, HashSet<String>>();
 		HashSet<String> dependentSingleRegLots = new HashSet<String>();
-		int numberOfParents = 0;
-		int numberOfSaltForms = 0;
-		int numberOfLots = 0;
-		Collection<Parent> parents = Parent.findParentsByCdId(salt.getCdId()).getResultList();
-		numberOfParents = parents.size();
+		ArrayList<Long> parentIDs = saltService.getAllParentIDs(salt);
+		Collection<Parent> parents = new HashSet<Parent>();
+		for (Long parentID : parentIDs)
+		{
+			parents.add(Parent.findParent(parentID));
+		}
+		int numberOfParents = parents.size();
 		for (Parent parent : parents) {
 			acasDependencies.put(parent.getCorpName(), new HashSet<String>());
 			if (parent.getSaltForms() != null) {
 				for (SaltForm saltForm : parent.getSaltForms()) {
-					acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
-					if (saltForm.getCdId() != salt.getCdId()) {
-						if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
-							cmpdRegDependencies.get(parent.getCorpName()).add(String.valueOf(saltForm.getCdId()));
-						} else {
-							HashSet<String> dependentSalts = new HashSet<String>();
-							dependentSalts.add(String.valueOf(saltForm.getCdId()));
-							cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
+					for (IsoSalt isoSalt : saltForm.getIsoSalts())
+					{
+						acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
+						if (isoSalt.getSalt().getId() != salt.getId()) {
+							if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
+								cmpdRegDependencies.get(parent.getCorpName()).add(String.valueOf(saltForm.getCdId()));
+							} else {
+								HashSet<String> dependentSalts = new HashSet<String>();
+								dependentSalts.add(String.valueOf(saltForm.getCdId()));
+								cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
+							}
 						}
-					}
-					if (saltForm.getLots() != null) {
-						for (Lot lot : saltForm.getLots()) {
-							acasDependencies.put(lot.getCorpName(), new HashSet<String>());
-							if (lot.getSaltForm() == null) {
-								dependentSingleRegLots.add(lot.getCorpName());
-							} else if (lot.getSaltForm().getCdId() != salt.getCdId()) {
-								if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
-									cmpdRegDependencies.get(parent.getCorpName())
-											.add(String.valueOf(lot.getSaltForm().getCdId()));
-								} else {
-									HashSet<String> dependentSalts = new HashSet<String>();
-									dependentSalts.add(String.valueOf(lot.getSaltForm().getCdId()));
-									cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
+						if (saltForm.getLots() != null) {
+							for (Lot lot : saltForm.getLots()) {
+								acasDependencies.put(lot.getCorpName(), new HashSet<String>());
+								if (lot.getSaltForm() == null) {
+									dependentSingleRegLots.add(lot.getCorpName());
+								} else if (isoSalt.getSalt().getId() != salt.getId()) {
+									if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
+										cmpdRegDependencies.get(parent.getCorpName())
+												.add(String.valueOf(lot.getSaltForm().getCdId()));
+									} else {
+										HashSet<String> dependentSalts = new HashSet<String>();
+										dependentSalts.add(String.valueOf(lot.getSaltForm().getCdId()));
+										cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
+									}
 								}
 							}
 						}
@@ -267,29 +420,6 @@ public class SaltServiceImpl implements SaltService {
 			}
 		}
 		parents.clear();
-
-		Collection<SaltForm> saltForms = SaltForm.findSaltFormsByCdId(salt.getCdId()).getResultList();
-		numberOfSaltForms = saltForms.size();
-		for (SaltForm saltForm : saltForms) {
-			acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
-			if (saltForm.getLots() != null) {
-				for (Lot lot : saltForm.getLots()) {
-					acasDependencies.put(lot.getCorpName(), new HashSet<String>());
-					if (lot.getSaltForm() == null) {
-						dependentSingleRegLots.add(lot.getCorpName());
-					} else if (lot.getSaltForm().getCdId() != salt.getCdId()) {
-						if (cmpdRegDependencies.containsKey(saltForm.getCorpName())) {
-							cmpdRegDependencies.get(saltForm.getCorpName()).add(String.valueOf(lot.getSaltForm().getCdId()));
-						} else {
-							HashSet<String> dependentSalts = new HashSet<String>();
-							dependentSalts.add(String.valueOf(lot.getSaltForm().getCdId()));
-							cmpdRegDependencies.put(saltForm.getCorpName(), dependentSalts);
-						}
-					}
-				}
-			}
-		}
-		saltForms.clear();
 
 		// Check Number of Dependent Containers 
 		Integer numberOfDependentContainers = 0;

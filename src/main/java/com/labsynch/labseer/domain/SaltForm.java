@@ -875,6 +875,24 @@ public class SaltForm implements Comparable {
 		return ((Long) q.getSingleResult());
 	}
 
+	public static TypedQuery<SaltForm> findSaltFormsByAnyIsoSalts(Set<IsoSalt> isoSalts) {
+        if (isoSalts == null)
+            throw new IllegalArgumentException("The isoSalts argument is required");
+        EntityManager em = SaltForm.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SaltForm AS o WHERE");
+        for (int i = 0; i < isoSalts.size(); i++) {
+            if (i > 0)
+                queryBuilder.append(" OR");
+            queryBuilder.append(" :isoSalts_item").append(i).append(" MEMBER OF o.isoSalts");
+        }
+        TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
+        int isoSaltsIndex  = 0;
+        for (IsoSalt _isoSalt : isoSalts) {
+            q.setParameter("isoSalts_item" + isoSaltsIndex++, _isoSalt);
+        }
+        return q;
+    }
+
 	public static TypedQuery<SaltForm> findSaltFormsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile) {
 		if (bulkLoadFile == null)
 			throw new IllegalArgumentException("The bulkLoadFile argument is required");
@@ -990,6 +1008,16 @@ public class SaltForm implements Comparable {
 		}
 		TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
 		q.setParameter("corpName", corpName);
+		return q;
+	}
+
+	public static TypedQuery<SaltForm> findSaltFormsBySalt(Salt salt) {
+		if (salt == null)
+			throw new IllegalArgumentException("The salt argument is required");
+		EntityManager em = SaltForm.entityManager();
+		// I Don't Believe This SQL Query is Correct As of Now 
+		TypedQuery<SaltForm> q = em.createQuery("SELECT o FROM SaltForm AS o WHERE o.salt = :salt", SaltForm.class);
+		q.setParameter("salt", salt);
 		return q;
 	}
 
