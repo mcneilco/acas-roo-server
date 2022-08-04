@@ -3,6 +3,7 @@ package com.labsynch.labseer.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -267,6 +268,24 @@ public class IsoSalt {
         q.setParameter("saltForm", saltForm);
         q.setParameter("type", type);
         return ((Long) q.getSingleResult());
+    }
+
+    public static TypedQuery<IsoSalt> findIsoSaltsBySalts(Set<Salt> salts) {
+        if (salts == null || salts.size() < 1)
+            throw new IllegalArgumentException("The salts argument is required");
+        EntityManager em = IsoSalt.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM IsoSalt AS o WHERE");
+        for (int i = 0; i < salts.size(); i++) {
+            if (i > 0)
+                queryBuilder.append(" OR");
+            queryBuilder.append(" :salt_item").append(i).append(" MEMBER OF o.salt");
+        }
+        TypedQuery<IsoSalt> q = em.createQuery(queryBuilder.toString(), IsoSalt.class);
+        int saltsIndex = 0;
+        for (Salt _salt : salts) { 
+            q.setParameter("salt_item" + saltsIndex++, _salt);
+        }
+        return q;
     }
 
     public static TypedQuery<IsoSalt> findIsoSaltsBySaltForm(SaltForm saltForm) {

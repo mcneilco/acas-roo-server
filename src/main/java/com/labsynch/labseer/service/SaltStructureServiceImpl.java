@@ -87,7 +87,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 				return null;
 			}
 		}
-		catch (Exception e)
+		catch (CmpdRegMolFormatException e)
         {
 			e.printStackTrace();
 			return null;
@@ -96,27 +96,19 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 	}
 
     public Salt edit(Salt oldSalt, Salt newSalt){
-        try
-        {
-            oldSalt.setAbbrev(newSalt.getAbbrev());
-            oldSalt.setName(newSalt.getName());
+		oldSalt.setAbbrev(newSalt.getAbbrev());
+		oldSalt.setName(newSalt.getName());
 
-            oldSalt.setOriginalStructure(newSalt.getMolStructure());
-        	oldSalt.setMolStructure(newSalt.getMolStructure());
-            oldSalt.setFormula(calculateFormula(newSalt));
-            oldSalt.setMolWeight(calculateWeight(newSalt));
-            oldSalt.setCharge(calculateCharge(newSalt));
-			
-			chemStructureService.updateStructure(oldSalt.getMolStructure(), StructureType.SALT, oldSalt.getCdId());
+		oldSalt.setOriginalStructure(newSalt.getMolStructure());
+		oldSalt.setMolStructure(newSalt.getMolStructure());
+		oldSalt.setFormula(calculateFormula(newSalt));
+		oldSalt.setMolWeight(calculateWeight(newSalt));
+		oldSalt.setCharge(calculateCharge(newSalt));
+		
+		chemStructureService.updateStructure(oldSalt.getMolStructure(), StructureType.SALT, oldSalt.getCdId());
 
-            oldSalt.merge();
-			return oldSalt;
-        }
-        catch (Exception e)
-        {
-			e.printStackTrace();
-			return null;
-        }
+		oldSalt.merge();
+		return oldSalt;
     }
 
 	public double calculateWeight(Salt salt) {
@@ -124,10 +116,10 @@ public class SaltStructureServiceImpl implements SaltStructureService {
         try
         {
             CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
-		    weight = mol.getExactMass();
+		    weight = mol.getMass();
             return weight;
         }
-        catch (Exception e)
+        catch (CmpdRegMolFormatException e)
         {
             e.printStackTrace();
             return weight;
@@ -142,7 +134,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		    formula = mol.getFormula();
             return formula;
         }
-        catch (Exception e)
+        catch (CmpdRegMolFormatException e)
         {
             e.printStackTrace();
             return formula;
@@ -157,7 +149,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		    charge = mol.getTotalCharge();
             return charge;
         }
-        catch (Exception e)
+        catch (CmpdRegMolFormatException e)
         {
             e.printStackTrace();
             return charge;
@@ -171,6 +163,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		List<Salt> allSalts = Salt.findAllSalts();
 		List<Salt> missingSaltsStructures = new ArrayList<Salt>();
 		for (Salt salt : allSalts) {
+			
 			Boolean checkForDupes = true;
 			Integer cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT,
 					checkForDupes);

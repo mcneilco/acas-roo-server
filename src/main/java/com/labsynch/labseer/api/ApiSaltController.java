@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.PurgeSaltDependencyCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.StructureSaveException;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.SaltService;
@@ -97,7 +96,7 @@ public class ApiSaltController {
 
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json) {
+	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json, @RequestParam(value = "dryrun", required = true) boolean dryrun) {
 		Salt oldSalt = Salt.findSalt(id);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text; charset=utf-8");
@@ -112,98 +111,21 @@ public class ApiSaltController {
 		else
 		{
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
+				Salt newSalt = Salt.fromJsonToSalt(json);
 
-				JsonNode rootNode = objectMapper.readTree(json);
-				JsonNode dryRunNode = rootNode.path("dryrun");
-				boolean dryrun = dryRunNode.asBoolean();
+				ArrayList<ErrorMessage> warnings = saltService.validateSaltEdit(oldSalt, newSalt);
+				boolean validSalt = saltService.isValidSaltEdit(oldSalt, newSalt);
 
-				rootNode = objectMapper.readTree(json);
-				JsonNode saltNode = rootNode.path("saltJSON");
-				Salt newSalt = Salt.fromJsonToSalt(saltNode.toString());
-
-				ArrayList<ErrorMessage> warnings = new ArrayList<ErrorMessage>();
-
-				if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
-					ErrorMessage warning = new ErrorMessage();
-					warning.setLevel("warning");
-					warning.setMessage("The abbreviation of this salt will be changed.");
-					warnings.add(warning);
-				}
-				if(!newSalt.getName().equals(oldSalt.getName())){
-					ErrorMessage warning = new ErrorMessage();
-					warning.setLevel("warning");
-					warning.setMessage("The name of this salt will be changed.");
-					warnings.add(warning);
-				}
-
-				newSalt.setAbbrev(newSalt.getAbbrev().trim());
-				newSalt.setName(newSalt.getName().trim());
-				newSalt.setFormula(saltStructureService.calculateFormula(newSalt));
-
-				// This doesn't always work; Might need to convert to mol and then compare
-				if(!newSalt.getMolStructure().equals(oldSalt.getMolStructure())){
-					ErrorMessage warning = new ErrorMessage();
-					warning.setLevel("warning");
-					warning.setMessage("The structure of this salt might be changed. The weight and charge might be affected.");
-					warnings.add(warning);
-				}
-
-				boolean validSalt = true;
-				List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
-				if (saltsByName.size() > 1) {
-					logger.error("Number of salts found: " + saltsByName.size());
-					validSalt = false;
-					ErrorMessage error = new ErrorMessage();
-					error.setLevel("error");
-					error.setMessage("Duplicate salt name. Another salt exist with the same name.");
-					warnings.add(error);
-				}
-				List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
-				if (saltsByAbbrev.size() > 1) {
-					logger.error("Number of salts found: " + saltsByAbbrev.size());
-					validSalt = false;
-					ErrorMessage error = new ErrorMessage();
-					error.setLevel("error");
-					error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
-					warnings.add(error);
-				}
-				List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
-				if (saltsByFormula.size() > 1) {
-					logger.error("Number of salts found: " + saltsByName.size());
-					validSalt = false;
-					ErrorMessage error = new ErrorMessage();
-					error.setLevel("error");
-					error.setMessage("Duplicate salt formula. Another salt exist with the same formula.");
-					warnings.add(error);
-				}
-				try { 
-					PurgeSaltDependencyCheckResponseDTO dependencyReport  = saltService.checkDependentData(oldSalt);
-					boolean hasDependencies = ! dependencyReport.isCanPurge();
-					if(hasDependencies){
-						ErrorMessage warning = new ErrorMessage();
-						warning.setLevel("warning");
-						warning.setMessage("This salt has experiment/lot dependencies. An attempt will be made to restandardize.");
-						warnings.add(warning);
-						// Need to Iterate Through Dependency Report and Individually Add As Warnings
-					}
-				}
-				catch (Exception e)
-				{
-					return new ResponseEntity<String>("ERROR: Depedency Check Issue:" + e.getMessage(), headers,
-						HttpStatus.INTERNAL_SERVER_ERROR);
-				}
 				if (validSalt && !dryrun) {
 					try {
 						oldSalt = saltStructureService.edit(oldSalt, newSalt);
 						try
 							{
-								// Attempt to Restandardize 
-								List<Long> saltID= new ArrayList<Long>();
-								saltID.add(oldSalt.getId());
-								standardizationService.restandardizeLots(saltID);
-
-
+								ArrayList<Long> parentIDs = saltService.getAllParentIDs(oldSalt);
+								if (parentIDs.size() > 0)
+								{
+									standardizationService.recalculateLotMolWeights(parentIDs); 
+								}
 								// Return Response of Any Warnings / Errors from Validations / Dependencies Done Prior 
 								return new ResponseEntity<String>(ErrorMessage.toJsonArray(warnings), headers, HttpStatus.OK);
 							}
@@ -228,7 +150,7 @@ public class ApiSaltController {
 				else if (!validSalt)
 				{
 					return new ResponseEntity<String>(ErrorMessage.toJsonArray(warnings), headers,
-					HttpStatus.EXPECTATION_FAILED);
+					HttpStatus.BAD_REQUEST);
 				}
 				else // Valid Salt Dryrun Case
 				{
@@ -265,11 +187,11 @@ public class ApiSaltController {
 			boolean lotDependency = false; 
 			PurgeSaltDependencyCheckResponseDTO dependencyReport  = saltService.checkDependentData(salt);
 			lotDependency = ! dependencyReport.isCanPurge();
-			// Need to Get Dependency Bool From Report JSON String
+			// isCanPurge() returns True/False of if Salt Can Be Deleted Due to Being a Dependency of a Lot 
 
 			// Query to See If Lot Depends on This Salt ID 
 			if(lotDependency){
-				return new ResponseEntity<String>(dependencyReport.getSummary(), headers, HttpStatus.EXPECTATION_FAILED);
+				return new ResponseEntity<String>(dependencyReport.getSummary(), headers, HttpStatus.BAD_REQUEST);
 			}
 			else
 			{
@@ -308,7 +230,7 @@ public class ApiSaltController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> createFromJson(@RequestBody String json) throws CmpdRegMolFormatException {
+	public ResponseEntity<String> createFromJson(@RequestBody String json, @RequestParam(value = "dryrun", required = true) boolean dryrun) throws CmpdRegMolFormatException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text");
 		headers.add("Access-Control-Allow-Origin", "*");
@@ -318,18 +240,9 @@ public class ApiSaltController {
 		headers.setExpires(0); // Expire the cache
 
 		Salt salt = null; 
-		boolean dryrun = true; 
 		try
 		{
-			ObjectMapper objectMapper = new ObjectMapper();
-
-			JsonNode rootNode = objectMapper.readTree(json);
-			JsonNode dryRunNode = rootNode.path("dryrun");
-			dryrun = dryRunNode.asBoolean();
-
-			rootNode = objectMapper.readTree(json);
-			JsonNode saltNode = rootNode.path("saltJSON");
-			salt = Salt.fromJsonToSalt(saltNode.toString());
+			salt = Salt.fromJsonToSalt(json);
 
 		}
 		catch (Exception e)
@@ -422,19 +335,10 @@ public class ApiSaltController {
 			if (updatedSalt == null) {
 				return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
 			} else {
-				try
-				{
-					String saltMol = updatedSalt.toJson();
-					standardizationService.standardizeSingleMol(saltMol); 
-					return new ResponseEntity<String>(saltMol, headers, HttpStatus.OK);
-				}
-				catch (Exception e)
-				{
-					return new ResponseEntity<String>("ERROR: Restandardization Issue:" + e.getMessage(), headers,
-					HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+				String saltMol = updatedSalt.toJson(); 
+				return new ResponseEntity<String>(saltMol, headers, HttpStatus.OK);
 			}
-		} catch (Exception e) {
+		} catch (CmpdRegMolFormatException e) {
 			return new ResponseEntity<String>("ERROR: Bad molfile:" + e.getMessage(), headers,
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
