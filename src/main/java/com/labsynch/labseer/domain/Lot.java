@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -505,7 +506,12 @@ public class Lot {
         q.setParameter("ignore", false);
 
         // Get string result from typed query
-        String lotAsDrawnStrucucture = q.getSingleResult();
+        String lotAsDrawnStrucucture = null;
+        try {
+            lotAsDrawnStrucucture = q.getSingleResult();
+        } catch (NoResultException e) {
+            logger.error("No original structure found for parent corp name " + parent.getCorpName() + " / parent id " + parent.getId());
+        }
         if (lotAsDrawnStrucucture == null) {
             return parentStructure;
         } else {
