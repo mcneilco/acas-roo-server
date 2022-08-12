@@ -3855,6 +3855,8 @@ public class ContainerServiceImpl implements ContainerService {
 			newValue.setCodeType(value.getCodeType());
 			newValue.setCodeKind(value.getCodeKind());
 			newValue.setCodeOrigin(value.getCodeOrigin());
+			newValue.setConcUnit(value.getConcUnit());
+			newValue.setConcentration(value.getConcentration());
 			newValue.setLsState(value.getLsState());
 			newValue.setLsTransaction(transactionId);
 			newValue.persist();
