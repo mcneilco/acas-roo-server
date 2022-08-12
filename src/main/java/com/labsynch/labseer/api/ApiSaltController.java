@@ -318,8 +318,8 @@ public class ApiSaltController {
 			return new ResponseEntity<String>(saltStr, headers, HttpStatus.OK);
 		} else {
 			ErrorMessage error = new ErrorMessage();
-			error.setLevel("warning");
-			error.setMessage("Duplicate salt found. Please select existing salt.");
+			error.setLevel("error");
+			error.setMessage("Duplicate salt found in system.");
 			errors.add(error);
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
 		}
