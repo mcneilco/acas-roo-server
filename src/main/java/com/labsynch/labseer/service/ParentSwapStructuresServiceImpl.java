@@ -24,6 +24,9 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
     public ParentService parentService;
 
 	@Autowired
+	public ParentStructureService parentStructureService;
+
+	@Autowired
 	public ChemStructureService chemStructureService;
 
     @Override
@@ -80,13 +83,13 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 		dupeParents2.remove(corpName1);
 		dupeParents2.remove(corpName2);
 		if (dupeParents1.isEmpty() && dupeParents2.isEmpty()) {
+			// Swap the structures
 			String mol = parent1.getMolStructure();
 			parent1.setMolStructure(parent2.getMolStructure());
-			parent1.setModifiedDate(new Date());
-			parent1.setModifiedBy(parentSwapStructuresDTO.getUsername());
 			parent2.setMolStructure(mol);
-			parent2.setModifiedDate(new Date());
-			parent2.setModifiedBy(parentSwapStructuresDTO.getUsername());
+			// Follow through with updates to formula, mol weight, lot mol weights, and structure tables
+			parent1 = parentStructureService.update(parent1);
+			parent2 = parentStructureService.update(parent2);
 			logger.info(String.format("Swapping corpName1=%s & corpName2=%s swap successful.", corpName1, corpName2));
 			return "";
 		} else {
