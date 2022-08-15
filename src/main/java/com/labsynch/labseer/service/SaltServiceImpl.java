@@ -272,15 +272,30 @@ public class SaltServiceImpl implements SaltService {
 			warnings.add(error);
 		}
 			
-		PurgeSaltDependencyCheckResponseDTO dependencyReport  = saltService.checkDependentData(oldSalt);
-		boolean hasDependencies = ! dependencyReport.isCanPurge();
-		if(hasDependencies){
-			ErrorMessage warning = new ErrorMessage();
-			warning.setLevel("warning");
-			warning.setMessage("This salt has experiment/lot dependencies. An attempt will be made to restandardize.");
-			warnings.add(warning);
-			// Need to Iterate Through Dependency Report and Individually Add As Warnings
+		// Get IsoSalts From Salt 
+		TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(oldSalt);
+		Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
+		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
+
+		// Getter of IsoSalt to SaltForm 
+
+		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
+		for (IsoSalt isoSalt : isoSaltsSet)
+		{
+			SaltForm tempSaltForm = isoSalt.getSaltForm();
+			saltFormSet.add(tempSaltForm);
 		}
+
+		// Getter of Lots from IsoSalt 
+
+		Set<Lot> lotSet = new HashSet<Lot>(); 
+		for (SaltForm saltForm : saltFormSet)
+		{
+			Set<Lot> tempLotSet = saltForm.getLots();
+			lotSet.addAll(tempLotSet);
+		}
+
+		int dependencyLotSize = lotSet.size();
 
 		return warnings;
 	}
@@ -297,7 +312,7 @@ public class SaltServiceImpl implements SaltService {
 		{
 			// Get All IsoSalts From Salt
 			if(IsoSalt.countIsoSalts() > 0){
-				TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalts(saltSet);
+				TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(salt);
 				Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
 				Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
 				
@@ -359,6 +374,8 @@ public class SaltServiceImpl implements SaltService {
 		}
 
 	// Helper Method to Check Dependent Containers; Utilized in Method Below It
+
+	// batchCodes == Lot Corp Name
 	private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes)
 		throws MalformedURLException, IOException {
 			String url = propertiesUtilService.getAcasURL() + "containers/getContainerDTOsByBatchCodes";
@@ -372,112 +389,37 @@ public class SaltServiceImpl implements SaltService {
 	// Method to Check for Dependent Data 
 	public PurgeSaltDependencyCheckResponseDTO checkDependentData(Salt salt)
 	{
-		Map<String, HashSet<String>> acasDependencies = new HashMap<String, HashSet<String>>();
-		Map<String, HashSet<String>> cmpdRegDependencies = new HashMap<String, HashSet<String>>();
-		HashSet<String> dependentSingleRegLots = new HashSet<String>();
-		ArrayList<Long> parentIDs = saltService.getAllParentIDs(salt);
-		Collection<Parent> parents = new HashSet<Parent>();
-		for (Long parentID : parentIDs)
+		// Get IsoSalts From Salt 
+		TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(salt);
+		Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
+		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
+
+		// Getter of IsoSalt to SaltForm 
+
+		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
+		for (IsoSalt isoSalt : isoSaltsSet)
 		{
-			parents.add(Parent.findParent(parentID));
-		}
-		int numberOfParents = parents.size();
-		for (Parent parent : parents) {
-			acasDependencies.put(parent.getCorpName(), new HashSet<String>());
-			if (parent.getSaltForms() != null) {
-				for (SaltForm saltForm : parent.getSaltForms()) {
-					for (IsoSalt isoSalt : saltForm.getIsoSalts())
-					{
-						acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
-						if (isoSalt.getSalt().getId() != salt.getId()) {
-							if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
-								cmpdRegDependencies.get(parent.getCorpName()).add(String.valueOf(saltForm.getCdId()));
-							} else {
-								HashSet<String> dependentSalts = new HashSet<String>();
-								dependentSalts.add(String.valueOf(saltForm.getCdId()));
-								cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
-							}
-						}
-						if (saltForm.getLots() != null) {
-							for (Lot lot : saltForm.getLots()) {
-								acasDependencies.put(lot.getCorpName(), new HashSet<String>());
-								if (lot.getSaltForm() == null) {
-									dependentSingleRegLots.add(lot.getCorpName());
-								} else if (isoSalt.getSalt().getId() != salt.getId()) {
-									if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
-										cmpdRegDependencies.get(parent.getCorpName())
-												.add(String.valueOf(lot.getSaltForm().getCdId()));
-									} else {
-										HashSet<String> dependentSalts = new HashSet<String>();
-										dependentSalts.add(String.valueOf(lot.getSaltForm().getCdId()));
-										cmpdRegDependencies.put(parent.getCorpName(), dependentSalts);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		parents.clear();
-
-		// Check Number of Dependent Containers 
-		Integer numberOfDependentContainers = 0;
-		Collection<ContainerBatchCodeDTO> dependentContainers = null;
-		if (!acasDependencies.isEmpty()) {
-			try {
-				dependentContainers = checkDependentACASContainers(acasDependencies.keySet());
-				numberOfDependentContainers = dependentContainers.size();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		// Check for Dependencies in ACAS 
-		if (!acasDependencies.isEmpty()) {
-			if (propertiesUtilService.getCheckACASDependenciesByContainerCode()) {
-				try {
-					Map<String, HashSet<String>> acasContainerDependencies = new HashMap<String, HashSet<String>>();
-					for (ContainerBatchCodeDTO container : dependentContainers) {
-						acasContainerDependencies.put(container.getContainerCodeName(), new HashSet<String>());
-					}
-					acasContainerDependencies = checkACASDependencies(acasContainerDependencies);
-					for (ContainerBatchCodeDTO containerBatchDTO : dependentContainers) {
-						HashSet<String> currentDependencies = acasDependencies.get(containerBatchDTO.getBatchCode());
-						currentDependencies
-								.addAll(acasContainerDependencies.get(containerBatchDTO.getContainerCodeName()));
-						acasDependencies.put(containerBatchDTO.getBatchCode(), currentDependencies);
-					}
-				} catch (Exception e) {
-				}
-			} else {
-				try {
-					acasDependencies = checkACASDependencies(acasDependencies);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+			SaltForm tempSaltForm = isoSalt.getSaltForm();
+			saltFormSet.add(tempSaltForm);
 		}
 
-		HashSet<String> dependentFiles = new HashSet<String>();
-		for (HashSet<String> dependentSet : cmpdRegDependencies.values()) {
-			for (String dependent : dependentSet) {
-				dependentFiles.add(dependent);
-			}
-		}
-		HashSet<String> dependentExperiments = new HashSet<String>();
-		for (HashSet<String> dependentSet : acasDependencies.values()) {
-			for (String dependent : dependentSet) {
-				dependentExperiments.add(dependent);
-			}
+		// Getter of Lots from IsoSalt 
+
+		Set<Lot> lotSet = new HashSet<Lot>(); 
+		for (SaltForm saltForm : saltFormSet)
+		{
+			Set<Lot> tempLotSet = saltForm.getLots();
+			lotSet.addAll(tempLotSet);
 		}
 
-		if (!dependentFiles.isEmpty() || !dependentExperiments.isEmpty() || !dependentSingleRegLots.isEmpty()) {
-			String summary = "This salt is referenced by " + String.valueOf(dependentExperiments.size()) + " experiments and " + String.valueOf(dependentSingleRegLots.size()) + " lots. ";
+		int dependencyLotSize = lotSet.size();
+
+		if (dependencyLotSize  > 0) {
+			String summary = "This salt is referenced by " + String.valueOf(dependencyLotSize) + " lots. It cannot be deleted.";
 			return new PurgeSaltDependencyCheckResponseDTO(summary, false);
 		} else {
 			String summary = "There were no lot dependencies found for this salt.";
 			return new PurgeSaltDependencyCheckResponseDTO(summary, true);
 		}
-
 	}
 }

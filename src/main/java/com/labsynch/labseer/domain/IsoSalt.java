@@ -270,21 +270,13 @@ public class IsoSalt {
         return ((Long) q.getSingleResult());
     }
 
-    public static TypedQuery<IsoSalt> findIsoSaltsBySalts(Set<Salt> salts) {
-        if (salts == null || salts.size() < 1)
-            throw new IllegalArgumentException("The salts argument is required");
+    public static TypedQuery<IsoSalt> findIsoSaltsBySalt(Salt salt) {
+        if (salt == null)
+            throw new IllegalArgumentException("The salt argument is required");
         EntityManager em = IsoSalt.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM IsoSalt AS o WHERE");
-        for (int i = 0; i < salts.size(); i++) {
-            if (i > 0)
-                queryBuilder.append(" OR");
-            queryBuilder.append(" :salt_item").append(i).append(" MEMBER OF o.salt");
-        }
-        TypedQuery<IsoSalt> q = em.createQuery(queryBuilder.toString(), IsoSalt.class);
-        int saltsIndex = 0;
-        for (Salt _salt : salts) { 
-            q.setParameter("salt_item" + saltsIndex++, _salt);
-        }
+        TypedQuery<IsoSalt> q = em.createQuery("SELECT o FROM IsoSalt AS o WHERE o.salt = :salt",
+        IsoSalt.class);
+        q.setParameter("salt", salt);
         return q;
     }
 
