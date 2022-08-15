@@ -121,11 +121,7 @@ public class ApiSaltController {
 						oldSalt = saltStructureService.edit(oldSalt, newSalt);
 						try
 							{
-								ArrayList<Long> parentIDs = saltService.getAllParentIDs(oldSalt);
-								if (parentIDs.size() > 0)
-								{
-									standardizationService.recalculateLotMolWeights(parentIDs); 
-								}
+								saltService.updateDependencies(oldSalt);
 								// Return Response of Any Warnings / Errors from Validations / Dependencies Done Prior 
 								return new ResponseEntity<String>(ErrorMessage.toJsonArray(warnings), headers, HttpStatus.OK);
 							}

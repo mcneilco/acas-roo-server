@@ -18,5 +18,7 @@ public interface SaltService {
 
 	boolean isValidSaltEdit(Salt oldSalt, Salt newSalt);
 
+	public void updateDependencies(Salt salt);
+
 	ArrayList<ErrorMessage> validateSaltEdit(Salt oldSalt, Salt newSalt);
 }

@@ -47,6 +47,9 @@ import com.labsynch.labseer.dto.PurgeSaltDependencyCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.service.AssayService;
+import com.labsynch.labseer.service.ContainerService;
+import com.labsynch.labseer.service.LotService;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 
 import com.labsynch.labseer.domain.Salt;
@@ -78,6 +81,15 @@ public class SaltServiceImpl implements SaltService {
 
 	@Autowired
 	public CmpdRegSDFWriterFactory cmpdRegSDFWriterFactory;
+
+	@Autowired
+	private AssayService assayService;
+
+	@Autowired
+	private ContainerService containerService;
+
+	@Autowired 
+	private LotService lotService;
 
 	@Autowired
 	private SaltService saltService;
@@ -219,6 +231,7 @@ public class SaltServiceImpl implements SaltService {
 			warning.setLevel("warning");
 			warning.setMessage("The abbreviation of this salt will be changed.");
 			warnings.add(warning);
+
 		}
 		if(!newSalt.getName().equals(oldSalt.getName())){
 			ErrorMessage warning = new ErrorMessage();
@@ -277,9 +290,9 @@ public class SaltServiceImpl implements SaltService {
 		Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
 		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
 
+		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
 		// Getter of IsoSalt to SaltForm 
 
-		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
 		for (IsoSalt isoSalt : isoSaltsSet)
 		{
 			SaltForm tempSaltForm = isoSalt.getSaltForm();
@@ -296,9 +309,13 @@ public class SaltServiceImpl implements SaltService {
 		}
 
 		int dependencyLotSize = lotSet.size();
-
-		// Add Dependency Lot Size to Warning Messages If > 0 
-
+		if (dependencyLotSize > 0)
+		{
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("warning");
+			error.setMessage("This salt is referenced by " + String.valueOf(dependencyLotSize) + " lots");
+			warnings.add(error);
+		}
 
 		// Check for linked containers
 		Set<String> batchCodeSet = new HashSet<String>();
@@ -308,9 +325,69 @@ public class SaltServiceImpl implements SaltService {
 		}
 		CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
 
-		// Parse Batch DTO for Warnings 
+		ErrorMessage error = new ErrorMessage();
+		error.setLevel("warning");
+		// Returns JSON String of Dependency Report 
+		error.setMessage(batchDTO.toJson());
+		warnings.add(error);
+
+		// Check CReg Config to See If Salt Abbrev in Lab Corp Name
+		if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
+			if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format"))
+			{
+				error = new ErrorMessage();
+				error.setLevel("warning");
+				error.setMessage("Lot corp names references salt abbreviations. Any associated lot corp names will be updated.");
+				warnings.add(error);
+			}
+
+		}
+
 
 		return warnings;
+	}
+
+	public void updateDependencies(Salt salt)
+	{
+		
+
+		// Get IsoSalts From Salt 
+		TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(salt);
+		Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
+		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
+
+		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
+
+		// Getter of IsoSalt to SaltForm 
+		for (IsoSalt isoSalt : isoSaltsSet)
+		{
+			SaltForm tempSaltForm = isoSalt.getSaltForm();
+			saltFormSet.add(tempSaltForm);
+		}
+
+		// Getter of Lots from IsoSalt 
+
+		Set<Lot> lotSet = new HashSet<Lot>(); 
+		for (SaltForm saltForm : saltFormSet)
+		{
+			Set<Lot> tempLotSet = saltForm.getLots();
+			lotSet.addAll(tempLotSet);
+		}
+
+		for (Lot lot : lotSet){
+			// Update Lot Corp Name If Format Uses Salt Abbrev
+			if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")) {
+				String newCorpName = lotService.generateCorpName(lot);
+				lot.setCorpName(newCorpName);
+				 // If Lot Corp Name Change, Cascade the Udpdate to “Batch Code” Values Within Analysis Groups and Lot Inventory Containers	
+				assayService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService");
+                containerService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService", null);
+
+			}
+			logger.info("new lot corp name: " + lot.getCorpName());
+			// Recalculate Lot Molecular Weights
+			lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));		
+		}
 	}
 
 	public ArrayList<Long> getAllParentIDs(Salt salt)
