@@ -231,7 +231,6 @@ public class SaltServiceImpl implements SaltService {
 			warning.setLevel("warning");
 			warning.setMessage("The abbreviation of this salt will be changed.");
 			warnings.add(warning);
-
 		}
 		if(!newSalt.getName().equals(oldSalt.getName())){
 			ErrorMessage warning = new ErrorMessage();
