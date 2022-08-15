@@ -248,14 +248,14 @@ public class SaltServiceImpl implements SaltService {
 		if(newSalt.getMolWeight() != oldSalt.getMolWeight()){
 			ErrorMessage warning = new ErrorMessage();
 			warning.setLevel("warning");
-			warning.setMessage("The weight of this salt has changed.");
+			warning.setMessage("The weight of this salt will be changed.");
 			warnings.add(warning);
 		}
 
 		if(newSalt.getCharge() != oldSalt.getCharge()){
 			ErrorMessage warning = new ErrorMessage();
 			warning.setLevel("warning");
-			warning.setMessage("The charge of this salt has changed.");
+			warning.setMessage("The charge of this salt will be changed.");
 			warnings.add(warning);
 		}
 
@@ -312,7 +312,7 @@ public class SaltServiceImpl implements SaltService {
 		{
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("warning");
-			error.setMessage("This salt is referenced by " + String.valueOf(dependencyLotSize) + " lots");
+			error.setMessage("This salt is referenced by " + String.valueOf(dependencyLotSize) + " lots.");
 			warnings.add(error);
 
 			// Check for linked containers
