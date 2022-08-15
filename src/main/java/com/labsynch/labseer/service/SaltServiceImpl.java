@@ -314,32 +314,58 @@ public class SaltServiceImpl implements SaltService {
 			error.setLevel("warning");
 			error.setMessage("This salt is referenced by " + String.valueOf(dependencyLotSize) + " lots");
 			warnings.add(error);
-		}
 
-		// Check for linked containers
-		Set<String> batchCodeSet = new HashSet<String>();
-		for (Lot lot : lotSet)
-		{
-			batchCodeSet.add(lot.getCorpName());
-		}
-		CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
-
-		ErrorMessage error = new ErrorMessage();
-		error.setLevel("warning");
-		// Returns JSON String of Dependency Report 
-		error.setMessage(batchDTO.toJson());
-		warnings.add(error);
-
-		// Check CReg Config to See If Salt Abbrev in Lab Corp Name
-		if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
-			if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format"))
+			// Check for linked containers
+			Set<String> batchCodeSet = new HashSet<String>();
+			for (Lot lot : lotSet)
 			{
+				batchCodeSet.add(lot.getCorpName());
+			}
+			CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
+
+			if(batchDTO.getBatchCodes() != null && batchDTO.getBatchCodes().size() > 0)
+			{
+				// Adds Associated Batch Codes to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage("Lot corp names references salt abbreviations. Any associated lot corp names will be updated.");
+				error.setMessage("Associated Batch Codes: " + batchDTO.getBatchCodes().toString());
 				warnings.add(error);
 			}
 
+			if(batchDTO.getLinkedExperiments() != null && batchDTO.getLinkedExperiments().size() > 0)
+			{
+				// Adds Linked Experiments to Warning Report 
+				error = new ErrorMessage();
+				error.setLevel("warning");
+				error.setMessage("Associated Experiments: " + batchDTO.getLinkedExperiments().toString());
+				warnings.add(error);
+			}
+			
+			if( batchDTO.getLinkedContainers() != null  && batchDTO.getLinkedContainers().size() > 0)
+			{
+				error = new ErrorMessage();
+				error.setLevel("warning");
+				error.setMessage("Associated Containers: " + batchDTO.getLinkedContainers().toString());
+				warnings.add(error);
+			}
+
+			// Adds Summary As Warning Message
+			error = new ErrorMessage();
+			error.setLevel("warning");
+			error.setMessage("Dependency Report Summary: " + batchDTO.getSummary());
+			warnings.add(error);
+
+			// Check CReg Config to See If Salt Abbrev in Lab Corp Name
+			if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
+				if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format"))
+				{
+					error = new ErrorMessage();
+					error.setLevel("warning");
+					error.setMessage("Lot corp names references salt abbreviations. Any associated lot corp names will be updated.");
+					warnings.add(error);
+				}
+
+			}
 		}
 
 

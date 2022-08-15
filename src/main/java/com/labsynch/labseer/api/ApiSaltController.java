@@ -187,7 +187,7 @@ public class ApiSaltController {
 
 			// Query to See If Lot Depends on This Salt ID 
 			if(lotDependency){
-				return new ResponseEntity<String>(dependencyReport.getSummary(), headers, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<String>(dependencyReport.getSummary(), headers, HttpStatus.CONFLICT);
 			}
 			else
 			{
