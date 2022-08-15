@@ -297,6 +297,19 @@ public class SaltServiceImpl implements SaltService {
 
 		int dependencyLotSize = lotSet.size();
 
+		// Add Dependency Lot Size to Warning Messages If > 0 
+
+
+		// Check for linked containers
+		Set<String> batchCodeSet = new HashSet<String>();
+		for (Lot lot : lotSet)
+		{
+			batchCodeSet.add(lot.getCorpName());
+		}
+		CmpdRegBatchCodeDTO batchDTO = lotService.checkForDependentData(batchCodeSet);
+
+		// Parse Batch DTO for Warnings 
+
 		return warnings;
 	}
 
