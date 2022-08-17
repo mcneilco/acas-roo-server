@@ -212,11 +212,11 @@ public class SaltServiceImpl implements SaltService {
 	{
 		boolean validSalt = true;
 		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
-		if (saltsByName.size() > 1) {
+		if (saltsByName.size() > 0) {
 			validSalt = false;
 		}
 		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
-		if (saltsByAbbrev.size() > 1) {
+		if (saltsByAbbrev.size() > 0) {
 			validSalt = false;
 		}
 		return validSalt;
@@ -260,7 +260,7 @@ public class SaltServiceImpl implements SaltService {
 		}
 
 		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
-		if (saltsByName.size() > 1) {
+		if (saltsByName.size() > 0) {
 			logger.error("Number of salts found: " + saltsByName.size());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
@@ -268,7 +268,7 @@ public class SaltServiceImpl implements SaltService {
 			warnings.add(error);
 		}
 		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
-		if (saltsByAbbrev.size() > 1) {
+		if (saltsByAbbrev.size() > 0) {
 			logger.error("Number of salts found: " + saltsByAbbrev.size());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
@@ -276,7 +276,7 @@ public class SaltServiceImpl implements SaltService {
 			warnings.add(error);
 		}
 		List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
-		if (saltsByFormula.size() > 1) {
+		if (saltsByFormula.size() > 0) {
 			logger.error("Number of salts found: " + saltsByName.size());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("warning");
