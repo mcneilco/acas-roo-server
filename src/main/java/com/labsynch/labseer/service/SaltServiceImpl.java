@@ -261,7 +261,6 @@ public class SaltServiceImpl implements SaltService {
 
 		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
 		if (saltsByName.size() > 0) {
-			logger.error("Number of salts found: " + saltsByName.size());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
 			error.setMessage("Duplicate salt name. Another salt exist with the same name.");
@@ -269,7 +268,6 @@ public class SaltServiceImpl implements SaltService {
 		}
 		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
 		if (saltsByAbbrev.size() > 0) {
-			logger.error("Number of salts found: " + saltsByAbbrev.size());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
 			error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
@@ -277,7 +275,6 @@ public class SaltServiceImpl implements SaltService {
 		}
 		List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
 		if (saltsByFormula.size() > 0) {
-			logger.error("Number of salts found: " + saltsByName.size());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("warning");
 			error.setMessage("Duplicate salt formula. Another salt exist with the same formula.");

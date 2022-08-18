@@ -146,7 +146,7 @@ public class ApiSaltController {
 				else if (!validSalt)
 				{
 					return new ResponseEntity<String>(ErrorMessage.toJsonArray(warnings), headers,
-					HttpStatus.BAD_REQUEST);
+					HttpStatus.OK);
 				}
 				else // Valid Salt Dryrun Case
 				{
