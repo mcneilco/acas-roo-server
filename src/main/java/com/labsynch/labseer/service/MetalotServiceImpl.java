@@ -598,7 +598,7 @@ public class MetalotServiceImpl implements MetalotService {
 					oldLot.setSynthesisDate(lot.getSynthesisDate());
 					oldLot.setChemist(lot.getChemist());
 					oldLot.setModifiedBy(lot.getModifiedBy());
-					oldLot.setModifiedDate(lot.getModifiedDate());
+					oldLot.setModifiedDate(new Date());
 					oldLot.setLotMolWeight(Parent.findParent(lot.getParent().getId()).getMolWeight() + totalSaltWeight);
 					//
 					oldLot.setRetain(lot.getRetain());
