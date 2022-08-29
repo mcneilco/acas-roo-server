@@ -17,6 +17,23 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
+      # Java Workflow Steps
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      # Cache Save and Restore
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      # Run Maven Tests
+      - name: Run tests
+        run: mvn test
+      -
         name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
