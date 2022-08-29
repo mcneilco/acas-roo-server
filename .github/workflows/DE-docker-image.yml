@@ -31,9 +31,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      # Run Maven Tests
-      - name: Run Maven Tests
-        run: mvn test
       -
         name: Docker meta
         id: meta
