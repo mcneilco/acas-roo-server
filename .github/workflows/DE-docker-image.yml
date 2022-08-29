@@ -31,8 +31,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       # Run Maven Tests
-      - name: Run tests
-        run: mvn test
+      #- name: Run tests
+      #  run: mvn test
       -
         name: Docker meta
         id: meta
