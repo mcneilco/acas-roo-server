@@ -12,6 +12,14 @@ public interface SaltStructureService {
 
 	public Salt update(Salt salt) throws CmpdRegMolFormatException;
 
+	public Salt edit(Salt oldSalt, Salt newSalt);
+
 	List<Salt> saveMissingStructures() throws StructureSaveException;
+
+	public double calculateWeight(Salt salt);
+
+	public String calculateFormula(Salt salt);
+
+	public int calculateCharge(Salt salt);
 
 }

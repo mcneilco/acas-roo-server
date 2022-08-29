@@ -646,7 +646,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
-	public int restandardizeLots(List<Long> parentIds) {
+	public int recalculateLotMolWeights(List<Long> parentIds) {
 		EntityManager em = Parent.entityManager();
 		String updateLotSql = "UPDATE lot SET lot_mol_weight = parent.mol_weight + salt_form.salt_weight, version = lot.version+1, modified_date = :modifiedDate FROM parent, salt_form WHERE parent.id = salt_form.parent and salt_form.id = lot.salt_form and parent.id in (:parentIds)";
 		Query updateLotQuery = em.createNativeQuery(updateLotSql);
@@ -780,7 +780,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 		// Update lot information, this is much faster than looping through the
 		// salt_forms and lots using hibernate
-		int countLotsUpdated = restandardizeLots(pIdGroup);
+		int countLotsUpdated = recalculateLotMolWeights(pIdGroup);
 		logger.info("Updated " + countLotsUpdated + " lots");
 
 		long savingEnd = new Date().getTime();
