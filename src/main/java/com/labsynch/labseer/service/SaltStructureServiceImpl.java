@@ -65,26 +65,97 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 
 	@Override
 	public Salt update(Salt salt) throws CmpdRegMolFormatException {
-		CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
-		salt.setOriginalStructure(salt.getMolStructure());
-		salt.setMolStructure(mol.getMolStructure());
-		salt.setFormula(mol.getFormula());
-		salt.setMolWeight(mol.getMass());
-		salt.setCharge(mol.getTotalCharge());
+		try
+		{
+			CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
+			salt.setOriginalStructure(salt.getMolStructure());
+			salt.setMolStructure(mol.getMolStructure());
+			salt.setFormula(mol.getFormula());
+			salt.setMolWeight(mol.getMass());
+			salt.setCharge(mol.getTotalCharge());
 
-		logger.debug("salt code: " + salt.getAbbrev());
-		logger.debug("salt name: " + salt.getName());
-		logger.debug("salt structure: " + salt.getMolStructure());
+			logger.debug("salt code: " + salt.getAbbrev());
+			logger.debug("salt name: " + salt.getName());
+			logger.debug("salt structure: " + salt.getMolStructure());
 
-		boolean updated = chemStructureService.updateStructure(mol, StructureType.SALT, salt.getCdId());
-		salt.merge();
+			boolean updated = chemStructureService.updateStructure(mol, StructureType.SALT, salt.getCdId());
+			salt.merge();
 
-		if (updated) {
-			return Salt.findSalt(salt.getId());
-		} else {
-			return null;
+			if (updated) {
+				return Salt.findSalt(salt.getId());
+			} else {
+				return null;
+			}
 		}
+		catch (CmpdRegMolFormatException e)
+        {
+			e.printStackTrace();
+			return null;
+        }
+
 	}
+
+    public Salt edit(Salt oldSalt, Salt newSalt){
+		oldSalt.setAbbrev(newSalt.getAbbrev());
+		oldSalt.setName(newSalt.getName());
+
+		oldSalt.setOriginalStructure(newSalt.getMolStructure());
+		oldSalt.setMolStructure(newSalt.getMolStructure());
+		oldSalt.setFormula(calculateFormula(newSalt));
+		oldSalt.setMolWeight(calculateWeight(newSalt));
+		oldSalt.setCharge(calculateCharge(newSalt));
+		
+		chemStructureService.updateStructure(oldSalt.getMolStructure(), StructureType.SALT, oldSalt.getCdId());
+
+		oldSalt.merge();
+		return oldSalt;
+    }
+
+	public double calculateWeight(Salt salt) {
+        double weight = -1.0;
+        try
+        {
+            CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
+		    weight = mol.getMass();
+            return weight;
+        }
+        catch (CmpdRegMolFormatException e)
+        {
+            e.printStackTrace();
+            return weight;
+        }
+    }
+
+	public String calculateFormula(Salt salt) {
+        String formula = "UNDEFINED"; 
+        try
+        {
+            CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
+		    formula = mol.getFormula();
+            return formula;
+        }
+        catch (CmpdRegMolFormatException e)
+        {
+            e.printStackTrace();
+            return formula;
+        }
+    }
+
+    public int calculateCharge(Salt salt) {
+        int charge = -1000; 
+        try
+        {
+            CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
+		    charge = mol.getTotalCharge();
+            return charge;
+        }
+        catch (CmpdRegMolFormatException e)
+        {
+            e.printStackTrace();
+            return charge;
+        }
+    }
+
 
 	@Override
 	@Transactional
@@ -92,6 +163,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		List<Salt> allSalts = Salt.findAllSalts();
 		List<Salt> missingSaltsStructures = new ArrayList<Salt>();
 		for (Salt salt : allSalts) {
+			
 			Boolean checkForDupes = true;
 			Integer cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT,
 					checkForDupes);

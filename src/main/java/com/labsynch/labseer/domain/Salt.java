@@ -134,6 +134,21 @@ public class Salt {
         return q;
     }
 
+    public static TypedQuery<Salt> findSaltsByFormulaEquals(String formula) {
+        if (formula == null || formula.length() == 0)
+            throw new IllegalArgumentException("The formula provided is emptpy or null");
+        EntityManager em = Salt.entityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Salt> criteria = criteriaBuilder.createQuery(Salt.class);
+        Root<Salt> saltRoot = criteria.from(Salt.class);
+        criteria.select(saltRoot);
+        Predicate predicate = criteriaBuilder.equal(criteriaBuilder.upper(saltRoot.<String>get("formula")),
+                formula.toUpperCase().trim());
+        criteria.where(criteriaBuilder.and(predicate));
+        TypedQuery<Salt> q = em.createQuery(criteria);
+        return q;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -157,6 +172,24 @@ public class Salt {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public static TypedQuery<Salt> findSaltsBySearchTerm(String searchTerm) {
+        if (searchTerm == null || searchTerm.length() == 0)
+            throw new IllegalArgumentException("The searchTerm argument is required");
+        searchTerm = searchTerm.replace('*', '%');
+        if (searchTerm.charAt(0) != '%') {
+            searchTerm = "%" + searchTerm;
+        }
+        if (searchTerm.charAt(searchTerm.length() - 1) != '%') {
+            searchTerm = searchTerm + "%";
+        }
+        EntityManager em = Salt.entityManager();
+        TypedQuery<Salt> q = em.createQuery(
+                "SELECT DISTINCT o FROM Salt AS o WHERE (LOWER(o.abbrev) LIKE LOWER(:searchTerm) OR LOWER(o.name) LIKE LOWER(:searchTerm))",
+                Salt.class);
+        q.setParameter("searchTerm", searchTerm);
+        return q;
     }
 
     public static Long countFindSaltsByAbbrevEquals(String abbrev) {
