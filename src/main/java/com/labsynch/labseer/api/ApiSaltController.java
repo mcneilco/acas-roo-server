@@ -114,7 +114,14 @@ public class ApiSaltController {
 				Salt newSalt = Salt.fromJsonToSalt(json);
 
 				ArrayList<ErrorMessage> warnings = saltService.validateSaltEdit(oldSalt, newSalt);
-				boolean validSalt = saltService.isValidSaltEdit(oldSalt, newSalt);
+				boolean validSalt = true; 
+				for (ErrorMessage warning : warnings)
+				{
+					if (warning.getLevel().equals("error"))
+					{
+						validSalt = false;
+					}
+				}
 
 				if (validSalt && !dryrun) {
 					try {
@@ -127,7 +134,7 @@ public class ApiSaltController {
 							}
 						catch (Exception e)
 							{
-								return new ResponseEntity<String>("ERROR: Restandardization Issue:" + e.getMessage(), headers,
+								return new ResponseEntity<String>("ERROR: Hit an issue updating salt dependencies:" + e.getMessage(), headers,
 								HttpStatus.INTERNAL_SERVER_ERROR);
 							}
 					} catch (Exception e) {

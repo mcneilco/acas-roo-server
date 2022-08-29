@@ -208,20 +208,6 @@ public class SaltServiceImpl implements SaltService {
 		return sdfWriter.getBufferString();
 	}
 
-	public boolean isValidSaltEdit(Salt oldSalt, Salt newSalt)
-	{
-		boolean validSalt = true;
-		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
-		if (saltsByName.size() > 0) {
-			validSalt = false;
-		}
-		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
-		if (saltsByAbbrev.size() > 0) {
-			validSalt = false;
-		}
-		return validSalt;
-	}
-
 	public ArrayList<ErrorMessage> validateSaltEdit(Salt oldSalt, Salt newSalt)
 	{
 		ArrayList<ErrorMessage> warnings = new ArrayList<ErrorMessage>();
@@ -374,8 +360,7 @@ public class SaltServiceImpl implements SaltService {
 		
 
 		// Get IsoSalts From Salt 
-		TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(salt);
-		Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
+		Collection<IsoSalt> isoSalts =  IsoSalt.findIsoSaltsBySalt(salt).getResultList();
 		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
 
 		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
@@ -400,110 +385,26 @@ public class SaltServiceImpl implements SaltService {
 			// Update Lot Corp Name If Format Uses Salt Abbrev
 			if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")) {
 				String newCorpName = lotService.generateCorpName(lot);
-				lot.setCorpName(newCorpName);
-				 // If Lot Corp Name Change, Cascade the Udpdate to “Batch Code” Values Within Analysis Groups and Lot Inventory Containers	
-				assayService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService");
-                containerService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService", null);
-
-			}
-			logger.info("new lot corp name: " + lot.getCorpName());
-			// Recalculate Lot Molecular Weights
-			lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));		
-		}
-	}
-
-	public ArrayList<Long> getAllParentIDs(Salt salt)
-	{
-		Set<Salt> saltSet = new HashSet<Salt>();
-		saltSet.add(salt);
-
-		ArrayList<Long> parentIDs = new ArrayList<Long>();
-		Collection<Parent> parents = new HashSet<Parent>();
-
-		try
-		{
-			// Get All IsoSalts From Salt
-			if(IsoSalt.countIsoSalts() > 0){
-				TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(salt);
-				Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
-				Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
-				
-				if(SaltForm.countSaltForms() > 0)
+				if (! newCorpName.equals(lot.getCorpName())) // Check to See If There is Indded a Change in the Name
 				{
-					// Get All SaltFormsFrom IsoSalts 
-					TypedQuery<SaltForm> saltFormQuery = SaltForm.findSaltFormsByAnyIsoSalts(isoSaltsSet);
-					Collection<SaltForm> saltForms = saltFormQuery.getResultList();
-					Set<SaltForm> saltFormsSet = new HashSet<SaltForm>(saltForms);
+					lot.setCorpName(newCorpName);
+					// If Lot Corp Name Change, Cascade the Udpdate to “Batch Code” Values Within Analysis Groups and Lot Inventory Containers	
+					assayService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService");
+					containerService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService", null);
 
-					if(Parent.countParents() > 0)
-					{
-						// findParentsBySaltForms(Set<SaltForm> saltForms)
-						TypedQuery<Parent> parentQuery = Parent.findParentsByAnySaltForms(saltFormsSet);
-						parents = parentQuery.getResultList();
-					}
-				}
-				
-			}
-			// Returns a List of All Parents 
-
-			for (Parent parent : parents)
-			{
-				parentIDs.add(parent.getId());
-			}
-	
-			return parentIDs;
-		}
-		catch (NullPointerException e)
-		{
-			// Query Result Empty
-			e.printStackTrace();
-			return new ArrayList<Long>();
+					logger.info("new lot corp name: " + lot.getCorpName());
+					// Recalculate Lot Molecular Weights
+					lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));	
+				} 
+			}	
 		}
 	}
-
-	// Helper Method Used to Check Dependencies Within ACAS
-	private Map<String, HashSet<String>> checkACASDependencies(
-		Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
-			String url = propertiesUtilService.getAcasURL() + "compounds/checkBatchDependencies";
-			BatchCodeDependencyDTO request = new BatchCodeDependencyDTO(acasDependencies.keySet());
-			String json = request.toJson();
-			String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
-			BatchCodeDependencyDTO responseDTO = BatchCodeDependencyDTO.fromJsonToBatchCodeDependencyDTO(responseJson);
-			if (responseDTO.getLinkedDataExists()) {
-				for (CodeTableDTO experimentCodeTable : responseDTO.getLinkedExperiments()) {
-					String experimentCodeAndName = experimentCodeTable.getCode() + " ( " + experimentCodeTable.getName()
-							+ " )";
-					if (acasDependencies.containsKey(experimentCodeTable.getComments())) {
-						acasDependencies.get(experimentCodeTable.getComments()).add(experimentCodeAndName);
-					} else {
-						HashSet<String> codes = new HashSet<String>();
-						codes.add(experimentCodeAndName);
-						acasDependencies.put(experimentCodeTable.getComments(), codes);
-					}
-				}
-			}
-			return acasDependencies;
-		}
-
-	// Helper Method to Check Dependent Containers; Utilized in Method Below It
-
-	// batchCodes == Lot Corp Name
-	private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes)
-		throws MalformedURLException, IOException {
-			String url = propertiesUtilService.getAcasURL() + "containers/getContainerDTOsByBatchCodes";
-			String json = (new JSONSerializer()).serialize(batchCodes);
-			String responseJson = SimpleUtil.postRequestToExternalServer(url, json, null);
-			Collection<ContainerBatchCodeDTO> responseDTOs = ContainerBatchCodeDTO
-					.fromJsonArrayToContainerBatchCoes(responseJson);
-			return responseDTOs;
-		}
 
 	// Method to Check for Dependent Data 
 	public PurgeSaltDependencyCheckResponseDTO checkDependentData(Salt salt)
 	{
 		// Get IsoSalts From Salt 
-		TypedQuery<IsoSalt> isoSaltQuery = IsoSalt.findIsoSaltsBySalt(salt);
-		Collection<IsoSalt> isoSalts =  isoSaltQuery.getResultList(); 
+		Collection<IsoSalt> isoSalts =  IsoSalt.findIsoSaltsBySalt(salt).getResultList();
 		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
 
 		// Getter of IsoSalt to SaltForm 

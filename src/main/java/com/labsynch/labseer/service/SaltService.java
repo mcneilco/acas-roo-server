@@ -12,11 +12,7 @@ public interface SaltService {
 
 	String exportSalts();
 
-	ArrayList<Long> getAllParentIDs(Salt salt);
-
 	PurgeSaltDependencyCheckResponseDTO checkDependentData(Salt salt);
-
-	boolean isValidSaltEdit(Salt oldSalt, Salt newSalt);
 
 	public void updateDependencies(Salt salt);
 
