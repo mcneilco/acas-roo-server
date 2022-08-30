@@ -96,7 +96,7 @@ public class ApiSaltController {
 
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json, @RequestParam(value = "dryrun", required = true) boolean dryrun) {
+	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json, @RequestParam(value = "dryrun", required = false, defaultValue = "false") boolean dryrun) {
 		Salt oldSalt = Salt.findSalt(id);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text; charset=utf-8");
@@ -233,7 +233,7 @@ public class ApiSaltController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> createFromJson(@RequestBody String json, @RequestParam(value = "dryrun", required = true) boolean dryrun) throws CmpdRegMolFormatException {
+	public ResponseEntity<String> createFromJson(@RequestBody String json, @RequestParam(value = "dryrun", required = false, defaultValue = "false") boolean dryrun) throws CmpdRegMolFormatException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text");
 		headers.add("Access-Control-Allow-Origin", "*");
