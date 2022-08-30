@@ -305,7 +305,6 @@ public class ApiSaltController {
 
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
 		} else if (salt.getCdId() > 0 || (validSalt & dryrun)) { // Continue If Valid Registered or Valid Salt in Dryrun
-			String saltStr = salt.toJson();
 			if(!dryrun) {
 				salt.persist();
 			}
@@ -315,9 +314,9 @@ public class ApiSaltController {
 				// These Are Normally Calculated During Registration Process
 				salt.setFormula(saltStructureService.calculateFormula(salt));
 				salt.setMolWeight(saltStructureService.calculateWeight(salt));
-				salt.setCharge(saltStructureService.calculateCharge(salt));;
-				saltStr = salt.toJson();
+				salt.setCharge(saltStructureService.calculateCharge(salt));
 			}
+			String saltStr = salt.toJson();
 			return new ResponseEntity<String>(saltStr, headers, HttpStatus.OK);
 		} else {
 			ErrorMessage error = new ErrorMessage();
