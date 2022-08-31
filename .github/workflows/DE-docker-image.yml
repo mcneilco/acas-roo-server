@@ -28,7 +28,7 @@ jobs:
       - name: Java Dependency Cache Step
         uses: actions/cache@v2.1.4
         with:
-          path: ~/.m2/repository
+          path: /root/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-${{ env.CACHE_NUMBER }}
       -
         name: Docker meta
