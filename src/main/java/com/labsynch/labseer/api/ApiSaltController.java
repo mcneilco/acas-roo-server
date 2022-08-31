@@ -96,7 +96,7 @@ public class ApiSaltController {
 
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json, @RequestParam(value = "dryrun", required = true) boolean dryrun) {
+	public ResponseEntity<String> editSalt(@PathVariable("id") Long id, @RequestBody String json, @RequestParam(value = "dryrun", required = false, defaultValue = "false") boolean dryrun) {
 		Salt oldSalt = Salt.findSalt(id);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text; charset=utf-8");
@@ -233,7 +233,7 @@ public class ApiSaltController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> createFromJson(@RequestBody String json, @RequestParam(value = "dryrun", required = true) boolean dryrun) throws CmpdRegMolFormatException {
+	public ResponseEntity<String> createFromJson(@RequestBody String json, @RequestParam(value = "dryrun", required = false, defaultValue = "false") boolean dryrun) throws CmpdRegMolFormatException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text");
 		headers.add("Access-Control-Allow-Origin", "*");
@@ -305,7 +305,6 @@ public class ApiSaltController {
 
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
 		} else if (salt.getCdId() > 0 || (validSalt & dryrun)) { // Continue If Valid Registered or Valid Salt in Dryrun
-			String saltStr = salt.toJson();
 			if(!dryrun) {
 				salt.persist();
 			}
@@ -315,9 +314,9 @@ public class ApiSaltController {
 				// These Are Normally Calculated During Registration Process
 				salt.setFormula(saltStructureService.calculateFormula(salt));
 				salt.setMolWeight(saltStructureService.calculateWeight(salt));
-				salt.setCharge(saltStructureService.calculateCharge(salt));;
-				saltStr = salt.toJson();
+				salt.setCharge(saltStructureService.calculateCharge(salt));
 			}
+			String saltStr = salt.toJson();
 			return new ResponseEntity<String>(saltStr, headers, HttpStatus.OK);
 		} else {
 			ErrorMessage error = new ErrorMessage();
