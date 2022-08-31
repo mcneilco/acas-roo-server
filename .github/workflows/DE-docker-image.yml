@@ -2,7 +2,7 @@ name: Dale Docker Image
 
 on:
   push:
-    branches: [ release/* ]
+    branches: [ /* ]
   create:
     tags: "**"
 jobs:
