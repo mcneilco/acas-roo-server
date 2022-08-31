@@ -25,12 +25,14 @@ jobs:
           java-version: 11
       # Cache Save and Restore
       - name: Java Dependency Cache Step
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.4
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            ${{ runner.os }}-m2
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
       -
         name: Docker meta
         id: meta
