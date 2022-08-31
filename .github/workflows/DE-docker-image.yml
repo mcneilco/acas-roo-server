@@ -5,7 +5,7 @@ on:
 
 env:
   CACHE_NUMBER: 0  # increase to reset cache manually
-  
+
 jobs:
   acas-roo-server:
     runs-on: ubuntu-latest
@@ -30,8 +30,6 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-${{ env.CACHE_NUMBER }}
-          restore-keys: |
-            ${{ runner.os }}-m2
       -
         name: Docker meta
         id: meta
