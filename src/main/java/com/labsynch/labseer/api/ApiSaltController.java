@@ -186,11 +186,6 @@ public class ApiSaltController {
 	@RequestMapping(value = "/saveMissingStructures", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> saveMissingStructures() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/text; charset=utf-8");
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Access-Control-Allow-Headers", "Content-Type");
-		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
-		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		try {
 			Collection<Salt> missingSaltStructures = saltStructureService.saveMissingStructures();
