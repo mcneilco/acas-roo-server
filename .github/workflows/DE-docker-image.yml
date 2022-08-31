@@ -1,10 +1,7 @@
 name: Dale Docker Image
 
 on:
-  push:
-    branches: [ /* ]
-  create:
-    tags: "**"
+  push
 jobs:
   acas-roo-server:
     runs-on: ubuntu-latest
