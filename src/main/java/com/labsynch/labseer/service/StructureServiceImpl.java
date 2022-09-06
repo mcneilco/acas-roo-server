@@ -26,8 +26,9 @@ import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.io.MDLV2000Reader;
+import org.openscience.cdk.io.ISimpleChemObjectReader;
 import org.openscience.cdk.io.MDLV2000Writer;
+import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
@@ -146,7 +147,7 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	private IAtomContainer readMolStructure(String molStructure) throws IOException, CDKException {
-		MDLV2000Reader mdlReader = new MDLV2000Reader(new StringReader(molStructure));
+		ISimpleChemObjectReader mdlReader = new ReaderFactory().createReader(new StringReader(molStructure));
 		IAtomContainer molecule = SilentChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
 		molecule = mdlReader.read(molecule);
 		mdlReader.close();
