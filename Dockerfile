@@ -18,6 +18,7 @@ RUN  mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD  . /src
 RUN  mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
+COPY  /root/.m2/repository .m2/repository
 
 FROM tomcat:9.0.62-jre8-openjdk-slim-buster
 
