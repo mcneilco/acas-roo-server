@@ -249,21 +249,21 @@ public class SaltServiceImpl implements SaltService {
 		if (saltsByName.size() > 0) {
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
-			error.setMessage("Duplicate salt name. Another salt exist with the same name.");
+			error.setMessage("Duplicate salt name. Another salt exists with the same name.");
 			warnings.add(error);
 		}
 		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
 		if (saltsByAbbrev.size() > 0) {
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
-			error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
+			error.setMessage("Duplicate salt abbreviation. Another salt exists with the same abbreviation.");
 			warnings.add(error);
 		}
 		List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
 		if (saltsByFormula.size() > 0) {
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("warning");
-			error.setMessage("Duplicate salt formula. Another salt exist with the same formula.");
+			error.setMessage("Duplicate salt formula. Another salt exists with the same formula.");
 			warnings.add(error);
 		}
 			
