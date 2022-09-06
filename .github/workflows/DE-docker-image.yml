@@ -4,7 +4,7 @@ on:
   push
 
 env:
-  CACHE_NUMBER: 1  # increase to reset cache manually
+  CACHE_NUMBER: 2  # increase to reset cache manually
 
 jobs:
   acas-roo-server:
