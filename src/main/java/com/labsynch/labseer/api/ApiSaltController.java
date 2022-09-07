@@ -268,7 +268,7 @@ public class ApiSaltController {
 
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
-			error.setMessage("Duplicate salt name. Another salt exist with the same name.");
+			error.setMessage("Duplicate salt name. Another salt exists with the same name.");
 			errors.add(error);
 		}
 		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(salt.getAbbrev()).getResultList();
@@ -278,7 +278,7 @@ public class ApiSaltController {
 
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
-			error.setMessage("Duplicate salt abbreviation. Another salt exist with the same abbreviation.");
+			error.setMessage("Duplicate salt abbreviation. Another salt exists with the same abbreviation.");
 			errors.add(error);
 		}
 		if (validSalt & !dryrun) {
