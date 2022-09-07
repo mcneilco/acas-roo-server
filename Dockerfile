@@ -12,9 +12,10 @@ RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jc
 FROM 	${CHEMISTRY_PACKAGE} as compile
 ADD 	pom.xml /src/pom.xml
 WORKDIR /src
-RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
-ADD 	. /src
-RUN 	mvn clean && \
+COPY  .m2/repository /root/.m2/repository
+RUN  mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
+ADD  . /src
+RUN  mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
 
 FROM tomcat:9.0.62-jre8-openjdk-slim-buster
