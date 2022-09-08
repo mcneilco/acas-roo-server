@@ -15,7 +15,7 @@ WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
 
-# Slow Step - Caching this Layer Can Greatly Improve Build Time  (~6x Faster)
+# Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster)
 RUN 	mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
 
