@@ -14,22 +14,39 @@ ADD 	pom.xml /src/pom.xml
 WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
+
+# Slow Step - Caching this Layer Can Greatly Improve Build Time  (~6x Faster)
 RUN 	mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
 
 FROM tomcat:9.0.62-jre8-openjdk-slim-buster
 
+# Third and Last Step That Requires Significant (Relative) Amount of Time 
 RUN apt-get update && \
-    apt-get install -y openssl libfontconfig libfreetype6 curl
+    apt-get install -y \
+      curl \
+      libfontconfig \
+      libfreetype6 \
+      openssl 
 
 RUN  sed -i 's/<Connector port="8080"/<Connector address="${listen.address}" port="8080"/' conf/server.xml
 
 # Add nodejs for prepare config files
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
+
+# Second Slowest Step 
 RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
   apt-get install -y nodejs && \
-  npm install -g coffeescript@2.5.1 properties@1.2.1 underscore@1.12.0 underscore-deep-extend@1.1.5 properties-parser@0.3.1 flat@5.0.2 glob@7.1.6
+  npm install -g \
+    coffeescript@2.5.1 \
+    flat@5.0.2 \ 
+    glob@7.1.6 \ 
+    properties@1.2.1 \
+    properties-parser@0.3.1 \
+    underscore@1.12.0 \ 
+    underscore-deep-extend@1.1.5 
+
 ENV NODE_PATH /usr/lib/node_modules
 
 # Add runner user so we don't run as root
