@@ -12,7 +12,6 @@ RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jc
 FROM 	${CHEMISTRY_PACKAGE} as compile
 ADD 	pom.xml /src/pom.xml
 WORKDIR /src
-COPY  .m2/repository /root/.m2/repository
 RUN  mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD  . /src
 RUN  mvn clean && \
