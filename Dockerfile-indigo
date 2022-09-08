@@ -9,7 +9,7 @@ ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 FROM 	dependencies as indigo
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
-ADD 	pom.xml /src/pom.xml
+COPY	pom.xml /src/pom.xml
 WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src

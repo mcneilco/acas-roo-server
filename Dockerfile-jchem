@@ -6,11 +6,11 @@ ARG     CHEMISTRY_PACKAGE
 ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 
 FROM 	dependencies as jchem
-ADD 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
+COPY 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
 RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jchem -DgroupId=com.chemaxon -Dversion=16.4.25.0 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
-ADD 	pom.xml /src/pom.xml
+COPY 	pom.xml /src/pom.xml
 WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
