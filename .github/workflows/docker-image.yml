@@ -55,16 +55,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-       -
-        name: Compile 
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          file: Dockerfile-multistage
-          platforms: linux/amd64,linux/arm64/v8
-          target: compile -t mcneilco/acas-roo-server-oss:compile
       -
         name: Copy Container .m2 Into GitHub Maven Dependency Directory 
         run: |
