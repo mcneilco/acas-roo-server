@@ -66,6 +66,7 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           target: compile 
           build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
+          load: true
       -
         name: Copy Container .m2 Into GitHub Maven Dependency Directory 
         run: |
