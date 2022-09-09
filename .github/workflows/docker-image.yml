@@ -56,6 +56,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Copy Container .m2 Into GitHub Maven Dependency Directory 
+        run: |
+          docker build -f Dockerfile-multistage --target=compile -t mcneilco/acas-roo-server-oss:compile --build-arg CHEMISTRY_PACKAGE=indigo .
+          id=$(docker create ${{ github.repository }}-oss:compile)
+          docker cp $id:/root/.m2/repository .m2/
+          docker rm $id
+      -
         name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -65,4 +72,3 @@ jobs:
           file: Dockerfile-multistage
           platforms: linux/amd64,linux/arm64/v8
           build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
-
