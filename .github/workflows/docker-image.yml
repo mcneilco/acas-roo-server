@@ -43,12 +43,6 @@ jobs:
             type=ref,event=branch,suffix=-${{ matrix.chemistry_package }}
             type=ref,event=pr,suffix=-${{ matrix.chemistry_package }}
             type=ref,event=tag,suffix=-${{ matrix.chemistry_package }}
-       -
-        name: Copy Container .m2 Into GitHub Maven Dependency Directory 
-        run: |
-          id=$(docker create mcneilco/acas-roo-server-oss:compile)
-          docker cp $id:/root/.m2/repository .m2/
-          docker rm $id
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
