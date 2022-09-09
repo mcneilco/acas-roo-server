@@ -43,6 +43,13 @@ jobs:
             type=ref,event=branch,suffix=-${{ matrix.chemistry_package }}
             type=ref,event=pr,suffix=-${{ matrix.chemistry_package }}
             type=ref,event=tag,suffix=-${{ matrix.chemistry_package }}
+       -
+        name: Copy Container .m2 Into GitHub Maven Dependency Directory 
+        run: |
+          docker build -f Dockerfile-multistage --target=compile -t mcneilco/acas-roo-server-oss:compile --build-arg CHEMISTRY_PACKAGE=indigo .
+          id=$(docker create ${{ github.repository }}-oss:compile)
+          docker cp $id:/root/.m2/repository .m2/
+          docker rm $id
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -65,9 +72,4 @@ jobs:
           file: Dockerfile-multistage
           platforms: linux/amd64,linux/arm64/v8
           build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
-      -
-        name: Copy Container .m2 Into GitHub Maven Dependency Directory 
-        run: |
-          id=$(docker create ${{ github.repository }}-oss:compile)
-          docker cp $id:/root/.m2/repository .m2/
-          docker rm $id
+
