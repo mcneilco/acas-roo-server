@@ -65,7 +65,6 @@ jobs:
           file: Dockerfile-multistage
           platforms: linux/amd64,linux/arm64/v8
           target: compile -t mcneilco/acas-roo-server-oss:compile
-          build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
       -
         name: Copy Container .m2 Into GitHub Maven Dependency Directory 
         run: |
