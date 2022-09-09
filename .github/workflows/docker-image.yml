@@ -63,7 +63,7 @@ jobs:
           tags: mcneilco/acas-roo-server-oss:compile
           labels: ${{ steps.meta.outputs.labels }}
           file: Dockerfile-multistage
-          platforms: linux/amd64,linux/arm64/v8
+          platforms: linux/amd64
           target: compile 
           build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
           load: true
