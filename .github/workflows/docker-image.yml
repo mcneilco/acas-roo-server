@@ -27,8 +27,8 @@ jobs:
       # Cache Save and Restore
       - name: Java Dependency Cache Step
         uses: actions/cache@v3
-        with:
-          path: ~/.m2
+        with: 
+          path: .m2/repository 
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-${{ env.CACHE_NUMBER }}
           restore-keys: |
                       ${{ runner.os }}-maven-
@@ -73,8 +73,9 @@ jobs:
         name: Copy Container .m2 Into GitHub Maven Dependency Directory 
         run: |
           id=$(docker create mcneilco/acas-roo-server-oss:compile)
-          docker cp $id:/root/.m2 ~/.m2
-          docker rm $id
+          docker cp $id:/root/.m2/repository .m2/repository
+          docker rm $id  
+
       -
         name: Build and push
         uses: docker/build-push-action@v2
