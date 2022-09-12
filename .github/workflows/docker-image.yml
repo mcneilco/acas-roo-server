@@ -32,8 +32,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-${{ env.CACHE_NUMBER }}
           restore-keys: |
                       ${{ runner.os }}-maven-
-      - name: Maven Package
-        run: mvn -B package -DskipTests -f ./pom.xml
       -
         name: Docker meta
         id: meta
