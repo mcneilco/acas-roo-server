@@ -16,6 +16,7 @@ FROM  ${CHEMISTRY_PACKAGE} as compile
 ADD   pom.xml /src/pom.xml
 WORKDIR /src
 COPY  .m2/repository /root/.m2/repository
+RUN ls -halt /root/.m2/repository
 RUN   mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD   . /src
 RUN   mvn clean && \
