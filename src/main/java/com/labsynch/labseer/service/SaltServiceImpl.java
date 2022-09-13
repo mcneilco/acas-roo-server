@@ -245,26 +245,35 @@ public class SaltServiceImpl implements SaltService {
 			warnings.add(warning);
 		}
 
-		List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
-		if (saltsByName.size() > 0 && !newSalt.getName().equals(oldSalt.getName())) {
-			ErrorMessage error = new ErrorMessage();
-			error.setLevel("error");
-			error.setMessage("Duplicate salt name. Another salt exists with the same name.");
-			warnings.add(error);
+		if(!newSalt.getName().equals(oldSalt.getName()))
+		{
+			List<Salt> saltsByName = Salt.findSaltsByNameEquals(newSalt.getName()).getResultList();
+			if (saltsByName.size() > 0) {
+				ErrorMessage error = new ErrorMessage();
+				error.setLevel("error");
+				error.setMessage("Duplicate salt name. Another salt exists with the same name.");
+				warnings.add(error);
+			}
 		}
-		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
-		if (saltsByAbbrev.size() > 0 && !newSalt.getAbbrev().equals(oldSalt.getAbbrev())) {
-			ErrorMessage error = new ErrorMessage();
-			error.setLevel("error");
-			error.setMessage("Duplicate salt abbreviation. Another salt exists with the same abbreviation.");
-			warnings.add(error);
+		if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev()))
+		{
+			List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
+			if (saltsByAbbrev.size() > 0) {
+				ErrorMessage error = new ErrorMessage();
+				error.setLevel("error");
+				error.setMessage("Duplicate salt abbreviation. Another salt exists with the same abbreviation.");
+				warnings.add(error);
+			}
 		}
-		List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
-		if (saltsByFormula.size() > 0 && !newSalt.getFormula().equals(oldSalt.getFormula())) {
-			ErrorMessage error = new ErrorMessage();
-			error.setLevel("warning");
-			error.setMessage("Duplicate salt formula. Another salt exists with the same formula.");
-			warnings.add(error);
+		if(!newSalt.getFormula().equals(oldSalt.getFormula()))
+		{
+			List<Salt> saltsByFormula = Salt.findSaltsByFormulaEquals(newSalt.getFormula()).getResultList();
+			if (saltsByFormula.size() > 0) {
+				ErrorMessage error = new ErrorMessage();
+				error.setLevel("warning");
+				error.setMessage("Duplicate salt formula. Another salt exists with the same formula.");
+				warnings.add(error);
+			}
 		}
 			
 		// Get IsoSalts From Salt 
