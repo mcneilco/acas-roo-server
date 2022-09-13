@@ -38,6 +38,7 @@ jobs:
           ls -halt .
           ls -halt .m2
           ls -halt .m2/repository 
+          touch .m2/repository/hopeitshere.txt
       -
         name: Docker meta
         id: meta
