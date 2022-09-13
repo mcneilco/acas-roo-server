@@ -253,7 +253,7 @@ public class SaltServiceImpl implements SaltService {
 			warnings.add(error);
 		}
 		List<Salt> saltsByAbbrev = Salt.findSaltsByAbbrevEquals(newSalt.getAbbrev()).getResultList();
-		if (saltsByAbbrev.size() > 0 && !newSalt.getName().equals(oldSalt.getName())) {
+		if (saltsByAbbrev.size() > 0 && !newSalt.getAbbrev().equals(oldSalt.getAbbrev())) {
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("error");
 			error.setMessage("Duplicate salt abbreviation. Another salt exists with the same abbreviation.");
