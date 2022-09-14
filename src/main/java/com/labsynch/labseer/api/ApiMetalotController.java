@@ -117,7 +117,7 @@ public class ApiMetalotController {
 		if (hasError) {
 			headers.add("lot save error", "true");
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(mr.getErrors()), headers,
-					HttpStatus.INTERNAL_SERVER_ERROR);
+					HttpStatus.BAD_REQUEST);
 		} else {
 			// MetalotReturnDTO miniLot = new MetalotReturnDTO();
 			// miniLot.setId(mr.getMetalot().getLot().getId());
