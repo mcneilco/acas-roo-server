@@ -342,6 +342,10 @@ public class MetalotServiceImpl implements MetalotService {
 					throw new SaltedCompoundException("Salted parent structure");
 				}
 			}
+			if (parentAliases.size() > 0){
+				// Validate parent aliases
+				parentAliasService.validateParentAliases(parentAliases);
+			}
 			if (!dupeParent) {
 				boolean checkForDupe = false;
 				cdId = chemService.saveStructure(parent.getMolStructure(), StructureType.PARENT, checkForDupe);
