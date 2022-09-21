@@ -2059,13 +2059,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		// This query pulls back the corp name and bulk load file ids for all parents, saltforms, and lots that are at all linked
 		// to the bulkLoadFileId in question. 
 		EntityManager em = Parent.entityManager();
-        TypedQuery<BulkLoadParentSaltFormLotDTO> q = em.createQuery("SELECT new com.labsynch.labseer.dto.BulkLoadParentSaltFormLotDTO("
+		TypedQuery<BulkLoadParentSaltFormLotDTO> q = em.createQuery("SELECT new com.labsynch.labseer.dto.BulkLoadParentSaltFormLotDTO("
 		+ "p.corpName, p.bulkLoadFile.id, sf.corpName, sf.bulkLoadFile.id, l.corpName, l.bulkLoadFile.id) "
 		+ "FROM Lot l JOIN l.saltForm sf JOIN sf.parent p "
 		+ "WHERE l.bulkLoadFile.id = :bulkLoadFileId OR sf.bulkLoadFile.id = :bulkLoadFileId OR p.bulkLoadFile.id = :bulkLoadFileId",
 		BulkLoadParentSaltFormLotDTO.class);
-        q.setParameter("bulkLoadFileId", bulkLoadFileId);
-        return q.getResultList();
+		q.setParameter("bulkLoadFileId", bulkLoadFileId);
+		return q.getResultList();
 	}
 
 	public Map<String, HashSet<String>> addToHashMapAsList(String key, String value, Map<String, HashSet<String>> map){
