@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -19,8 +20,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
@@ -49,6 +52,7 @@ import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
+import com.labsynch.labseer.dto.BulkLoadParentSaltFormLotDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFRequestDTO;
@@ -2051,84 +2055,107 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return summary;
 	}
 
+	public Collection<BulkLoadParentSaltFormLotDTO> getBulkLoadDTOsByBulkLoadFileId(Long bulkLoadFileId) {
+		// This query pulls back the corp name and bulk load file ids for all parents, saltforms, and lots that are at all linked
+		// to the bulkLoadFileId in question. 
+		EntityManager em = Parent.entityManager();
+		TypedQuery<BulkLoadParentSaltFormLotDTO> q = em.createQuery("SELECT new com.labsynch.labseer.dto.BulkLoadParentSaltFormLotDTO("
+		+ "p.corpName, p.bulkLoadFile.id, sf.corpName, sf.bulkLoadFile.id, l.corpName, l.bulkLoadFile.id) "
+		+ "FROM Lot l JOIN l.saltForm sf JOIN sf.parent p "
+		+ "WHERE l.bulkLoadFile.id = :bulkLoadFileId OR sf.bulkLoadFile.id = :bulkLoadFileId OR p.bulkLoadFile.id = :bulkLoadFileId",
+		BulkLoadParentSaltFormLotDTO.class);
+		q.setParameter("bulkLoadFileId", bulkLoadFileId);
+		return q.getResultList();
+	}
+
+	public Map<String, HashSet<String>> addToHashMapAsList(String key, String value, Map<String, HashSet<String>> map){
+		// Helper function to avoid repetition
+		if (map.containsKey(key)){
+			map.get(key).add(value);
+		} else {
+			HashSet<String> values = new HashSet<String>();
+			values.add(value);
+			map.put(key, values);
+		}
+		return map;
+	}
+
 	@Override
 	public PurgeFileDependencyCheckResponseDTO checkPurgeFileDependencies(BulkLoadFile bulkLoadFile) {
+		// acasDependencies is a map of corpName : set of ACAS experiments that depend on that corpName
 		Map<String, HashSet<String>> acasDependencies = new HashMap<String, HashSet<String>>();
+		// cmpdRegDependencies is a map of corpName : set of CReg BulkLoadFiles that depend on that corpName
 		Map<String, HashSet<String>> cmpdRegDependencies = new HashMap<String, HashSet<String>>();
+		// dependentSingleRegLots is a set of lot corpnames which came from single (non-bulk) registration and depend on parents or saltforms from this file
 		HashSet<String> dependentSingleRegLots = new HashSet<String>();
-		// we make a map with a CorpName as each key, and a list of dependent CorpNames
-		// as each value
-		int numberOfParents = 0;
-		int numberOfSaltForms = 0;
-		int numberOfLots = 0;
-		Collection<Parent> parents = Parent.findParentsByBulkLoadFileEquals(bulkLoadFile).getResultList();
-		numberOfParents = parents.size();
-		String manuallyRegistered = "Manually Registered";
-		for (Parent parent : parents) {
-			acasDependencies.put(parent.getCorpName(), new HashSet<String>());
-			if (parent.getSaltForms() != null) {
-				for (SaltForm saltForm : parent.getSaltForms()) {
-					acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
-					if (saltForm.getBulkLoadFile() != null && saltForm.getBulkLoadFile() != bulkLoadFile) {
-						if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
-							cmpdRegDependencies.get(parent.getCorpName()).add(saltForm.getBulkLoadFile().getFileName());
-						} else {
-							HashSet<String> dependentFiles = new HashSet<String>();
-							dependentFiles.add(saltForm.getBulkLoadFile().getFileName());
-							cmpdRegDependencies.put(parent.getCorpName(), dependentFiles);
-						}
-					}
-					if (saltForm.getLots() != null) {
-						for (Lot lot : saltForm.getLots()) {
-							acasDependencies.put(lot.getCorpName(), new HashSet<String>()); 
-							if (lot.getBulkLoadFile() == null) {
-								dependentSingleRegLots.add(lot.getCorpName());
-							} else if (lot.getBulkLoadFile() != bulkLoadFile) {
-								if (cmpdRegDependencies.containsKey(parent.getCorpName())) {
-									cmpdRegDependencies.get(parent.getCorpName())
-											.add(lot.getBulkLoadFile().getFileName());
-								} else {
-									HashSet<String> dependentFiles = new HashSet<String>();
-									dependentFiles.add(lot.getBulkLoadFile().getFileName());
-									cmpdRegDependencies.put(parent.getCorpName(), dependentFiles);
-								}
-							}
-						}
-					}
+		// These Sets are used to count the number of parents, saltForms, and lots directly linked to this bulkLoadFile
+		Set<String> uniqueParentCorpNames = new HashSet<String>();
+		Set<String> uniqueSaltFormCorpNames = new HashSet<String>();
+		Set<String> uniqueLotCorpNames = new HashSet<String>();
+		
+		// Grab the id of the current bulkLoadFile being checked, since we'll reference it a lot below
+		Long bulkLoadFileId = bulkLoadFile.getId();
+		// collect all parent, saltform, and lot corpNames and bulkLoadFileIds tied to this file (directly or indirectly)
+		Collection<BulkLoadParentSaltFormLotDTO> dtos = getBulkLoadDTOsByBulkLoadFileId(bulkLoadFileId);
+		// collect all the unique bulkLoadFile ids, and later build a map of id to name
+		Map<Long, String> bulkLoadIdsToNames = new HashMap<Long, String>();
+		
+		for (BulkLoadParentSaltFormLotDTO dto : dtos) {
+			String parentCorpName = dto.getParentCorpName();
+			String saltFormCorpName = dto.getSaltFormCorpName();
+			String lotCorpName = dto.getLotCorpName();
+			Long parentBulkLoadFileId = dto.getParentBulkLoadFileId();
+			Long saltFormBulkLoadFileId = dto.getSaltFormBulkLoadFileId();
+			Long lotBulkLoadFileId = dto.getLotBulkLoadFileId();
+			// acasDependencies, unique corpName lists: collect all parent, saltform, and lot corpnames directly tied to the file
+			if (bulkLoadFileId.equals(parentBulkLoadFileId)){
+				acasDependencies.put(parentCorpName, new HashSet<String>());
+				uniqueParentCorpNames.add(parentCorpName);
+			}
+			if (bulkLoadFileId.equals(saltFormBulkLoadFileId)){
+				acasDependencies.put(saltFormCorpName, new HashSet<String>());
+				uniqueSaltFormCorpNames.add(saltFormCorpName);
+			}
+			if (bulkLoadFileId.equals(lotBulkLoadFileId)){
+				acasDependencies.put(lotCorpName, new HashSet<String>());
+				uniqueLotCorpNames.add(lotCorpName);
+			}
+			// Find the names of any bulkLoadFiles we haven't yet seen
+			// We're using bulkLoadIdsToNames as a cache to avoid repeat lookups
+			List<Long> bulkLoadFileIds = Arrays.asList(parentBulkLoadFileId, saltFormBulkLoadFileId, lotBulkLoadFileId);
+			for (Long id : bulkLoadFileIds){
+				if (id != null && !bulkLoadIdsToNames.containsKey(id)){
+					BulkLoadFile blf = BulkLoadFile.findBulkLoadFile(id);
+					bulkLoadIdsToNames.put(id, blf.getFileName());
 				}
 			}
-		}
-		parents.clear();
-
-		Collection<SaltForm> saltForms = SaltForm.findSaltFormsByBulkLoadFileEquals(bulkLoadFile).getResultList();
-		numberOfSaltForms = saltForms.size();
-		for (SaltForm saltForm : saltForms) {
-			acasDependencies.put(saltForm.getCorpName(), new HashSet<String>());
-			if (saltForm.getLots() != null) {
-				for (Lot lot : saltForm.getLots()) {
-					acasDependencies.put(lot.getCorpName(), new HashSet<String>());
-					if (lot.getBulkLoadFile() == null) {
-						dependentSingleRegLots.add(lot.getCorpName());
-					} else if (lot.getBulkLoadFile() != bulkLoadFile) {
-						if (cmpdRegDependencies.containsKey(saltForm.getCorpName())) {
-							cmpdRegDependencies.get(saltForm.getCorpName()).add(lot.getBulkLoadFile().getFileName());
-						} else {
-							HashSet<String> dependentFiles = new HashSet<String>();
-							dependentFiles.add(lot.getBulkLoadFile().getFileName());
-							cmpdRegDependencies.put(saltForm.getCorpName(), dependentFiles);
-						}
-					}
+			// cmpdRegDependencies: collect all other bulkload files that are dependent on this one, meaning their saltforms or lots depend on this file's parents or saltforms
+			if (bulkLoadFileId.equals(parentBulkLoadFileId)){
+				// if the parent belongs to the current file, check if the saltform or lot are from a different file
+				// if so, we collect their file names
+				if (saltFormBulkLoadFileId != null && !saltFormBulkLoadFileId.equals(bulkLoadFileId)) {
+					cmpdRegDependencies = addToHashMapAsList(parentCorpName, bulkLoadIdsToNames.get(saltFormBulkLoadFileId), cmpdRegDependencies);
+				}
+				if (lotBulkLoadFileId != null && !lotBulkLoadFileId.equals(bulkLoadFileId)) {
+					cmpdRegDependencies = addToHashMapAsList(parentCorpName, bulkLoadIdsToNames.get(lotBulkLoadFileId), cmpdRegDependencies);
+				}
+			} else if (bulkLoadFileId.equals(saltFormBulkLoadFileId)) {
+				// if the parent is from a different file, but the saltForm is from the current file, we check if the lot is from a different file
+				if (lotBulkLoadFileId != null && !lotBulkLoadFileId.equals(bulkLoadFileId)) {
+					cmpdRegDependencies = addToHashMapAsList(parentCorpName, bulkLoadIdsToNames.get(lotBulkLoadFileId), cmpdRegDependencies);
 				}
 			}
+			// dependentSingleRegLots: collect any dependent lots that are from single registration (bulkLoadId = null)
+			if (lotBulkLoadFileId == null) {
+				dependentSingleRegLots.add(lotCorpName);
+			}
 		}
-		saltForms.clear();
+		// counts: Count up the parents, saltForms, and lots directly linked to the file (these are the ones that will be purged along with the file)
+		// to avoid duplication, we build a unique list, then count afterwards
+		int numberOfParents = uniqueParentCorpNames.size();
+		int numberOfSaltForms = uniqueSaltFormCorpNames.size();
+		int numberOfLots = uniqueLotCorpNames.size();
 
-		Collection<Lot> lots = Lot.findLotsByBulkLoadFileEquals(bulkLoadFile).getResultList();
-		for (Lot lot : lots) {
-			acasDependencies.put(lot.getCorpName(), new HashSet<String>());
-		}
-		numberOfLots = lots.size();
-		lots.clear();
 		if (logger.isDebugEnabled())
 			logger.debug(cmpdRegDependencies.toString());
 		// Check for all the vials in ACAS that reference lots being purged
