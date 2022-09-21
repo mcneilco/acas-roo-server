@@ -2082,11 +2082,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	@Override
 	public PurgeFileDependencyCheckResponseDTO checkPurgeFileDependencies(BulkLoadFile bulkLoadFile) {
-		// acasDependencies is a map of corpName : list of ACAS experiments that depend on that corpName
+		// acasDependencies is a map of corpName : set of ACAS experiments that depend on that corpName
 		Map<String, HashSet<String>> acasDependencies = new HashMap<String, HashSet<String>>();
-		// cmpdRegDependencies is a map of corpName : list of CReg BulkLoadFiles that depend on that corpName
+		// cmpdRegDependencies is a map of corpName : set of CReg BulkLoadFiles that depend on that corpName
 		Map<String, HashSet<String>> cmpdRegDependencies = new HashMap<String, HashSet<String>>();
-		// dependentSingleRegLots is a unique list of lot corpnames which came from single (non-bulk) registration and depend on parents or saltforms from this file
+		// dependentSingleRegLots is a set of lot corpnames which came from single (non-bulk) registration and depend on parents or saltforms from this file
 		HashSet<String> dependentSingleRegLots = new HashSet<String>();
 		// These Sets are used to count the number of parents, saltForms, and lots directly linked to this bulkLoadFile
 		Set<String> uniqueParentCorpNames = new HashSet<String>();
