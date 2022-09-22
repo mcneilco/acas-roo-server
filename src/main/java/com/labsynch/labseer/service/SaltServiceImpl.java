@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import java.net.MalformedURLException;
 
@@ -329,7 +330,7 @@ public class SaltServiceImpl implements SaltService {
 				// Adds Linked Experiments to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage("Associated Experiments: " + batchDTO.getLinkedExperiments().toString());
+				error.setMessage("Associated Experiments: " + batchDTO.getLinkedExperiments().size() + " - " + batchDTO.getLinkedExperiments().stream().map(e -> e.getCode() + '(' + e.getName() + ")").collect(Collectors.toList()));;
 				warnings.add(error);
 			}
 			
@@ -337,15 +338,9 @@ public class SaltServiceImpl implements SaltService {
 			{
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage("Associated Containers: " + batchDTO.getLinkedContainers().toString());
+				error.setMessage("Associated Containers: " + batchDTO.getLinkedContainers().size() + " - " + batchDTO.getLinkedContainers().stream().map(c -> c.getContainerBarcode()).collect(Collectors.toList()));
 				warnings.add(error);
 			}
-
-			// Adds Summary As Warning Message
-			error = new ErrorMessage();
-			error.setLevel("warning");
-			error.setMessage("Dependency Report Summary: " + batchDTO.getSummary());
-			warnings.add(error);
 
 			// Check CReg Config to See If Salt Abbrev in Lab Corp Name
 			if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
