@@ -321,7 +321,7 @@ public class SaltServiceImpl implements SaltService {
 				// Adds Associated Batch Codes to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage("Associated Batch Codes: " + batchDTO.getBatchCodes().toString());
+				error.setMessage(batchDTO.getBatchCodes().size() + " Associated Batch Code(s): " + batchDTO.getBatchCodes().toString());
 				warnings.add(error);
 			}
 
@@ -330,7 +330,7 @@ public class SaltServiceImpl implements SaltService {
 				// Adds Linked Experiments to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage("Associated Experiments: " + batchDTO.getLinkedExperiments().size() + " - " + batchDTO.getLinkedExperiments().stream().map(e -> e.getCode() + '(' + e.getName() + ")").collect(Collectors.toList()));;
+				error.setMessage(batchDTO.getLinkedExperiments().size() + " Associated Experiment(s): " + batchDTO.getLinkedExperiments().stream().map(e -> e.getCode() + '(' + e.getName() + ")").collect(Collectors.toList()));;
 				warnings.add(error);
 			}
 			
@@ -338,7 +338,7 @@ public class SaltServiceImpl implements SaltService {
 			{
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage("Associated Containers: " + batchDTO.getLinkedContainers().size() + " - " + batchDTO.getLinkedContainers().stream().map(c -> c.getContainerBarcode()).collect(Collectors.toList()));
+				error.setMessage( batchDTO.getLinkedContainers().size() + " Associated Container(s): " + batchDTO.getLinkedContainers().stream().map(c -> c.getContainerBarcode()).collect(Collectors.toList()));
 				warnings.add(error);
 			}
 
