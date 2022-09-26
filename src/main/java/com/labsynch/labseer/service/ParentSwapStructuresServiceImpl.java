@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.dto.ParentSwapStructuresDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.ParentNotFoundException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 
 @Service
@@ -29,6 +32,36 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 	@Autowired
 	public ChemStructureService chemStructureService;
 
+	/**
+	 * Get parent matching the name. If no parent is found then check if the name
+	 * matches a unique alias and if a match is found then return the parent.
+	 *
+	 * @param name Parent corporate name or parent alias name.
+	 * @return   Parent object.
+	 */
+	private Parent getParent(String name) throws ParentNotFoundException {
+		// Check if a parent with the corporate name exists.
+		try {
+			return Parent.findParentsByCorpNameEquals(name).getSingleResult();
+		} catch (Exception e) {
+			logger.warn("No parent found for {}", name);
+		}
+
+		// Check if a unique alias with the name exists.
+		List<ParentAlias> parentAliases = new ArrayList<>();
+		try {
+			parentAliases = ParentAlias.findParentAliasesByAliasNameEquals(name).getResultList();
+		} catch (Exception e) {
+			logger.warn("No parent aliases found for {}", name);
+		}
+		if (parentAliases.size() == 1) {
+			ParentAlias parentAlias = parentAliases.get(0);
+			logger.info("Unique parent alias found for {}",  name);
+			return parentAlias.getParent();
+		}
+		throw new ParentNotFoundException("No parent or unique alias found for " + name);
+	}
+
     @Override
     public String swapParentStructures(ParentSwapStructuresDTO parentSwapStructuresDTO) {
 		String corpName1 = parentSwapStructuresDTO.getCorpName1();
@@ -37,13 +70,16 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 		Parent parent1;
 		Parent parent2;
 		try {
-			parent1 = Parent.findParentsByCorpNameEquals(corpName1).getSingleResult();
-			parent2 = Parent.findParentsByCorpNameEquals(corpName2).getSingleResult();
+			parent1 = this.getParent(corpName1);
+			parent2 = this.getParent(corpName2);
 		} catch (Exception e) {
-			String msg = "Caught error while fetching parent";
+			String msg = e.getMessage();
 			logger.error(msg, e);
 			return msg;
 		}
+
+		corpName1 = parent1.getCorpName();
+		corpName2 = parent2.getCorpName();
 
 		// Check if there are existing errors or duplicates.
 		ParentValidationDTO validationDTO1;
