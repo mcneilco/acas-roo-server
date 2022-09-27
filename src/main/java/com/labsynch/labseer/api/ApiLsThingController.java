@@ -1048,25 +1048,39 @@ public class ApiLsThingController {
 		if (errorsFound) {
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
 		} else {
-			if (with != null) {
-				if (with.equalsIgnoreCase("nestedfull")) {
-					return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
-				} else if (with.equalsIgnoreCase("prettyjson")) {
-					return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
-				} else if (with.equalsIgnoreCase("nestedstub")) {
-					return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
-				} else if (with.equalsIgnoreCase("stub")) {
-					return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
-				} else if (with.equalsIgnoreCase("codeTable")) {
-					GenericQueryCodeTableResultDTO resultDTO = new GenericQueryCodeTableResultDTO();
-					resultDTO.setMaxResults(result.getMaxResults());
-					resultDTO.setNumberOfResults(result.getNumberOfResults());
-					if (result.getResults() != null) {
-						resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+			try {
+				if (with != null) {
+					if (with.equalsIgnoreCase("nestedfull")) {
+						return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+					} else if (with.equalsIgnoreCase("prettyjson")) {
+						return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+					} else if (with.equalsIgnoreCase("nestedstub")) {
+						return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+					} else if (with.equalsIgnoreCase("stub")) {
+						return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+					} else if (with.equalsIgnoreCase("codeTable")) {
+						GenericQueryCodeTableResultDTO resultDTO = new GenericQueryCodeTableResultDTO();
+						resultDTO.setMaxResults(result.getMaxResults());
+						resultDTO.setNumberOfResults(result.getNumberOfResults());
+						if (result.getResults() != null) {
+							resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+						}
+						return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+					// If the format is not recognized but returnDTO is in the request, then we return 
+					// the flattened {key: value} pairs specified in the returnDTO
+					} else if(query.getReturnDTO() != null && query.getReturnDTO().size() > 0) {
+						return new ResponseEntity<String>(result.toFlattenedJsonArray(query.getReturnDTO()), headers, HttpStatus.OK);
 					}
-					return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
 				}
+			} catch (Exception e) {
+				logger.error("Caught formatting results for lsThings in generic interaction search", e);
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage(e.getMessage());
+				errors.add(error);
+				return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
 			}
+			
 			return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 		}
 
