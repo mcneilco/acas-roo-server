@@ -111,6 +111,13 @@ public class LsThing extends AbstractThing {
                 .deserialize(json);
     }
 
+    @Transactional 
+    public String toJsonNoNestedAttributes() {
+        return new JSONSerializer()
+            .exclude("*.class", "lsStates", "lsValues", "lsTags", "lsLabels", "firstLsThings", "secondLsThings")
+            .transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+
     @Transactional
     public String toJsonWithNestedStubs() {
         return new JSONSerializer()

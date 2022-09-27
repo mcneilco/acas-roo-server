@@ -11,72 +11,28 @@ import flexjson.JSONSerializer;
 
 public class LsThingReturnDTO {
 
-    String stateType;
-    String stateKind;
-    String valueType;
-    String valueKind;
-    String labelType;
-    String labelKind;
-    String key;
+    
+    private Collection<String> thingAttributes;
+    private Collection<LsThingReturnValueDTO> thingValues;
 
     public LsThingReturnDTO() {
 
     }
 
-    public String getStateType() {
-        return this.stateType;
+    public Collection<String> getThingAttributes() {
+        return this.thingAttributes;
     }
 
-    public void setStateType(String stateType) {
-        this.stateType = stateType;
+    public void setThingAttributes(Collection<String> thingAttributes) {
+        this.thingAttributes = thingAttributes;
     }
 
-    public String getStateKind() {
-        return this.stateKind;
+    public Collection<LsThingReturnValueDTO> getThingValues() {
+        return this.thingValues;
     }
 
-    public void setStateKind(String stateKind) {
-        this.stateKind = stateKind;
-    }
-
-    public String getValueType() {
-        return this.valueType;
-    }
-
-    public void setValueType(String valueType) {
-        this.valueType = valueType;
-    }
-
-    public String getValueKind() {
-        return this.valueKind;
-    }
-
-    public void setValueKind(String valueKind) {
-        this.valueKind = valueKind;
-    }
-
-    public String getKey() {
-        return this.key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getLabelType() {
-        return this.labelType;
-    }
-
-    public void setLabelType(String labelType) {
-        this.labelType = labelType;
-    }
-
-    public String getLabelKind() {
-        return this.labelKind;
-    }
-
-    public void setLabelKind(String labelKind) {
-        this.labelKind = labelKind;
+    public void setThingValues(Collection<LsThingReturnValueDTO> thingValues) {
+        this.thingValues = thingValues;
     }
 
     public String toString() {

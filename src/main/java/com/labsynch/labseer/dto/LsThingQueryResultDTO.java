@@ -1,16 +1,18 @@
 package com.labsynch.labseer.dto;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.labsynch.labseer.domain.AbstractThing;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -97,38 +99,70 @@ public class LsThingQueryResultDTO {
                 .use("values", LsThingQueryResultDTO.class).deserialize(json);
     }
 
-    public String toFlattenedJsonArray(Collection<LsThingReturnDTO> valueReturnDTO) {
+    public String toFlattenedJsonArray(LsThingReturnDTO valueReturnDTO) {
         // Flatten the ls thing into an array of objects with key value pairs 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode returnObject = mapper.createObjectNode();
 		ArrayNode resultArray = mapper.createArrayNode();
+
+        // Get a list of thing attributes to return with the flattened objects (these are reserved words which cannot be used as keys)
+        Set<String> allThingAttributesReservedWords = new HashSet<>(Arrays.asList("codeName", "id", "recordedBy", "recordedDate", "modifiedBy", "modifiedDate", "lsType", "lsKind", "lsTransaction"));
+        Set<String> thingAttributesToAdd = new HashSet<>();
+        if(valueReturnDTO.getThingAttributes() != null) {
+            // Print a warning if a passed thing attribute isn't a thing attribute
+            for(String thingAttribute : valueReturnDTO.getThingAttributes()) {
+                if(!allThingAttributesReservedWords.contains(thingAttribute)) {
+                    System.out.println("WARNING: " + thingAttribute + " is not a thing attribute. It will be ignored.");
+                } else {
+                    thingAttributesToAdd.add(thingAttribute);
+                }
+            }
+        } else {
+            // If no thing attributes are passed, use all reserved words
+            thingAttributesToAdd = allThingAttributesReservedWords;
+        }
+
+        
         for(LsThing lsThing : this.getResults()) {
             ObjectNode resultObject = mapper.createObjectNode();
-            resultObject.put("codeName", lsThing.getCodeName());
-            resultObject.put("id", lsThing.getId());
-            resultObject.put("recordedBy", lsThing.getRecordedBy());
-            resultObject.put("recordedDate", lsThing.getRecordedDate().getTime());
-            for (LsThingReturnDTO returnQuery : valueReturnDTO) {
+
+            // Convert the LsThing to a JsonNode so that we can dynamically fetch it's attributes by string name
+            // This json serialization excludes the lsStates and lsLabels and other nested attributes
+            String lsThingJson = lsThing.toJsonNoNestedAttributes();
+            ObjectNode lsThingObject;
+            try {
+                lsThingObject = (ObjectNode) mapper.readTree(lsThingJson);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to parse lsThingJson", e);
+            }
+
+            // Add thing attributes to the result object first
+            for(String thingAttribute : thingAttributesToAdd) {
+                if(lsThingObject.has(thingAttribute)) {
+                    resultObject.replace(thingAttribute, lsThingObject.get(thingAttribute));
+                }
+            }
+            
+            for (LsThingReturnValueDTO returnQuery : valueReturnDTO.getThingValues()) {
+
+                // Validate the key uniqueness and reserved thing words
                 String key;
                 key = returnQuery.getKey();
+                if(key == null) {
+                    throw new RuntimeException("Key is required for thing values");
+                } else {
+                    // Make sure key isn't in the list of thing attributes already being returned
+                    if(thingAttributesToAdd.contains(key)) {
+                        throw new RuntimeException("Key '" + key + "' is already being returned as a thing attribute");
+                    }
+                    // Make sure this isn't a duplicate key
+                    if(resultObject.has(key)) {
+                        throw new RuntimeException("Key '" + key + "' is a duplicate. All keys must be unique.");
+                    }
+                }
 
                 // If the state type/kind and value type/kind are not null then it's a value return listing
                 if(returnQuery.getStateType() != null && returnQuery.getStateKind() != null && returnQuery.getValueType() != null && returnQuery.getValueKind() != null) {
-                    if(returnQuery.getKey() == null) {
-                        //If key is not provided then use the lsKind of the value key
-                        key = returnQuery.getValueKind();
-                    }
-
-                    // codeName is always returned so this is a reserved word.
-                    if(key.equals("codeName")) {
-                        throw new RuntimeException("codeName is a reserved word and cannot be used as a key");
-                    }
-
-                    // It's not allowed to pass the same key twice so throw and error if the key already exists
-                    if (resultObject.get(key) != null) {
-                        throw new RuntimeException("Duplicate key found in query: " + key);
-                    }
-                    
                     // Get the first matching value from the thing that is not ignored
                     LsThingValue v = lsThing.getLsStates().stream()
                         .filter(state -> state.getLsType().equalsIgnoreCase(returnQuery.getStateType()) && state.getLsKind().equalsIgnoreCase(returnQuery.getStateKind()) && !state.isIgnored())
@@ -163,20 +197,9 @@ public class LsThingQueryResultDTO {
                     }
                 // Check to see if it's a label return listing
                 } else if(returnQuery.getLabelType() != null && returnQuery.getLabelKind() != null) {
-
                     if(returnQuery.getKey() == null) {
                         //If key is not provided then use the lsKind of the value key
                         key = returnQuery.getLabelKind();
-                    }
-
-                    // Some words like recordedBy and recordedDate are always returned and are reserved words.
-                    if(key.equals("recordedBy") || key.equals("recordedDate")) {
-                        throw new RuntimeException(key + " is a reserved word and cannot be used as a key");
-                    }
-                    
-                    // It's not allowed to pass the same key twice so throw and error if the key already exists
-                    if (resultObject.get(key) != null) {
-                        throw new RuntimeException("Duplicate key found in query: " + key);
                     }
 
                     // Get the first matching label from the thing that is not ignored
