@@ -2,7 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 		try {
 			return Parent.findParentsByCorpNameEquals(name).getSingleResult();
 		} catch (Exception e) {
-			logger.warn("No parent found for {}", name);
+			logger.warn(String.format("No parent found for corporate id - '%s'", name), e);
 		}
 
 		// Check if a unique alias with the name exists.
@@ -52,14 +52,27 @@ public class ParentSwapStructuresServiceImpl implements ParentSwapStructuresServ
 		try {
 			parentAliases = ParentAlias.findParentAliasesByAliasNameEquals(name).getResultList();
 		} catch (Exception e) {
-			logger.warn("No parent aliases found for {}", name);
+			logger.error(String.format("No parent aliases for alias name - '%s'", name), e);
 		}
+
 		if (parentAliases.size() == 1) {
 			ParentAlias parentAlias = parentAliases.get(0);
-			logger.info("Unique parent alias found for {}",  name);
+			logger.info("Alias name '{}' uniquely maps to corporate id '{}'", name, parentAlias.getParent().getCorpName());
 			return parentAlias.getParent();
 		}
-		throw new ParentNotFoundException("No parent or unique alias found for " + name);
+
+		String errorMsg;
+		if (parentAliases.size() == 0) {
+			errorMsg = String.format("'%s' was not found as a corporate id or as an alias", name);
+		} else {
+			ArrayList<String> corporateIDs = new ArrayList<>();
+			for (ParentAlias parentAlias : parentAliases) {
+				corporateIDs.add(parentAlias.getParent().getCorpName());
+			}
+			Collections.sort(corporateIDs);
+			errorMsg = String.format("Alias name '%s' has multiple corporate id matches: %s", name, String.join(", ", corporateIDs));
+		}
+		throw new ParentNotFoundException(errorMsg);
 	}
 
     @Override
