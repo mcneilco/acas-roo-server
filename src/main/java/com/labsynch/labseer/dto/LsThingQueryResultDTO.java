@@ -101,7 +101,19 @@ public class LsThingQueryResultDTO {
     public String toFlattenedJsonArray(LsThingReturnDTO valueReturnDTO) {
         // Flatten the ls thing into an array of objects with key value pairs 
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode returnObject = mapper.createObjectNode();
+        String jsonString = new JSONSerializer()
+                .exclude("*.class", "results").serialize(this);
+        ObjectNode returnObject;
+        try {
+            returnObject = (ObjectNode) mapper.readTree(jsonString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse lsThingJson", e);
+        }
+
+        // If results empty, then return empty results
+        if(this.getResults()== null) {
+            return returnObject.toString();
+        }
 		ArrayNode resultArray = mapper.createArrayNode();
 
         // Get a list of thing attributes to return with the flattened objects (these are reserved words which cannot be used as keys)
@@ -120,7 +132,6 @@ public class LsThingQueryResultDTO {
             // If no thing attributes are passed, use all reserved words
             thingAttributesToAdd = allThingAttributesReservedWords;
         }
-
         
         for(LsThing lsThing : this.getResults()) {
             ObjectNode resultObject = mapper.createObjectNode();

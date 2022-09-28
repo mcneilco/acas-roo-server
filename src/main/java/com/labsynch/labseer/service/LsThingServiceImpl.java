@@ -2458,15 +2458,6 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 
 	@Override
-	public Collection<LsThing> getLsThingsByIds(Collection<Long> lsThingIds) {
-		Collection<LsThing> lsThings = new ArrayList<LsThing>();
-		for (Long id : lsThingIds) {
-			lsThings.add(LsThing.findLsThing(id));
-		}
-		return lsThings;
-	}
-
-	@Override
 	public Collection<Long> searchLsThingIdsByQueryDTO(LsThingQueryDTO query) throws Exception {
 		List<Long> lsThingIdList = new ArrayList<Long>();
 		EntityManager em = LsThing.entityManager();
@@ -2825,6 +2816,10 @@ public class LsThingServiceImpl implements LsThingService {
 										Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
 										valuePredicatesList.add(valueLike);
 									}
+								} else {
+									// If we failed to parse the time, then make sure this query returns nothing
+									Predicate valueEqual = criteriaBuilder.equal(value.<Date>get("dateValue"), new Date(0));
+									valuePredicatesList.add(valueEqual);
 								}
 							} else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")) {
 								try {
@@ -3098,6 +3093,10 @@ public class LsThingServiceImpl implements LsThingService {
 										Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
 										valuePredicatesList.add(valueLike);
 									}
+								} else {
+									// If we failed to parse the time, then make sure this query returns nothing
+									Predicate valueEqual = criteriaBuilder.equal(value.<Date>get("dateValue"), new Date(0));
+									valuePredicatesList.add(valueEqual);
 								}
 							} else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")) {
 								try {
@@ -3260,6 +3259,10 @@ public class LsThingServiceImpl implements LsThingService {
 								Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
 								valuePredicatesList.add(valueLike);
 							}
+						} else {
+							// If we failed to parse the time, then make sure this query returns nothing
+							Predicate valueEqual = criteriaBuilder.equal(value.<Date>get("dateValue"), new Date(0));
+							valuePredicatesList.add(valueEqual);
 						}
 					} else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")) {
 						try {
@@ -3563,7 +3566,7 @@ public class LsThingServiceImpl implements LsThingService {
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.info(q.unwrap(org.hibernate.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
 		logger.debug("Found " + lsThingIdList.size() + " results.");
 		return lsThingIdList;

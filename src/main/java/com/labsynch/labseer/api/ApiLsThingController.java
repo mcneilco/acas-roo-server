@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
@@ -974,7 +975,7 @@ public class ApiLsThingController {
 			result.setMaxResults(structureAndThingQuery.getMaxResults());
 			if (structureAndThingQuery.getMaxResults() == null
 					|| result.getNumberOfResults() <= result.getMaxResults()) {
-				result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
+				result.setResults(LsThing.findLsThingsByIdsIn(lsThingIds));
 			}
 		} catch (Exception e) {
 			logger.error("Caught searching for lsThings in generic interaction search", e);
@@ -1029,13 +1030,13 @@ public class ApiLsThingController {
 		try {
 			lsThingIds = lsThingService.searchLsThingIdsByBrowserQueryDTO(query);
 			int maxResults = 1000;
-			if (query.getQueryDTO().getMaxResults() != null)
+			if (query.getQueryDTO().getMaxResults() != null && query.getQueryDTO().getMaxResults() > 0) {
 				maxResults = query.getQueryDTO().getMaxResults();
+			}
 			result.setMaxResults(maxResults);
 			result.setNumberOfResults(lsThingIds.size());
-			if (result.getNumberOfResults() <= result.getMaxResults()) {
-				result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
-			}
+			lsThingIds = lsThingIds.stream().limit(maxResults).collect(Collectors.toList());
+			result.setResults(LsThing.findLsThingsByIdsIn(lsThingIds));
 		} catch (Exception e) {
 			logger.error("Caught searching for lsThings in generic interaction search", e);
 			ErrorMessage error = new ErrorMessage();
@@ -1135,7 +1136,7 @@ public class ApiLsThingController {
 			result.setNumberOfResults(lsThingIds.size());
 			result.setMaxResults(query.getMaxResults());
 			if (query.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()) {
-				result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
+				result.setResults(LsThing.findLsThingsByIdsIn(lsThingIds));
 			}
 		} catch (Exception e) {
 			logger.error("Caught searching for lsThings in generic interaction search", e);

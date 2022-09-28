@@ -976,6 +976,16 @@ public class LsThing extends AbstractThing {
         return q.getResultList();
     }
 
+    public static Collection<LsThing> findLsThingsByIdsIn(Collection<Long> thingIds) {
+        EntityManager em = LsThing.entityManager();
+        String query = "SELECT DISTINCT lsThing FROM LsThing lsThing " +
+                "WHERE lsThing.ignored IS NOT :ignored AND lsThing.id in (:ids)";
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("ids", thingIds);
+        q.setParameter("ignored", true);
+        return q.getResultList();
+    }
+
     public static TypedQuery<LsThing> findLsThingByPreferredLabelText(String thingType,
             String thingKind, String labelType, String labelKind,
             String labelText) {
