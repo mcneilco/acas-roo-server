@@ -3566,7 +3566,7 @@ public class LsThingServiceImpl implements LsThingService {
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.info(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
 		logger.debug("Found " + lsThingIdList.size() + " results.");
 		return lsThingIdList;
