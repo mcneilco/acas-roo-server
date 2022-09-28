@@ -18,6 +18,11 @@
     <!-- <Logger name="org.hibernate.engine.transaction.internal.TransactionImpl" level="debug"/>
     <Logger name="org.springframework.transaction" level="debug"/>
     <Logger name="org.springframework.orm.jpa" level="debug"/> -->
+
+    <!-- Log all SQL statements -->
+    <Logger name="org.hibernate.SQL" level="info"/>
+    <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="info"/>
+
     <Root level="info">
       <AppenderRef ref="STDOUT"/>
     </Root>

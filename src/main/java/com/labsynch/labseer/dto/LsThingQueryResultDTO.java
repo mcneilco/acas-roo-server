@@ -114,7 +114,7 @@ public class LsThingQueryResultDTO {
         if(this.getResults()== null) {
             return returnObject.toString();
         }
-		ArrayNode resultArray = mapper.createArrayNode();
+        ArrayNode resultArray = mapper.createArrayNode();
 
         // Get a list of thing attributes to return with the flattened objects (these are reserved words which cannot be used as keys)
         Set<String> allThingAttributesReservedWords = new HashSet<>(Arrays.asList("codeName", "id", "recordedBy", "recordedDate", "modifiedBy", "modifiedDate", "lsType", "lsKind", "lsTransaction"));
