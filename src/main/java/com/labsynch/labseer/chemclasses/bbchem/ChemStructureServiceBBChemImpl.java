@@ -578,55 +578,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		return true;
 	}
 
-	private String getServiceFormat(String format) {
-		String serviceFormat = null;
-		if (format == null || format.equalsIgnoreCase("mol")) {
-			serviceFormat = "sdf";
-		} else if (format.equalsIgnoreCase("sdf")) {
-			serviceFormat = "sdf";
-		} else if (format.equalsIgnoreCase("smi")) {
-			serviceFormat = "smiles";
-		}
-		return serviceFormat;
-	}
-
 	@Override
 	public MolConvertOutputDTO toFormat(String structure, String inputFormat, String outputFormat)
 			throws IOException, CmpdRegMolFormatException {
-		// Calls preprocessor URL and gets the standardized structure from the
-		// preprocessor URL
+		// Call bbchem to conver the structure to the
 		MolConvertOutputDTO output = new MolConvertOutputDTO();
 
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = bbChemStructureService.getPreprocessorSettings();
-
-		// Extract the url to call
-		JsonNode urlNode = jsonNode.get("converterURL");
-		if (urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings converterURL!!");
-		}
-
-		String url = urlNode.asText();
-
-		// Create the request format
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode requestData = mapper.createObjectNode();
-
-		requestData.put("input_format", getServiceFormat(inputFormat));
-		requestData.put("output_format", getServiceFormat(outputFormat));
-
-		ArrayNode inputsNode = mapper.createArrayNode();
-		inputsNode.add(structure);
-		requestData.put("inputs", inputsNode);
-
-		// Post to the service
-		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
-		logger.debug("Got response: " + postResponse);
-
-		// Parse the response json
-		ObjectMapper responseMapper = new ObjectMapper();
-		JsonNode responseNode = responseMapper.readTree(postResponse);
-		output.setStructure(responseNode.get(0).asText());
+		output.setStructure(bbChemStructureService.convert(structure, inputFormat, outputFormat));
 		output.setFormat(outputFormat);
 		String contentUrl = "TO DO: Download Link";
 		output.setContentUrl(contentUrl);

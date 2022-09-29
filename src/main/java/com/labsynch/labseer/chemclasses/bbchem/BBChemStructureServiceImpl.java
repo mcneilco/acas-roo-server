@@ -3,7 +3,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.BitSet;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -48,6 +46,16 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private static final String EMPTY_STRUCTURE = "EMPTY_STRUCTURE";
 	private static final String ERROR_STRUCTURE = "ERROR_STRUCTURE";
 
+
+	private final String CONVERTER_PATH = "/converter/api/v0/convert";
+	private final String EXPORTSDF_PATH = "/sdf_export/api/v0/";
+	private final String FINGERPRINT_PATH = "/fingerprint/api/v0";
+	private final String IMAGE_PATH = "image/api/v0/";	
+	private final String PARSESDF_PATH =  "/parse/api/v0/";	
+	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
+	private final String SPLIT_PATH = "/split/api/v0";
+	private final String SUBSTRUCTURE_PATH = "/substructure/api/v0";
+
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -55,17 +63,16 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		return jsonNode;
 	}
 
-	private String getUrlFromPreprocessorSettings(String propertyKey) throws IOException {
+	private String getLDChemBaseUrl() throws IOException {
 		JsonNode jsonNode = null;
 		jsonNode = getPreprocessorSettings();
-		JsonNode urlNode = jsonNode.get(propertyKey);
+		JsonNode urlNode = jsonNode.get("ldchemURL");
 		if (urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings " + propertyKey + "!!");
-			throw new IOException("Missing preprocessorSettings " + propertyKey + "!!");
+			logger.error("Missing preprocessorSettings ldchemURL!!");
+			throw new IOException("Missing preprocessorSettings ldchemURL!!");
 		}
-		String url = urlNode.asText();
-		return url;
-
+		String base_ld_chem_url = urlNode.asText();
+		return base_ld_chem_url;
 	}
 
 	private HashMap<String, BitSet> molsToFingerprints(HashMap<String, String> structures, String type)
@@ -73,7 +80,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		// Fetch the fingerprint from the BBChem fingerprint service
 		String url = null;
 		try {
-			url = getUrlFromPreprocessorSettings("fingerprintURL");
+			url = getLDChemBaseUrl() + FINGERPRINT_PATH;
 		} catch (IOException e) {
 			throw new CmpdRegMolFormatException(e);
 		}
@@ -208,7 +215,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	private JsonNode postToProcessService(HashMap<String, String> structures) throws IOException {
 
-		String url = getUrlFromPreprocessorSettings("processURL");
+		String url = getLDChemBaseUrl() + PROCESS_PATH;
 
 		JsonNode jsonNode = getPreprocessorSettings();
 
@@ -478,7 +485,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	@Override
 	public String getSDF(BBChemParentStructure bbChemStructure) throws IOException {
 
-		String url = getUrlFromPreprocessorSettings("exportSDFURL");
+		String url = getLDChemBaseUrl() + EXPORTSDF_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -526,7 +533,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		String url = null;
 		try {
-			url = getUrlFromPreprocessorSettings("parseURL");
+			url = getLDChemBaseUrl() + PARSESDF_PATH;
 		} catch (IOException e) {
 			throw new CmpdRegMolFormatException(e);
 		}
@@ -590,7 +597,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		String url = null;
 		try {
-			url = getUrlFromPreprocessorSettings("splitURL");
+			url = getLDChemBaseUrl() + SPLIT_PATH;
 		} catch (IOException e) {
 			throw new CmpdRegMolFormatException(e);
 		}
@@ -649,7 +656,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		String url = null;
 		try {
-			url = getUrlFromPreprocessorSettings("substructureMatchURL");
+			url = getLDChemBaseUrl() + SUBSTRUCTURE_PATH;
 		} catch (IOException e) {
 			throw new CmpdRegMolFormatException(e);
 		}
@@ -663,7 +670,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		for (AbstractBBChemStructure needsMatch : needsMatchStructures) {
 			arrayNode.add(needsMatch.getMol());
 		}
-		requestData.put("needs_match", arrayNode);
+		requestData.replace("needs_match", arrayNode);
 		requestData.put("query", queryMol);
 		requestData.put("query_format", "sdf");
 		requestData.put("boolean_results", true);
@@ -701,5 +708,76 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
 		}
 	}
+
+	public byte[] callImageService(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize)
+			throws IOException {
+
+		// Extract the url to call
+		String url = getLDChemBaseUrl() + IMAGE_PATH;
+
+		// Create the request json
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+		String mol = "";
+		try {
+			mol = molecule.getMolStructure();
+		} catch (CmpdRegMolFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		requestData.put("molv3", mol);
+		requestData.put("format", imageFormat);
+		ObjectNode draw_options = mapper.createObjectNode();
+		draw_options.put("width", wSize);
+		draw_options.put("height", hSize);
+		requestData.replace("draw_options", draw_options);
+		String request = requestData.toString();
+		logger.info("Image request" + request);
+
+		// Return the response bytes
+		return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
+	}
+
+	private String getServiceFormat(String format) {
+		String serviceFormat = null;
+		if (format == null || format.equalsIgnoreCase("mol")) {
+			serviceFormat = "sdf";
+		} else if (format.equalsIgnoreCase("sdf")) {
+			serviceFormat = "sdf";
+		} else if (format.equalsIgnoreCase("smi")) {
+			serviceFormat = "smiles";
+		}
+		return serviceFormat;
+	}
+
+	@Override
+	public String convert(String structure, String inputFormat, String outputFormat)
+			throws IOException, CmpdRegMolFormatException {
+
+		// Read the preprocessor settings as json
+		String url = getLDChemBaseUrl() + CONVERTER_PATH;
+
+		// Create the request format
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		requestData.put("input_format", getServiceFormat(inputFormat));
+		requestData.put("output_format", getServiceFormat(outputFormat));
+
+		ArrayNode inputsNode = mapper.createArrayNode();
+		inputsNode.add(structure);
+		requestData.put("inputs", inputsNode);
+
+		// Post to the service
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
+		logger.debug("Got response: " + postResponse);
+
+		// Parse the response json
+		ObjectMapper responseMapper = new ObjectMapper();
+		JsonNode responseNode = responseMapper.readTree(postResponse);
+		return responseNode.get(0).asText();
+	}
+	
+	
 
 }
