@@ -279,6 +279,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public BulkLoadRegisterSDFResponseDTO registerSdf(BulkLoadRegisterSDFRequestDTO registerRequestDTO) {
 		// get properties out the request
 		String inputFileName = registerRequestDTO.getFilePath();
+		String originalFileName = registerRequestDTO.getOriginalFileName();
 		Long startTime = new Date().getTime();
 		String chemist = registerRequestDTO.getUserName();
 		Collection<ValidationResponseDTO> results = new ArrayList();
@@ -316,7 +317,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.info("shortFileName: " + shortFileName);
 
 			int fileSizeInBytes = (int) (new File(inputFileName)).length();
-			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, 0, fileSizeInBytes,
+			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, originalFileName, 0, fileSizeInBytes,
 					BulkLoadPropertyMappingDTO.toJsonArray(mappings), chemist, new Date());
 			if (registerRequestDTO.getFileDate() != null)
 				bulkLoadFile.setFileDate(registerRequestDTO.getFileDate());
