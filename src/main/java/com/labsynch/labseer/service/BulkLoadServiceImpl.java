@@ -2334,6 +2334,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		int numParents = 0;
 		int numContainers = 0;
 		String fileName = bulkLoadFile.getFileName();
+		String originalFileName = bulkLoadFile.getOriginalFileName();
 		Collection<Lot> lots = Lot.findLotsByBulkLoadFileEquals(bulkLoadFile).getResultList();
 		Set<String> lotCorpNames = new HashSet<String>();
 		for (Lot lot : lots) {
@@ -2395,8 +2396,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		bulkLoadFile.remove();
 
-		String summary = generateSuccessfulPurgeHtml(fileName, numParents, numSaltForms, numLots, numContainers);
-		return new PurgeFileResponseDTO(summary, true, fileName);
+		String summary = generateSuccessfulPurgeHtml(originalFileName, numParents, numSaltForms, numLots, numContainers);
+		return new PurgeFileResponseDTO(summary, true, fileName, originalFileName);
 	}
 
 	public String generateSuccessfulPurgeHtml(String fileName, int numberOfParents,
