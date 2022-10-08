@@ -884,7 +884,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		float previousPercent = percent;
 		for (List<Long> group : groups) {
 			
-			p = p+fillMissingParentStructuresGroup(group);
+			p = p+fillMissingParentStructuresByParentIDList(group);
 			
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
@@ -904,7 +904,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 	
 	@Transactional
-	public int fillMissingParentStructuresGroup(List<Long> group) throws CmpdRegMolFormatException {
+	public int fillMissingParentStructuresByParentIDList(List<Long> group) throws CmpdRegMolFormatException {
 			int p = 0;
 			Boolean checkForDupes = false;
 			logger.info("Started fetching " + group.size() + " " + StructureType.PARENT + " molstructures to save");
