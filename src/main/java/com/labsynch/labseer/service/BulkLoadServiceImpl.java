@@ -552,6 +552,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				// Check list of aliases within file being bulkloaded
 				if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
 					for (ParentAlias alias : parent.getParentAliases()) {
+						// Skip ignored and deleted aliases
+						if (alias.isDeleted() | alias.isIgnored()) {
+							continue;
+						}
+						// Make sure the parent doesn't already have this alias name
 						if (allAliasMaps.get(alias.getAliasName()) == null) {
 							allAliasMaps.put(alias.getAliasName(), numRecordsRead);
 						} else {
