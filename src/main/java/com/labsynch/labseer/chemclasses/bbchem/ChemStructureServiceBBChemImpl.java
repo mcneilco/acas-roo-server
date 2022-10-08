@@ -876,18 +876,40 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		int batchSize = propertiesUtilService.getStandardizationBatchSize();
 
 		List<List<Long>> groups = SimpleUtil.splitIntArrayIntoGroups(missingIds, batchSize);
-		Boolean checkForDupes = false;
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		int totalCount = missingIds.size();
 		float percent = 0;
 		int p = 0;
 		float previousPercent = percent;
-		EntityManager em = BBChemParentStructure.entityManager();
-
 		for (List<Long> group : groups) {
+			
+			p = p+fillMissingParentStructuresGroup(group);
+			
+			// Compute your percentage.
+			percent = (float) Math.floor(p * 100f / totalCount);
+			if (percent != previousPercent) {
+				currentTime = new Date().getTime();
+				// Output if different from the last time.
+				logger.info("filling " + " " + StructureType.PARENT + " structure representations " + percent
+						+ "% complete (" + p + " of "
+						+ totalCount + ") average speed (rows/min):"
+						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
+				currentTime = new Date().getTime();
+				logger.debug("Time Elapsed:" + (currentTime - startTime));
+			}
+			// Update the percentage.
+			previousPercent = percent;
+		}
+	}
+	
+	@Transactional
+	public int fillMissingParentStructuresGroup(List<Long> group) throws CmpdRegMolFormatException {
+			int p = 0;
+			Boolean checkForDupes = false;
 			logger.info("Started fetching " + group.size() + " " + StructureType.PARENT + " molstructures to save");
 			HashMap<String, String> structureIdParentMolStructureMap = new HashMap<String, String>();
+			EntityManager em = BBChemParentStructure.entityManager();
 			List<Parent> parents = em.createQuery("SELECT p FROM Parent p where id in (:ids)", Parent.class)
 					.setParameter("ids", group)
 					.getResultList();
@@ -914,22 +936,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			}
 
 			logger.info("Finished saving " + processedStructures.size() + " " + StructureType.PARENT + " structures");
-
-			// Compute your percentage.
-			percent = (float) Math.floor(p * 100f / totalCount);
-			if (percent != previousPercent) {
-				currentTime = new Date().getTime();
-				// Output if different from the last time.
-				logger.info("filling " + " " + StructureType.PARENT + " structure representations " + percent
-						+ "% complete (" + p + " of "
-						+ totalCount + ") average speed (rows/min):"
-						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
-				currentTime = new Date().getTime();
-				logger.debug("Time Elapsed:" + (currentTime - startTime));
-			}
-			// Update the percentage.
-			previousPercent = percent;
-		}
+			return p;
 	}
 
 	public void fillMissingSaltFormStructures() throws CmpdRegMolFormatException {
@@ -1015,3 +1022,4 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 }
+
