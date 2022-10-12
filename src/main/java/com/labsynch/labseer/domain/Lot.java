@@ -1678,7 +1678,7 @@ public class Lot {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public static HashMap<Long, String> getOriginallyDrawnAsStructuresByParentIds(List<Long> pIdGroup) {
+    public static HashMap<Long, String> getOriginallyDrawnAsStructuresByParentIds(List<Long> parentIds) {
 
         Query q = entityManager().createNativeQuery("WITH AS_DRAWN_STRUCTS as ("
             + "select p.id as parent_id, coalesce(l.as_drawn_struct, p.mol_structure) as_drawn_struct, ROW_NUMBER () OVER (PARTITION BY p.id order by l.lot_number asc) as rn "
@@ -1688,7 +1688,7 @@ public class Lot {
             + "left join lot l on s.id = l.salt_form and (l.ignore is null or l.ignore = :ignore) and l.as_drawn_struct is not null "
             + "where p.id in (:parent_ids)) "
             + "select parent_id, as_drawn_struct from AS_DRAWN_STRUCTS where rn = 1")
-        .setParameter("parent_ids", pIdGroup)
+        .setParameter("parent_ids", parentIds)
         .setParameter("ignore", false);
 
         // Convert the result list into a hashmap of parent id to mol structure
@@ -1701,9 +1701,9 @@ public class Lot {
         }
 
         // Verify that each of the original pIdGroup parent ids exist in the result set
-        for (Long pId : pIdGroup) {
-            if (!parentIdsToMolStructures.containsKey(pId)) {
-                parentIdsToMolStructures.put(pId, null);
+        for (Long parentId : parentIds) {
+            if (!parentIdsToMolStructures.containsKey(parentId)) {
+                parentIdsToMolStructures.put(parentId, null);
             }
         }
 
