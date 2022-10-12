@@ -4,13 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
@@ -23,12 +20,12 @@ import com.labsynch.labseer.dto.SearchCompoundReturnDTO;
 import com.labsynch.labseer.dto.SearchLotDTO;
 import com.labsynch.labseer.dto.SearchResultExportRequestDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ExportServiceImpl implements ExportService {
@@ -61,10 +58,10 @@ public class ExportServiceImpl implements ExportService {
 	 * @return File of the SDF data representing the lots
 	**/
 	@Override
+	@Transactional
 	public File exportLots(List<String> lotCorpNames) throws IllegalArgumentException, IOException, CmpdRegMolFormatException {
-		Collection<Lot> foundLots = getLotsByCorpNames(lotCorpNames);
 		Collection<LotDTO> lotDTOs = new HashSet<LotDTO>();
-		for (Lot foundLot : foundLots) {
+		for (Lot foundLot : Lot.findLotsByCorpNameCollection(lotCorpNames).getResultList()) {
 			LotDTO lotDTO = new LotDTO(foundLot);
 			lotDTOs.add(lotDTO);
 		}
@@ -78,9 +75,8 @@ public class ExportServiceImpl implements ExportService {
 	public ExportResultDTO exportLots(String filePath, Collection<String> lotCorpNames) throws FileNotFoundException {
 		ExportResultDTO result = new ExportResultDTO();
 		result.setReportFilePath(filePath);
-		Collection<Lot> foundLots = getLotsByCorpNames(lotCorpNames);
 		Collection<LotDTO> lotDTOs = new HashSet<LotDTO>();
-		for (Lot foundLot : foundLots) {
+		for (Lot foundLot : Lot.findLotsByCorpNameCollection(lotCorpNames).getResultList()) {
 			LotDTO lotDTO = new LotDTO(foundLot);
 			lotDTOs.add(lotDTO);
 		}
@@ -98,24 +94,6 @@ public class ExportServiceImpl implements ExportService {
 			result.setMessage(e.getMessage());
 			return result;
 		}
-	}
-
-	private Collection<Lot> getLotsByCorpNames(Collection<String> lotCorpNames) {
-		EntityManager em = Lot.entityManager();
-		List<String> batchCodes = new ArrayList<String>();
-		batchCodes.addAll(lotCorpNames);
-		String queryString = "Select lot "
-				+ "FROM Lot lot "
-				+ "WHERE ";
-		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "lot.corpName", batchCodes);
-		Collection<Lot> results = new ArrayList<Lot>();
-		logger.debug("Querying for " + batchCodes.size() + " lot corpnames");
-		for (Query q : queries) {
-			if (logger.isDebugEnabled())
-				logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-			results.addAll(q.getResultList());
-		}
-		return results;
 	}
 
 	private int writeLotsToSDF(String exportSDFFileName, Collection<LotDTO> lotDTOs)

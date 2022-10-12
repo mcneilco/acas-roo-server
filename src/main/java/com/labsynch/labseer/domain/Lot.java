@@ -1337,6 +1337,33 @@ public class Lot {
         return q;
     }
 
+    public static TypedQuery<Lot> findLotsByCorpNameCollection(Collection<String> lotCorpNames) {
+		EntityManager em = Lot.entityManager();
+		List<String> batchCodes = new ArrayList<String>();
+		batchCodes.addAll(lotCorpNames);
+
+		String queryString = "Select lot "
+        + "FROM Lot lot "
+        + "JOIN FETCH lot.saltForm saltForm "
+        + "JOIN FETCH saltForm.parent parent "
+        + "JOIN FETCH parent.stereoCategory stereoCategory "
+        + "LEFT JOIN FETCH lot.amountUnits amountUnits "
+        + "LEFT JOIN FETCH lot.bulkLoadFile bulkLoadFile "
+        + "LEFT JOIN FETCH lot.physicalState physicalState "
+        + "LEFT JOIN FETCH lot.purityMeasuredBy purityMeasuredBy "
+        + "LEFT JOIN FETCH lot.purityOperator purityOperator "
+        + "LEFT JOIN FETCH lot.lotAliases lotAliases "
+        + "LEFT JOIN FETCH saltForm.isoSalts isoSalts "
+        + "LEFT JOIN FETCH lot.vendor vendor "
+        + "LEFT JOIN FETCH parent.parentAliases parentAliases "
+        + "LEFT JOIN FETCH parent.parentAnnotation parentAnnotation "
+        + "LEFT JOIN FETCH parent.compoundType compoundType "
+        + "WHERE lot.corpName IN (:batchCodes)";
+		TypedQuery<Lot> q = em.createQuery(queryString, Lot.class)
+				.setParameter("batchCodes", batchCodes);
+		return q;
+	}
+
     public static TypedQuery<Lot> findLotsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile, String sortFieldName,
             String sortOrder) {
         if (bulkLoadFile == null)
