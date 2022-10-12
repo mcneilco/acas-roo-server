@@ -1,8 +1,10 @@
 package com.labsynch.labseer.domain;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +19,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -492,31 +493,6 @@ public class Lot {
         q.setParameter("parent", parent);
         q.setParameter("ignore", false);
         return q;
-    }
-
-    public static String getOriginallyDrawnAsStructure(Parent parent) {
-        if (parent == null)
-            throw new IllegalArgumentException("The parent argument is required");
-        String parentStructure = parent.getMolStructure();
-        EntityManager em = Lot.entityManager();
-        TypedQuery<String> q = em.createQuery(
-                "SELECT o.asDrawnStruct FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))",
-                String.class);
-        q.setParameter("parent", parent);
-        q.setParameter("ignore", false);
-
-        // Get string result from typed query
-        String lotAsDrawnStrucucture = null;
-        try {
-            lotAsDrawnStrucucture = q.getSingleResult();
-        } catch (NoResultException e) {
-            logger.error("No original structure found for parent corp name " + parent.getCorpName() + " / parent id " + parent.getId());
-        }
-        if (lotAsDrawnStrucucture == null) {
-            return parentStructure;
-        } else {
-            return lotAsDrawnStrucucture;
-        }
     }
 
     public static TypedQuery<Lot> findLotsBySaltForm(SaltForm saltForm) {
@@ -1700,5 +1676,37 @@ public class Lot {
 
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public static HashMap<Long, String> getOriginallyDrawnAsStructuresByParentIds(List<Long> pIdGroup) {
+
+        Query q = entityManager().createNativeQuery("WITH AS_DRAWN_STRUCTS as ("
+            + "select p.id as parent_id, coalesce(l.as_drawn_struct, p.mol_structure) as_drawn_struct, ROW_NUMBER () OVER (PARTITION BY p.id order by l.lot_number asc) as rn "
+            + "from parent p "
+            + "left join salt_form s "
+            + "on p.id = s.parent "
+            + "left join lot l on s.id = l.salt_form and (l.ignore is null or l.ignore = :ignore) and l.as_drawn_struct is not null "
+            + "where p.id in (:parent_ids)) "
+            + "select parent_id, as_drawn_struct from AS_DRAWN_STRUCTS where rn = 1")
+        .setParameter("parent_ids", pIdGroup)
+        .setParameter("ignore", false);
+
+        // Convert the result list into a hashmap of parent id to mol structure
+        HashMap<Long, String> parentIdsToMolStructures = new HashMap<Long, String>();
+        List<Object[]> results = q.getResultList();
+        for (Object[] result : results) {
+            // Cast BigInteger value to Long
+            Long parentId = ((BigInteger) result[0]).longValue();
+            parentIdsToMolStructures.put(parentId, (String) result[1]);
+        }
+
+        // Verify that each of the original pIdGroup parent ids exist in the result set
+        for (Long pId : pIdGroup) {
+            if (!parentIdsToMolStructures.containsKey(pId)) {
+                parentIdsToMolStructures.put(pId, null);
+            }
+        }
+
+        return parentIdsToMolStructures;
     }
 }

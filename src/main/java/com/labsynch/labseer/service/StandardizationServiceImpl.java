@@ -257,13 +257,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Create standardization hashmap
 		HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
 		HashMap<String, String> parentIdsToAsDrawnStructs = new HashMap<String, String>();
+		HashMap<Long, String> parentAsDrawnMap = Lot.getOriginallyDrawnAsStructuresByParentIds(pIdGroup);
 		HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
 		for (Long parentId : pIdGroup) {
 			parent = Parent.findParent(parentId);
 			parents.put(parentId, parent);
 
 			// Get the as drawn structure
-			String asDrawnStruct = Lot.getOriginallyDrawnAsStructure(parent);
+			String asDrawnStruct = parentAsDrawnMap.get(parentId);
 			if (asDrawnStruct == null) {
 				logger.warn("Parent " + parentId + " has no as drawn structure");
 				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
@@ -702,6 +703,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Create standardization hashmap
 		HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
 		HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
+		HashMap<Long, String> parentAsDrawnMap = Lot.getOriginallyDrawnAsStructuresByParentIds(pIdGroup);
 		Parent parent;
 		String standardizedMol;
 
@@ -710,7 +712,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			parents.put(parentId, parent);
 
 			// Get the as drawn structure
-			String asDrawnStruct = Lot.getOriginallyDrawnAsStructure(parent);
+			String asDrawnStruct = parentAsDrawnMap.get(parent.getId());
 			if (asDrawnStruct == null) {
 				logger.warn("Parent " + parentId + " has no as drawn structure");
 				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
