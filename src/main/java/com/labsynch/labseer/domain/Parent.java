@@ -710,6 +710,31 @@ public class Parent {
         return q;
     }
 
+    public static TypedQuery<Parent> checkForDuplicateParentByCdId(Long parentId, int[] cdIds) {
+        if(cdIds == null)
+            throw new IllegalArgumentException("The cdIds argument is required");
+        if(parentId == null)
+            throw new IllegalArgumentException("The parentId argument is required");
+
+        Parent parent = findParent(parentId);
+        if(parent == null)
+            throw new IllegalArgumentException("The parentId argument is invalid - no parent with id " + parentId + " found");
+        
+        EntityManager em = Parent.entityManager();
+        String queryBuilder = "SELECT o FROM Parent AS o WHERE o.cdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
+        TypedQuery<Parent> q = em.createQuery(queryBuilder, Parent.class);
+        q.setParameter("cdIds", cdIds);
+        q.setParameter("id", parent.getId());
+        q.setParameter("stereoCategory", parent.getStereoCategory());
+        if(parent.getStereoComment() == null) {
+            queryBuilder += " AND o.stereoComment IS NULL";
+        } else {
+            queryBuilder += " AND o.stereoComment = :stereoComment";
+            q.setParameter("stereoComment", parent.getStereoComment());
+        }
+        return q;
+    }
+
     public String toJson() {
         return new JSONSerializer()
                 .exclude("*.class").serialize(this);
