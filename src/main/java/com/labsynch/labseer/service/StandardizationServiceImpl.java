@@ -477,7 +477,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// don't want to limit the hit counts here)
 			hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
 					StructureType.STANDARDIZATION_DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-			List<DryRunCompound> dryRunDupes = DryRunCompound.checkForDuplicateDryRunCompoundByCdId(dryRunCompound.getId(), hits).getResultList();
+			List<StandardizationDryRunCompound> dryRunDupes = StandardizationDryRunCompound.checkForDuplicateStandardizationDryRunCompoundByCdId(dryRunCompound.getId(), hits).getResultList();
 			newDupeCount = dryRunDupes.size();
 			if(newDupeCount > 0) {
 				dryRunCompound.setChangedStructure(true);

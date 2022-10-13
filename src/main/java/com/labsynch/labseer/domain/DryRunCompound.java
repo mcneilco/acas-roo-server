@@ -288,31 +288,6 @@ public class DryRunCompound {
         return q;
     }
 
-    public static TypedQuery<DryRunCompound> checkForDuplicateDryRunCompoundByCdId(Long dryRunRowId, int[] cdIds) {
-        if(cdIds == null)
-            throw new IllegalArgumentException("The cdIds argument is required");
-        if(dryRunRowId == null)
-            throw new IllegalArgumentException("The dryRunRowId argument is required");
-
-        DryRunCompound dryRunCompound = findDryRunCompound(dryRunRowId);
-        if(dryRunCompound == null)
-            throw new IllegalArgumentException("The dryRunRowId argument is invalid - no dryRunRow with id " + dryRunRowId + " found");
-        
-        EntityManager em = DryRunCompound.entityManager();
-        String queryBuilder = "SELECT o FROM DryRunCompound AS o WHERE o.cdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
-        TypedQuery<DryRunCompound> q = em.createQuery(queryBuilder, DryRunCompound.class);
-        q.setParameter("cdIds", cdIds);
-        q.setParameter("id", dryRunCompound.getId());
-        q.setParameter("stereoCategory", dryRunCompound.getStereoCategory());
-        if(dryRunCompound.getStereoComment() == null) {
-            queryBuilder += " AND o.stereoComment IS NULL";
-        } else {
-            queryBuilder += " AND o.stereoComment = :stereoComment";
-            q.setParameter("stereoComment", dryRunCompound.getStereoComment());
-        }
-        return q;
-    }
-
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }

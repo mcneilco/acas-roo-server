@@ -1,11 +1,13 @@
 package com.labsynch.labseer.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -721,17 +723,20 @@ public class Parent {
             throw new IllegalArgumentException("The parentId argument is invalid - no parent with id " + parentId + " found");
         
         EntityManager em = Parent.entityManager();
-        String queryBuilder = "SELECT o FROM Parent AS o WHERE o.cdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
-        TypedQuery<Parent> q = em.createQuery(queryBuilder, Parent.class);
-        q.setParameter("cdIds", cdIds);
-        q.setParameter("id", parent.getId());
-        q.setParameter("stereoCategory", parent.getStereoCategory());
+        String queryBuilder = "SELECT o FROM Parent AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
+
         if(parent.getStereoComment() == null) {
             queryBuilder += " AND o.stereoComment IS NULL";
         } else {
             queryBuilder += " AND o.stereoComment = :stereoComment";
-            q.setParameter("stereoComment", parent.getStereoComment());
         }
+        TypedQuery<Parent> q = em.createQuery(queryBuilder, Parent.class);
+        q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
+        q.setParameter("id", parent.getId());
+        q.setParameter("stereoCategory", parent.getStereoCategory());
+		if(parent.getStereoComment() != null) {
+			q.setParameter("stereoComment", parent.getStereoComment());
+		}
         return q;
     }
 
