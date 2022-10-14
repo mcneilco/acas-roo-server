@@ -775,8 +775,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 			parent.setMolFormula(cmpdRegMolecule.getFormula());
 
-			parent.merge();
-
 		}
 		// Update lot information, this is much faster than looping through the
 		// salt_forms and lots using hibernate
