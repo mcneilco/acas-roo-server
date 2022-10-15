@@ -15,6 +15,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.Version;
@@ -22,6 +24,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
@@ -45,17 +48,11 @@ public class StandardizationDryRunCompound {
 
 	private Date qcDate;
 
-	private Long parentId;
-
-	private String corpName;
-
 	private String newDuplicates;
 
 	private String existingDuplicates;
 
 	private boolean changedStructure;
-
-	private Double oldMolWeight;
 
 	private Double newMolWeight;
 
@@ -70,10 +67,6 @@ public class StandardizationDryRunCompound {
 	private int existingDuplicateCount;
 
 	private String alias;
-
-	private String stereoCategory;
-
-	private String stereoComment;
 
 	private int CdId;
 
@@ -94,6 +87,20 @@ public class StandardizationDryRunCompound {
 
 	private String registrationComment;
 
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private SyncStatus parentSyncStatus;
+
+	public enum SyncStatus {
+		COMPLETE,
+		READY
+	}
+
+	@ManyToOne
+	@NotNull
+	@JoinColumn(name = "parent_id")
+	private Parent parent;
+	
 	public StandardizationDryRunCompound() {
 	}
 
@@ -114,32 +121,32 @@ public class StandardizationDryRunCompound {
 				.createQuery("SELECT max(o.runNumber) FROM StandardizationDryRunCompound o", Integer.class);
 	}
 
+	@Transactional
 	public static TypedQuery<StandardizationDryRunCompound> findStandardizationChanges() {
-		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE changedStructure = true OR existingDuplicateCount > 0 OR newDuplicateCount > 0 OR displayChange = true";
+		String querySQL = "SELECT o FROM StandardizationDryRunCompound o JOIN FETCH o.parent p WHERE o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class);
 	}
 
-	public static TypedQuery<Long> findParentIdsWithStandardizationChanges() {
-		String querySQL = "SELECT o.parentId FROM StandardizationDryRunCompound o WHERE changedStructure = true OR existingDuplicateCount > 0 OR newDuplicateCount > 0 OR displayChange = true";
-		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class);
+	@Transactional
+	public static TypedQuery<StandardizationDryRunCompound> findReadyStandardizationChanges() {
+		String querySQL = "SELECT o FROM StandardizationDryRunCompound o JOIN FETCH o.parent p WHERE o.parentSyncStatus = :parentSyncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
+		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class).setParameter("parentSyncStatus", SyncStatus.READY);
 	}
 
+	@Transactional
+	public static int getReadyStandardizationChangesCount() {
+		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.parentSyncStatus = :parentSyncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
+		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class).setParameter("parentSyncStatus", SyncStatus.READY).getSingleResult().intValue();
+	}
+
+	@Transactional
 	public static int getStandardizationChangesCount() {
 		return toIntExact(StandardizationDryRunCompound.entityManager().createQuery(
 				"SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE changedStructure = true OR existingDuplicateCount > 0 OR newDuplicateCount > 0 OR displayChange = true",
 				Long.class).getSingleResult());
 	}
 
-	public static TypedQuery<Long> findParentsWithDisplayChanges() {
-		String querySQL = "SELECT o.parentId FROM StandardizationDryRunCompound o WHERE displayChange = true";
-		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class);
-	}
-
 	public StandardizationHistory fetchStats() {
-		// String querySQL = "SELECT o.parentId FROM StandardizationDryRunCompound o
-		// WHERE displayChange = true";
-		// Query q =
-		// StandardizationDryRunCompound.entityManager().createNativeQuery(querySQL);
 		StandardizationHistory stats = new StandardizationHistory();
 		stats.setStructuresStandardizedCount(toIntExact(StandardizationDryRunCompound.entityManager()
 				.createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s", Long.class).getSingleResult()));
@@ -392,22 +399,6 @@ public class StandardizationDryRunCompound {
 		this.qcDate = qcDate;
 	}
 
-	public Long getParentId() {
-		return this.parentId;
-	}
-
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
-	}
-
-	public String getCorpName() {
-		return this.corpName;
-	}
-
-	public void setCorpName(String corpName) {
-		this.corpName = corpName;
-	}
-
 	public String getNewDuplicates() {
 		return this.newDuplicates;
 	}
@@ -430,14 +421,6 @@ public class StandardizationDryRunCompound {
 
 	public void setChangedStructure(boolean changedStructure) {
 		this.changedStructure = changedStructure;
-	}
-
-	public Double getOldMolWeight() {
-		return this.oldMolWeight;
-	}
-
-	public void setOldMolWeight(Double oldMolWeight) {
-		this.oldMolWeight = oldMolWeight;
 	}
 
 	public Double getNewMolWeight() {
@@ -494,22 +477,6 @@ public class StandardizationDryRunCompound {
 
 	public void setAlias(String alias) {
 		this.alias = alias;
-	}
-
-	public String getStereoCategory() {
-		return this.stereoCategory;
-	}
-
-	public void setStereoCategory(String stereoCategory) {
-		this.stereoCategory = stereoCategory;
-	}
-
-	public String getStereoComment() {
-		return this.stereoComment;
-	}
-
-	public void setStereoComment(String stereoComment) {
-		this.stereoComment = stereoComment;
 	}
 
 	public int getCdId() {
@@ -575,6 +542,22 @@ public class StandardizationDryRunCompound {
 	public void setRegistrationComment(String registrationComment) {
 		this.registrationComment = registrationComment;
 	}
+
+	public SyncStatus getParentSyncStatus() {
+		return this.parentSyncStatus;
+	}
+
+	public void setParentSyncStatus(SyncStatus parentSyncStatus) {
+		this.parentSyncStatus = parentSyncStatus;
+	}
+
+    public Parent getParent() {
+        return this.parent;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
 
 	public static Long countFindStandardizationDryRunCompoundsByCdId(int CdId) {
 		EntityManager em = StandardizationDryRunCompound.entityManager();
