@@ -694,7 +694,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return(p);
 	}
 	
-	@Transactional
 	public int restandardizeParentsOfStandardizationDryRunCompoundsBatch(int batchSize) throws CmpdRegMolFormatException, StandardizerException, IOException {
 
 		

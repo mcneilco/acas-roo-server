@@ -87,13 +87,10 @@ public abstract class AbstractBBChemStructure {
 
     private String registrationComment;
 
-    @Transient
     private Double exactMolWeight;
 
-    @Transient
     private Double averageMolWeight;
 
-    @Transient
     private Integer totalCharge;
 
     @Transient
@@ -102,7 +99,6 @@ public abstract class AbstractBBChemStructure {
     @Transient
     private String inchi;
 
-    @Transient
     private String molecularFormula;
 
     @Transient

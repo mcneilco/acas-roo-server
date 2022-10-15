@@ -123,13 +123,12 @@ public class StandardizationDryRunCompound {
 
 	@Transactional
 	public static TypedQuery<StandardizationDryRunCompound> findStandardizationChanges() {
-		String querySQL = "SELECT o FROM StandardizationDryRunCompound o JOIN FETCH o.parent p WHERE o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true";
+		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class);
 	}
 
-	@Transactional
 	public static TypedQuery<StandardizationDryRunCompound> findReadyStandardizationChanges() {
-		String querySQL = "SELECT o FROM StandardizationDryRunCompound o JOIN FETCH o.parent p WHERE o.parentSyncStatus = :parentSyncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
+		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE o.parentSyncStatus = :parentSyncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class).setParameter("parentSyncStatus", SyncStatus.READY);
 	}
 
