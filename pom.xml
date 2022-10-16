@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<description>ACAS Java persistence layer</description>
 	<properties>
 		<aspectj.version>1.9.7</aspectj.version>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
@@ -41,9 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<log4j.version>2.17.2</log4j.version>
 		<spring.version>5.3.19</spring.version>
 		<querydsl.version>3.4.3</querydsl.version>
+
 		<spring-security.version>5.6.3</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
-		<jchem.version>16.4.25.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
@@ -58,6 +58,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<url>https://github.com/mcneilco/acas-roo-server.git</url>
 	</scm>
 	<repositories>
+		<repository>
+			<id>Chemaxon Public Repository</id>
+			<url>https://hub.chemaxon.com/artifactory/libs-release</url>
+		</repository>
 		<repository>
 			<id>spring-release</id>
 			<name>Spring Release</name>
@@ -104,20 +108,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
-					<artifactId>jchem</artifactId>
-					<version>${jchem.version}</version>
+					<artifactId>jchem-main</artifactId>
+					<version>22.12.0</version>
 				</dependency>
-				<!-- JCHEM 16 requires dom4j 1.3. This depdendency can be removed when we upgrade jchem to jchem > 17 -->
 				<dependency>
-					<groupId>dom4j</groupId>
-					<artifactId>dom4j</artifactId>
-					<version>1.3</version>
+					<groupId>com.chemaxon</groupId>
+					<artifactId>jchem-utils</artifactId>
+					<version>22.12.0</version>
 				</dependency>
-				<!-- JHEM 16 requires trove4j https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
 				<dependency>
-					<groupId>net.sf.trove4j</groupId>
-					<artifactId>trove4j</artifactId>
-					<version>3.0.3</version>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+					<version>23.0</version>
 				</dependency>
 			</dependencies>
 			<properties>
