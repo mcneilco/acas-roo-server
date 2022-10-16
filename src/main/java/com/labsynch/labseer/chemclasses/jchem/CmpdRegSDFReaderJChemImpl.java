@@ -24,6 +24,8 @@ public class CmpdRegSDFReaderJChemImpl implements CmpdRegSDFReader {
 			this.molImporter = new MolImporter(fis);
 		} catch (MolFormatException e) {
 			throw new CmpdRegMolFormatException(e);
+		} catch (Exception e) {
+			throw new CmpdRegMolFormatException(e);
 		}
 	};
 
