@@ -89,10 +89,11 @@ public class StandardizationDryRunCompound {
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	private SyncStatus parentSyncStatus;
+	private SyncStatus syncStatus;
 
 	public enum SyncStatus {
 		COMPLETE,
+		NO_CHANGE_REQUIRED,
 		READY
 	}
 
@@ -102,6 +103,7 @@ public class StandardizationDryRunCompound {
 	private Parent parent;
 	
 	public StandardizationDryRunCompound() {
+		this.setSyncStatus( SyncStatus.NO_CHANGE_REQUIRED);
 	}
 
 	@Transactional
@@ -121,21 +123,15 @@ public class StandardizationDryRunCompound {
 				.createQuery("SELECT max(o.runNumber) FROM StandardizationDryRunCompound o", Integer.class);
 	}
 
-	@Transactional
-	public static TypedQuery<StandardizationDryRunCompound> findStandardizationChanges() {
-		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true";
-		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class);
-	}
-
 	public static TypedQuery<StandardizationDryRunCompound> findReadyStandardizationChanges() {
-		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE o.parentSyncStatus = :parentSyncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
-		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class).setParameter("parentSyncStatus", SyncStatus.READY);
+		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus";
+		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class).setParameter("syncStatus", SyncStatus.READY);
 	}
 
 	@Transactional
 	public static int getReadyStandardizationChangesCount() {
-		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.parentSyncStatus = :parentSyncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
-		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class).setParameter("parentSyncStatus", SyncStatus.READY).getSingleResult().intValue();
+		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
+		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class).setParameter("syncStatus", SyncStatus.READY).getSingleResult().intValue();
 	}
 
 	@Transactional
@@ -542,12 +538,12 @@ public class StandardizationDryRunCompound {
 		this.registrationComment = registrationComment;
 	}
 
-	public SyncStatus getParentSyncStatus() {
-		return this.parentSyncStatus;
+	public SyncStatus getSyncStatus() {
+		return this.syncStatus;
 	}
 
-	public void setParentSyncStatus(SyncStatus parentSyncStatus) {
-		this.parentSyncStatus = parentSyncStatus;
+	public void setSyncStatus(SyncStatus syncStatus) {
+		this.syncStatus = syncStatus;
 	}
 
     public Parent getParent() {

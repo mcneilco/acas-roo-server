@@ -305,7 +305,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		for (Long parentId : pIdGroup) {
 			parent = parents.get(parentId);
 			stndznCompound = new StandardizationDryRunCompound();
-			stndznCompound.setParentSyncStatus(SyncStatus.READY);
 			stndznCompound.setRunNumber(runNumber);
 			stndznCompound.setQcDate(qcDate);
 			stndznCompound.setParent(parent);
@@ -332,6 +331,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				DecimalFormat deltaMolFormat = new DecimalFormat("#.###");
 				Double deltaMolWeight = stndznCompound.getParent().getMolWeight() - stndznCompound.getNewMolWeight();
 				stndznCompound.setDeltaMolWeight(Double.valueOf(deltaMolFormat.format(deltaMolWeight)));
+				if(stndznCompound.getDeltaMolWeight() <= 0.01) {
+					stndznCompound.setSyncStatus(SyncStatus.READY);
+				}
 			}
 
 			boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
@@ -339,6 +341,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 			if (!displayTheSame) {
 				stndznCompound.setDisplayChange(true);
+				stndznCompound.setSyncStatus(SyncStatus.READY);
 				logger.debug("the compounds are NOT matching: " + parent.getCorpName());
 				nonMatchingCmpds++;
 			}
@@ -528,6 +531,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			dryRunCompound.setNewDuplicateCount(newDupeCount);
 			if (!newDuplicateCorpNames.equals("")) {
 				dryRunCompound.setNewDuplicates(newDuplicateCorpNames);
+				dryRunCompound.setSyncStatus(SyncStatus.READY);
 			}
 			dryRunCompound.setExistingDuplicateCount(oldDuplicateCount);
 			if (!oldDuplicateCorpNames.equals("")) {
@@ -551,7 +555,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public String getStandardizationDryRunReportFiles(String sdfFileName)
 			throws IOException, CmpdRegMolFormatException {
-		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findStandardizationChanges()
+				List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges()
 				.getResultList();
 
 		return (writeStandardizationCompoundsToSDF(stndznCompounds, sdfFileName));
@@ -618,7 +622,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public String getStandardizationDryRunReport()
 			throws StandardizerException, CmpdRegMolFormatException, IOException {
-		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findStandardizationChanges()
+				List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges()
 				.getResultList();
 
 		String json = "[]";
@@ -653,6 +657,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
+	@Transactional
 	public int restandardizeParentsOfStandardizationDryRunCompounds()
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
 
@@ -694,9 +699,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return(p);
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public int restandardizeParentsOfStandardizationDryRunCompoundsBatch(int batchSize) throws CmpdRegMolFormatException, StandardizerException, IOException {
 
-		
 		// Create a hashmap we can use to store the cmpdreg molecules for each cdId in the standardizationDryRunCompounds
 		HashMap<String, Integer> cdIdMap = new HashMap<String, Integer>();
 		List<StandardizationDryRunCompound> standardizationDryRunCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges().setMaxResults(batchSize).getResultList();
@@ -756,7 +761,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 			pIds.add(parent.getId());
 
-			standardizationCompound.setParentSyncStatus(SyncStatus.COMPLETE);
+			standardizationCompound.setSyncStatus(SyncStatus.COMPLETE);
 		}
 		// Update lot information, this is much faster than looping through the
 		// salt_forms and lots using hibernate
@@ -774,6 +779,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
+	@Transactional
 	public String executeStandardization(String username, String reason) throws StandardizerException {
 		StandardizationHistory standardizationHistory = getMostRecentStandardizationHistory();
 		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings();
@@ -793,6 +799,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		try {
 			result = this.runStandardization();
 		} catch (CmpdRegMolFormatException | IOException | StandardizerException e) {
+			logger.error("Failed running standardization", e);
 			standardizationHistory.setStandardizationComplete(new Date());
 			standardizationHistory.setStandardizationStatus("failed");
 			standardizationHistory.merge();
@@ -810,7 +817,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		standardizationHistory.setStandardizationUser(username);
 		standardizationHistory.setStandardizationReason(reason);
 		standardizationHistory.merge();
-		this.reset();
 		return standardizationHistory.toJson();
 	}
 
