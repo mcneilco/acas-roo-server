@@ -214,12 +214,12 @@ public class ApiStereoCategoryController {
 		} catch (Exception e) {
 			logger.info("Hit an exception: " + e);
 			Long parentCount = Parent.countParentsByStereoCategory(stereoCategory);
-			logger.info("Unable to delete the stereoCategory. " + parentCount
-					+ " parents associated with the stereoCategory " + stereoCategory.getName());
+			logger.info("Unable to delete the stereoCategory: \"" + stereoCategory.getName()+ "\". " + parentCount
+			+ " parents associated with the stereoCategory.");
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("ERROR");
-			error.setMessage("Unable to delete the stereoCategory. " + parentCount
-					+ " parents associated with the stereoCategory " + stereoCategory.getName());
+			error.setMessage("Unable to delete the stereoCategory: \"" + stereoCategory.getName()+ "\". " + parentCount
+					+ " parents associated with the stereoCategory.");
 			errors.add(error);
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
 		}

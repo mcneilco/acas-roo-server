@@ -212,11 +212,11 @@ public class ApiVendorController {
 		} catch (Exception e) {
 			logger.info("Hit an exception: " + e);
 			Long lotCount = Lot.countLotsByVendor(vendor);
-			logger.info("Unable to delete the vendor. " + lotCount + " lots associated with the vendor "
+			logger.info("Unable to delete Vendor: \"" + vendor.getName() + "\". " + lotCount + " lots associated with the vendor."
 					+ vendor.getName());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("ERROR");
-			error.setMessage("Unable to delete the vendor. " + lotCount + " lots associated with the vendor "
+			error.setMessage("Unable to delete Vendor: \"" + vendor.getName() + "\". " + lotCount + " lots associated with the vendor."
 					+ vendor.getName());
 			errors.add(error);
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
