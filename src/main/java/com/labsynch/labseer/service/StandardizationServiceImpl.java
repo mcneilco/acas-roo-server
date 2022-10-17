@@ -80,7 +80,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
 	@Override
-	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
 		logger.info("Application context: " + context.getDisplayName());
@@ -932,3 +931,4 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 	}
 }
+
