@@ -713,6 +713,9 @@ public class Parent {
     }
 
     public static TypedQuery<Parent> checkForDuplicateParentByCdId(Long parentId, int[] cdIds) {
+        // Given a parent ID and list of structure ids
+        // Return a list of duplicates which have theame stereo category and stereo comment as the parent id
+        // exclude the parent id from the list
         if(cdIds == null)
             throw new IllegalArgumentException("The cdIds argument is required");
         if(parentId == null)
@@ -734,9 +737,9 @@ public class Parent {
         q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
         q.setParameter("id", parent.getId());
         q.setParameter("stereoCategory", parent.getStereoCategory());
-		if(parent.getStereoComment() != null) {
-			q.setParameter("stereoComment", parent.getStereoComment());
-		}
+        if(parent.getStereoComment() != null) {
+            q.setParameter("stereoComment", parent.getStereoComment());
+        }
         return q;
     }
 

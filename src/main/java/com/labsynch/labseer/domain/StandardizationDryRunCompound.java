@@ -653,32 +653,35 @@ public class StandardizationDryRunCompound {
 		return q;
 	}
 
-    public static TypedQuery<StandardizationDryRunCompound> checkForDuplicateStandardizationDryRunCompoundByCdId(Long standardizationDryRunRowId, int[] cdIds) {
-        if(cdIds == null)
-            throw new IllegalArgumentException("The cdIds argument is required");
-        if(standardizationDryRunRowId == null)
-            throw new IllegalArgumentException("The standardizationDryRunRowId argument is required");
+    public static TypedQuery<StandardizationDryRunCompound> checkForDuplicateStandardizationDryRunCompoundByCdId(Long standardizationDryRunCompoundId, int[] cdIds) {
+		// Given a a standardization dry run compound id ID and list of structure ids
+		// Return a list of StandardizationDryRunCompounds which have theame stereo category and stereo comment as the parent id
+		// exclude the StandardizationDryRunCompound id from the list
+		if(cdIds == null)
+			throw new IllegalArgumentException("The cdIds argument is required");
+		if(standardizationDryRunCompoundId == null)
+			throw new IllegalArgumentException("The standardizationDryRunRowId argument is required");
 
-        StandardizationDryRunCompound standardizationDryRunCompound = findStandardizationDryRunCompound(standardizationDryRunRowId);
-        if(standardizationDryRunCompound == null)
-            throw new IllegalArgumentException("The standardizationDryRunRowId argument is invalid - no standardizationDryRunRow with id " + standardizationDryRunRowId + " found");
-        
-        EntityManager em = StandardizationDryRunCompound.entityManager();
-        String queryBuilder = "SELECT o FROM StandardizationDryRunCompound AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
+		StandardizationDryRunCompound standardizationDryRunCompound = findStandardizationDryRunCompound(standardizationDryRunCompoundId);
+		if(standardizationDryRunCompound == null)
+			throw new IllegalArgumentException("The standardizationDryRunRowId argument is invalid - no standardizationDryRunRow with id " + standardizationDryRunCompoundId + " found");
+		
+		EntityManager em = StandardizationDryRunCompound.entityManager();
+		String queryBuilder = "SELECT o FROM StandardizationDryRunCompound AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
 
-        if(standardizationDryRunCompound.getStereoComment() == null) {
-            queryBuilder += " AND o.stereoComment IS NULL";
-        } else {
-            queryBuilder += " AND o.stereoComment = :stereoComment";
-        }
-        TypedQuery<StandardizationDryRunCompound> q = em.createQuery(queryBuilder, StandardizationDryRunCompound.class);
-        q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
-        q.setParameter("id", standardizationDryRunCompound.getId());
-        q.setParameter("stereoCategory", standardizationDryRunCompound.getStereoCategory());
+		if(standardizationDryRunCompound.getStereoComment() == null) {
+			queryBuilder += " AND o.stereoComment IS NULL";
+		} else {
+			queryBuilder += " AND o.stereoComment = :stereoComment";
+		}
+		TypedQuery<StandardizationDryRunCompound> q = em.createQuery(queryBuilder, StandardizationDryRunCompound.class);
+		q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
+		q.setParameter("id", standardizationDryRunCompound.getId());
+		q.setParameter("stereoCategory", standardizationDryRunCompound.getStereoCategory());
 		if(standardizationDryRunCompound.getStereoComment() != null) {
 			q.setParameter("stereoComment", standardizationDryRunCompound.getStereoComment());
 		}
-        return q;
+		return q;
     }
 
 	@PersistenceContext
