@@ -1700,7 +1700,7 @@ public class Lot {
             parentIdsToMolStructures.put(parentId, (String) result[1]);
         }
 
-        // Verify that each of the original pIdGroup parent ids exist in the result set
+        // Verify that each of the original parentIds exist in the result set
         for (Long parentId : parentIds) {
             if (!parentIdsToMolStructures.containsKey(parentId)) {
                 parentIdsToMolStructures.put(parentId, null);
