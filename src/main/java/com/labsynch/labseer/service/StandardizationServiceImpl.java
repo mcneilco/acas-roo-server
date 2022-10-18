@@ -479,7 +479,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			List<StandardizationDryRunCompound> dryRunDupes = StandardizationDryRunCompound.checkForDuplicateStandardizationDryRunCompoundByCdId(dryRunCompound.getId(), hits).getResultList();
 			newDupeCount = dryRunDupes.size();
 			if(newDupeCount > 0) {
-				dryRunCompound.setChangedStructure(true);
 				newDuplicateCorpNames = dryRunDupes
 					.stream()
 					.map(d -> d.getCorpName())
