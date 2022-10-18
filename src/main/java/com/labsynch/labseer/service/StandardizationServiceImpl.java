@@ -612,7 +612,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public String getStandardizationDryRunReport()
 			throws StandardizerException, CmpdRegMolFormatException, IOException {
-				List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges()
+		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges()
 				.getResultList();
 
 		String json = "[]";

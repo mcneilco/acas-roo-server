@@ -548,13 +548,13 @@ public class StandardizationDryRunCompound {
 		this.syncStatus = syncStatus;
 	}
 
-    public Parent getParent() {
-        return this.parent;
-    }
+	public Parent getParent() {
+		return this.parent;
+	}
 
-    public void setParent(Parent parent) {
-        this.parent = parent;
-    }
+	public void setParent(Parent parent) {
+		this.parent = parent;
+	}
 
 	public static Long countFindStandardizationDryRunCompoundsByCdId(int CdId) {
 		EntityManager em = StandardizationDryRunCompound.entityManager();
