@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -12,12 +13,13 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
+import java.util.stream.Collectors;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
+import com.labsynch.labseer.domain.DryRunCompound;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
@@ -80,7 +82,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
 	@Override
-	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
 		logger.info("Application context: " + context.getDisplayName());
@@ -259,13 +260,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Create standardization hashmap
 		HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
 		HashMap<String, String> parentIdsToAsDrawnStructs = new HashMap<String, String>();
+		HashMap<Long, String> parentAsDrawnMap = Lot.getOriginallyDrawnAsStructuresByParentIds(pIdGroup);
 		HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
 		for (Long parentId : pIdGroup) {
 			parent = Parent.findParent(parentId);
 			parents.put(parentId, parent);
 
 			// Get the as drawn structure
-			String asDrawnStruct = Lot.getOriginallyDrawnAsStructure(parent);
+			String asDrawnStruct = parentAsDrawnMap.get(parentId);
 			if (asDrawnStruct == null) {
 				logger.warn("Parent " + parentId + " has no as drawn structure");
 				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
@@ -469,69 +471,57 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					chemStructureHashMap,
 					StructureType.STANDARDIZATION_DRY_RUN);
 
+			// Fetch the dry run dupes (aka new duplicates)
+
 			// Pass -1F for simlarityPercent (non nullable int required in function
 			// signature not used in DUPLICATE_TAUTOMER searches)
 			// Pass -1 for maxResults (non nullable int required in function signature we
 			// don't want to limit the hit counts here)
 			hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
 					StructureType.STANDARDIZATION_DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-			newDupeCount = hits.length;
-			for (int hit : hits) {
-				List<StandardizationDryRunCompound> searchResults = StandardizationDryRunCompound
-						.findStandardizationDryRunCompoundsByCdId(hit).getResultList();
-				for (StandardizationDryRunCompound searchResult : searchResults) {
-					if (searchResult.getParent().getCorpName().equalsIgnoreCase(dryRunCompound.getParent().getCorpName())) {
-						newDupeCount = newDupeCount - 1;
-					} else {
-						if (searchResult.getParent().getStereoCategory().getId() == dryRunCompound.getParent().getStereoCategory().getId()
-								&& StringUtils.equalsIgnoreCase(searchResult.getParent().getStereoComment(),
-										dryRunCompound.getParent().getStereoComment())) {
-							if (!firstNewDuplicateHit)
-								newDuplicateCorpNames = newDuplicateCorpNames.concat(";");
-							newDuplicateCorpNames = newDuplicateCorpNames.concat(searchResult.getParent().getCorpName());
-							firstNewDuplicateHit = false;
-							logger.info("found new dupe parents - query: '" + dryRunCompound.getParent().getCorpName() + "' dupe: '"
-									+ searchResult.getParent().getCorpName() + "'");
-							totalNewDuplicateCount++;
-						} else {
-							newDupeCount = newDupeCount - 1;
-							logger.debug("found different stereo codes and comments");
-						}
-					}
-				}
+			List<StandardizationDryRunCompound> dryRunDupes = StandardizationDryRunCompound.checkForDuplicateStandardizationDryRunCompoundByCdId(dryRunCompound.getId(), hits).getResultList();
+			newDupeCount = dryRunDupes.size();
+			if(newDupeCount > 0) {
+				newDuplicateCorpNames = dryRunDupes
+					.stream()
+					.map(d -> d.getParent().getCorpName())
+					.collect(
+						Collectors.joining(";")
+					);
+				logger.info("found dry run dupe - query: '" + dryRunCompound.getParent().getCorpName() + "' dupes list: "
+					+ newDuplicateCorpNames);	
 			}
-			hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
-					StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-			oldDuplicateCount = hits.length;
-			dryRunCompound.setChangedStructure(true);
-			for (int hit : hits) {
-				List<Parent> searchResults = Parent.findParentsByCdId(hit).getResultList();
-				for (Parent searchResult : searchResults) {
-					if (searchResult.getCorpName().equalsIgnoreCase(dryRunCompound.getParent().getCorpName())) {
-						oldDuplicateCount = oldDuplicateCount - 1;
-						dryRunCompound.setChangedStructure(false);
-					} else {
-						if (searchResult.getStereoCategory().getId() == dryRunCompound.getParent().getStereoCategory().getId()
-								&& StringUtils.equalsIgnoreCase(searchResult.getStereoComment(),
-										dryRunCompound.getParent().getStereoComment())) {
-							if (!firstOldDuplicateHit)
-								oldDuplicateCorpNames = oldDuplicateCorpNames.concat(";");
-							oldDuplicateCorpNames = oldDuplicateCorpNames.concat(searchResult.getCorpName());
-							firstOldDuplicateHit = false;
-							logger.info("found old dupe parents - query: '" + dryRunCompound.getParent().getCorpName() + "' dupe: "
-									+ searchResult.getCorpName() + "'");
-							// totalExistingDuplicateCount++;
-						} else {
-							oldDuplicateCount = oldDuplicateCount - 1;
-							logger.debug("found different stereo codes and comments");
-						}
-					}
-				}
-			}
+
 			dryRunCompound.setNewDuplicateCount(newDupeCount);
 			if (!newDuplicateCorpNames.equals("")) {
 				dryRunCompound.setNewDuplicates(newDuplicateCorpNames);
 				dryRunCompound.setSyncStatus(SyncStatus.READY);
+			}
+
+			hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
+					StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
+			
+			// Check for changed structure by seeing if any of the hits from the parent table match the newly standardize structure
+			// If not then we mark the structure as changed
+			int parentCdId = dryRunCompound.getParent().getCdId();
+			if(Arrays.stream(hits).anyMatch(x -> x == parentCdId)) {
+				dryRunCompound.setChangedStructure(false);
+			} else {
+				dryRunCompound.setChangedStructure(true);
+			}
+
+			// Fetch the parent (aka old/existing duplicates)
+			List<Parent> parentDupes = Parent.checkForDuplicateParentByCdId(dryRunCompound.getParent().getId(), hits).getResultList();
+			oldDuplicateCount = parentDupes.size();
+			if(oldDuplicateCount > 0) {
+				oldDuplicateCorpNames = parentDupes
+					.stream()
+					.map(p -> p.getCorpName())
+					.collect(
+						Collectors.joining(";")
+					);
+				logger.info("found dupe parents - query: '" + dryRunCompound.getParent().getCorpName() + "' dupes list: "
+					+ oldDuplicateCorpNames);	
 			}
 			dryRunCompound.setExistingDuplicateCount(oldDuplicateCount);
 			if (!oldDuplicateCorpNames.equals("")) {
@@ -930,3 +920,4 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 	}
 }
+
