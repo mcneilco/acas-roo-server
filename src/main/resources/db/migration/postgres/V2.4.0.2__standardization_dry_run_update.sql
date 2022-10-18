@@ -7,24 +7,3 @@ ALTER TABLE standardization_dry_run_compound DROP COLUMN IF EXISTS stereo_commen
 ALTER TABLE standardization_dry_run_compound DROP COLUMN IF EXISTS old_mol_weight;
 
 CREATE INDEX IF NOT EXISTS stndzn_dry_run_sync_status_idx on standardization_dry_run_compound(sync_status);
-
-ALTER TABLE bbchem_standardization_dry_run_structure ADD COLUMN IF NOT EXISTS exact_mol_weight double precision;
-ALTER TABLE bbchem_standardization_dry_run_structure ADD COLUMN IF NOT EXISTS average_mol_weight double precision;
-ALTER TABLE bbchem_standardization_dry_run_structure ADD COLUMN IF NOT EXISTS total_charge integer;
-ALTER TABLE bbchem_standardization_dry_run_structure ADD COLUMN IF NOT EXISTS molecular_formula character varying(4000);
-ALTER TABLE bbchem_dry_run_structure ADD COLUMN IF NOT EXISTS exact_mol_weight double precision;
-ALTER TABLE bbchem_dry_run_structure ADD COLUMN IF NOT EXISTS average_mol_weight double precision;
-ALTER TABLE bbchem_dry_run_structure ADD COLUMN IF NOT EXISTS total_charge integer;
-ALTER TABLE bbchem_dry_run_structure ADD COLUMN IF NOT EXISTS molecular_formula character varying(4000);
-ALTER TABLE bbchem_parent_structure ADD COLUMN IF NOT EXISTS exact_mol_weight double precision;
-ALTER TABLE bbchem_parent_structure ADD COLUMN IF NOT EXISTS average_mol_weight double precision;
-ALTER TABLE bbchem_parent_structure ADD COLUMN IF NOT EXISTS total_charge integer;
-ALTER TABLE bbchem_parent_structure ADD COLUMN IF NOT EXISTS molecular_formula character varying(4000);
-ALTER TABLE bbchem_salt_form_structure ADD COLUMN IF NOT EXISTS exact_mol_weight double precision;
-ALTER TABLE bbchem_salt_form_structure ADD COLUMN IF NOT EXISTS average_mol_weight double precision;
-ALTER TABLE bbchem_salt_form_structure ADD COLUMN IF NOT EXISTS total_charge integer;
-ALTER TABLE bbchem_salt_form_structure ADD COLUMN IF NOT EXISTS molecular_formula character varying(4000);
-ALTER TABLE bbchem_salt_structure ADD COLUMN IF NOT EXISTS exact_mol_weight double precision;
-ALTER TABLE bbchem_salt_structure ADD COLUMN IF NOT EXISTS average_mol_weight double precision;
-ALTER TABLE bbchem_salt_structure ADD COLUMN IF NOT EXISTS total_charge integer;
-ALTER TABLE bbchem_salt_structure ADD COLUMN IF NOT EXISTS molecular_formula character varying(4000);
