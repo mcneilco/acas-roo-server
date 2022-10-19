@@ -19,7 +19,6 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
-import com.labsynch.labseer.domain.DryRunCompound;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
@@ -544,7 +543,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public String getStandardizationDryRunReportFiles(String sdfFileName)
 			throws IOException, CmpdRegMolFormatException {
-				List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges()
+		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findReadyStandardizationChanges()
 				.getResultList();
 
 		return (writeStandardizationCompoundsToSDF(stndznCompounds, sdfFileName));
