@@ -611,10 +611,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						String.valueOf(stndznCompound.isAsDrawnDisplayChange()));
 				cmpdRegMolecule.setProperty("Stereo Category", stndznCompound.getStereoCategory());
 				cmpdRegMolecule.setProperty("Stereo Comment", stndznCompound.getStereoComment());
+				cmpdRegMoleculeList.add(cmpdRegMolecule);
 			}
 		}
 		sdfWriter.writeMols(cmpdRegMoleculeList);
-
+		sdfWriter.close();
 		// Return the path to the sdf file
 		return sdfFileName;
 	}

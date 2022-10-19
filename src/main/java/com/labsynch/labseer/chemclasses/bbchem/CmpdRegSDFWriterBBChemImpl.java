@@ -51,7 +51,8 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
     public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
         CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
         try {
-            this.writer.write(bbChemStructureServices.getSDF(molWrapper.molecule));
+            String sdfText = bbChemStructureServices.getSDF(molWrapper.molecule);
+            this.writer.write(sdfText);
         } catch (Exception e) {
             logger.error("Unable to write mol", e);
             return false;
@@ -67,8 +68,8 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
                 CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
                 cmpdRegMoleculeBBChemImplList.add(molWrapper.molecule);
             }
-
-            this.writer.write(bbChemStructureServices.getSDF(cmpdRegMoleculeBBChemImplList));
+            String sdfText = bbChemStructureServices.getSDF(cmpdRegMoleculeBBChemImplList);
+            this.writer.write(sdfText);
         } catch (Exception e) {
             logger.error("Unable to write mol", e);
             return false;

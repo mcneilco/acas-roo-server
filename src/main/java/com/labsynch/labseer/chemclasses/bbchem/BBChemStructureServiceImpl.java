@@ -507,25 +507,18 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			// Add the mol node to the sdfs array node
 			sdfsNode.add(molNode);
 	
-			// Add the sdfs to the request data
-			requestData.put("sdfs", sdfsNode);
 	
-			// Post to the service and parse the response
-			String requestString = requestData.toString();
-			logger.debug("requestString: " + requestString);
-			String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
-			logger.debug("Got response: " + postResponse);
-	
-			// Parse the response json
-			ObjectMapper responseMapper = new ObjectMapper();
-			JsonNode responseNode = responseMapper.readTree(postResponse);
-			return responseNode.asText();
 		}
 
+		// Add the sdfs to the request data
+		requestData.put("sdfs", sdfsNode);
+		
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
+		logger.info("Making to bbchem sdf export service");
 		logger.debug("requestString: " + requestString);
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
+		logger.info("Got response from bbchem sdf export service");
 		logger.debug("Got response: " + postResponse);
 
 		// Parse the response json
