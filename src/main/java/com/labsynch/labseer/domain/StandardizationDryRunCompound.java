@@ -125,6 +125,7 @@ public class StandardizationDryRunCompound {
 				.createQuery("SELECT max(o.runNumber) FROM StandardizationDryRunCompound o", Integer.class);
 	}
 
+	@Transactional
 	public static TypedQuery<StandardizationDryRunCompound> findReadyStandardizationChanges() {
 		String querySQL = "SELECT o FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, StandardizationDryRunCompound.class).setParameter("syncStatus", SyncStatus.READY);
