@@ -3,6 +3,8 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
@@ -50,6 +52,23 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
         CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
         try {
             this.writer.write(bbChemStructureServices.getSDF(molWrapper.molecule));
+        } catch (Exception e) {
+            logger.error("Unable to write mol", e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean writeMols(List<CmpdRegMolecule> cmpdRegMoleculeList) throws CmpdRegMolFormatException, IOException {
+        try {
+            List<BBChemParentStructure> cmpdRegMoleculeBBChemImplList = new ArrayList<BBChemParentStructure>();
+            for (CmpdRegMolecule molecule : cmpdRegMoleculeList) {
+                CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
+                cmpdRegMoleculeBBChemImplList.add(molWrapper.molecule);
+            }
+
+            this.writer.write(bbChemStructureServices.getSDF(cmpdRegMoleculeBBChemImplList));
         } catch (Exception e) {
             logger.error("Unable to write mol", e);
             return false;
