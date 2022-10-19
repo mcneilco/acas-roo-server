@@ -647,8 +647,9 @@ public class StandardizationDryRunCompound {
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 		String queryBuilder = "SELECT o FROM StandardizationDryRunCompound AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
 
-		if(standardizationDryRunCompound.getParent().getStereoComment() == null) {
-			queryBuilder += " AND o.stereoComment IS NULL";
+		Boolean stereoCommentEmpty = standardizationDryRunCompound.getParent() == null || standardizationDryRunCompound.getParent().getStereoComment().length() == 0;
+		if(stereoCommentEmpty) {
+            queryBuilder += " AND o.stereoComment IS NULL or o.stereoComment = ''";
 		} else {
 			queryBuilder += " AND o.stereoComment = :stereoComment";
 		}
@@ -656,7 +657,7 @@ public class StandardizationDryRunCompound {
 		q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
 		q.setParameter("id", standardizationDryRunCompound.getId());
 		q.setParameter("stereoCategory", standardizationDryRunCompound.getParent().getStereoCategory());
-		if(standardizationDryRunCompound.getParent().getStereoComment() != null) {
+		if(!stereoCommentEmpty) {
 			q.setParameter("stereoComment", standardizationDryRunCompound.getParent().getStereoComment());
 		}
 		return q;

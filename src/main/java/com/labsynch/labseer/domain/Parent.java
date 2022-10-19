@@ -728,8 +728,9 @@ public class Parent {
         EntityManager em = Parent.entityManager();
         String queryBuilder = "SELECT o FROM Parent AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
 
-        if(parent.getStereoComment() == null) {
-            queryBuilder += " AND o.stereoComment IS NULL";
+        Boolean stereoCommentEmpty = parent.getStereoComment() == null || parent.getStereoComment().length() == 0;
+        if(stereoCommentEmpty) {
+            queryBuilder += " AND o.stereoComment IS NULL or o.stereoComment = ''";
         } else {
             queryBuilder += " AND o.stereoComment = :stereoComment";
         }
@@ -737,7 +738,7 @@ public class Parent {
         q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
         q.setParameter("id", parent.getId());
         q.setParameter("stereoCategory", parent.getStereoCategory());
-        if(parent.getStereoComment() != null) {
+        if(!stereoCommentEmpty) {
             q.setParameter("stereoComment", parent.getStereoComment());
         }
         return q;
