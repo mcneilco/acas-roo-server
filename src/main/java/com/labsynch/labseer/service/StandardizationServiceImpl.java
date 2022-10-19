@@ -506,6 +506,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				dryRunCompound.setChangedStructure(false);
 			} else {
 				dryRunCompound.setChangedStructure(true);
+				dryRunCompound.setSyncStatus(SyncStatus.READY);
 			}
 
 			// Fetch the parent (aka old/existing duplicates)
