@@ -133,15 +133,8 @@ public class StandardizationDryRunCompound {
 
 	@Transactional
 	public static int getReadyStandardizationChangesCount() {
-		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus and (o.changedStructure = true OR o.existingDuplicateCount > 0 OR o.newDuplicateCount > 0 OR o.displayChange = true)";
+		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class).setParameter("syncStatus", SyncStatus.READY).getSingleResult().intValue();
-	}
-
-	@Transactional
-	public static int getStandardizationChangesCount() {
-		return toIntExact(StandardizationDryRunCompound.entityManager().createQuery(
-				"SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE changedStructure = true OR existingDuplicateCount > 0 OR newDuplicateCount > 0 OR displayChange = true",
-				Long.class).getSingleResult());
 	}
 
 	public StandardizationHistory fetchStats() {

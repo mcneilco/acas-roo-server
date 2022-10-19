@@ -892,7 +892,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		stndznHistory.setDryRunComplete(new Date());
 		stndznHistory.setDryRunStatus("complete");
 		stndznHistory
-				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getStandardizationChangesCount());
+				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getReadyStandardizationChangesCount());
 		stndznHistory.merge();
 	}
 
