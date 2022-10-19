@@ -452,8 +452,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 		int totalNewDuplicateCount = 0;
 
-		boolean firstNewDuplicateHit = true;
-		boolean firstOldDuplicateHit = true;
 		dryRunCompound = StandardizationDryRunCompound.findStandardizationDryRunCompound(dryRunId);
 
 		if (dryRunCompound.getRegistrationStatus() == RegistrationStatus.ERROR) {
