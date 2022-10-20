@@ -617,7 +617,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						String.valueOf(stndznCompound.isAsDrawnDisplayChange()));
 				cmpdRegMolecule.setProperty("Stereo Category", stndznCompound.getParent().getStereoCategory().getName());
 				cmpdRegMolecule.setProperty("Stereo Comment", stndznCompound.getParent().getStereoComment());
-                cmpdRegMoleculeList.add(cmpdRegMolecule);
+				cmpdRegMoleculeList.add(cmpdRegMolecule);
 			}
 		}
 		sdfWriter.writeMols(cmpdRegMoleculeList);
@@ -916,10 +916,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	private int runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		logger.info("standardization dry run initialized");
-		logger.info("step 1/3: resetting dry run table");
-		this.reset();
-		logger.info("step 2/3: populating dry run table");
-		this.populateStandardizationDryRunTable();
+		// logger.info("step 1/3: resetting dry run table");
+		// this.reset();
+		// logger.info("step 2/3: populating dry run table");
+		// this.populateStandardizationDryRunTable();
 		logger.info("step 3/3: checking for standardization duplicates");
 		int numberOfDisplayChanges = this.dupeCheckStandardizationStructures();
 		logger.info("standardization dry run complete");

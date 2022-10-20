@@ -644,7 +644,7 @@ public class StandardizationDryRunCompound {
 
 		Boolean stereoCommentEmpty = standardizationDryRunCompound.getParent().getStereoComment() == null || standardizationDryRunCompound.getParent().getStereoComment().length() == 0;
 		if(stereoCommentEmpty) {
-            queryBuilder += " AND (p.stereoComment IS NULL or p.stereoComment = '')";
+			queryBuilder += " AND (p.stereoComment IS NULL or p.stereoComment = '')";
 		} else {
 			queryBuilder += " AND lower(p.stereoComment) = lower(:stereoComment)";
 		}
