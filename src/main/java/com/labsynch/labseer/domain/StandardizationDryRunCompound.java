@@ -812,7 +812,29 @@ public class StandardizationDryRunCompound {
 
 	public static String toJsonArray(Collection<StandardizationDryRunCompound> collection) {
 		return new JSONSerializer()
-				.exclude("*.class").serialize(collection);
+				.include("parent.corpName", 
+					"parent.molWeight",
+					"runNumber", 
+					"qcDate",
+					"newDuplicates",
+					"existingDuplicates",
+					"changedStructure",
+					"newMolWeight",
+					"deltaMolWeight",
+					"displayChange",
+					"asDrawnDisplayChange",
+					"newDuplicateCount",
+					"existingDuplicateCount",
+					"alias",
+					"CdId",
+					"comment",
+					"standardizationComment",
+					"registrationComment",
+					"registrationStatus",
+					"standardizationStatus",
+					"syncStatus"
+				)
+				.exclude("*.class", "*").serialize(collection);
 	}
 
 	public static String toJsonArray(Collection<StandardizationDryRunCompound> collection, String[] fields) {
