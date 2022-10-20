@@ -639,13 +639,13 @@ public class StandardizationDryRunCompound {
 			throw new IllegalArgumentException("The standardizationDryRunRowId argument is invalid - no standardizationDryRunRow with id " + standardizationDryRunCompoundId + " found");
 		
 		EntityManager em = StandardizationDryRunCompound.entityManager();
-		String queryBuilder = "SELECT o FROM StandardizationDryRunCompound AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
+		String queryBuilder = "SELECT o FROM StandardizationDryRunCompound AS o JOIN FETCH o.parent p WHERE o.CdId IN (:cdIds) AND o.id != :id and p.stereoCategory = :stereoCategory";
 
-		Boolean stereoCommentEmpty = standardizationDryRunCompound.getParent() == null || standardizationDryRunCompound.getParent().getStereoComment().length() == 0;
+		Boolean stereoCommentEmpty = standardizationDryRunCompound.getParent().getStereoComment() == null || standardizationDryRunCompound.getParent().getStereoComment().length() == 0;
 		if(stereoCommentEmpty) {
-            queryBuilder += " AND o.stereoComment IS NULL or o.stereoComment = ''";
+            queryBuilder += " AND (p.stereoComment IS NULL or p.stereoComment = '')";
 		} else {
-			queryBuilder += " AND o.stereoComment = :stereoComment";
+			queryBuilder += " AND lower(p.stereoComment) = lower(:stereoComment)";
 		}
 		TypedQuery<StandardizationDryRunCompound> q = em.createQuery(queryBuilder, StandardizationDryRunCompound.class);
 		q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
