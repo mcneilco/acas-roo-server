@@ -7,9 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.io.IOUtils;
 
 public class Request implements Callable<Response> {
+
+	Logger logger = LoggerFactory.getLogger(Request.class);
 
     private HttpURLConnection con;
     private URL obj;
@@ -49,6 +53,7 @@ public class Request implements Callable<Response> {
             String body = IOUtils.toString(inputStream);
             return new Response(id, responseCode, body);
         } catch (IOException e) {
+            logger.error("Error in Request", e);
             response = "{\"output\":\"some error occurred\"}";
             return new Response(id, 404, response);
         }

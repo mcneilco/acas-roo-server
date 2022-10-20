@@ -83,6 +83,7 @@ public class ApiStandardizationServicesController {
 		return new ResponseEntity<String>(jsonReport, headers, HttpStatus.OK);
 	}
 
+	@Transactional
 	@RequestMapping(value = "/dryRunSearch", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> dryRunSearch(
 			@RequestParam(value = "countOnly", required = false) Boolean countOnly,
@@ -103,6 +104,7 @@ public class ApiStandardizationServicesController {
 		}
 	}
 
+	@Transactional
 	@RequestMapping(value = "/dryRunSearchExport", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> dryRunSearchExport(
 			@RequestBody String json) throws IOException, CmpdRegMolFormatException {
@@ -114,6 +116,7 @@ public class ApiStandardizationServicesController {
 		return new ResponseEntity<String>(outputFilePath, headers, HttpStatus.OK);
 	}
 
+	@Transactional
 	@RequestMapping(value = "/dryRunReportFiles", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> dryRunReportFile(@RequestBody String filePath)
@@ -144,6 +147,7 @@ public class ApiStandardizationServicesController {
 
 	}
 
+	@Transactional
 	@RequestMapping(value = "/execute", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> execute(@RequestParam(value = "username", required = true) String username,
