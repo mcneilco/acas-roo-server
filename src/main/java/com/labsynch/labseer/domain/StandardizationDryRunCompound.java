@@ -322,7 +322,7 @@ public class StandardizationDryRunCompound {
 
 		criteria.where(buildPredicatesForSearch(criteriaBuilder, root, dryRunSearch));
 
-		criteria.orderBy(criteriaBuilder.desc(root.get("corpName")));
+		criteria.orderBy(criteriaBuilder.desc(root.join("parent").get("corpName")));
 		TypedQuery<StandardizationDryRunCompound> q = em.createQuery(criteria);
 
 		if (dryRunSearch.getMaxResults() != null && dryRunSearch.getMaxResults() > -1) {
@@ -563,7 +563,7 @@ public class StandardizationDryRunCompound {
 			throw new IllegalArgumentException("The corpName argument is required");
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 		TypedQuery q = em.createQuery(
-				"SELECT COUNT(o) FROM StandardizationDryRunCompound AS o WHERE o.corpName = :corpName", Long.class);
+				"SELECT COUNT(o) FROM StandardizationDryRunCompound AS o JOIN o.parent p WHERE p.corpName = :corpName", Long.class);
 		q.setParameter("corpName", corpName);
 		return ((Long) q.getSingleResult());
 	}
@@ -600,7 +600,7 @@ public class StandardizationDryRunCompound {
 			throw new IllegalArgumentException("The corpName argument is required");
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 		TypedQuery<StandardizationDryRunCompound> q = em.createQuery(
-				"SELECT o FROM StandardizationDryRunCompound AS o WHERE o.corpName = :corpName",
+				"SELECT o FROM StandardizationDryRunCompound AS o JOIN o.parent p WHERE p.corpName = :corpName",
 				StandardizationDryRunCompound.class);
 		q.setParameter("corpName", corpName);
 		return q;
@@ -612,7 +612,7 @@ public class StandardizationDryRunCompound {
 			throw new IllegalArgumentException("The corpName argument is required");
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT o FROM StandardizationDryRunCompound AS o WHERE o.corpName = :corpName");
+				"SELECT o FROM StandardizationDryRunCompound AS o JOIN o.parent p WHERE p.corpName = :corpName");
 		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
 			queryBuilder.append(" ORDER BY ").append(sortFieldName);
 			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
