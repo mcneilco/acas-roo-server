@@ -332,7 +332,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				DecimalFormat deltaMolFormat = new DecimalFormat("#.###");
 				Double deltaMolWeight = stndznCompound.getParent().getMolWeight() - stndznCompound.getNewMolWeight();
 				stndznCompound.setDeltaMolWeight(Double.valueOf(deltaMolFormat.format(deltaMolWeight)));
-				if(stndznCompound.getDeltaMolWeight() <= 0.01) {
+				if(Math.abs(stndznCompound.getDeltaMolWeight()) >= 0.01) {
 					stndznCompound.setSyncStatus(SyncStatus.READY);
 				}
 			}
@@ -526,7 +526,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				dryRunCompound.setExistingDuplicates(oldDuplicateCorpNames);
 			}
 
-			dryRunCompound.merge();
 		}
 	
 		return (totalNewDuplicateCount);
