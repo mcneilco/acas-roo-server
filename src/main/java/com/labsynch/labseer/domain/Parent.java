@@ -730,9 +730,9 @@ public class Parent {
 
         Boolean stereoCommentEmpty = parent.getStereoComment() == null || parent.getStereoComment().length() == 0;
         if(stereoCommentEmpty) {
-            queryBuilder += " AND o.stereoComment IS NULL or o.stereoComment = ''";
+            queryBuilder += " AND (o.stereoComment IS NULL or o.stereoComment = '')";
         } else {
-            queryBuilder += " AND o.stereoComment = :stereoComment";
+            queryBuilder += " AND lower(o.stereoComment) = lower(:stereoComment)";
         }
         TypedQuery<Parent> q = em.createQuery(queryBuilder, Parent.class);
         q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
