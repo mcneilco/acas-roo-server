@@ -597,6 +597,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				.getCmpdRegMolecules(standardizationDryRunHashCompoundHashmap, StructureType.STANDARDIZATION_DRY_RUN);
 
 		// Loop stndznCompounds and write cmpdreg molecule to the sdf file
+		List<CmpdRegMolecule> cmpdRegMoleculeList = new ArrayList<CmpdRegMolecule>();
 		for (StandardizationDryRunCompound stndznCompound : stndznCompounds) {
 			CmpdRegMolecule cmpdRegMolecule = cmpdRegMolecules.get(stndznCompound.getParent().getCorpName());
 			if (cmpdRegMolecule != null) {
@@ -616,11 +617,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						String.valueOf(stndznCompound.isAsDrawnDisplayChange()));
 				cmpdRegMolecule.setProperty("Stereo Category", stndznCompound.getParent().getStereoCategory().getName());
 				cmpdRegMolecule.setProperty("Stereo Comment", stndznCompound.getParent().getStereoComment());
-				sdfWriter.writeMol(cmpdRegMolecule);
+                cmpdRegMoleculeList.add(cmpdRegMolecule);
 			}
 		}
+		sdfWriter.writeMols(cmpdRegMoleculeList);
 		sdfWriter.close();
-
 		// Return the path to the sdf file
 		return sdfFileName;
 	}
