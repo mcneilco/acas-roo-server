@@ -1,5 +1,6 @@
 -- As part of ACAS-480
 CREATE INDEX IF NOT EXISTS parent_stereocomment_lower_idx on parent(lower(stereo_comment));
+CREATE INDEX IF NOT EXISTS parent_stereocomment_idx on parent(stereo_comment);
 
 ALTER TABLE standardization_dry_run_compound ADD COLUMN IF NOT EXISTS sync_status character varying(255);
 ALTER TABLE standardization_dry_run_compound DROP COLUMN IF EXISTS stereo_category;
