@@ -24,6 +24,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -237,9 +238,9 @@ public class StandardizationDryRunCompound {
 		if (dryRunSearch.getIncludeCorpNames() != null) {
 			if (dryRunSearch.getCorpNames() != null && dryRunSearch.getCorpNames().length > 0) {
 				if (dryRunSearch.getIncludeCorpNames()) {
-					predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
+					predicates.add(root.join("parent").get("corpName").in(dryRunSearch.getCorpNames()));
 				} else {
-					predicates.add(criteriaBuilder.not(root.get("corpName").in(dryRunSearch.getCorpNames())));
+					predicates.add(criteriaBuilder.not(root.join("parent", JoinType.LEFT).get("corpName").in(dryRunSearch.getCorpNames())));
 				}
 			} else {
 				if (dryRunSearch.getIncludeCorpNames()) {
