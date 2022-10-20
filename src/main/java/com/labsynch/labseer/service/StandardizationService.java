@@ -31,7 +31,7 @@ public interface StandardizationService {
 
 	public int recalculateLotMolWeights(List<Long> parentIds);
 
-	int restandardizeParentStructures(List<Long> parentIds)
+	int restandardizeParentsOfStandardizationDryRunCompounds()
 			throws CmpdRegMolFormatException, IOException, StandardizerException;
 
 	String standardizeSingleMol(String mol) throws CmpdRegMolFormatException, StandardizerException, IOException;

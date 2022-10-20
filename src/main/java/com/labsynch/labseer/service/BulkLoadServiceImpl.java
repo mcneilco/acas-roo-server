@@ -279,6 +279,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public BulkLoadRegisterSDFResponseDTO registerSdf(BulkLoadRegisterSDFRequestDTO registerRequestDTO) {
 		// get properties out the request
 		String inputFileName = registerRequestDTO.getFilePath();
+		String originalFileName = registerRequestDTO.getOriginalFileName();
 		Long startTime = new Date().getTime();
 		String chemist = registerRequestDTO.getUserName();
 		Collection<ValidationResponseDTO> results = new ArrayList();
@@ -316,7 +317,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.info("shortFileName: " + shortFileName);
 
 			int fileSizeInBytes = (int) (new File(inputFileName)).length();
-			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, 0, fileSizeInBytes,
+			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, originalFileName, 0, fileSizeInBytes,
 					BulkLoadPropertyMappingDTO.toJsonArray(mappings), chemist, new Date());
 			if (registerRequestDTO.getFileDate() != null)
 				bulkLoadFile.setFileDate(registerRequestDTO.getFileDate());
@@ -551,6 +552,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				// Check list of aliases within file being bulkloaded
 				if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
 					for (ParentAlias alias : parent.getParentAliases()) {
+						// Skip ignored and deleted aliases
+						if (alias.isDeleted() | alias.isIgnored()) {
+							continue;
+						}
+						// Make sure the parent doesn't already have this alias name
 						if (allAliasMaps.get(alias.getAliasName()) == null) {
 							allAliasMaps.put(alias.getAliasName(), numRecordsRead);
 						} else {
@@ -2333,6 +2339,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		int numParents = 0;
 		int numContainers = 0;
 		String fileName = bulkLoadFile.getFileName();
+		String originalFileName = bulkLoadFile.getOriginalFileName();
 		Collection<Lot> lots = Lot.findLotsByBulkLoadFileEquals(bulkLoadFile).getResultList();
 		Set<String> lotCorpNames = new HashSet<String>();
 		for (Lot lot : lots) {
@@ -2394,8 +2401,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		bulkLoadFile.remove();
 
-		String summary = generateSuccessfulPurgeHtml(fileName, numParents, numSaltForms, numLots, numContainers);
-		return new PurgeFileResponseDTO(summary, true, fileName);
+		String summary = generateSuccessfulPurgeHtml(originalFileName, numParents, numSaltForms, numLots, numContainers);
+		return new PurgeFileResponseDTO(summary, true, fileName, originalFileName);
 	}
 
 	public String generateSuccessfulPurgeHtml(String fileName, int numberOfParents,

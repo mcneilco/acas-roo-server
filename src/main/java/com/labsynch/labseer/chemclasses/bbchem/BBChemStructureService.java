@@ -27,6 +27,8 @@ public interface BBChemStructureService {
 
     public String getSDF(BBChemParentStructure structure) throws IOException;
 
+    public String getSDF(List<BBChemParentStructure> bbchemStructures) throws IOException;
+
     public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException;
 
     public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException;

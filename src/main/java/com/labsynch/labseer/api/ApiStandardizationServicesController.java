@@ -144,6 +144,7 @@ public class ApiStandardizationServicesController {
 
 	}
 
+	@Transactional
 	@RequestMapping(value = "/execute", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> execute(@RequestParam(value = "username", required = true) String username,

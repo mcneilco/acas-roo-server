@@ -194,11 +194,7 @@ public class LotDTO {
 		this.parentStructure = parent.getMolStructure();
 		this.parentMolWeight = parent.getMolWeight();
 		this.parentExactMass = parent.getExactMass();
-		try {
-			this.parentMolFormula = MoleculeUtil.getMolFormula(parent.getMolStructure());
-		} catch (CmpdRegMolFormatException e) {
-			// leave mol formula blank
-		}
+		this.parentMolFormula = parent.getMolFormula();
 		this.parentRegistrationDate = parent.getRegistrationDate();
 		if (parent.getRegisteredBy() != null)
 			this.parentRegisteredBy = parent.getRegisteredBy();

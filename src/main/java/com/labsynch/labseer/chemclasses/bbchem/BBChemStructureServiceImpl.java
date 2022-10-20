@@ -483,7 +483,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public String getSDF(BBChemParentStructure bbChemStructure) throws IOException {
+	public String getSDF(List<BBChemParentStructure> bbChemStructures) throws IOException {
 
 		String url = getLDChemBaseUrl() + EXPORTSDF_PATH;
 
@@ -493,38 +493,54 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		// Create sdfs arraynode and mol node
 		ArrayNode sdfsNode = mapper.createArrayNode();
-		ObjectNode molNode = mapper.createObjectNode();
 
-		// Add the properties to the mol node
-		ArrayNode propertiesNode = mapper.createArrayNode();
-		for (Map.Entry<String, String> entry : bbChemStructure.getProperties().entrySet()) {
-			ObjectNode propertyNode = mapper.createObjectNode();
-			propertyNode.put("name", entry.getKey());
-			propertyNode.put("value", entry.getValue());
-			propertiesNode.add(propertyNode);
+		for(BBChemParentStructure bbChemStructure : bbChemStructures) {
+			ObjectNode molNode = mapper.createObjectNode();
 
+			// Add the properties to the mol node
+			ArrayNode propertiesNode = mapper.createArrayNode();
+			for (Map.Entry<String, String> entry : bbChemStructure.getProperties().entrySet()) {
+				ObjectNode propertyNode = mapper.createObjectNode();
+				propertyNode.put("name", entry.getKey());
+				propertyNode.put("value", entry.getValue());
+				propertiesNode.add(propertyNode);
+	
+			}
+			molNode.put("properties", propertiesNode);
+	
+			// Add the structure to the mol node
+			molNode.put("sdf", bbChemStructure.getMol());
+	
+			// Add the mol node to the sdfs array node
+			sdfsNode.add(molNode);
+	
+	
 		}
-		molNode.put("properties", propertiesNode);
-
-		// Add the structure to the mol node
-		molNode.put("sdf", bbChemStructure.getMol());
-
-		// Add the mol node to the sdfs array node
-		sdfsNode.add(molNode);
 
 		// Add the sdfs to the request data
 		requestData.put("sdfs", sdfsNode);
-
+		
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
+		logger.info("Making to bbchem sdf export service");
 		logger.debug("requestString: " + requestString);
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
+		logger.info("Got response from bbchem sdf export service");
 		logger.debug("Got response: " + postResponse);
 
 		// Parse the response json
 		ObjectMapper responseMapper = new ObjectMapper();
 		JsonNode responseNode = responseMapper.readTree(postResponse);
 		return responseNode.asText();
+
+	}
+
+	@Override
+	public String getSDF(BBChemParentStructure bbChemStructure) throws IOException {
+
+		ArrayList<BBChemParentStructure> structureList = new ArrayList<BBChemParentStructure>();
+		structureList.add(bbChemStructure);
+		return getSDF(structureList);
 	}
 
 	@Override
