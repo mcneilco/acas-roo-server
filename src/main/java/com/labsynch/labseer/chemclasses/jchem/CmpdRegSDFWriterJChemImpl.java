@@ -2,6 +2,7 @@ package com.labsynch.labseer.chemclasses.jchem;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
@@ -37,6 +38,14 @@ public class CmpdRegSDFWriterJChemImpl implements CmpdRegSDFWriter {
 	public void close() throws IOException {
 		this.molExporter.close();
 	}
+
+	@Override
+    public boolean writeMols(List<CmpdRegMolecule> cmpdRegMoleculeList) throws CmpdRegMolFormatException, IOException {
+        for (CmpdRegMolecule molecule : cmpdRegMoleculeList) {
+			writeMol(molecule);
+		}
+        return true;
+    }
 
 	@Override
 	public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
