@@ -858,7 +858,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		EntityManager em = BBChemParentStructure.entityManager();
 		Query q = em.createNativeQuery("SELECT p.id FROM " + structureType.name() + " p LEFT JOIN "
 				+ getBBChemStructureTableNameFromStructureType(structureType)
-				+ " b on p.cd_id=b.id where p.mol_structure is not null and b.id is null");
+				+ " b on p.cd_id=b.id where p.mol_structure is not null and p.mol_structure != '' and b.id is null");
 		return q.getResultList();
 	}
 
