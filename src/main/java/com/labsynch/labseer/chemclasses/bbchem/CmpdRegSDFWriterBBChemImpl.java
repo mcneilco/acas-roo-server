@@ -1,8 +1,9 @@
 package com.labsynch.labseer.chemclasses.bbchem;
 
-import java.io.File;
+import java.io.Writer;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,7 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
     @Autowired
     private BBChemStructureService bbChemStructureServices;
 
-    private FileWriter writer;
-
-    private File tempFile;
+    private Writer writer;
 
     public CmpdRegSDFWriterBBChemImpl(String fileName) {
         try {
@@ -37,14 +36,7 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
     }
 
     public CmpdRegSDFWriterBBChemImpl() {
-        try {
-            this.tempFile = File.createTempFile("bbchem-molwriter-", ".sdf");
-            this.tempFile.deleteOnExit();
-            this.writer = new FileWriter(this.tempFile.getAbsolutePath());
-        } catch (IOException e) {
-            logger.error("Unable to write sdf", e);
-        }
-
+        this.writer = new StringWriter();
     }
 
     @Override
@@ -80,9 +72,6 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
     @Override
     public void close() throws IOException {
         this.writer.close();
-        if (this.tempFile != null && this.tempFile.exists()) {
-            this.tempFile.delete();
-        }
     }
 
     @Override
