@@ -962,13 +962,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		for (List<Long> group : groups) {
 			
-			p = p + fillMissingParentStructuresByParentIDList(group);
+			p = p + fillMissingSaltFormStructuresBySaltFormIDList(group);
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
 				currentTime = new Date().getTime();
 				// Output if different from the last time.
-				logger.info("filling " + " " + StructureType.PARENT + " structure representations " + percent
+				logger.info("filling " + " " + StructureType.SALT_FORM + " structure representations " + percent
 						+ "% complete (" + p + " of "
 						+ totalCount + ") average speed (rows/min):"
 						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
@@ -1002,7 +1002,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		logger.info("Finished processing " + structureIdSaltFormMolStructureMap.size() + " "
 				+ StructureType.SALT_FORM + " structures");
 		logger.info("Started saving " + processedStructures.size() + " " + StructureType.SALT_FORM + " structures");
-		// Loop through parents
+		// Loop through salt forms
 		for (SaltForm saltForm : saltForms) {
 			String originalCdId = String.valueOf(saltForm.getCdId());
 			BBChemParentStructure processedParentStructure = processedStructures.get(originalCdId);
