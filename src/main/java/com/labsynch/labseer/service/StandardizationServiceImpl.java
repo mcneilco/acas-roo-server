@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound.SyncStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
@@ -89,19 +90,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// initialized
 			return;
 		}
-
-		logger.info("Checking for structures missing from chemistry engine tables");
-		try {
-			chemStructureService.fillMissingStructures();
-		} catch (Exception e) {
-			logger.error("Error in trying to fill missing structures", e);
-		}
-
+	
 		logger.info("Checking compound standardization state");
 		try {
-			// Get the current configuration settings
-			StandardizerSettingsConfigDTO currentStandardizationSettings = chemStructureService
-					.getStandardizerSettings();
 
 			// Cancel all running standardization histories as failed
 			List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
@@ -119,17 +110,34 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				}
 			}
 
-			// Get the applied settings from the history table which should have the most
-			// recent standardization settings applied
-			StandardizationHistory appliedStandardizationSettings = getMostRecentStandardizationHistory();
+			// Get the applied settings from the history table which should have the most recent standardization settings applied
+			List<StandardizationHistory> completedHistories = StandardizationHistory.findStandardizationHistoriesByStatus("complete", 0, 1, "id", "DESC").getResultList();
 
-			if (appliedStandardizationSettings != null) {
+			
+
+			if (completedHistories.size() > 0) {
+
+				StandardizationHistory mostRecentHistory = completedHistories.get(0);
+
+				// Get the current settings from the config file
+				StandardizerSettingsConfigDTO currentRawStandardizerSettings = chemStructureService.getStandardizerSettings();
+				
+				// Do a config check to verify that settings are valid and if we need to restandardize or not
+				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(currentRawStandardizerSettings.getSettings(), mostRecentHistory.getSettings());
+
+				// If the settings are invalid then throw an error and print the error message
+				if (!configCheckResponse.getValid()) {
+					throw new StandardizerException("The current standardization settings are invalid. Please check the standardization settings in the config file. Reasons: " + String.join("\n", currentStandardizationSettings.getReasons()));
+				}
+
 				// If we have applied standardization settings previously
-				if (currentStandardizationSettings.hashCode() != appliedStandardizationSettings.getSettingsHash()) {
+				if (configCheckResponse.getNeedsRestandardization()) {
 					// If the applied settings are different from the current settings
 					logger.info(
-							"Standardizer configs have changed, marking 'standardization needed' according to configs as "
-									+ currentStandardizationSettings.getShouldStandardize());
+							"System requires restandardization, marking 'standardization needed' as "
+									+ configCheckResponse.getNeedsRestandardization()
+									+ " reasons: " + String.join("\n", configCheckResponse.getReasons())
+					);
 
 					// We should only ever really have one standardization settings row at any given
 					// time
@@ -187,6 +195,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 		} catch (StandardizerException e) {
 			logger.error("Caught error on checking standardization state", e);
+		}
+
+		logger.info("Checking for structures missing from chemistry engine tables");
+		try {
+			chemStructureService.fillMissingStructures();
+		} catch (Exception e) {
+			logger.error("Error in trying to fill missing structures", e);
 		}
 	}
 

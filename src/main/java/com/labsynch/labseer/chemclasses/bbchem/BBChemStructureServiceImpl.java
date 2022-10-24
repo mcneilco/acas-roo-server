@@ -782,7 +782,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		ArrayNode inputsNode = mapper.createArrayNode();
 		inputsNode.add(structure);
-		requestData.put("inputs", inputsNode);
+		requestData.replace("inputs", inputsNode);
 
 		// Post to the service
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
@@ -792,6 +792,11 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		ObjectMapper responseMapper = new ObjectMapper();
 		JsonNode responseNode = responseMapper.readTree(postResponse);
 		return responseNode.get(0).asText();
+	}
+
+	@Override
+	public String configCheck(String oldConfig, String newConfig, String newTatutomerHash, String oldTatuomerHash, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) {
+		return null;
 	}
 	
 	

@@ -29,6 +29,7 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -732,19 +733,23 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException {
-		// Read the preprocessor settings as json
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = null;
+		// Create new settings json node
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode settings = mapper.createObjectNode();
+
 		try {
-			jsonNode = bbChemStructureService.getPreprocessorSettings().get("standardizer_actions");
+			JsonNode preprocessorSettings = bbChemStructureService.getPreprocessorSettings();
+			settings.replace("standardizer_actions", preprocessorSettings.get("standardizer_actions"));
+			settings.put("hash_scheme", preprocessorSettings.get("process_options").get("hash_scheme").asText());
 		} catch (IOException e) {
 			logger.error("Error parsing preprocessor settings json", e);
 			throw new StandardizerException("Error parsing preprocessor settings json");
 		}
 
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
-		standardizationConfigDTO.setSettings(jsonNode.toString());
+		standardizationConfigDTO.setSettings(settings.toString());
 		standardizationConfigDTO.setType("bbchem");
+		
 		standardizationConfigDTO.setShouldStandardize(true);
 		return standardizationConfigDTO;
 
@@ -1070,6 +1075,69 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		// Salt
 		fillMissingSaltStructures();
+
+	}
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(String oldSettings, String newSettings) {
+
+		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		// Parse both settings into JsonNodes
+		try {
+			ObjectNode oldSettingsObject = (ObjectNode) new ObjectMapper().readTree(oldSettings);
+			ObjectNode newSettingsJsonNode = (ObjectNode) new ObjectMapper().readTree(newSettings);
+
+			String oldConfig;
+			String newConfig;
+			String oldHashScheme;
+			String newHashScheme;
+			String oldSchrodingerSuite;
+			String newSchrodingerSuite;
+
+			
+			// To be backwards compatable with old versions of ACAS we check to see if settings is in the configs
+			// If it is we use it, if not we use the new settings
+			if (oldSettingsObject.has("settings")) {
+				String oldConfig = oldSettingsObject.get("settings").asText();
+
+				old_state.replace("config", options);
+				old_state.put("hash_scheme", "TAUTOMER_INSENSITIVE_LAYERS");
+				old_state.put("schrodinger_suite_version", "unknown");
+				old_state.put("preprocessor_version", "unknown");
+			} else {
+				old_state = oldSettingsObject;
+			}
+
+			// Check if the new settings are the same as the old settings
+			ObjectNode new_state = mapper.createObjectNode();
+			new_state.set("new_config", newSettingsJsonNode);
+
+			ObjectNode requestObject = mapper.createObjectNode();
+			requestObject.set("old_state", old_state);
+			requestObject.set("new_state", new_state);
+
+
+			// Return the response bytes
+			return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
+
+			
+
+			
+			
+
+
+
+
+			
+		} catch (IOException e) {
+			logger.error("Error parsing standardizer settings", e);
+			throw new RuntimeException("Error parsing standardizer settings", e);
+		}
+
+
 
 	}
 

@@ -42,4 +42,6 @@ public interface BBChemStructureService {
     public String convert(String structure, String inputFormat, String outputFormat)
 			throws IOException, CmpdRegMolFormatException;
 
+    public String configCheck(String oldConfig, String newConfig, String newTatutomerHash, String oldTatuomerHash, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion);
+
 }
