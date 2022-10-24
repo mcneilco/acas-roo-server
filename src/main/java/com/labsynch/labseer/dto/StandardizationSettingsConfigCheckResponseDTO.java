@@ -2,6 +2,9 @@ package com.labsynch.labseer.dto;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -13,7 +16,7 @@ public class StandardizationSettingsConfigCheckResponseDTO {
 
     private Boolean needsRestandardization;
 
-    private String[] reasons;
+    private List<String> reasons;
 
     private String validatedSettings;
 
@@ -21,7 +24,7 @@ public class StandardizationSettingsConfigCheckResponseDTO {
 
     }
 
-    public StandardizationSettingsConfigCheckResponseDTO(Boolean valid, Boolean needsRestandardization, String reasons[], String validatedSettings) {
+    public StandardizationSettingsConfigCheckResponseDTO(Boolean valid, Boolean needsRestandardization, List<String> reasons, String validatedSettings) {
         this.valid = valid;
         this.needsRestandardization = needsRestandardization;
         this.reasons = reasons;
@@ -44,16 +47,28 @@ public class StandardizationSettingsConfigCheckResponseDTO {
         this.needsRestandardization = needsRestandardization;
     }
 
-    public String[] getReasons() {
+    public List<String> getReasons() {
         return this.reasons;
     }
 
     public void setReasons(String reasons) {
-        this.reasons = reasons.split(",");
+        this.reasons = new ArrayList<String>(Arrays.asList(reasons.split("\\s*,\\s*")));
     }
 
-    public void setReasons(String[] reasons) {
-        this.reasons = reasons;
+    public void setReasons(List<String> reasons) {
+        if(reasons != null) {
+            this.reasons = reasons;
+        }
+    }
+
+    public void addReasons(List<String> reasons) {
+        if(reasons != null) {
+            this.reasons.addAll(reasons);
+        }
+    }
+
+    public void addReason(String reason) {
+        this.reasons.add(reason);
     }
 
     public String getValidatedSettings() {

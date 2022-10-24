@@ -3,11 +3,11 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
 import org.springframework.stereotype.Service;
@@ -42,6 +42,8 @@ public interface BBChemStructureService {
     public String convert(String structure, String inputFormat, String outputFormat)
 			throws IOException, CmpdRegMolFormatException;
 
-    public String configCheck(String oldConfig, String newConfig, String newTatutomerHash, String oldTatuomerHash, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion);
+    public StandardizationSettingsConfigCheckResponseDTO configCheck(String oldConfig, String newConfig, String newTatutomerHash, String oldTatuomerHash, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) throws IOException;
+
+    public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode jsonNode) throws IOException;
 
 }

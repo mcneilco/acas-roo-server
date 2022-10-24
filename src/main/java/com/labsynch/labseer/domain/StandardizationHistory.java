@@ -170,6 +170,7 @@ public class StandardizationHistory {
             }
         }
         TypedQuery<StandardizationHistory> q = em.createQuery(queryBuilder.toString(), StandardizationHistory.class);
+        q.setParameter("status", status);
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
         return q;

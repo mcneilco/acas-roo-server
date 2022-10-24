@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -1078,65 +1079,96 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	}
 
+	private ObjectNode parseSettingsToObjectNode(String settingsJsonString) {
+		if(settingsJsonString == null || settingsJsonString.isEmpty()) {
+			return null;
+		}
+		// Empty mapper
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode inputSettings = mapper.createObjectNode();
+
+		ObjectNode returnNode = mapper.createObjectNode();
+		try {
+			inputSettings = (ObjectNode) mapper.readTree(settingsJsonString);
+			ObjectNode config = mapper.createObjectNode();
+			String hashScheme = "TAUTOMER_INSENSITIVE_LAYERS";
+			String schrodingerSuite = "unknown";
+			String processorVersion = "unknown";
+
+			// To be backwards compatable with old versions of ACAS we check to see if settings is in the configs
+			// If it is we use it, if not we use the new settings
+			if(inputSettings.get("standardizer_actions") != null) {
+				config = (ObjectNode) inputSettings.get("standardizer_actions");
+			}
+			returnNode.replace("config", config);
+
+			if(inputSettings.get("settings") != null) {
+				config = (ObjectNode) mapper.readTree(inputSettings.get("settings").textValue());
+			}
+			returnNode.replace("config", config);
+
+			if(config.get("schrodinger_suite_version") != null) {
+				schrodingerSuite = config.get("schrodinger_suite_version").asText();
+			}
+			returnNode.put("schrodinger_suite_version", schrodingerSuite);
+
+			if(config.get("preprocessor_version") != null) {
+				processorVersion = config.get("preprocessor_version").asText();
+			}
+			returnNode.put("preprocessor_version", processorVersion);
+
+			if(config.get("hash_scheme") != null) {
+				hashScheme = config.get("hash_scheme").asText();
+			}
+			returnNode.put("hash_scheme", hashScheme);
+			
+			return returnNode;
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse lsThingJson", e);
+        }
+
+
+
+	}
+
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(String oldSettings, String newSettings) {
 
 		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+		ObjectNode oldSettingsNode = parseSettingsToObjectNode(oldSettings);
+		ObjectNode newSettingsNode = parseSettingsToObjectNode(newSettings);
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		// Parse both settings into JsonNodes
+		// Validate the new settings
 		try {
-			ObjectNode oldSettingsObject = (ObjectNode) new ObjectMapper().readTree(oldSettings);
-			ObjectNode newSettingsJsonNode = (ObjectNode) new ObjectMapper().readTree(newSettings);
-
-			String oldConfig;
-			String newConfig;
-			String oldHashScheme;
-			String newHashScheme;
-			String oldSchrodingerSuite;
-			String newSchrodingerSuite;
-
-			
-			// To be backwards compatable with old versions of ACAS we check to see if settings is in the configs
-			// If it is we use it, if not we use the new settings
-			if (oldSettingsObject.has("settings")) {
-				String oldConfig = oldSettingsObject.get("settings").asText();
-
-				old_state.replace("config", options);
-				old_state.put("hash_scheme", "TAUTOMER_INSENSITIVE_LAYERS");
-				old_state.put("schrodinger_suite_version", "unknown");
-				old_state.put("preprocessor_version", "unknown");
+			response = bbChemStructureService.configFix(newSettingsNode.get("config"));
+			if(oldSettingsNode.isEmpty()) {
+				logger.warn("Old settings are empty, setting needs restandardization to do because of unknown state");
+				response.setNeedsRestandardization(true);
+				response.setReasons("Old settings are empty");
 			} else {
-				old_state = oldSettingsObject;
+				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = bbChemStructureService.configCheck(
+					oldSettingsNode.get("config").toString(), 
+					newSettingsNode.get("config").toString(), 
+					oldSettingsNode.get("hash_scheme").asText(),
+					newSettingsNode.get("hash_scheme").asText(), 
+					oldSettingsNode.get("preprocessor_version").asText(), 
+					oldSettingsNode.get("schrodinger_suite_version").asText()
+				);
+				
+				if(configCheckResponse.getValid()) {
+					response.setValid(configCheckResponse.getValid());
+				}
+
+				response.setNeedsRestandardization(configCheckResponse.getNeedsRestandardization());
+
+				response.addReasons(configCheckResponse.getReasons());
+
 			}
-
-			// Check if the new settings are the same as the old settings
-			ObjectNode new_state = mapper.createObjectNode();
-			new_state.set("new_config", newSettingsJsonNode);
-
-			ObjectNode requestObject = mapper.createObjectNode();
-			requestObject.set("old_state", old_state);
-			requestObject.set("new_state", new_state);
-
-
-			// Return the response bytes
-			return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
-
-			
-
-			
-			
-
-
-
-
-			
+			return response;
 		} catch (IOException e) {
-			logger.error("Error parsing standardizer settings", e);
-			throw new RuntimeException("Error parsing standardizer settings", e);
+			throw new RuntimeException("Failed call to bbchem config fix service: " + newSettingsNode.get("config").asText(), e);
 		}
-
 
 
 	}

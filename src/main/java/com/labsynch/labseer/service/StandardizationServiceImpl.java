@@ -81,6 +81,24 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
+	private void failRunnningStandardization() {
+		// Cancel all running standardization histories as failed
+		List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
+		for (StandardizationHistory history : histories) {
+			if (history.getStandardizationStatus() != null
+					&& history.getStandardizationStatus().equals("running")) {
+				logger.info("Failing running standardization for run id " + history.getId());
+				history.setStandardizationStatus("failed");
+				history.merge();
+			}
+			if (history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")) {
+				logger.info("Failing running standardization dry run for run id " + history.getId());
+				history.setDryRunStatus("failed");
+				history.merge();
+			}
+		}
+	}
+
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
@@ -94,49 +112,34 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		logger.info("Checking compound standardization state");
 		try {
 
-			// Cancel all running standardization histories as failed
-			List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
-			for (StandardizationHistory history : histories) {
-				if (history.getStandardizationStatus() != null
-						&& history.getStandardizationStatus().equals("running")) {
-					logger.info("Failing running standardization for run id " + history.getId());
-					history.setStandardizationStatus("failed");
-					history.merge();
-				}
-				if (history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")) {
-					logger.info("Failing running standardization dry run for run id " + history.getId());
-					history.setDryRunStatus("failed");
-					history.merge();
-				}
-			}
+			// Fail any dry runs or standardizations that are still in progress from when the server was last up
+			failRunnningStandardization();
 
 			// Get the applied settings from the history table which should have the most recent standardization settings applied
 			List<StandardizationHistory> completedHistories = StandardizationHistory.findStandardizationHistoriesByStatus("complete", 0, 1, "id", "DESC").getResultList();
 
-			
+			// Get the current settings from the config file
+			StandardizerSettingsConfigDTO currentRawStandardizerSettings = chemStructureService.getStandardizerSettings();
 
 			if (completedHistories.size() > 0) {
 
 				StandardizationHistory mostRecentHistory = completedHistories.get(0);
-
-				// Get the current settings from the config file
-				StandardizerSettingsConfigDTO currentRawStandardizerSettings = chemStructureService.getStandardizerSettings();
 				
 				// Do a config check to verify that settings are valid and if we need to restandardize or not
 				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(currentRawStandardizerSettings.getSettings(), mostRecentHistory.getSettings());
 
 				// If the settings are invalid then throw an error and print the error message
 				if (!configCheckResponse.getValid()) {
-					throw new StandardizerException("The current standardization settings are invalid. Please check the standardization settings in the config file. Reasons: " + String.join("\n", currentStandardizationSettings.getReasons()));
+					throw new StandardizerException("The current standardization settings are invalid. Please check the standardization settings in the config file. Reasons: " + String.join("\n", configCheckResponse.getReasons()));
 				}
 
 				// If we have applied standardization settings previously
 				if (configCheckResponse.getNeedsRestandardization()) {
 					// If the applied settings are different from the current settings
 					logger.info(
-							"System requires restandardization, marking 'standardization needed' as "
+							"System requires restandardization, marking standardization_needed as "
 									+ configCheckResponse.getNeedsRestandardization()
-									+ " reasons: " + String.join("\n", configCheckResponse.getReasons())
+									+ " reasons: " + String.join(System.getProperty("line.separator"), configCheckResponse.getReasons())
 					);
 
 					// We should only ever really have one standardization settings row at any given
@@ -151,14 +154,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						// settings then we should have a standardization settings row
 						StandardizationSettings standardizationSettings = new StandardizationSettings();
 						standardizationSettings
-								.setNeedsStandardization(currentStandardizationSettings.getShouldStandardize());
+								.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
 						standardizationSettings.setModifiedDate(new Date());
 						standardizationSettings.persist();
 					} else {
 
 						// If there is more than 0, then just update the current row
 						standardizationSettingses.get(0)
-								.setNeedsStandardization(currentStandardizationSettings.getShouldStandardize());
+								.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
 						standardizationSettingses.get(0).setModifiedDate(new Date());
 						standardizationSettingses.get(0).merge();
 					}
@@ -180,7 +183,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				} else {
 					logger.warn(
 							"Standardization is in an unknown state because there are no rows in standardization history table.");
-					if (currentStandardizationSettings.getShouldStandardize() == false) {
+					if (currentRawStandardizerSettings.getShouldStandardize() == false) {
 						logger.info(
 								"Standardization is turned off so marking the database as not requiring standardization at this time");
 						standardizationSettings.setNeedsStandardization(false);

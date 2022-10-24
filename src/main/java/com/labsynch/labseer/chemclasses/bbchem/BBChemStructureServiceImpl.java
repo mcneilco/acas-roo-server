@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.Request;
@@ -55,6 +56,8 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
 	private final String SPLIT_PATH = "/split/api/v0";
 	private final String SUBSTRUCTURE_PATH = "/substructure/api/v0";
+	private final String CONFIG_CHECK_PATH = "/preprocessor/api/v0/config/check";
+	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix";
 
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
@@ -795,8 +798,97 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public String configCheck(String oldConfig, String newConfig, String newTatutomerHash, String oldTatuomerHash, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) {
-		return null;
+	public StandardizationSettingsConfigCheckResponseDTO configCheck(String oldConfig, String newConfig, String oldHashScheme, String newHashScheme, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) throws IOException {
+		String url = getLDChemBaseUrl() + CONFIG_CHECK_PATH;
+
+		// Create the request format
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		// New config
+		requestData.replace("new_config", mapper.readTree(newConfig));
+		requestData.put("new_hash_scheme", newHashScheme);
+
+		// Old state
+		ObjectNode oldState = mapper.createObjectNode();
+		oldState.replace("config", mapper.readTree(oldConfig));
+		oldState.put("hash_scheme", oldHashScheme);
+		oldState.put("preprocessor_version", oldPreprocessorVersion);
+		oldState.put("schrodinger_suite_version", oldSchrodingerSuiteVersion);
+		requestData.replace("old_state", oldState);
+
+		// Post to the service
+		String request = requestData.toString();
+		logger.info("Making a config check request to " + url + " with " + request);
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, request, logger);
+		logger.info("Got response: " + postResponse);
+
+		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+		JsonNode responseNode = mapper.readTree(postResponse);
+
+		// Check if the config is valid
+		if(responseNode.get("valid") != null) {
+			response.setValid(responseNode.get("valid").asBoolean());
+		} else {
+			response.setValid(false);
+		}
+
+		// Check if rerun_preprocessor
+		if(responseNode.get("rerun_preprocessor") != null) {
+			response.setNeedsRestandardization(responseNode.get("rerun_preprocessor").asBoolean());
+		} else {
+			response.setNeedsRestandardization(true);
+		}
+
+		// Check if reason
+		if(responseNode.get("reasons") != null) {
+			// response node reasons is an array of strings create a new array of strings and get it from the response node
+			ArrayNode reasons = (ArrayNode) responseNode.get("reasons");
+			List<String> reasonsList = new ArrayList<>();
+			for (JsonNode reason : reasons) {
+				reasonsList.add(reason.textValue());
+			}
+			response.setReasons(reasonsList);
+		}
+			
+		return response;
+	}
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode jsonNode) throws IOException {
+		
+		String url = getLDChemBaseUrl() + CONFIG_FIX_PATH;
+		
+		// Array of arrays
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode requestData = mapper.createArrayNode();
+		requestData.add(jsonNode.toString());
+		String request = requestData.toString();
+		logger.info("Making a config fix request to " + url + " with " + request);
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, request, logger);
+		logger.info("Got response: " + postResponse);
+
+		// Parse the response json into an array of arrays with the first element being the object we need to interpret
+		JsonNode responseNode = mapper.readTree(postResponse);
+		JsonNode firstElement = responseNode.get(0);
+
+		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+		if(firstElement.get("is_input_valid") != null) {
+			response.setValid(firstElement.get("is_input_valid").asBoolean());
+		} else {
+			response.setValid(false);
+		}
+
+		if(firstElement.get("error_message") != null) {
+			response.setReasons(firstElement.get("error_message").asText());
+		}
+
+		if(firstElement.get("fixed_config") != null) {
+			response.setValidatedSettings(firstElement.get("fixed_config").asText());
+		}
+
+		return response;
+
 	}
 	
 	
