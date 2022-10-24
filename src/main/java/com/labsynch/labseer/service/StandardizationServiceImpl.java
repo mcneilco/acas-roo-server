@@ -617,7 +617,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						String.valueOf(stndznCompound.isAsDrawnDisplayChange()));
 				cmpdRegMolecule.setProperty("Stereo Category", stndznCompound.getParent().getStereoCategory().getName());
 				cmpdRegMolecule.setProperty("Stereo Comment", stndznCompound.getParent().getStereoComment());
-                cmpdRegMoleculeList.add(cmpdRegMolecule);
+				cmpdRegMoleculeList.add(cmpdRegMolecule);
 			}
 		}
 		sdfWriter.writeMols(cmpdRegMoleculeList);
@@ -829,14 +829,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	private int runStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		logger.info("standardization initialized");
-		logger.info("save missing salt structures - started");
-		try {
-			Collection<Salt> missingSaltStructures = saltStructureService.saveMissingStructures();
-			logger.info("saved " + missingSaltStructures.size() + " missing salt structures");
-		} catch (StructureSaveException e) {
-			throw new StandardizerException(e);
-		}
-		logger.info("save missing salt structures - complete");
 		logger.info("restandardize parent structures - started");
 		int result = -1;
 		try {

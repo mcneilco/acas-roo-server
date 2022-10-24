@@ -816,7 +816,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		EntityManager em = BBChemParentStructure.entityManager();
 		Query q = em.createNativeQuery("SELECT p.id FROM " + structureType.name() + " p LEFT JOIN "
 				+ getBBChemStructureTableNameFromStructureType(structureType)
-				+ " b on p.cd_id=b.id where p.mol_structure is not null and b.id is null");
+				+ " b on p.cd_id=b.id where p.mol_structure is not null and p.mol_structure != '' and b.id is null");
 		return q.getResultList();
 	}
 
@@ -920,13 +920,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		for (List<Long> group : groups) {
 			
-			p = p + fillMissingParentStructuresByParentIDList(group);
+			p = p + fillMissingSaltFormStructuresBySaltFormIDList(group);
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
 				currentTime = new Date().getTime();
 				// Output if different from the last time.
-				logger.info("filling " + " " + StructureType.PARENT + " structure representations " + percent
+				logger.info("filling " + " " + StructureType.SALT_FORM + " structure representations " + percent
 						+ "% complete (" + p + " of "
 						+ totalCount + ") average speed (rows/min):"
 						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
@@ -960,7 +960,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		logger.info("Finished processing " + structureIdSaltFormMolStructureMap.size() + " "
 				+ StructureType.SALT_FORM + " structures");
 		logger.info("Started saving " + processedStructures.size() + " " + StructureType.SALT_FORM + " structures");
-		// Loop through parents
+		// Loop through salt forms
 		for (SaltForm saltForm : saltForms) {
 			String originalCdId = String.valueOf(saltForm.getCdId());
 			BBChemParentStructure processedParentStructure = processedStructures.get(originalCdId);
@@ -977,6 +977,88 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		return p;
 	}
 
+
+	public void fillMissingSaltStructures() throws CmpdRegMolFormatException {
+		// Salt Forms
+		List<BigInteger> missingIds = getStructureTypeIdsMissingStructures(StructureType.SALT);
+		if (missingIds.size() > 0) {
+			logger.warn("Found " + missingIds.size() + " " + StructureType.SALT
+					+ " ids missing structure representations");
+		} else {
+			logger.info("No " + StructureType.SALT + " ids missing structure representations");
+			return;
+		}
+
+		int batchSize = propertiesUtilService.getStandardizationBatchSize();
+
+		List<List<Long>> groups = SimpleUtil.splitIntArrayIntoGroups(missingIds, batchSize);
+		Long startTime = new Date().getTime();
+		Long currentTime = new Date().getTime();
+		int totalCount = missingIds.size();
+		float percent = 0;
+		int p = 0;
+		float previousPercent = percent;
+
+		for (List<Long> group : groups) {
+			
+			p = p + fillMissingSaltStructuresBySaltIDList(group);
+			// Compute your percentage.
+			percent = (float) Math.floor(p * 100f / totalCount);
+			if (percent != previousPercent) {
+				currentTime = new Date().getTime();
+				// Output if different from the last time.
+				logger.info("filling " + " " + StructureType.SALT + " structure representations " + percent
+						+ "% complete (" + p + " of "
+						+ totalCount + ") average speed (rows/min):"
+						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
+				currentTime = new Date().getTime();
+				logger.debug("Time Elapsed:" + (currentTime - startTime));
+			}
+			// Update the percentage.
+			previousPercent = percent;
+		}
+	}
+
+	@Transactional
+	public int fillMissingSaltStructuresBySaltIDList(List<Long> group) throws CmpdRegMolFormatException {
+		int p = 0;
+		EntityManager em = BBChemSaltStructure.entityManager();
+		Boolean checkForDupes = false;
+
+		logger.info("Started fetching " + group.size() + " " + StructureType.SALT + " molstructures to save");
+		HashMap<String, String> structureIdSaltMolStructureMap = new HashMap<String, String>();
+		List<Salt> salts = em.createQuery("SELECT p FROM Salt p where id in (:ids)", Salt.class)
+				.setParameter("ids", group)
+				.getResultList();
+		for (Salt salt : salts) {
+			structureIdSaltMolStructureMap.put(String.valueOf(salt.getCdId()), salt.getMolStructure());
+		}
+		logger.info("Finished fetching " + group.size() + " " + StructureType.SALT + " molstructures to save");
+		logger.info("Started processing " + structureIdSaltMolStructureMap.size() + " "
+				+ StructureType.SALT + " structures");
+		HashMap<String, BBChemParentStructure> processedStructures = bbChemStructureService
+				.getProcessedStructures(structureIdSaltMolStructureMap, true);
+		logger.info("Finished processing " + structureIdSaltMolStructureMap.size() + " "
+				+ StructureType.SALT + " structures");
+		logger.info("Started saving " + processedStructures.size() + " " + StructureType.SALT + " structures");
+		// Loop through parents
+		for (Salt salt : salts) {
+			String originalCdId = String.valueOf(salt.getCdId());
+			BBChemParentStructure processedParentStructure = processedStructures.get(originalCdId);
+			int savedCdId = saveStructure(processedParentStructure, StructureType.SALT, checkForDupes);
+			salt.setCdId(savedCdId);
+			salt.persist();
+			logger.info("CdId for " + StructureType.SALT + " name '" + salt.getName() + "' abbrev '" + salt.getAbbrev()
+					+ "' changed from " + originalCdId + " to " + savedCdId);
+			p++;
+		}
+
+		logger.info("Finished saving " + processedStructures.size() + " structures");
+
+		return p;
+	}
+
+
 	@Override
 	public void fillMissingStructures() throws CmpdRegMolFormatException {
 
@@ -985,6 +1067,9 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		// Salt Forms
 		fillMissingSaltFormStructures();
+
+		// Salt
+		fillMissingSaltStructures();
 
 	}
 
