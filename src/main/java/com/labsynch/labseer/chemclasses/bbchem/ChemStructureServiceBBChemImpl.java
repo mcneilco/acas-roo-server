@@ -29,6 +29,7 @@ import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
@@ -1135,12 +1136,12 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(String oldSettings, String newSettings) {
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO) {
 
 		StandardizationSettingsConfigCheckResponseDTO newConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
 		StandardizationSettingsConfigCheckResponseDTO oldConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
-		ObjectNode oldSettingsNode = parseSettingsToObjectNode(oldSettings);
-		ObjectNode newSettingsNode = parseSettingsToObjectNode(newSettings);
+		ObjectNode oldSettingsNode = parseSettingsToObjectNode(mostRecentStandardizationHistory.getSettings());
+		ObjectNode newSettingsNode = parseSettingsToObjectNode(standardizationSettingsConfigDTO.getSettings());
 
 		// Validate the new settings
 		try {

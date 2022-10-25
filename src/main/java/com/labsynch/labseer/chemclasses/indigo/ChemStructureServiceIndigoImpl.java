@@ -767,4 +767,15 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		// switch to indigo from another chemistry engine
 
 	}
+
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO) {
+		// Not currently implemented for indigo as standardization is not implmented so just returning no stanardization required
+		StandardizationSettingsConfigCheckResponseDTO returnSettings = new StandardizationSettingsConfigCheckResponseDTO();
+		returnSettings.setNeedsRestandardization(false);
+		returnSettings.setValid(true);
+		returnSettings.setValidatedSettings(standardizationSettingsConfigDTO.getSettings());
+		return returnSettings;
+	}
 }

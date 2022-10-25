@@ -141,7 +141,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			StandardizationHistory mostRecentHistory = completedHistories.get(0);
 			
 			// Do a config check to verify that settings are valid and if we need to restandardize or not
-			StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(mostRecentHistory.getSettings(), currentRawStandardizerSettings.getSettings());
+			StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
 
 			// If the settings are invalid then throw an error and print the error message
 			if (!configCheckResponse.getValid()) {

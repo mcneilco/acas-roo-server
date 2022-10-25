@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
@@ -150,6 +151,6 @@ public interface ChemStructureService {
 
 	public void fillMissingStructures() throws CmpdRegMolFormatException;
 
-	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(String oldSettings, String newSettings);
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO);
 	
 }
