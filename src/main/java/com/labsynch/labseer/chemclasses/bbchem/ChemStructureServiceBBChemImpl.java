@@ -742,6 +742,11 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			JsonNode preprocessorSettings = bbChemStructureService.getPreprocessorSettings();
 			settings.replace("standardizer_actions", preprocessorSettings.get("standardizer_actions"));
 			settings.put("hash_scheme", preprocessorSettings.get("process_options").get("hash_scheme").asText());
+
+			JsonNode bbchemHealth = bbChemStructureService.health();
+			settings.put("schrodinger_suite_version", bbchemHealth.get("suite_version").asText());
+			settings.put("preprocessor_version", bbchemHealth.get("preprocessor_version").asText());
+
 		} catch (IOException e) {
 			logger.error("Error parsing preprocessor settings json", e);
 			throw new StandardizerException("Error parsing preprocessor settings json");
@@ -1095,30 +1100,27 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			String schrodingerSuite = "unknown";
 			String processorVersion = "unknown";
 
-			// To be backwards compatable with old versions of ACAS we check to see if settings is in the configs
-			// If it is we use it, if not we use the new settings
+			if(inputSettings.get("settings") != null) {
+				inputSettings = (ObjectNode) mapper.readTree(inputSettings.get("settings").textValue());
+			}
+
 			if(inputSettings.get("standardizer_actions") != null) {
 				config = (ObjectNode) inputSettings.get("standardizer_actions");
 			}
 			returnNode.replace("config", config);
 
-			if(inputSettings.get("settings") != null) {
-				config = (ObjectNode) mapper.readTree(inputSettings.get("settings").textValue());
-			}
-			returnNode.replace("config", config);
-
-			if(config.get("schrodinger_suite_version") != null) {
-				schrodingerSuite = config.get("schrodinger_suite_version").asText();
+			if(inputSettings.get("schrodinger_suite_version") != null) {
+				schrodingerSuite = inputSettings.get("schrodinger_suite_version").asText();
 			}
 			returnNode.put("schrodinger_suite_version", schrodingerSuite);
 
-			if(config.get("preprocessor_version") != null) {
-				processorVersion = config.get("preprocessor_version").asText();
+			if(inputSettings.get("preprocessor_version") != null) {
+				processorVersion = inputSettings.get("preprocessor_version").asText();
 			}
 			returnNode.put("preprocessor_version", processorVersion);
 
-			if(config.get("hash_scheme") != null) {
-				hashScheme = config.get("hash_scheme").asText();
+			if(inputSettings.get("hash_scheme") != null) {
+				hashScheme = inputSettings.get("hash_scheme").asText();
 			}
 			returnNode.put("hash_scheme", hashScheme);
 			
@@ -1135,21 +1137,24 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(String oldSettings, String newSettings) {
 
-		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+		StandardizationSettingsConfigCheckResponseDTO newConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
+		StandardizationSettingsConfigCheckResponseDTO oldConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
 		ObjectNode oldSettingsNode = parseSettingsToObjectNode(oldSettings);
 		ObjectNode newSettingsNode = parseSettingsToObjectNode(newSettings);
 
 		// Validate the new settings
 		try {
-			response = bbChemStructureService.configFix(newSettingsNode.get("config"));
+			newConfigCheck = bbChemStructureService.configFix(newSettingsNode.get("config"));
+			oldConfigCheck = bbChemStructureService.configFix(newSettingsNode.get("config"));
+			oldConfigCheck.getValidatedSettings();
 			if(oldSettingsNode.isEmpty()) {
 				logger.warn("Old settings are empty, setting needs restandardization to do because of unknown state");
-				response.setNeedsRestandardization(true);
-				response.setReasons("Old settings are empty");
+				newConfigCheck.setNeedsRestandardization(true);
+				newConfigCheck.setReasons("Old settings are empty");
 			} else {
 				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = bbChemStructureService.configCheck(
-					oldSettingsNode.get("config").toString(), 
-					newSettingsNode.get("config").toString(), 
+					oldConfigCheck.getValidatedSettings(), 
+					newConfigCheck.getValidatedSettings(), 
 					oldSettingsNode.get("hash_scheme").asText(),
 					newSettingsNode.get("hash_scheme").asText(), 
 					oldSettingsNode.get("preprocessor_version").asText(), 
@@ -1157,15 +1162,15 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				);
 				
 				if(configCheckResponse.getValid()) {
-					response.setValid(configCheckResponse.getValid());
+					newConfigCheck.setValid(configCheckResponse.getValid());
 				}
 
-				response.setNeedsRestandardization(configCheckResponse.getNeedsRestandardization());
+				newConfigCheck.setNeedsRestandardization(configCheckResponse.getNeedsRestandardization());
 
-				response.addReasons(configCheckResponse.getReasons());
+				newConfigCheck.addReasons(configCheckResponse.getReasons());
 
 			}
-			return response;
+			return newConfigCheck;
 		} catch (IOException e) {
 			throw new RuntimeException("Failed call to bbchem config fix service: " + newSettingsNode.get("config").asText(), e);
 		}

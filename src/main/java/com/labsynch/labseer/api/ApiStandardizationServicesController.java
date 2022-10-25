@@ -182,8 +182,14 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> getCurrentStandardizationSettings() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		StandardizationSettings stndardizationSettings = standardizationService.getStandardizationSettings();
-		return new ResponseEntity<String>(stndardizationSettings.toJson(), headers, HttpStatus.OK);
+		try {
+			standardizationService.checkStandardizationState();
+			StandardizationSettings stndardizationSettings = standardizationService.getStandardizationSettings();
+			return new ResponseEntity<String>(stndardizationSettings.toJson(), headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Caught error trying to get standardization settings: ", e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Transactional

@@ -50,7 +50,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	private final String CONVERTER_PATH = "/converter/api/v0/convert";
 	private final String EXPORTSDF_PATH = "/sdf_export/api/v0/";
-	private final String FINGERPRINT_PATH = "/fingerprint/api/v0";
+	private final String FINGERPRINT_PATH = "/fingerprint/api/v0/";
 	private final String IMAGE_PATH = "image/api/v0/";	
 	private final String PARSESDF_PATH =  "/parse/api/v0/";	
 	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
@@ -58,6 +58,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private final String SUBSTRUCTURE_PATH = "/substructure/api/v0";
 	private final String CONFIG_CHECK_PATH = "/preprocessor/api/v0/config/check";
 	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix";
+	private final String HEALTH_PATH = "/preprocessor/api/v0/health";
 
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
@@ -884,13 +885,26 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		if(firstElement.get("fixed_config") != null) {
-			response.setValidatedSettings(firstElement.get("fixed_config").asText());
+			response.setValidatedSettings(firstElement.get("fixed_config").toString());
 		}
 
 		return response;
 
 	}
-	
+
+	@Override
+	public JsonNode health() throws IOException {
+		String url = getLDChemBaseUrl() + HEALTH_PATH;
+
+		logger.info("Making a health request to " + url);
+		String response = SimpleUtil.getRequestToExternalServer(url, logger);
+		logger.info("Got health response: " + response);
+		// Parse the response json
+		ObjectMapper responseMapper = new ObjectMapper();
+		JsonNode responseNode = responseMapper.readTree(response);
+		return responseNode;
+	}
+		
 	
 
 }

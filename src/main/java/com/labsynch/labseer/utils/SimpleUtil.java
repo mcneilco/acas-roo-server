@@ -383,6 +383,18 @@ public class SimpleUtil {
 		return getStringBody(connection);
 	}
 
+	public static String getRequestToExternalServer(String url, Logger logger)
+			throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("GET");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		logger.debug("Sending request to: " + url);
+		return getStringBody(connection);
+	}
+
 	public static String getStringBody(HttpURLConnection httpURLConnection) throws IOException {
 		// Input stream
 		InputStream inputStream = null;

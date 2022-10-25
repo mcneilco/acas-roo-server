@@ -46,4 +46,6 @@ public interface BBChemStructureService {
 
     public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode jsonNode) throws IOException;
 
+    public JsonNode health() throws IOException;
+
 }
