@@ -51,7 +51,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private final String CONVERTER_PATH = "/converter/api/v0/convert";
 	private final String EXPORTSDF_PATH = "/sdf_export/api/v0/";
 	private final String FINGERPRINT_PATH = "/fingerprint/api/v0/";
-	private final String IMAGE_PATH = "image/api/v0/";	
+	private final String IMAGE_PATH = "/image/api/v0/";	
 	private final String PARSESDF_PATH =  "/parse/api/v0/";	
 	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
 	private final String SPLIT_PATH = "/split/api/v0";
