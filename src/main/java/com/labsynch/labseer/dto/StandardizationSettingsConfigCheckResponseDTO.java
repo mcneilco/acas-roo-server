@@ -16,7 +16,7 @@ public class StandardizationSettingsConfigCheckResponseDTO {
 
     private Boolean needsRestandardization;
 
-    private List<String> reasons;
+    private List<String> reasons = new ArrayList<String>();
 
     private String validatedSettings;
 
@@ -52,7 +52,9 @@ public class StandardizationSettingsConfigCheckResponseDTO {
     }
 
     public void setReasons(String reasons) {
-        this.reasons = new ArrayList<String>(Arrays.asList(reasons.split("\\s*,\\s*")));
+        if(reasons != null && !reasons.isEmpty()) {
+            this.reasons = new ArrayList<String>(Arrays.asList(reasons.split("\\s*,\\s*")));
+        }
     }
 
     public void setReasons(List<String> reasons) {
@@ -68,7 +70,9 @@ public class StandardizationSettingsConfigCheckResponseDTO {
     }
 
     public void addReason(String reason) {
-        this.reasons.add(reason);
+        if(reason != null && !reason.isEmpty()) {
+            this.reasons.add(reason);
+        }
     }
 
     public String getValidatedSettings() {

@@ -67,27 +67,11 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		return jsonNode;
 	}
 
-	private String getLDChemBaseUrl() throws IOException {
-		JsonNode jsonNode = null;
-		jsonNode = getPreprocessorSettings();
-		JsonNode urlNode = jsonNode.get("ldchemURL");
-		if (urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings ldchemURL!!");
-			throw new IOException("Missing preprocessorSettings ldchemURL!!");
-		}
-		String base_ld_chem_url = urlNode.asText();
-		return base_ld_chem_url;
-	}
-
 	private HashMap<String, BitSet> molsToFingerprints(HashMap<String, String> structures, String type)
 			throws CmpdRegMolFormatException {
 		// Fetch the fingerprint from the BBChem fingerprint service
 		String url = null;
-		try {
-			url = getLDChemBaseUrl() + FINGERPRINT_PATH;
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		url = propertiesUtilService.getLDChemURL() + FINGERPRINT_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -219,7 +203,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	private JsonNode postToProcessService(HashMap<String, String> structures) throws IOException {
 
-		String url = getLDChemBaseUrl() + PROCESS_PATH;
+		String url = propertiesUtilService.getLDChemURL() + PROCESS_PATH;
 
 		JsonNode jsonNode = getPreprocessorSettings();
 
@@ -489,7 +473,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	@Override
 	public String getSDF(List<BBChemParentStructure> bbChemStructures) throws IOException {
 
-		String url = getLDChemBaseUrl() + EXPORTSDF_PATH;
+		String url = propertiesUtilService.getLDChemURL() + EXPORTSDF_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -551,12 +535,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException {
 		List<BBChemParentStructure> bbChemStructures = new ArrayList<BBChemParentStructure>();
 
-		String url = null;
-		try {
-			url = getLDChemBaseUrl() + PARSESDF_PATH;
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		String url = propertiesUtilService.getLDChemURL() + PARSESDF_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -615,12 +594,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	@Override
 	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
 
-		String url = null;
-		try {
-			url = getLDChemBaseUrl() + SPLIT_PATH;
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		String url = propertiesUtilService.getLDChemURL() + SPLIT_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -674,12 +648,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			throws CmpdRegMolFormatException {
 		// Fetch the fingerprint from the BBChem finerprint service
 
-		String url = null;
-		try {
-			url = getLDChemBaseUrl() + SUBSTRUCTURE_PATH;
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		String url = propertiesUtilService.getLDChemURL() + SUBSTRUCTURE_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -733,7 +702,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			throws IOException {
 
 		// Extract the url to call
-		String url = getLDChemBaseUrl() + IMAGE_PATH;
+		String url = propertiesUtilService.getLDChemURL() + IMAGE_PATH;
 
 		// Create the request json
 		ObjectMapper mapper = new ObjectMapper();
@@ -775,7 +744,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			throws IOException, CmpdRegMolFormatException {
 
 		// Read the preprocessor settings as json
-		String url = getLDChemBaseUrl() + CONVERTER_PATH;
+		String url = propertiesUtilService.getLDChemURL() + CONVERTER_PATH;
 
 		// Create the request format
 		ObjectMapper mapper = new ObjectMapper();
@@ -800,7 +769,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO configCheck(String oldConfig, String newConfig, String oldHashScheme, String newHashScheme, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) throws IOException {
-		String url = getLDChemBaseUrl() + CONFIG_CHECK_PATH;
+		String url = propertiesUtilService.getLDChemURL() + CONFIG_CHECK_PATH;
 
 		// Create the request format
 		ObjectMapper mapper = new ObjectMapper();
@@ -857,8 +826,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode jsonNode) throws IOException {
-		
-		String url = getLDChemBaseUrl() + CONFIG_FIX_PATH;
+		String url = propertiesUtilService.getLDChemURL() + CONFIG_FIX_PATH;
 		
 		// Array of arrays
 		ObjectMapper mapper = new ObjectMapper();
@@ -894,7 +862,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	@Override
 	public JsonNode health() throws IOException {
-		String url = getLDChemBaseUrl() + HEALTH_PATH;
+		String url = propertiesUtilService.getLDChemURL() + HEALTH_PATH;
 
 		logger.info("Making a health request to " + url);
 		String response = SimpleUtil.getRequestToExternalServer(url, logger);

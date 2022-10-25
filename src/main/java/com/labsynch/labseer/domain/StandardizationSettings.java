@@ -40,6 +40,16 @@ public class StandardizationSettings {
      */
     private Boolean needsStandardization;
 
+    private String reasons;
+
+    public String getReasons() {
+        return reasons;
+    }
+
+    public void setReasons(String reasons) {
+        this.reasons = reasons;
+    }
+
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }

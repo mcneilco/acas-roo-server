@@ -859,6 +859,18 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.preprocessorSettings;
 	}
 
+	String ldChemURL;
+
+	@Value("${client.cmpdreg.serverSettings.liveDesign.url}")
+	public void setLDChemURL(String ldChemURL) {
+		this.ldChemURL = ldChemURL;
+	}
+
+	@Override
+	public String getLDChemURL() {
+		return this.ldChemURL;
+	}
+
 	int standardizationBatchSize;
 
 	@Value("${server.acas.standardizationBatchSize}")

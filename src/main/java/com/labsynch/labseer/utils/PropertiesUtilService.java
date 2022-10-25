@@ -136,4 +136,6 @@ public interface PropertiesUtilService {
 
 	Integer getMaxAutoLotNumber();
 
+	String getLDChemURL();
+
 }

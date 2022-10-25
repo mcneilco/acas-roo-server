@@ -151,35 +151,36 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// If we have applied standardization settings previously
 			if (configCheckResponse.getNeedsRestandardization()) {
 				// If the applied settings are different from the current settings
+
+				// Join the reasons as a single string seperated by the line separator
+				String reasons = configCheckResponse.getReasons().stream().collect(Collectors.joining(System.lineSeparator()));
 				logger.info(
 						"System requires restandardization, marking standardization_needed as "
 								+ configCheckResponse.getNeedsRestandardization()
-								+ " reasons: " + String.join(System.getProperty("line.separator"), configCheckResponse.getReasons())
+								+ " reasons: " + reasons
 				);
 
 				// We should only ever really have one standardization settings row at any given
 				// time
 				List<StandardizationSettings> standardizationSettingses = StandardizationSettings
 						.findAllStandardizationSettingses();
+				StandardizationSettings standardizationSettings;
 
 				if (standardizationSettingses.size() == 0) {
 					// If we have no standardization settings rows, create one and set the value to
 					// shouldStandardize to whatever the current settings say
 					// Note - this is a weird state, if we have previously applied standardized
 					// settings then we should have a standardization settings row
-					StandardizationSettings standardizationSettings = new StandardizationSettings();
-					standardizationSettings
-							.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
-					standardizationSettings.setModifiedDate(new Date());
-					standardizationSettings.persist();
+					standardizationSettings = new StandardizationSettings();
 				} else {
-
 					// If there is more than 0, then just update the current row
-					standardizationSettingses.get(0)
-							.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
-					standardizationSettingses.get(0).setModifiedDate(new Date());
-					standardizationSettingses.get(0).merge();
+					standardizationSettings = standardizationSettingses.get(0);
+
 				}
+				standardizationSettings.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
+				standardizationSettings.setReasons(reasons);
+				standardizationSettings.setModifiedDate(new Date());
+				standardizationSettings.persist();
 			} else {
 				logger.info("Standardizer configs have not changed, not marking 'standardization needed'");
 			}
@@ -192,6 +193,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				logger.info(
 						"There are no parents registered, we can assume standardization configs match the database standardization state so storing configs as the standardization settings");
 				standardizationSettings.setNeedsStandardization(false);
+				standardizationSettings.setReasons(null);
 				standardizationSettings.persist();
 				logger.info("Saved current standardization settings");
 				executeStandardization("acas", "Initialization");
@@ -202,11 +204,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					logger.info(
 							"Standardization is turned off so marking the database as not requiring standardization at this time");
 					standardizationSettings.setNeedsStandardization(false);
+					standardizationSettings.setReasons(null);
 					standardizationSettings.persist();
 				} else {
 					logger.warn(
 							"Standardization is turned on so we don't know the current database standardization state. Assuming no standardization is needed.");
 					standardizationSettings.setNeedsStandardization(false);
+					standardizationSettings.setReasons(null);
 					standardizationSettings.persist();
 				}
 			}
@@ -838,6 +842,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 		StandardizationSettings stndardizationSettings = this.getStandardizationSettings();
 		stndardizationSettings.setNeedsStandardization(false);
+		stndardizationSettings.setReasons(null);
 		stndardizationSettings.persist();
 
 		standardizationHistory = StandardizationDryRunCompound.addStatsToHistory(standardizationHistory);
@@ -876,9 +881,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public StandardizationSettings getStandardizationSettings() {
 		List<StandardizationSettings> standardizationSettingses = StandardizationSettings
 				.findAllStandardizationSettingses("modifiedDate", "DESC");
-		StandardizationSettings standardizationSettings = new StandardizationSettings();
+		StandardizationSettings standardizationSettings;
 		if (standardizationSettingses.size() > 0) {
 			standardizationSettings = standardizationSettingses.get(0);
+		} else {
+			standardizationSettings = new StandardizationSettings();
 		}
 		return (standardizationSettings);
 	}
