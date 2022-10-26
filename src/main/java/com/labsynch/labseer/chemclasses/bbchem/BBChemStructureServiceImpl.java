@@ -769,6 +769,61 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO configCheck(String oldConfig, String newConfig, String oldHashScheme, String newHashScheme, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) throws IOException {
+		// The service call to BBChem accepts old configurations and new configurations and returns validation results including if the new config is valid, if preprocessing (standardization) is needed
+		// and reasons for why the new config is invalid and/or preprocessing is needed
+		// accepts e.g.:
+		// {
+		// 	"new_config": {
+		// 		"CHOOSE_CANONICAL_TAUTOMER": false,
+		// 		"CLEAR_INVALID_WEDGE_BONDS": true,
+		// 		"EXPLICIT_HYDROGENS": "REMOVE_ALL",
+		// 		"GENERATE_COORDINATES": "FULL_ALIGNED",
+		// 		"GENERATE_V3K_SDF": true,
+		// 		"HEAVY_HYDROGEN_DT": false,
+		// 		"KEEP_ONLY_LARGEST_STRUCTURE": false,
+		// 		"NEUTRALIZE": true,
+		// 		"REMOVE_PROPERTIES": false,
+		// 		"REMOVE_SGROUP_DATA": "NONE",
+		// 		"RING_REPRESENTATION": "KEKULE",
+		// 		"STRIP_AND_GROUPS_ON_SINGLE_ATOM": true,
+		// 		"TRANSFORMATIONS": [],
+		// 		"CHIRAL_FLAG_0_MEANING": "UNGROUPED_ARE_ABSOLUTE",
+		// 		"RESOLVE_AMBIGUOUS_TAUTOMERS": false
+		// 	},
+		// 	"new_hash_scheme": "TAUTOMER_INSENSITIVE_LAYERS",
+		// 	"old_state": {
+		// 		"schrodinger_suite_version": "bbchem_2019.1-61",
+		// 		"preprocessor_version": "Schrodinger Suite 2019-1, Build 130",
+		// 		"config": {
+		// 			"CHOOSE_CANONICAL_TAUTOMER": false,
+		// 			"CLEAR_INVALID_WEDGE_BONDS": true,
+		// 			"EXPLICIT_HYDROGENS": "REMOVE_ALL",
+		// 			"GENERATE_COORDINATES": "FULL_ALIGNED",
+		// 			"HEAVY_HYDROGEN_DT": false,
+		// 			"KEEP_ONLY_LARGEST_STRUCTURE": false,
+		// 			"NEUTRALIZE": true,
+		// 			"REMOVE_PROPERTIES": false,
+		// 			"REMOVE_SGROUP_DATA": "NONE",
+		// 			"RING_REPRESENTATION": "KEKULE",
+		// 			"STRIP_AND_GROUPS_ON_SINGLE_ATOM": true,
+		// 			"TRANSFORMATIONS": [],
+		// 			"CHIRAL_FLAG_0_MEANING": "UNGROUPED_ARE_ABSOLUTE",
+		// 			"RESOLVE_AMBIGUOUS_TAUTOMERS": false
+		// 		},
+		// 		"hash_scheme": "TAUTOMER_INSENSITIVE_LAYERS"
+		// 	}
+		// }
+		// Returns e.g.
+		// {
+		// 	"valid": true,
+		// 	"new_state": {
+		// 		"config": "{\"CHIRAL_FLAG_0_MEANING\": \"UNGROUPED_ARE_ABSOLUTE\", \"CHOOSE_CANONICAL_TAUTOMER\": false, \"CLEAR_INVALID_WEDGE_BONDS\": true, \"EXPLICIT_HYDROGENS\": \"REMOVE_ALL\", \"GENERATE_COORDINATES\": \"FULL_ALIGNED\", \"HEAVY_HYDROGEN_DT\": false, \"KEEP_ONLY_LARGEST_STRUCTURE\": false, \"MAX_NUM_ATOMS\": null, \"NEUTRALIZE\": true, \"REMOVE_PROPERTIES\": false, \"REMOVE_SGROUP_DATA\": \"NONE\", \"RESOLVE_AMBIGUOUS_TAUTOMERS\": false, \"RING_REPRESENTATION\": \"KEKULE\", \"STRIP_AND_GROUPS_ON_SINGLE_ATOM\": true, \"STRIP_SALTS\": null, \"TRANSFORMATIONS\": []}",
+		// 		"hash_scheme": "TAUTOMER_INSENSITIVE_LAYERS",
+		// 		"preprocessor_version": "bbchem_2022.1-61",
+		// 		"schrodinger_suite_version": "Schrodinger Suite 2022-2, Build 130"
+		// 	},
+		// 	"rerun_preprocessor": false
+		// }
 		String url = propertiesUtilService.getLDChemURL() + CONFIG_CHECK_PATH;
 
 		// Create the request format
@@ -826,6 +881,34 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode jsonNode) throws IOException {
+		// Services a list of configs and returns a list of "fixed" configs
+		// e.g.
+		// ["{\"CHIRAL_FLAG_0_MEANING\": \"UNGROUPED_ARE_ABSOLUTE\", \"CHOOSE_CANONICAL_TAUTOMER\": false, \"CLEAR_INVALID_WEDGE_BONDS\": true, \"EXPLICIT_HYDROGENS\": \"REMOVE_ALL\", \"GENERATE_COORDINATES\": \"FULL_ALIGNED\", \"HEAVY_HYDROGEN_DT\": false, \"KEEP_ONLY_LARGEST_STRUCTURE\": false, \"MAX_NUM_ATOMS\": null, \"NEUTRALIZE\": true, \"REMOVE_PROPERTIES\": false, \"REMOVE_SGROUP_DATA\": \"NONE\", \"RESOLVE_AMBIGUOUS_TAUTOMERS\": false, \"RING_REPRESENTATION\": \"KEKULE\", \"STRIP_AND_GROUPS_ON_SINGLE_ATOM\": true, \"STRIP_SALTS\": null, \"TRANSFORMATIONS\": []}"]
+		// returns e.g.
+		// [
+		//     {
+		//         "is_input_valid": true,
+		//         "error_message": "",
+		//         "fixed_config": {
+		//             "MAX_NUM_ATOMS": null,
+		//             "KEEP_ONLY_LARGEST_STRUCTURE": false,
+		//             "REMOVE_PROPERTIES": false,
+		//             "STRIP_SALTS": null,
+		//             "RESOLVE_AMBIGUOUS_TAUTOMERS": false,
+		//             "CHOOSE_CANONICAL_TAUTOMER": false,
+		//             "TRANSFORMATIONS": [],
+		//             "NEUTRALIZE": true,
+		//             "EXPLICIT_HYDROGENS": "REMOVE_ALL",
+		//             "GENERATE_COORDINATES": "FULL_ALIGNED",
+		//             "CHIRAL_FLAG_0_MEANING": "UNGROUPED_ARE_ABSOLUTE",
+		//             "HEAVY_HYDROGEN_DT": false,
+		//             "RING_REPRESENTATION": "KEKULE",
+		//             "REMOVE_SGROUP_DATA": "NONE",
+		//             "CLEAR_INVALID_WEDGE_BONDS": true,
+		//             "STRIP_AND_GROUPS_ON_SINGLE_ATOM": true
+		//         }
+		//     }
+		// ]
 		String url = propertiesUtilService.getLDChemURL() + CONFIG_FIX_PATH;
 		
 		// Array of arrays
@@ -862,6 +945,24 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	@Override
 	public JsonNode health() throws IOException {
+		// Get request to the health endpoint
+		// returns e.g.
+		// {
+		// 	"status": "OK",
+		// 	"formats": [
+		// 		"MOL",
+		// 		"SDF"
+		// 	],
+		// 	"default_timeout": 60,
+		// 	"suite_version": "Schrodinger Suite 2022-2, Build 130",
+		// 	"preprocessor_version": "bbchem_2022.1-61",
+		// 	"currently_submitted": 0,
+		// 	"recent_jobs": 0,
+		// 	"recent_error_rate": "n/a",
+		// 	"recent_timeout_rate": "n/a",
+		// 	"recent_avg_total_runtime": "n/a",
+		// 	"recent_avg_runtime_per_success": "n/a"
+		// }
 		String url = propertiesUtilService.getLDChemURL() + HEALTH_PATH;
 
 		logger.info("Making a health request to " + url);

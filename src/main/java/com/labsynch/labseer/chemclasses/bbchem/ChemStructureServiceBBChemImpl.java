@@ -584,7 +584,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public MolConvertOutputDTO toFormat(String structure, String inputFormat, String outputFormat)
 			throws IOException, CmpdRegMolFormatException {
-		// Call bbchem to conver the structure to the
+		// Call bbchem to conver the structure to the structure to the output format
 		MolConvertOutputDTO output = new MolConvertOutputDTO();
 
 		output.setStructure(bbChemStructureService.convert(structure, inputFormat, outputFormat));
@@ -1086,6 +1086,10 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	private ObjectNode parseSettingsToObjectNode(String settingsJsonString) {
+		// This functions parses settings json from the ACAS configs or from the standardization history table
+		// which have slightly different formats (the history table has a "settings" key) nested in the json
+		// into a uniform object node with defaults for missing keys (schrodingerSuite and preprocessorVersion)
+		// had, in previous versions, not been stored in the history table.
 		if(settingsJsonString == null || settingsJsonString.isEmpty()) {
 			return null;
 		}
