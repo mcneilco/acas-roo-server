@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -99,6 +100,7 @@ public class ExportServiceImpl implements ExportService {
 	private int writeLotsToSDF(String exportSDFFileName, Collection<LotDTO> lotDTOs)
 			throws IllegalArgumentException, IOException, CmpdRegMolFormatException {
 		CmpdRegSDFWriter exporter = cmpdRegSDFWriterFactory.getCmpdRegSDFWriter(exportSDFFileName);
+		List<CmpdRegMolecule> cmpdRegMoleculeList = new ArrayList<CmpdRegMolecule>();
 		for (LotDTO lotDTO : lotDTOs) {
 			CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(lotDTO.getParentStructure());
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -236,8 +238,9 @@ public class ExportServiceImpl implements ExportService {
 				mol.setProperty("Parent Comment", lotDTO.getParentComment());
 			if (lotDTO.getParentIsMixture() != null)
 				mol.setProperty("Parent Is Mixture", lotDTO.getParentIsMixture().toString());
-			exporter.writeMol(mol);
+			cmpdRegMoleculeList.add(mol);
 		}
+		exporter.writeMols(cmpdRegMoleculeList);
 		exporter.close();
 		return lotDTOs.size();
 	}
