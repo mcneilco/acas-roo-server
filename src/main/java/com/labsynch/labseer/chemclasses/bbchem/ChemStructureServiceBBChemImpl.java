@@ -748,7 +748,6 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 			// Get standardizer actions from the config file if appliedSettings is false
 			if (appliedSettings) {
-				propertiesUtilService.getStandardizerActions();
 				settings.replace("standardizer_actions", propertiesUtilService.getStandardizerActions());
 
 			} else {
@@ -1166,13 +1165,33 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		ObjectNode newSettingsNode = parseSettingsToObjectNode(standardizationSettingsConfigDTO.getSettings());
 
 		try {
-			StandardizationSettingsConfigCheckResponseDTO configFixResponse = bbChemStructureService.configFix(newSettingsNode.get("config"));
 
+			// Check if the configs are valid and get the reasons why they are not and set the applied standardizer actions to the validated response
+			// Using the configured settings, call the BBChem fix endpoint to get a valididated setting configurations
+			StandardizationSettingsConfigCheckResponseDTO configFixResponse = bbChemStructureService.configFix(newSettingsNode.get("config"));
+			ObjectMapper mapper = new ObjectMapper();
+			newConfigCheck.setValid(configFixResponse.getValid());
+			newConfigCheck.setInvalidReasons(configFixResponse.getInvalidReasons());
+			newConfigCheck.setSuggestedConfigurationChanges(configFixResponse.getSuggestedConfigurationChanges());
+			propertiesUtilService.setStandardizerActions(mapper.readTree(configFixResponse.getValidatedSettings()));
+
+			// Logic to determine whether we need to restandardize
 			if(oldSettingsNode == null || oldSettingsNode.isEmpty()) {
-				logger.warn("Old settings are empty, setting needs restandardization to do because of unknown state");
-				newConfigCheck.setNeedsRestandardization(true);
-				newConfigCheck.setReasons("No standardization history records found");
+				// If we can find a standardization history, then check if there are any parents on the system
+				long parentCount = Parent.countParents();
+				if(parentCount > 0) {
+					// If there are 0 parents then we mark it as needing restandardization
+					logger.warn("Found no standardization history, and there are " + parentCount + " parents on the system. Setting needs restandardization to true.");
+					newConfigCheck.setNeedsRestandardization(true);
+					newConfigCheck.setNeedsRestandardizationReasons("No standardization history records found");
+				} else {
+					// If there are parents on the system and we have no history, then we don't need to restandardize
+					logger.warn("Old settings are empty, and there are no parents on the system. Setting needs restandardization to false");
+					newConfigCheck.setNeedsRestandardization(false);
+				}
+
 			} else {
+				// We have a previous standardization history record, so check if the settings are the same
 				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = bbChemStructureService.configCheck(
 					oldSettingsNode.get("config").toString(), 
 					configFixResponse.getValidatedSettings(), 
@@ -1181,15 +1200,10 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 					oldSettingsNode.get("preprocessor_version").asText(), 
 					oldSettingsNode.get("schrodinger_suite_version").asText()
 				);
-
 				newConfigCheck.setNeedsRestandardization(configCheckResponse.getNeedsRestandardization());
-				newConfigCheck.addReasons(configCheckResponse.getReasons());
-
+				newConfigCheck.addNeedsRestandardizationReasons(configCheckResponse.getNeedsRestandardizationReasons());
 			}
-			ObjectMapper mapper = new ObjectMapper();
-			propertiesUtilService.setStandardizerActions(mapper.readTree(configFixResponse.getValidatedSettings()));
-			newConfigCheck.setValid(configFixResponse.getValid());
-			newConfigCheck.setSuggestedConfigurationChanges(configFixResponse.getSuggestedConfigurationChanges());
+
 			return newConfigCheck;
 		} catch (IOException e) {
 			throw new RuntimeException("Failed call to bbchem config fix service: " + newSettingsNode.get("config").asText(), e);

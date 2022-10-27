@@ -13,10 +13,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class StandardizationSettingsConfigCheckResponseDTO {
 
     private Boolean valid;
+    
+    private List<String> invalidReasons = new ArrayList<String>();
 
     private Boolean needsRestandardization;
 
-    private List<String> reasons = new ArrayList<String>();
+    private List<String> needsRestandardizationReasons = new ArrayList<String>();
 
     private List<String> suggestedConfigurationChanges = new ArrayList<String>();
 
@@ -26,10 +28,11 @@ public class StandardizationSettingsConfigCheckResponseDTO {
 
     }
 
-    public StandardizationSettingsConfigCheckResponseDTO(Boolean valid, Boolean needsRestandardization, List<String> reasons,  List<String> suggestedConfigurationChanges, String validatedSettings) {
+    public StandardizationSettingsConfigCheckResponseDTO(Boolean valid, Boolean needsRestandardization, List<String> needsRestandardizationReasons,  List<String> invalidReasons,  List<String> suggestedConfigurationChanges, String validatedSettings) {
         this.valid = valid;
+        this.invalidReasons = invalidReasons;
         this.needsRestandardization = needsRestandardization;
-        this.reasons = reasons;
+        this.needsRestandardizationReasons = needsRestandardizationReasons;
         this.suggestedConfigurationChanges = suggestedConfigurationChanges;
         this.validatedSettings = validatedSettings;
     }
@@ -42,6 +45,18 @@ public class StandardizationSettingsConfigCheckResponseDTO {
         this.valid = valid;
     }
 
+    public List<String> getInvalidReasons() {
+        return invalidReasons;
+    }
+
+    public void setInvalidReasons(List<String> invalidReasons) {
+        this.invalidReasons = invalidReasons;
+    }
+
+    public void addInvalidReason(String invalidReason) {
+        this.invalidReasons.add(invalidReason);
+    }
+
     public Boolean getNeedsRestandardization() {
         return needsRestandardization;
     }
@@ -50,31 +65,31 @@ public class StandardizationSettingsConfigCheckResponseDTO {
         this.needsRestandardization = needsRestandardization;
     }
 
-    public List<String> getReasons() {
-        return this.reasons;
+    public List<String> getNeedsRestandardizationReasons() {
+        return this.needsRestandardizationReasons;
     }
 
-    public void setReasons(String reasons) {
+    public void setNeedsRestandardizationReasons(String reasons) {
         if(reasons != null && !reasons.isEmpty()) {
-            this.reasons = new ArrayList<String>(Arrays.asList(reasons.split("\\s*,\\s*")));
+            this.needsRestandardizationReasons = new ArrayList<String>(Arrays.asList(reasons.split("\\s*,\\s*")));
         }
     }
 
-    public void setReasons(List<String> reasons) {
+    public void setNeedsRestandardizationReasons(List<String> reasons) {
         if(reasons != null) {
-            this.reasons = reasons;
+            this.needsRestandardizationReasons = reasons;
         }
     }
 
-    public void addReasons(List<String> reasons) {
+    public void addNeedsRestandardizationReasons(List<String> reasons) {
         if(reasons != null) {
-            this.reasons.addAll(reasons);
+            this.needsRestandardizationReasons.addAll(reasons);
         }
     }
 
-    public void addReason(String reason) {
+    public void addNeedsRestandardizationReason(String reason) {
         if(reason != null && !reason.isEmpty()) {
-            this.reasons.add(reason);
+            this.needsRestandardizationReasons.add(reason);
         }
     }
 

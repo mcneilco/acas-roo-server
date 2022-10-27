@@ -130,26 +130,47 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public void checkStandardizationState() throws StandardizerException {
 		logger.info("Checking compound standardization state");
 
+		// Get the current settings from the config file using "false" which tell getStandardizerSettings to get the raw configs as opposed to the fixed/applied configs
+		StandardizerSettingsConfigDTO currentRawStandardizerSettings = chemStructureService.getStandardizerSettings(false);
+
 		// Get the applied settings from the history table which should have the most recent standardization settings applied
 		List<StandardizationHistory> completedHistories = StandardizationHistory.findStandardizationHistoriesByStatus("complete", 0, 1, "id", "DESC").getResultList();
 
 		StandardizationHistory mostRecentHistory;
-		if (completedHistories.size() > 0) {
+		if (completedHistories.size() > 0 && completedHistories.get(0).getStructuresStandardizedCount() > 0) {
 			mostRecentHistory = completedHistories.get(0);
-			
 		} else {
-			mostRecentHistory = new StandardizationHistory();
+			if(completedHistories.size() > 0) {
+				// If we have a completed standardization history but we didn't standardize any structures
+				// then just update the standardization history to the current settings
+				// This covers the case where a user started an empty system and then changed the standardization settings
+				mostRecentHistory = completedHistories.get(0);
+			} else {
+				// If there is no standardization history the lets create one
+				mostRecentHistory = new StandardizationHistory();
+				mostRecentHistory.setRecordedDate(new Date());
+			}
+			if(Parent.countParents() > 0) {
+				// Call to checkStandardizerSettings fills in the appliedSettings properties properly
+				chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
+
+				// No we can fetch the applied settings and update the history to reflect those
+				StandardizerSettingsConfigDTO appliedSettings = chemStructureService.getStandardizerSettings(true);
+				mostRecentHistory.setSettings(appliedSettings.toJson());
+				mostRecentHistory.setSettingsHash(appliedSettings.hashCode());
+
+				mostRecentHistory = StandardizationDryRunCompound.addStatsToHistory(mostRecentHistory);
+				mostRecentHistory.setStructuresUpdatedCount(0);
+				mostRecentHistory.setStandardizationComplete(new Date());
+				mostRecentHistory.setStandardizationStatus("complete");
+				mostRecentHistory.setStandardizationUser("acas");
+				mostRecentHistory.setStandardizationReason("Initial standardization");
+				mostRecentHistory.persist();
+			}
 		}
-		// Get the current settings from the config file using "false" which tell getStandardizerSettings to get the raw configs as opposed to the fixed/applied configs
-		StandardizerSettingsConfigDTO currentRawStandardizerSettings = chemStructureService.getStandardizerSettings(false);
 
 		// Do a config check to verify that settings are valid and if we need to restandardize or not
 		StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
-
-		// If the settings are invalid then throw an error and print the error message
-		if (!configCheckResponse.getValid()) {
-			throw new StandardizerException("The current standardization settings are invalid. Please check the standardization settings in the config file. Reasons: " + String.join("\n", configCheckResponse.getReasons()));
-		}
 
 		// We should only ever really have one standardization settings row at any given
 		// time
@@ -163,20 +184,29 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			standardizationSettings = standardizationSettingses.get(0);
 		}
 
+		String invalidReasons = configCheckResponse.getInvalidReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+		standardizationSettings.setInvalidReasons(invalidReasons);
+
+		// If the settings are invalid then throw an error and print the error message
+		standardizationSettings.setValid(configCheckResponse.getValid());
+		if (!standardizationSettings.getValid()) {
+			logger.error("Standardization settings are invalid: " + invalidReasons);
+		}
+
 		// Join the reasons as a single string seperated by the line separator
-		String reasons = configCheckResponse.getReasons().stream().collect(Collectors.joining(System.lineSeparator()));
-		standardizationSettings.setReasons(reasons);
+		String needsStandardizationReasons = configCheckResponse.getNeedsRestandardizationReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+		standardizationSettings.setNeedsRestandardizationReasons(needsStandardizationReasons);
+		
 		// If we have applied standardization settings previously
-		if (configCheckResponse.getNeedsRestandardization()) {
+		standardizationSettings.setNeedsStandardization(configCheckResponse.getNeedsRestandardization());
+		if (standardizationSettings.getNeedsStandardization()) {
 			logger.info(
 					"System requires restandardization, marking standardization_needed as "
 							+ configCheckResponse.getNeedsRestandardization()
-							+ " reasons: " + reasons
+							+ " reasons: " + needsStandardizationReasons
 			);
 			logger.info("Standardizer configs have not changed, not marking 'standardization needed'");
 			standardizationSettings.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
-		} else {
-			standardizationSettings.setNeedsStandardization(false);
 		}
 		String suggestedConfigurationChanges = configCheckResponse.getSuggestedConfigurationChanges().stream().collect(Collectors.joining(System.lineSeparator()));
 		standardizationSettings.setSuggestedConfigurationChanges(suggestedConfigurationChanges);

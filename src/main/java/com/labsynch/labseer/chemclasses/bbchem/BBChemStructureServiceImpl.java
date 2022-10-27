@@ -873,7 +873,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			for (JsonNode reason : reasons) {
 				reasonsList.add(reason.textValue());
 			}
-			response.setReasons(reasonsList);
+			response.setNeedsRestandardizationReasons(reasonsList);
 		}
 			
 		return response;
@@ -927,12 +927,15 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
 		if(firstElement.get("is_input_valid") != null) {
 			response.setValid(firstElement.get("is_input_valid").asBoolean());
+			if(!response.getValid()) {
+				if(firstElement.get("error_message") != null) {
+					response.addInvalidReason((firstElement.get("error_message").asText()));
+				} else {
+					response.addInvalidReason(CONFIG_FIX_PATH + " returned an invalid config but no error message. Please contact administators.");
+				}
+			}
 		} else {
 			response.setValid(false);
-		}
-
-		if(firstElement.get("error_message") != null) {
-			response.setReasons(firstElement.get("error_message").asText());
 		}
 
 		if(firstElement.get("fixed_config") != null) {
