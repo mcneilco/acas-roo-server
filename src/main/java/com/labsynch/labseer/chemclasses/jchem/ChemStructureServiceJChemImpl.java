@@ -1739,7 +1739,9 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException {
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException {
+		// Applied settings are always the same as the configured settings because we don't have a validation step
+		// which can be applied to the settings for the JChem standardizer
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
 		standardizationConfigDTO.setType("jchem");
 		standardizationConfigDTO.setShouldStandardize(false);

@@ -18,16 +18,19 @@ public class StandardizationSettingsConfigCheckResponseDTO {
 
     private List<String> reasons = new ArrayList<String>();
 
+    private List<String> suggestedConfigurationChanges = new ArrayList<String>();
+
     private String validatedSettings;
 
     public StandardizationSettingsConfigCheckResponseDTO() {
 
     }
 
-    public StandardizationSettingsConfigCheckResponseDTO(Boolean valid, Boolean needsRestandardization, List<String> reasons, String validatedSettings) {
+    public StandardizationSettingsConfigCheckResponseDTO(Boolean valid, Boolean needsRestandardization, List<String> reasons,  List<String> suggestedConfigurationChanges, String validatedSettings) {
         this.valid = valid;
         this.needsRestandardization = needsRestandardization;
         this.reasons = reasons;
+        this.suggestedConfigurationChanges = suggestedConfigurationChanges;
         this.validatedSettings = validatedSettings;
     }
 
@@ -72,6 +75,34 @@ public class StandardizationSettingsConfigCheckResponseDTO {
     public void addReason(String reason) {
         if(reason != null && !reason.isEmpty()) {
             this.reasons.add(reason);
+        }
+    }
+
+    public List<String> getSuggestedConfigurationChanges() {
+        return this.suggestedConfigurationChanges;
+    }
+
+    public void setSuggestedConfigurationChanges(String suggestedConfigurationChanges) {
+        if(suggestedConfigurationChanges != null && !suggestedConfigurationChanges.isEmpty()) {
+            this.suggestedConfigurationChanges = new ArrayList<String>(Arrays.asList(suggestedConfigurationChanges.split("\\s*,\\s*")));
+        }
+    }
+
+    public void setSuggestedConfigurationChanges(List<String> suggestedConfigurationChanges) {
+        if(suggestedConfigurationChanges != null) {
+            this.suggestedConfigurationChanges = suggestedConfigurationChanges;
+        }
+    }
+
+    public void addSuggestedConfigurationChanges(List<String> suggestedConfigurationChanges) {
+        if(suggestedConfigurationChanges != null) {
+            this.suggestedConfigurationChanges.addAll(suggestedConfigurationChanges);
+        }
+    }
+
+    public void addSuggestedConfigurationChange(String suggestedConfigurationChange) {
+        if(suggestedConfigurationChange != null && !suggestedConfigurationChange.isEmpty()) {
+            this.suggestedConfigurationChanges.add(suggestedConfigurationChange);
         }
     }
 

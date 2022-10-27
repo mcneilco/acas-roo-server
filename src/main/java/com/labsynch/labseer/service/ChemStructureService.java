@@ -92,7 +92,7 @@ public interface ChemStructureService {
 
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException;
 
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException;
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException;
 
 	public enum SearchType {
 		DUPLICATE, DUPLICATE_TAUTOMER, DUPLICATE_NO_TAUTOMER, STEREO_IGNORE, FULL_TAUTOMER,

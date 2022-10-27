@@ -2,6 +2,7 @@ package com.labsynch.labseer.utils;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
@@ -137,5 +138,9 @@ public interface PropertiesUtilService {
 	Integer getMaxAutoLotNumber();
 
 	String getLDChemURL();
+
+	JsonNode getStandardizerActions();
+
+	void setStandardizerActions(JsonNode standardizerActions);
 
 }

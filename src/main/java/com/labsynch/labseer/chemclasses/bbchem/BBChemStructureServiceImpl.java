@@ -215,9 +215,9 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
 
 		// Get the standardizer actions
-		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
 
-		options.put("standardizer_actions", standardizerActions);
+		options.replace("standardizer_actions", standardizerActions);
 		requestData.put("options", options);
 
 		// Set timeout (default to 900)
@@ -880,7 +880,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode jsonNode) throws IOException {
+	public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode inputConfigs) throws IOException {
 		// Services a list of configs and returns a list of "fixed" configs
 		// e.g.
 		// ["{\"CHIRAL_FLAG_0_MEANING\": \"UNGROUPED_ARE_ABSOLUTE\", \"CHOOSE_CANONICAL_TAUTOMER\": false, \"CLEAR_INVALID_WEDGE_BONDS\": true, \"EXPLICIT_HYDROGENS\": \"REMOVE_ALL\", \"GENERATE_COORDINATES\": \"FULL_ALIGNED\", \"HEAVY_HYDROGEN_DT\": false, \"KEEP_ONLY_LARGEST_STRUCTURE\": false, \"MAX_NUM_ATOMS\": null, \"NEUTRALIZE\": true, \"REMOVE_PROPERTIES\": false, \"REMOVE_SGROUP_DATA\": \"NONE\", \"RESOLVE_AMBIGUOUS_TAUTOMERS\": false, \"RING_REPRESENTATION\": \"KEKULE\", \"STRIP_AND_GROUPS_ON_SINGLE_ATOM\": true, \"STRIP_SALTS\": null, \"TRANSFORMATIONS\": []}"]
@@ -914,7 +914,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		// Array of arrays
 		ObjectMapper mapper = new ObjectMapper();
 		ArrayNode requestData = mapper.createArrayNode();
-		requestData.add(jsonNode.toString());
+		requestData.add(inputConfigs.toString());
 		String request = requestData.toString();
 		logger.info("Making a config fix request to " + url + " with " + request);
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, request, logger);
@@ -936,7 +936,19 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		if(firstElement.get("fixed_config") != null) {
-			response.setValidatedSettings(firstElement.get("fixed_config").toString());
+			JsonNode fixedConfigs = firstElement.get("fixed_config");
+			response.setValidatedSettings(fixedConfigs.toString());
+			
+			// The service doesn't return a list of reasons, so we print it here
+			List<String> diffs = SimpleUtil.diffJsonObjects(fixedConfigs, inputConfigs);
+			if(diffs.size() > 0) {
+				logger.warn("Found diffs in the config fix response: " + diffs);
+				for(String diff : diffs) {
+					logger.warn(diff);
+				}
+			}
+
+			response.setSuggestedConfigurationChanges(diffs);
 		}
 
 		return response;

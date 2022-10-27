@@ -42,6 +42,16 @@ public class StandardizationSettings {
 
     private String reasons;
 
+    private String suggestedConfigurationChanges;
+
+    public String getSuggestedConfigurationChanges() {
+        return suggestedConfigurationChanges;
+    }
+
+    public void setSuggestedConfigurationChanges(String suggestedConfigurationChanges) {
+        this.suggestedConfigurationChanges = suggestedConfigurationChanges;
+    }
+
     public String getReasons() {
         return reasons;
     }

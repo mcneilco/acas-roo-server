@@ -734,16 +734,32 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException {
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException {
+		// If appliedSettings is true, then get the settings that are currently applied rather than the settings from the configuration file
+		// This is applicable to bbchem because we want the fixed bbchem settings which are being applied during standardization which can be different than those
+		// in the configuration file
+
 		// Create new settings json node
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode settings = mapper.createObjectNode();
 
 		try {
 			JsonNode preprocessorSettings = bbChemStructureService.getPreprocessorSettings();
-			settings.replace("standardizer_actions", preprocessorSettings.get("standardizer_actions"));
+
+			// Get standardizer actions from the config file if appliedSettings is false
+			if (appliedSettings) {
+				propertiesUtilService.getStandardizerActions();
+				settings.replace("standardizer_actions", propertiesUtilService.getStandardizerActions());
+
+			} else {
+				settings.replace("standardizer_actions", preprocessorSettings.get("standardizer_actions"));
+			}
+
+			// Hash Scheme from configs
 			settings.put("hash_scheme", preprocessorSettings.get("process_options").get("hash_scheme").asText());
 
+			// Call the health endpoint to get the version of preprocessor and schrodinger suite version we are standardizing with
+			// This is used on upgrades of BBCHem to determine whether the system needs re-standardizing
 			JsonNode bbchemHealth = bbChemStructureService.health();
 			settings.put("schrodinger_suite_version", bbchemHealth.get("suite_version").asText());
 			settings.put("preprocessor_version", bbchemHealth.get("preprocessor_version").asText());
@@ -1141,46 +1157,43 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO) {
+		// This functions checks the most recent standardization history settings against the current configured settings)
+		// to check if settings are valid, if we need to re standardize and why (reasons).
 
+		// Parse the Standardization history and current configs into a common format
 		StandardizationSettingsConfigCheckResponseDTO newConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
-		StandardizationSettingsConfigCheckResponseDTO oldConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
 		ObjectNode oldSettingsNode = parseSettingsToObjectNode(mostRecentStandardizationHistory.getSettings());
 		ObjectNode newSettingsNode = parseSettingsToObjectNode(standardizationSettingsConfigDTO.getSettings());
 
-		// Validate the new settings
 		try {
-			newConfigCheck = bbChemStructureService.configFix(newSettingsNode.get("config"));
-			oldConfigCheck = bbChemStructureService.configFix(newSettingsNode.get("config"));
-			oldConfigCheck.getValidatedSettings();
-			if(oldSettingsNode.isEmpty()) {
+			StandardizationSettingsConfigCheckResponseDTO configFixResponse = bbChemStructureService.configFix(newSettingsNode.get("config"));
+
+			if(oldSettingsNode == null || oldSettingsNode.isEmpty()) {
 				logger.warn("Old settings are empty, setting needs restandardization to do because of unknown state");
 				newConfigCheck.setNeedsRestandardization(true);
-				newConfigCheck.setReasons("Old settings are empty");
+				newConfigCheck.setReasons("No standardization history records found");
 			} else {
 				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = bbChemStructureService.configCheck(
-					oldConfigCheck.getValidatedSettings(), 
-					newConfigCheck.getValidatedSettings(), 
+					oldSettingsNode.get("config").toString(), 
+					configFixResponse.getValidatedSettings(), 
 					oldSettingsNode.get("hash_scheme").asText(),
 					newSettingsNode.get("hash_scheme").asText(), 
 					oldSettingsNode.get("preprocessor_version").asText(), 
 					oldSettingsNode.get("schrodinger_suite_version").asText()
 				);
-				
-				if(configCheckResponse.getValid()) {
-					newConfigCheck.setValid(configCheckResponse.getValid());
-				}
 
 				newConfigCheck.setNeedsRestandardization(configCheckResponse.getNeedsRestandardization());
-
 				newConfigCheck.addReasons(configCheckResponse.getReasons());
 
 			}
+			ObjectMapper mapper = new ObjectMapper();
+			propertiesUtilService.setStandardizerActions(mapper.readTree(configFixResponse.getValidatedSettings()));
+			newConfigCheck.setValid(configFixResponse.getValid());
+			newConfigCheck.setSuggestedConfigurationChanges(configFixResponse.getSuggestedConfigurationChanges());
 			return newConfigCheck;
 		} catch (IOException e) {
 			throw new RuntimeException("Failed call to bbchem config fix service: " + newSettingsNode.get("config").asText(), e);
 		}
-
-
 	}
 
 }
