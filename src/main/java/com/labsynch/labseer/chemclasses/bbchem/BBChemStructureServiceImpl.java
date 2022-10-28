@@ -218,11 +218,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
 
 		options.replace("standardizer_actions", standardizerActions);
-<<<<<<< HEAD
-		requestData.put("options", options);
-=======
 		requestData.replace("options", options);
->>>>>>> aefcd81f (Removing all deprecated uses of ObjectNode.put(key, node))
 
 		// Set timeout (default to 900)
 		JsonNode timeoutNode = jsonNode.get("timeout");
