@@ -137,36 +137,37 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		List<StandardizationHistory> completedHistories = StandardizationHistory.findStandardizationHistoriesByStatus("complete", 0, 1, "id", "DESC").getResultList();
 
 		StandardizationHistory mostRecentHistory;
-		if (completedHistories.size() > 0 && completedHistories.get(0).getStructuresStandardizedCount() > 0) {
+		if (completedHistories.size() > 0) {
+			// Got a complete history where the standardization actually standaradized compounds
 			mostRecentHistory = completedHistories.get(0);
 		} else {
-			if(completedHistories.size() > 0) {
-				// If we have a completed standardization history but we didn't standardize any structures
-				// then just update the standardization history to the current settings
-				// This covers the case where a user started an empty system and then changed the standardization settings
-				mostRecentHistory = completedHistories.get(0);
-			} else {
-				// If there is no standardization history the lets create one
-				mostRecentHistory = new StandardizationHistory();
-				mostRecentHistory.setRecordedDate(new Date());
-			}
-			if(Parent.countParents() > 0) {
-				// Call to checkStandardizerSettings fills in the appliedSettings properties properly
-				chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
+			// There are 2 normal states where there are no completed histories
+			// 1. We upgraded to the new standardization code and there are no completed standardizations
+			// 2. This is a new install and there are no completed standardizations
+			mostRecentHistory = new StandardizationHistory();
+			StandardizationSettingsConfigCheckResponseDTO checkStandarizerOutput = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
+			if(Parent.countParents() == 0) {
+				// We need to call checkStandardization settings as it is responsible for making sure the applied settings are
+				// filled in approriatly before we save the history with applied settings.
+				if(!checkStandarizerOutput.getValid()) {
+					// If the settings are invalid then we don't save a standardization history as there has never been a valid state
+					String initialSettingsInvalidReasons = checkStandarizerOutput.getInvalidReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+					logger.info("Initial standardization settings are invalid: " + initialSettingsInvalidReasons);
+				} else {
 
-				// No we can fetch the applied settings and update the history to reflect those
-				StandardizerSettingsConfigDTO appliedSettings = chemStructureService.getStandardizerSettings(true);
-				mostRecentHistory.setSettings(appliedSettings.toJson());
-				mostRecentHistory.setSettingsHash(appliedSettings.hashCode());
+					// If there is no standardization history the lets create one
+					mostRecentHistory = StandardizationDryRunCompound.addStatsToHistory(mostRecentHistory);
+					mostRecentHistory.setStructuresStandardizedCount(0);
+					mostRecentHistory.setStructuresUpdatedCount(0);
+					mostRecentHistory.setStandardizationComplete(new Date());
+					mostRecentHistory.setStandardizationStatus("complete");
+					mostRecentHistory.setStandardizationUser("acas");
+					mostRecentHistory.setStandardizationReason("Initial standardization record");
+					mostRecentHistory.persist();
 
-				mostRecentHistory = StandardizationDryRunCompound.addStatsToHistory(mostRecentHistory);
-				mostRecentHistory.setStructuresUpdatedCount(0);
-				mostRecentHistory.setStandardizationComplete(new Date());
-				mostRecentHistory.setStandardizationStatus("complete");
-				mostRecentHistory.setStandardizationUser("acas");
-				mostRecentHistory.setStandardizationReason("Initial standardization");
-				mostRecentHistory.persist();
+				}
 			}
+
 		}
 
 		// Do a config check to verify that settings are valid and if we need to restandardize or not

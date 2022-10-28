@@ -1172,7 +1172,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			ObjectMapper mapper = new ObjectMapper();
 			newConfigCheck.setValid(configFixResponse.getValid());
 			newConfigCheck.setInvalidReasons(configFixResponse.getInvalidReasons());
-			newConfigCheck.setSuggestedConfigurationChanges(configFixResponse.getSuggestedConfigurationChanges());
+
+			// We only suggest configuration changes if the configurations are valid because listing invalid reasons next to a list of suggested
+			// changes is confusing.  If an administrator fixes their configs to be valid they will then be presented with a list of suggestions
+			if(newConfigCheck.getValid()) {
+				newConfigCheck.setSuggestedConfigurationChanges(configFixResponse.getSuggestedConfigurationChanges());
+			}
+
 			propertiesUtilService.setStandardizerActions(mapper.readTree(configFixResponse.getValidatedSettings()));
 
 			// Logic to determine whether we need to restandardize
@@ -1180,12 +1186,12 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				// If we can find a standardization history, then check if there are any parents on the system
 				long parentCount = Parent.countParents();
 				if(parentCount > 0) {
-					// If there are 0 parents then we mark it as needing restandardization
+					// If there are parents on the system and we have no history, then we need to restandardize
 					logger.warn("Found no standardization history, and there are " + parentCount + " parents on the system. Setting needs restandardization to true.");
 					newConfigCheck.setNeedsRestandardization(true);
-					newConfigCheck.setNeedsRestandardizationReasons("No standardization history records found");
+					newConfigCheck.setNeedsRestandardizationReasons("No record of any standardized structures but there are " + parentCount + " parents on the system.");
 				} else {
-					// If there are parents on the system and we have no history, then we don't need to restandardize
+					// If there are 0 parents then we mark it as not needing restandardization
 					logger.warn("Old settings are empty, and there are no parents on the system. Setting needs restandardization to false");
 					newConfigCheck.setNeedsRestandardization(false);
 				}
