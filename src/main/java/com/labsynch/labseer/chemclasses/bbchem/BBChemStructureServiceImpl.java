@@ -92,7 +92,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			for (String structure : structureGroupList) {
 				arrayNode.add(structure);
 			}
-			requestData.put("input", arrayNode);
+			requestData.replace("input", arrayNode);
 			requestData.put("input_format", "sdf");
 			requestData.put("fingerprint_use", type);
 
@@ -218,7 +218,11 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
 
 		options.replace("standardizer_actions", standardizerActions);
+<<<<<<< HEAD
 		requestData.put("options", options);
+=======
+		requestData.replace("options", options);
+>>>>>>> aefcd81f (Removing all deprecated uses of ObjectNode.put(key, node))
 
 		// Set timeout (default to 900)
 		JsonNode timeoutNode = jsonNode.get("timeout");
@@ -245,7 +249,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			for (String structure : structureGroupList) {
 				arrayNode.add(structure);
 			}
-			requestData.put("structures", arrayNode);
+			requestData.replace("structures", arrayNode);
 
 			// Post to the service and parse the response
 			String requestString = requestData.toString();
@@ -494,7 +498,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 				propertiesNode.add(propertyNode);
 	
 			}
-			molNode.put("properties", propertiesNode);
+			molNode.replace("properties", propertiesNode);
 	
 			// Add the structure to the mol node
 			molNode.put("sdf", bbChemStructure.getMol());
@@ -506,7 +510,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		// Add the sdfs to the request data
-		requestData.put("sdfs", sdfsNode);
+		requestData.replace("sdfs", sdfsNode);
 		
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
@@ -603,7 +607,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		// Add the structures to the request
 		ArrayNode arrayNode = mapper.createArrayNode();
 		arrayNode.add(molfile);
-		requestData.put("sdfs", arrayNode);
+		requestData.replace("sdfs", arrayNode);
 
 		List<String> molStrings = new ArrayList<>();
 		// Post to the service and parse the response
