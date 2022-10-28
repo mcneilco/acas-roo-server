@@ -144,6 +144,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// There are 2 normal states where there are no completed histories
 			// 1. We upgraded to the new standardization code and there are no completed standardizations
 			// 2. This is a new install and there are no completed standardizations
+			// We account for these states by:
+			// In case 1, we pass along an empty StandardizationHistory, which will cause the system to report that it needs standardization.
+			// In case 2 we try to fill in an initial standardization record with the current settings, provided they're valid settings, so no restandardization is needed.
 			mostRecentHistory = new StandardizationHistory();
 			StandardizationSettingsConfigCheckResponseDTO checkStandarizerOutput = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
 			if(Parent.countParents() == 0) {
