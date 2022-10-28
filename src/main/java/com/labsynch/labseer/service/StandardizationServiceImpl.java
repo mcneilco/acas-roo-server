@@ -177,7 +177,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
 
 		// We should only ever really have one standardization settings row at any given
-		// time
+		// time. Standardization Settings represent the current state of the system and 
+		// the row is checked and updated on ACAS start or anytime the /settings endpoint is checked
+		// which currently happens on creg single load page, bulk loader page and standardization module.
 		List<StandardizationSettings> standardizationSettingses = StandardizationSettings
 				.findAllStandardizationSettingses("id", "DESC");
 		StandardizationSettings standardizationSettings;
