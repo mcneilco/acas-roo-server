@@ -381,7 +381,7 @@ public class Lot {
         return q.getSingleResult();
     }
 
-    public static Integer getMaxParentLotNumber(Parent parent) {
+    public static Integer getMaxParentLotNumber(Parent parent, Integer maxAutoLotNumber) {
         if (parent == null)
             throw new IllegalArgumentException("The parent argument is required");
         logger.debug("get max parent lot number for parent " + parent.getCorpName());
@@ -393,7 +393,17 @@ public class Lot {
         Join<SaltForm, Parent> saltFormParent = lotSaltForm.join("parent");
         Predicate predicate = criteriaBuilder.equal(saltFormParent, parent);
         criteria.select(criteriaBuilder.max(lotRoot.<Integer>get("lotNumber")));
-        criteria.where(criteriaBuilder.and(predicate));
+        List<Predicate> predicateList = new ArrayList<Predicate>();
+        predicateList.add(predicate);
+
+        // If max auto lot number is passed in
+        // We don't want to use any lot number that is greater than the max auto lot number
+        // so add it to the where clause list
+        if(maxAutoLotNumber != null && maxAutoLotNumber > 0) {
+            Predicate maxAutoLotPredicate = criteriaBuilder.lessThanOrEqualTo(lotRoot.<Integer>get("lotNumber"), maxAutoLotNumber);
+            predicateList.add(maxAutoLotPredicate);
+        }
+		criteria.where(criteriaBuilder.and(predicateList.toArray( new Predicate[0])));
         TypedQuery<Integer> q = em.createQuery(criteria);
         return q.getSingleResult();
     }
