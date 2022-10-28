@@ -3,7 +3,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.BitSet;
@@ -13,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -26,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.Request;
@@ -48,6 +47,19 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private static final String EMPTY_STRUCTURE = "EMPTY_STRUCTURE";
 	private static final String ERROR_STRUCTURE = "ERROR_STRUCTURE";
 
+
+	private final String CONVERTER_PATH = "/converter/api/v0/convert";
+	private final String EXPORTSDF_PATH = "/sdf_export/api/v0/";
+	private final String FINGERPRINT_PATH = "/fingerprint/api/v0/";
+	private final String IMAGE_PATH = "/image/api/v0/";	
+	private final String PARSESDF_PATH =  "/parse/api/v0/";	
+	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
+	private final String SPLIT_PATH = "/split/api/v0";
+	private final String SUBSTRUCTURE_PATH = "/substructure/api/v0";
+	private final String CONFIG_CHECK_PATH = "/preprocessor/api/v0/config/check";
+	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix";
+	private final String HEALTH_PATH = "/preprocessor/api/v0/health";
+
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -55,28 +67,11 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		return jsonNode;
 	}
 
-	private String getUrlFromPreprocessorSettings(String propertyKey) throws IOException {
-		JsonNode jsonNode = null;
-		jsonNode = getPreprocessorSettings();
-		JsonNode urlNode = jsonNode.get(propertyKey);
-		if (urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings " + propertyKey + "!!");
-			throw new IOException("Missing preprocessorSettings " + propertyKey + "!!");
-		}
-		String url = urlNode.asText();
-		return url;
-
-	}
-
 	private HashMap<String, BitSet> molsToFingerprints(HashMap<String, String> structures, String type)
 			throws CmpdRegMolFormatException {
 		// Fetch the fingerprint from the BBChem fingerprint service
 		String url = null;
-		try {
-			url = getUrlFromPreprocessorSettings("fingerprintURL");
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		url = propertiesUtilService.getLDChemURL() + FINGERPRINT_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -97,7 +92,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			for (String structure : structureGroupList) {
 				arrayNode.add(structure);
 			}
-			requestData.put("input", arrayNode);
+			requestData.replace("input", arrayNode);
 			requestData.put("input_format", "sdf");
 			requestData.put("fingerprint_use", type);
 
@@ -208,7 +203,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 	private JsonNode postToProcessService(HashMap<String, String> structures) throws IOException {
 
-		String url = getUrlFromPreprocessorSettings("processURL");
+		String url = propertiesUtilService.getLDChemURL() + PROCESS_PATH;
 
 		JsonNode jsonNode = getPreprocessorSettings();
 
@@ -220,10 +215,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
 
 		// Get the standardizer actions
-		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
 
-		options.put("standardizer_actions", standardizerActions);
-		requestData.put("options", options);
+		options.replace("standardizer_actions", standardizerActions);
+		requestData.replace("options", options);
 
 		// Set timeout (default to 900)
 		JsonNode timeoutNode = jsonNode.get("timeout");
@@ -250,7 +245,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			for (String structure : structureGroupList) {
 				arrayNode.add(structure);
 			}
-			requestData.put("structures", arrayNode);
+			requestData.replace("structures", arrayNode);
 
 			// Post to the service and parse the response
 			String requestString = requestData.toString();
@@ -478,7 +473,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	@Override
 	public String getSDF(List<BBChemParentStructure> bbChemStructures) throws IOException {
 
-		String url = getUrlFromPreprocessorSettings("exportSDFURL");
+		String url = propertiesUtilService.getLDChemURL() + EXPORTSDF_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -499,7 +494,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 				propertiesNode.add(propertyNode);
 	
 			}
-			molNode.put("properties", propertiesNode);
+			molNode.replace("properties", propertiesNode);
 	
 			// Add the structure to the mol node
 			molNode.put("sdf", bbChemStructure.getMol());
@@ -511,7 +506,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		// Add the sdfs to the request data
-		requestData.put("sdfs", sdfsNode);
+		requestData.replace("sdfs", sdfsNode);
 		
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
@@ -540,12 +535,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException {
 		List<BBChemParentStructure> bbChemStructures = new ArrayList<BBChemParentStructure>();
 
-		String url = null;
-		try {
-			url = getUrlFromPreprocessorSettings("parseURL");
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		String url = propertiesUtilService.getLDChemURL() + PARSESDF_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -604,12 +594,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	@Override
 	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
 
-		String url = null;
-		try {
-			url = getUrlFromPreprocessorSettings("splitURL");
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		String url = propertiesUtilService.getLDChemURL() + SPLIT_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -618,7 +603,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		// Add the structures to the request
 		ArrayNode arrayNode = mapper.createArrayNode();
 		arrayNode.add(molfile);
-		requestData.put("sdfs", arrayNode);
+		requestData.replace("sdfs", arrayNode);
 
 		List<String> molStrings = new ArrayList<>();
 		// Post to the service and parse the response
@@ -663,12 +648,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			throws CmpdRegMolFormatException {
 		// Fetch the fingerprint from the BBChem finerprint service
 
-		String url = null;
-		try {
-			url = getUrlFromPreprocessorSettings("substructureMatchURL");
-		} catch (IOException e) {
-			throw new CmpdRegMolFormatException(e);
-		}
+		String url = propertiesUtilService.getLDChemURL() + SUBSTRUCTURE_PATH;
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -679,7 +659,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		for (AbstractBBChemStructure needsMatch : needsMatchStructures) {
 			arrayNode.add(needsMatch.getMol());
 		}
-		requestData.put("needs_match", arrayNode);
+		requestData.replace("needs_match", arrayNode);
 		requestData.put("query", queryMol);
 		requestData.put("query_format", "sdf");
 		requestData.put("boolean_results", true);
@@ -717,5 +697,298 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
 		}
 	}
+
+	public byte[] callImageService(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize)
+			throws IOException {
+
+		// Extract the url to call
+		String url = propertiesUtilService.getLDChemURL() + IMAGE_PATH;
+
+		// Create the request json
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+		String mol = "";
+		try {
+			mol = molecule.getMolStructure();
+		} catch (CmpdRegMolFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		requestData.put("molv3", mol);
+		requestData.put("format", imageFormat);
+		ObjectNode draw_options = mapper.createObjectNode();
+		draw_options.put("width", wSize);
+		draw_options.put("height", hSize);
+		requestData.replace("draw_options", draw_options);
+		String request = requestData.toString();
+		logger.info("Image request" + request);
+
+		// Return the response bytes
+		return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
+	}
+
+	private String getServiceFormat(String format) {
+		String serviceFormat = null;
+		if (format == null || format.equalsIgnoreCase("mol")) {
+			serviceFormat = "sdf";
+		} else if (format.equalsIgnoreCase("sdf")) {
+			serviceFormat = "sdf";
+		} else if (format.equalsIgnoreCase("smi")) {
+			serviceFormat = "smiles";
+		}
+		return serviceFormat;
+	}
+
+	@Override
+	public String convert(String structure, String inputFormat, String outputFormat)
+			throws IOException, CmpdRegMolFormatException {
+
+		// Read the preprocessor settings as json
+		String url = propertiesUtilService.getLDChemURL() + CONVERTER_PATH;
+
+		// Create the request format
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		requestData.put("input_format", getServiceFormat(inputFormat));
+		requestData.put("output_format", getServiceFormat(outputFormat));
+
+		ArrayNode inputsNode = mapper.createArrayNode();
+		inputsNode.add(structure);
+		requestData.replace("inputs", inputsNode);
+
+		// Post to the service
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
+		logger.debug("Got response: " + postResponse);
+
+		// Parse the response json
+		ObjectMapper responseMapper = new ObjectMapper();
+		JsonNode responseNode = responseMapper.readTree(postResponse);
+		return responseNode.get(0).asText();
+	}
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO configCheck(String oldConfig, String newConfig, String oldHashScheme, String newHashScheme, String oldPreprocessorVersion, String oldSchrodingerSuiteVersion) throws IOException {
+		// The service call to BBChem accepts old configurations and new configurations and returns validation results including if the new config is valid, if preprocessing (standardization) is needed
+		// and reasons for why the new config is invalid and/or preprocessing is needed
+		// accepts e.g.:
+		// {
+		// 	"new_config": {
+		// 		"CHOOSE_CANONICAL_TAUTOMER": false,
+		// 		"CLEAR_INVALID_WEDGE_BONDS": true,
+		// 		"EXPLICIT_HYDROGENS": "REMOVE_ALL",
+		// 		"GENERATE_COORDINATES": "FULL_ALIGNED",
+		// 		"GENERATE_V3K_SDF": true,
+		// 		"HEAVY_HYDROGEN_DT": false,
+		// 		"KEEP_ONLY_LARGEST_STRUCTURE": false,
+		// 		"NEUTRALIZE": true,
+		// 		"REMOVE_PROPERTIES": false,
+		// 		"REMOVE_SGROUP_DATA": "NONE",
+		// 		"RING_REPRESENTATION": "KEKULE",
+		// 		"STRIP_AND_GROUPS_ON_SINGLE_ATOM": true,
+		// 		"TRANSFORMATIONS": [],
+		// 		"CHIRAL_FLAG_0_MEANING": "UNGROUPED_ARE_ABSOLUTE",
+		// 		"RESOLVE_AMBIGUOUS_TAUTOMERS": false
+		// 	},
+		// 	"new_hash_scheme": "TAUTOMER_INSENSITIVE_LAYERS",
+		// 	"old_state": {
+		// 		"schrodinger_suite_version": "bbchem_2019.1-61",
+		// 		"preprocessor_version": "Schrodinger Suite 2019-1, Build 130",
+		// 		"config": {
+		// 			"CHOOSE_CANONICAL_TAUTOMER": false,
+		// 			"CLEAR_INVALID_WEDGE_BONDS": true,
+		// 			"EXPLICIT_HYDROGENS": "REMOVE_ALL",
+		// 			"GENERATE_COORDINATES": "FULL_ALIGNED",
+		// 			"HEAVY_HYDROGEN_DT": false,
+		// 			"KEEP_ONLY_LARGEST_STRUCTURE": false,
+		// 			"NEUTRALIZE": true,
+		// 			"REMOVE_PROPERTIES": false,
+		// 			"REMOVE_SGROUP_DATA": "NONE",
+		// 			"RING_REPRESENTATION": "KEKULE",
+		// 			"STRIP_AND_GROUPS_ON_SINGLE_ATOM": true,
+		// 			"TRANSFORMATIONS": [],
+		// 			"CHIRAL_FLAG_0_MEANING": "UNGROUPED_ARE_ABSOLUTE",
+		// 			"RESOLVE_AMBIGUOUS_TAUTOMERS": false
+		// 		},
+		// 		"hash_scheme": "TAUTOMER_INSENSITIVE_LAYERS"
+		// 	}
+		// }
+		// Returns e.g.
+		// {
+		// 	"valid": true,
+		// 	"new_state": {
+		// 		"config": "{\"CHIRAL_FLAG_0_MEANING\": \"UNGROUPED_ARE_ABSOLUTE\", \"CHOOSE_CANONICAL_TAUTOMER\": false, \"CLEAR_INVALID_WEDGE_BONDS\": true, \"EXPLICIT_HYDROGENS\": \"REMOVE_ALL\", \"GENERATE_COORDINATES\": \"FULL_ALIGNED\", \"HEAVY_HYDROGEN_DT\": false, \"KEEP_ONLY_LARGEST_STRUCTURE\": false, \"MAX_NUM_ATOMS\": null, \"NEUTRALIZE\": true, \"REMOVE_PROPERTIES\": false, \"REMOVE_SGROUP_DATA\": \"NONE\", \"RESOLVE_AMBIGUOUS_TAUTOMERS\": false, \"RING_REPRESENTATION\": \"KEKULE\", \"STRIP_AND_GROUPS_ON_SINGLE_ATOM\": true, \"STRIP_SALTS\": null, \"TRANSFORMATIONS\": []}",
+		// 		"hash_scheme": "TAUTOMER_INSENSITIVE_LAYERS",
+		// 		"preprocessor_version": "bbchem_2022.1-61",
+		// 		"schrodinger_suite_version": "Schrodinger Suite 2022-2, Build 130"
+		// 	},
+		// 	"rerun_preprocessor": false
+		// }
+		String url = propertiesUtilService.getLDChemURL() + CONFIG_CHECK_PATH;
+
+		// Create the request format
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		// New config
+		requestData.replace("new_config", mapper.readTree(newConfig));
+		requestData.put("new_hash_scheme", newHashScheme);
+
+		// Old state
+		ObjectNode oldState = mapper.createObjectNode();
+		oldState.replace("config", mapper.readTree(oldConfig));
+		oldState.put("hash_scheme", oldHashScheme);
+		oldState.put("preprocessor_version", oldPreprocessorVersion);
+		oldState.put("schrodinger_suite_version", oldSchrodingerSuiteVersion);
+		requestData.replace("old_state", oldState);
+
+		// Post to the service
+		String request = requestData.toString();
+		logger.info("Making a config check request to " + url + " with " + request);
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, request, logger);
+		logger.info("Got response: " + postResponse);
+
+		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+		JsonNode responseNode = mapper.readTree(postResponse);
+
+		// Check if the config is valid
+		if(responseNode.get("valid") != null) {
+			response.setValid(responseNode.get("valid").asBoolean());
+		} else {
+			response.setValid(false);
+		}
+
+		// Check if rerun_preprocessor
+		if(responseNode.get("rerun_preprocessor") != null) {
+			response.setNeedsRestandardization(responseNode.get("rerun_preprocessor").asBoolean());
+		} else {
+			response.setNeedsRestandardization(true);
+		}
+
+		// Check if reason
+		if(responseNode.get("reasons") != null) {
+			// response node reasons is an array of strings create a new array of strings and get it from the response node
+			ArrayNode reasons = (ArrayNode) responseNode.get("reasons");
+			List<String> reasonsList = new ArrayList<>();
+			for (JsonNode reason : reasons) {
+				reasonsList.add(reason.textValue());
+			}
+			response.setNeedsRestandardizationReasons(reasonsList);
+		}
+			
+		return response;
+	}
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO configFix(JsonNode inputConfigs) throws IOException {
+		// Services a list of configs and returns a list of "fixed" configs
+		// e.g.
+		// ["{\"CHIRAL_FLAG_0_MEANING\": \"UNGROUPED_ARE_ABSOLUTE\", \"CHOOSE_CANONICAL_TAUTOMER\": false, \"CLEAR_INVALID_WEDGE_BONDS\": true, \"EXPLICIT_HYDROGENS\": \"REMOVE_ALL\", \"GENERATE_COORDINATES\": \"FULL_ALIGNED\", \"HEAVY_HYDROGEN_DT\": false, \"KEEP_ONLY_LARGEST_STRUCTURE\": false, \"MAX_NUM_ATOMS\": null, \"NEUTRALIZE\": true, \"REMOVE_PROPERTIES\": false, \"REMOVE_SGROUP_DATA\": \"NONE\", \"RESOLVE_AMBIGUOUS_TAUTOMERS\": false, \"RING_REPRESENTATION\": \"KEKULE\", \"STRIP_AND_GROUPS_ON_SINGLE_ATOM\": true, \"STRIP_SALTS\": null, \"TRANSFORMATIONS\": []}"]
+		// returns e.g.
+		// [
+		//     {
+		//         "is_input_valid": true,
+		//         "error_message": "",
+		//         "fixed_config": {
+		//             "MAX_NUM_ATOMS": null,
+		//             "KEEP_ONLY_LARGEST_STRUCTURE": false,
+		//             "REMOVE_PROPERTIES": false,
+		//             "STRIP_SALTS": null,
+		//             "RESOLVE_AMBIGUOUS_TAUTOMERS": false,
+		//             "CHOOSE_CANONICAL_TAUTOMER": false,
+		//             "TRANSFORMATIONS": [],
+		//             "NEUTRALIZE": true,
+		//             "EXPLICIT_HYDROGENS": "REMOVE_ALL",
+		//             "GENERATE_COORDINATES": "FULL_ALIGNED",
+		//             "CHIRAL_FLAG_0_MEANING": "UNGROUPED_ARE_ABSOLUTE",
+		//             "HEAVY_HYDROGEN_DT": false,
+		//             "RING_REPRESENTATION": "KEKULE",
+		//             "REMOVE_SGROUP_DATA": "NONE",
+		//             "CLEAR_INVALID_WEDGE_BONDS": true,
+		//             "STRIP_AND_GROUPS_ON_SINGLE_ATOM": true
+		//         }
+		//     }
+		// ]
+		String url = propertiesUtilService.getLDChemURL() + CONFIG_FIX_PATH;
+		
+		// Array of arrays
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode requestData = mapper.createArrayNode();
+		requestData.add(inputConfigs.toString());
+		String request = requestData.toString();
+		logger.info("Making a config fix request to " + url + " with " + request);
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, request, logger);
+		logger.info("Got response: " + postResponse);
+
+		// Parse the response json into an array of arrays with the first element being the object we need to interpret
+		JsonNode responseNode = mapper.readTree(postResponse);
+		JsonNode firstElement = responseNode.get(0);
+
+		StandardizationSettingsConfigCheckResponseDTO response = new StandardizationSettingsConfigCheckResponseDTO();
+		if(firstElement.get("is_input_valid") != null) {
+			response.setValid(firstElement.get("is_input_valid").asBoolean());
+			if(!response.getValid()) {
+				if(firstElement.get("error_message") != null) {
+					response.addInvalidReason((firstElement.get("error_message").asText()));
+				} else {
+					response.addInvalidReason(CONFIG_FIX_PATH + " returned an invalid config but no error message. Please contact administators.");
+				}
+			}
+		} else {
+			response.setValid(false);
+		}
+
+		if(firstElement.get("fixed_config") != null) {
+			JsonNode fixedConfigs = firstElement.get("fixed_config");
+			response.setValidatedSettings(fixedConfigs.toString());
+			
+			// The service doesn't return a list of reasons, so we print it here
+			List<String> diffs = SimpleUtil.diffJsonObjects(fixedConfigs, inputConfigs);
+			if(diffs.size() > 0) {
+				logger.warn("Found diffs in the config fix response: " + diffs);
+				for(String diff : diffs) {
+					logger.warn(diff);
+				}
+			}
+
+			response.setSuggestedConfigurationChanges(diffs);
+		}
+
+		return response;
+
+	}
+
+	@Override
+	public JsonNode health() throws IOException {
+		// Get request to the health endpoint
+		// returns e.g.
+		// {
+		// 	"status": "OK",
+		// 	"formats": [
+		// 		"MOL",
+		// 		"SDF"
+		// 	],
+		// 	"default_timeout": 60,
+		// 	"suite_version": "Schrodinger Suite 2022-2, Build 130",
+		// 	"preprocessor_version": "bbchem_2022.1-61",
+		// 	"currently_submitted": 0,
+		// 	"recent_jobs": 0,
+		// 	"recent_error_rate": "n/a",
+		// 	"recent_timeout_rate": "n/a",
+		// 	"recent_avg_total_runtime": "n/a",
+		// 	"recent_avg_runtime_per_success": "n/a"
+		// }
+		String url = propertiesUtilService.getLDChemURL() + HEALTH_PATH;
+
+		logger.info("Making a health request to " + url);
+		String response = SimpleUtil.getRequestToExternalServer(url, logger);
+		logger.info("Got health response: " + response);
+		// Parse the response json
+		ObjectMapper responseMapper = new ObjectMapper();
+		JsonNode responseNode = responseMapper.readTree(response);
+		return responseNode;
+	}
+		
+	
 
 }

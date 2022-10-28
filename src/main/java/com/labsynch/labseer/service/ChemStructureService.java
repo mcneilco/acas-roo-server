@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -90,7 +92,7 @@ public interface ChemStructureService {
 
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException;
 
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException;
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException;
 
 	public enum SearchType {
 		DUPLICATE, DUPLICATE_TAUTOMER, DUPLICATE_NO_TAUTOMER, STEREO_IGNORE, FULL_TAUTOMER,
@@ -149,4 +151,6 @@ public interface ChemStructureService {
 
 	public void fillMissingStructures() throws CmpdRegMolFormatException;
 
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO);
+	
 }

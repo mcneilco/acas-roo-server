@@ -42,4 +42,6 @@ public interface StandardizationService {
 
 	void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException;
 
+	void checkStandardizationState() throws StandardizerException;
+
 }

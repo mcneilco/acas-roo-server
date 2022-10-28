@@ -36,9 +36,48 @@ public class StandardizationSettings {
     @DateTimeFormat(style = "M-")
     private Date modifiedDate;
 
+    private Boolean valid;
+
+    private String invalidReasons;
     /**
      */
     private Boolean needsStandardization;
+
+    private String needsStandardizationReasons;
+
+    private String suggestedConfigurationChanges;
+
+    public Boolean getValid() {
+        return valid;
+    }
+
+    public void setValid(Boolean valid) {
+        this.valid = valid;
+    }
+
+    public String getInvalidReasons() {
+        return invalidReasons;
+    }
+
+    public void setInvalidReasons(String invalidReasons) {
+        this.invalidReasons = invalidReasons;
+    }
+
+    public String getSuggestedConfigurationChanges() {
+        return suggestedConfigurationChanges;
+    }
+
+    public void setSuggestedConfigurationChanges(String suggestedConfigurationChanges) {
+        this.suggestedConfigurationChanges = suggestedConfigurationChanges;
+    }
+
+    public String getNeedsRestandardizationReasons() {
+        return needsStandardizationReasons;
+    }
+
+    public void setNeedsRestandardizationReasons(String reasons) {
+        this.needsStandardizationReasons = reasons;
+    }
 
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
