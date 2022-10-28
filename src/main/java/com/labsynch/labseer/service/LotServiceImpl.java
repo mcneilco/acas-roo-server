@@ -94,7 +94,7 @@ public class LotServiceImpl implements LotService {
 		if(propertiesUtilService.getMaxAutoLotNumber() != null && lot.getLotNumber() > propertiesUtilService.getMaxAutoLotNumber()){
 			newLotNumber = lot.getLotNumber();
 		} else {
-			newLotNumber = Lot.getMaxParentLotNumber(parent) + 1;
+			newLotNumber = Lot.getMaxParentLotNumber(parent, propertiesUtilService.getMaxAutoLotNumber()) + 1;
 		}
 		return newLotNumber;
 	}
@@ -528,10 +528,13 @@ public class LotServiceImpl implements LotService {
 				int lotCount = 0;
 				if (lot.getParent().getId() == null) {
 					logger.debug("Setting lotCount of new parent = 0");
-				} else if (Lot.getMaxParentLotNumber(lot.getParent()) == null) {
-					logger.debug("this is a null pointer exception. Set lotCount = 0");
 				} else {
-					lotCount = Lot.getMaxParentLotNumber(lot.getParent());
+					Integer maxLotNumber = Lot.getMaxParentLotNumber(lot.getParent(), propertiesUtilService.getMaxAutoLotNumber());
+					if (maxLotNumber == null) {
+						logger.debug("this is a null pointer exception. Set lotCount = 0");
+					} else {
+						lotCount = maxLotNumber;
+					}
 				}
 				logger.debug("Lot Count = " + lotCount);
 				lotNumber = lotCount + 1;
