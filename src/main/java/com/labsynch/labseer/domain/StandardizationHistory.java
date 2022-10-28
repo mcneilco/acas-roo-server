@@ -76,8 +76,6 @@ public class StandardizationHistory {
 
     private Integer registrationErrorCount;
 
-    private String needsStandardiationReasons;
-
     public StandardizationHistory() {
     }
 
