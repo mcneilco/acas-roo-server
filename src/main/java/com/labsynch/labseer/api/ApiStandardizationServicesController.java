@@ -7,8 +7,8 @@ import javax.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
-import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.StandardizationService;
@@ -183,9 +183,8 @@ public class ApiStandardizationServicesController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
-			standardizationService.checkStandardizationState();
-			StandardizationSettings stndardizationSettings = standardizationService.getStandardizationSettings();
-			return new ResponseEntity<String>(stndardizationSettings.toJson(), headers, HttpStatus.OK);
+			StandardizationSettingsConfigCheckResponseDTO standardizationSettingsConfigCheckResponseDTO = standardizationService.checkStandardizationState();
+			return new ResponseEntity<String>(standardizationSettingsConfigCheckResponseDTO.toJson(), headers, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Caught error trying to get standardization settings: ", e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);

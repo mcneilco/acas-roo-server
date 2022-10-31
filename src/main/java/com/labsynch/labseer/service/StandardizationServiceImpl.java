@@ -25,7 +25,6 @@ import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
-import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound.SyncStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
@@ -127,7 +126,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Transactional
 	@Override
-	public void checkStandardizationState() throws StandardizerException {
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizationState() throws StandardizerException {
 		logger.info("Checking compound standardization state");
 
 		// Get the current settings from the config file using "false" which tell getStandardizerSettings to get the raw configs as opposed to the fixed/applied configs
@@ -176,48 +175,26 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Do a config check to verify that settings are valid and if we need to restandardize or not
 		StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
 
-		// We should only ever really have one standardization settings row at any given
-		// time. Standardization Settings represent the current state of the system and 
-		// the row is checked and updated on ACAS start or anytime the /settings endpoint is checked
-		// which currently happens on creg single load page, bulk loader page and standardization module.
-		List<StandardizationSettings> standardizationSettingses = StandardizationSettings
-				.findAllStandardizationSettingses("id", "DESC");
-		StandardizationSettings standardizationSettings;
 
-		if (standardizationSettingses.size() == 0) {
-			standardizationSettings = new StandardizationSettings();
-		} else {
-			standardizationSettings = standardizationSettingses.get(0);
-		}
-
-		String invalidReasons = configCheckResponse.getInvalidReasons().stream().collect(Collectors.joining(System.lineSeparator()));
-		standardizationSettings.setInvalidReasons(invalidReasons);
-
-		// If the settings are invalid then throw an error and print the error message
-		standardizationSettings.setValid(configCheckResponse.getValid());
-		if (!standardizationSettings.getValid()) {
-			logger.error("Standardization settings are invalid: " + invalidReasons);
-		}
-
-		// Join the reasons as a single string seperated by the line separator
-		String needsStandardizationReasons = configCheckResponse.getNeedsRestandardizationReasons().stream().collect(Collectors.joining(System.lineSeparator()));
-		standardizationSettings.setNeedsRestandardizationReasons(needsStandardizationReasons);
-		
-		// If we have applied standardization settings previously
-		standardizationSettings.setNeedsStandardization(configCheckResponse.getNeedsRestandardization());
-		if (standardizationSettings.getNeedsStandardization()) {
+		// If the settings are invalid log the reasons
+		if (!configCheckResponse.getValid()) {
+			String invalidReasons = configCheckResponse.getInvalidReasons().stream().collect(Collectors.joining(System.lineSeparator()));
 			logger.info(
-					"System requires restandardization, marking standardization_needed as "
-							+ configCheckResponse.getNeedsRestandardization()
+					"The system is configured with invalid standardizer configurations, "
+							+ " reasons: " + invalidReasons
+			);
+		}
+
+		// If we have applied standardization settings previously
+		if (configCheckResponse.getNeedsRestandardization()) {
+			String needsStandardizationReasons = configCheckResponse.getNeedsRestandardizationReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+			logger.info(
+					"System requires restandardization, "
 							+ " reasons: " + needsStandardizationReasons
 			);
-			logger.info("Standardizer configs have not changed, not marking 'standardization needed'");
-			standardizationSettings.setNeedsStandardization(currentRawStandardizerSettings.getShouldStandardize());
 		}
-		String suggestedConfigurationChanges = configCheckResponse.getSuggestedConfigurationChanges().stream().collect(Collectors.joining(System.lineSeparator()));
-		standardizationSettings.setSuggestedConfigurationChanges(suggestedConfigurationChanges);
-		standardizationSettings.setModifiedDate(new Date());
-		standardizationSettings.persist();
+
+		return configCheckResponse;
 	}
 
 	@Transactional
@@ -876,19 +853,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		dryRunStats.setSettings(standardizerConfigs.toJson());
 		dryRunStats.setSettingsHash(standardizerConfigs.hashCode());
 		return dryRunStats.toJson();
-	}
-
-	@Override
-	public StandardizationSettings getStandardizationSettings() {
-		List<StandardizationSettings> standardizationSettingses = StandardizationSettings
-				.findAllStandardizationSettingses("modifiedDate", "DESC");
-		StandardizationSettings standardizationSettings;
-		if (standardizationSettingses.size() > 0) {
-			standardizationSettings = standardizationSettingses.get(0);
-		} else {
-			standardizationSettings = new StandardizationSettings();
-		}
-		return (standardizationSettings);
 	}
 
 	@Override

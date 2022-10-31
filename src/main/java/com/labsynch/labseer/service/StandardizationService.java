@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.labsynch.labseer.domain.StandardizationHistory;
-import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 
@@ -36,12 +36,10 @@ public interface StandardizationService {
 
 	String standardizeSingleMol(String mol) throws CmpdRegMolFormatException, StandardizerException, IOException;
 
-	StandardizationSettings getStandardizationSettings();
-
 	List<StandardizationHistory> getStandardizationHistory();
 
 	void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException;
 
-	void checkStandardizationState() throws StandardizerException;
+	StandardizationSettingsConfigCheckResponseDTO checkStandardizationState() throws StandardizerException;
 
 }

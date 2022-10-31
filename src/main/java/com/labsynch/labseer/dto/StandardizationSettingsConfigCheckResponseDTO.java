@@ -135,7 +135,7 @@ public class StandardizationSettingsConfigCheckResponseDTO {
 
     public String toJson() {
         return new JSONSerializer()
-                .exclude("*.class").serialize(this);
+                .exclude("*.class").include("invalidReasons", "needsRestandardizationReasons", "suggestedConfigurationChanges").serialize(this);
     }
 
     public String toJson(String[] fields) {
