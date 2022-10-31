@@ -33,8 +33,11 @@ import com.epam.indigo.IndigoObject;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -687,7 +690,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	}
 
 	@Override
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException {
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException {
 		// There are no standardizer settings for Indigo implmented so returning empty
 		// string
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
@@ -766,5 +769,16 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		// Not currently implemented for indigo as there is no use case currently to
 		// switch to indigo from another chemistry engine
 
+	}
+
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO) {
+		// Not currently implemented for indigo as standardization is not implmented so just returning no stanardization required
+		StandardizationSettingsConfigCheckResponseDTO returnSettings = new StandardizationSettingsConfigCheckResponseDTO();
+		returnSettings.setNeedsRestandardization(false);
+		returnSettings.setValid(true);
+		returnSettings.setValidatedSettings(standardizationSettingsConfigDTO.getSettings());
+		return returnSettings;
 	}
 }

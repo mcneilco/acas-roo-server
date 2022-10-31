@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.underscore.$;
 import com.github.underscore.Function1;
 import com.labsynch.labseer.domain.LsThing;
@@ -383,6 +386,18 @@ public class SimpleUtil {
 		return getStringBody(connection);
 	}
 
+	public static String getRequestToExternalServer(String url, Logger logger)
+			throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("GET");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		logger.debug("Sending request to: " + url);
+		return getStringBody(connection);
+	}
+
 	public static String getStringBody(HttpURLConnection httpURLConnection) throws IOException {
 		// Input stream
 		InputStream inputStream = null;
@@ -578,6 +593,42 @@ public class SimpleUtil {
 				.boxed().collect(Collectors.toList());
 
 		return splitArrayIntoGroups(longs, groupSize);
+	}
+
+	public static List<String> diffJsonObjects(JsonNode object1, JsonNode object2) {
+		List<String> diff = new ArrayList<String>();
+		if (object1 == null || object2 == null) {
+			return diff;
+		}
+
+		// Get fields that are in object1 but not in object2
+		// Get fields that are in both objects but have different values
+		Iterator<Entry<String, JsonNode>> fieldsIterator = object1.fields();
+		while (fieldsIterator.hasNext()) {
+			Entry<String, JsonNode> field = fieldsIterator.next();
+			String fieldName = field.getKey();
+			JsonNode fieldValue = field.getValue();
+			if (object2.has(fieldName)) {
+				JsonNode fieldValue2 = object2.get(fieldName);
+				if (!fieldValue.equals(fieldValue2)) {
+					diff.add("Change " + fieldName + " from " + fieldValue + " to " + fieldValue2);
+				}
+			} else {
+				diff.add("Add " + fieldName + " with value " + fieldValue);
+			}
+		}
+
+		// Get fields that are in object2 but not in object1
+		// ignore fields that are in both objects as they have already been handled
+		fieldsIterator = object2.fields();
+		while (fieldsIterator.hasNext()) {
+			Entry<String, JsonNode> field = fieldsIterator.next();
+			String fieldName = field.getKey();
+			if (!object1.has(fieldName)) {
+				diff.add("Remove " + fieldName);
+			}
+		}
+		return diff;
 	}
 
 }

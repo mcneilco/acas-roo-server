@@ -25,9 +25,9 @@ import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
-import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound.SyncStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
@@ -80,6 +80,24 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
+	private void failRunnningStandardization() {
+		// Cancel all running standardization histories as failed
+		List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
+		for (StandardizationHistory history : histories) {
+			if (history.getStandardizationStatus() != null
+					&& history.getStandardizationStatus().equals("running")) {
+				logger.info("Failing running standardization for run id " + history.getId());
+				history.setStandardizationStatus("failed");
+				history.merge();
+			}
+			if (history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")) {
+				logger.info("Failing running standardization dry run for run id " + history.getId());
+				history.setDryRunStatus("failed");
+				history.merge();
+			}
+		}
+	}
+
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
@@ -90,104 +108,93 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return;
 		}
 
+		// Fail any dry runs or standardizations that are still in progress from when the server was last up
+		failRunnningStandardization();
+		try{
+			checkStandardizationState();
+		} catch (Exception e) {
+			logger.warn("Error checking standardization state", e);
+		}
+
 		logger.info("Checking for structures missing from chemistry engine tables");
 		try {
 			chemStructureService.fillMissingStructures();
 		} catch (Exception e) {
 			logger.error("Error in trying to fill missing structures", e);
 		}
+	}
 
+	@Transactional
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizationState() throws StandardizerException {
 		logger.info("Checking compound standardization state");
-		try {
-			// Get the current configuration settings
-			StandardizerSettingsConfigDTO currentStandardizationSettings = chemStructureService
-					.getStandardizerSettings();
 
-			// Cancel all running standardization histories as failed
-			List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
-			for (StandardizationHistory history : histories) {
-				if (history.getStandardizationStatus() != null
-						&& history.getStandardizationStatus().equals("running")) {
-					logger.info("Failing running standardization for run id " + history.getId());
-					history.setStandardizationStatus("failed");
-					history.merge();
-				}
-				if (history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")) {
-					logger.info("Failing running standardization dry run for run id " + history.getId());
-					history.setDryRunStatus("failed");
-					history.merge();
+		// Get the current settings from the config file using "false" which tell getStandardizerSettings to get the raw configs as opposed to the fixed/applied configs
+		StandardizerSettingsConfigDTO currentRawStandardizerSettings = chemStructureService.getStandardizerSettings(false);
+
+		// Get the applied settings from the history table which should have the most recent standardization settings applied
+		List<StandardizationHistory> completedHistories = StandardizationHistory.findStandardizationHistoriesByStatus("complete", 0, 1, "id", "DESC").getResultList();
+
+		StandardizationHistory mostRecentHistory;
+		if (completedHistories.size() > 0) {
+			// Got a complete history where the standardization actually standaradized compounds
+			mostRecentHistory = completedHistories.get(0);
+		} else {
+			// There are 2 normal states where there are no completed histories
+			// 1. We upgraded to the new standardization code and there are no completed standardizations
+			// 2. This is a new install and there are no completed standardizations
+			// We account for these states by:
+			// In case 1, we pass along an empty StandardizationHistory, which will cause the system to report that it needs standardization.
+			// In case 2 we try to fill in an initial standardization record with the current settings, provided they're valid settings, so no restandardization is needed.
+			mostRecentHistory = new StandardizationHistory();
+			StandardizationSettingsConfigCheckResponseDTO checkStandarizerOutput = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
+			if(Parent.countParents() == 0) {
+				// We need to call checkStandardization settings as it is responsible for making sure the applied settings are
+				// filled in approriatly before we save the history with applied settings.
+				if(!checkStandarizerOutput.getValid()) {
+					// If the settings are invalid then we don't save a standardization history as there has never been a valid state
+					String initialSettingsInvalidReasons = checkStandarizerOutput.getInvalidReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+					logger.info("Initial standardization settings are invalid: " + initialSettingsInvalidReasons);
+				} else {
+
+					// If there is no standardization history the lets create one
+					mostRecentHistory = StandardizationDryRunCompound.addStatsToHistory(mostRecentHistory);
+					mostRecentHistory.setStructuresStandardizedCount(0);
+					mostRecentHistory.setStructuresUpdatedCount(0);
+					mostRecentHistory.setStandardizationComplete(new Date());
+					mostRecentHistory.setStandardizationStatus("complete");
+					mostRecentHistory.setStandardizationUser("acas");
+					mostRecentHistory.setStandardizationReason("Initial standardization record");
+					mostRecentHistory.persist();
+
 				}
 			}
 
-			// Get the applied settings from the history table which should have the most
-			// recent standardization settings applied
-			StandardizationHistory appliedStandardizationSettings = getMostRecentStandardizationHistory();
-
-			if (appliedStandardizationSettings != null) {
-				// If we have applied standardization settings previously
-				if (currentStandardizationSettings.hashCode() != appliedStandardizationSettings.getSettingsHash()) {
-					// If the applied settings are different from the current settings
-					logger.info(
-							"Standardizer configs have changed, marking 'standardization needed' according to configs as "
-									+ currentStandardizationSettings.getShouldStandardize());
-
-					// We should only ever really have one standardization settings row at any given
-					// time
-					List<StandardizationSettings> standardizationSettingses = StandardizationSettings
-							.findAllStandardizationSettingses();
-
-					if (standardizationSettingses.size() == 0) {
-						// If we have no standardization settings rows, create one and set the value to
-						// shouldStandardize to whatever the current settings say
-						// Note - this is a weird state, if we have previously applied standardized
-						// settings then we should have a standardization settings row
-						StandardizationSettings standardizationSettings = new StandardizationSettings();
-						standardizationSettings
-								.setNeedsStandardization(currentStandardizationSettings.getShouldStandardize());
-						standardizationSettings.setModifiedDate(new Date());
-						standardizationSettings.persist();
-					} else {
-
-						// If there is more than 0, then just update the current row
-						standardizationSettingses.get(0)
-								.setNeedsStandardization(currentStandardizationSettings.getShouldStandardize());
-						standardizationSettingses.get(0).setModifiedDate(new Date());
-						standardizationSettingses.get(0).merge();
-					}
-				} else {
-					logger.info("Standardizer configs have not changed, not marking 'standardization needed'");
-				}
-			} else {
-				logger.info("No standardization history found in database");
-				StandardizationSettings standardizationSettings = new StandardizationSettings();
-				standardizationSettings.setModifiedDate(new Date());
-				Long numberOfParents = Parent.countParents();
-				if (numberOfParents == 0.0) {
-					logger.info(
-							"There are no parents registered, we can assume standardization configs match the database standardization state so storing configs as the standardization settings");
-					standardizationSettings.setNeedsStandardization(false);
-					standardizationSettings.persist();
-					logger.info("Saved current standardization settings");
-					executeStandardization("acas", "Initialization");
-				} else {
-					logger.warn(
-							"Standardization is in an unknown state because there are no rows in standardization history table.");
-					if (currentStandardizationSettings.getShouldStandardize() == false) {
-						logger.info(
-								"Standardization is turned off so marking the database as not requiring standardization at this time");
-						standardizationSettings.setNeedsStandardization(false);
-						standardizationSettings.persist();
-					} else {
-						logger.warn(
-								"Standardization is turned on so we don't know the current database standardization state. Assuming no standardization is needed.");
-						standardizationSettings.setNeedsStandardization(false);
-						standardizationSettings.persist();
-					}
-				}
-			}
-		} catch (StandardizerException e) {
-			logger.error("Caught error on checking standardization state", e);
 		}
+
+		// Do a config check to verify that settings are valid and if we need to restandardize or not
+		StandardizationSettingsConfigCheckResponseDTO configCheckResponse = chemStructureService.checkStandardizerSettings(mostRecentHistory, currentRawStandardizerSettings);
+
+
+		// If the settings are invalid log the reasons
+		if (!configCheckResponse.getValid()) {
+			String invalidReasons = configCheckResponse.getInvalidReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+			logger.info(
+					"The system is configured with invalid standardizer configurations, "
+							+ " reasons: " + invalidReasons
+			);
+		}
+
+		// If we have applied standardization settings previously
+		if (configCheckResponse.getNeedsRestandardization()) {
+			String needsStandardizationReasons = configCheckResponse.getNeedsRestandardizationReasons().stream().collect(Collectors.joining(System.lineSeparator()));
+			logger.info(
+					"System requires restandardization, "
+							+ " reasons: " + needsStandardizationReasons
+			);
+		}
+
+		return configCheckResponse;
 	}
 
 	@Transactional
@@ -789,7 +796,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Transactional
 	public String executeStandardization(String username, String reason) throws StandardizerException {
 		StandardizationHistory standardizationHistory = getMostRecentStandardizationHistory();
-		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings();
+		// We pass true to get the applied settings as oppoosed to the configuration file setttings
+		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings(true);
 		if (standardizationHistory == null
 				|| StringUtils.equalsIgnoreCase(standardizationHistory.getStandardizationStatus(), "complete")) {
 			standardizationHistory = new StandardizationHistory();
@@ -813,10 +821,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return (standardizationHistory.toJson());
 		}
 
-		StandardizationSettings stndardizationSettings = this.getStandardizationSettings();
-		stndardizationSettings.setNeedsStandardization(false);
-		stndardizationSettings.persist();
-
 		standardizationHistory = StandardizationDryRunCompound.addStatsToHistory(standardizationHistory);
 		standardizationHistory.setStructuresUpdatedCount(result);
 		standardizationHistory.setStandardizationComplete(new Date());
@@ -824,6 +828,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		standardizationHistory.setStandardizationUser(username);
 		standardizationHistory.setStandardizationReason(reason);
 		standardizationHistory.merge();
+
+		checkStandardizationState();
 		return standardizationHistory.toJson();
 	}
 
@@ -842,22 +848,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	public String getDryRunStats() throws StandardizerException {
-		StandardizerSettingsConfigDTO standardizerConfigs = chemStructureService.getStandardizerSettings();
+		StandardizerSettingsConfigDTO standardizerConfigs = chemStructureService.getStandardizerSettings(true);
 		StandardizationHistory dryRunStats = new StandardizationDryRunCompound().fetchStats();
 		dryRunStats.setSettings(standardizerConfigs.toJson());
 		dryRunStats.setSettingsHash(standardizerConfigs.hashCode());
 		return dryRunStats.toJson();
-	}
-
-	@Override
-	public StandardizationSettings getStandardizationSettings() {
-		List<StandardizationSettings> standardizationSettingses = StandardizationSettings
-				.findAllStandardizationSettingses("modifiedDate", "DESC");
-		StandardizationSettings standardizationSettings = new StandardizationSettings();
-		if (standardizationSettingses.size() > 0) {
-			standardizationSettings = standardizationSettingses.get(0);
-		}
-		return (standardizationSettings);
 	}
 
 	@Override
@@ -870,7 +865,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Transactional
 	private StandardizationHistory setCurrentStandardizationDryRunStatus(String status) throws StandardizerException {
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
-		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings();
+		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings(true);
 		if (stndznHistory == null
 				|| StringUtils.equalsIgnoreCase(stndznHistory.getStandardizationStatus(), "complete")) {
 			stndznHistory = new StandardizationHistory();

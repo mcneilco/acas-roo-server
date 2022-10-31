@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -98,7 +99,7 @@ public class StandardizationHistory {
             "standardizationUser", "standardizationReason", "standardizationStart", "standardizationComplete",
             "structuresStandardizedCount", "structuresUpdatedCount", "newDuplicateCount", "existingDuplicateCount",
             "displayChangeCount", "asDrawnDisplayChangeCount", "changedStructureCount",
-            "dryRunStandardizationChangesCount", "standardizationErrorCount", "registrationErrorCount");
+            "dryRunStandardizationChangesCount", "standardizationErrorCount", "registrationErrorCount", "needsStandardiationReasons");
 
     public static final EntityManager entityManager() {
         EntityManager em = new StandardizationHistory().entityManager;
@@ -152,6 +153,28 @@ public class StandardizationHistory {
         return entityManager().createQuery(jpaQuery, StandardizationHistory.class).setFirstResult(firstResult)
                 .setMaxResults(maxResults).getResultList();
     }
+
+    public static TypedQuery<StandardizationHistory> findStandardizationHistoriesByStatus(String status, int firstResult, int maxResults,
+            String sortFieldName, String sortOrder) {
+            if (status == null)
+            throw new IllegalArgumentException("The status argument is required");
+        EntityManager em = StandardizationHistory.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM StandardizationHistory AS o WHERE");
+        queryBuilder.append(" o.standardizationStatus = :status");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY " + sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" " + sortOrder);
+            }
+        }
+        TypedQuery<StandardizationHistory> q = em.createQuery(queryBuilder.toString(), StandardizationHistory.class);
+        q.setParameter("status", status);
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        return q;
+    }
+
+
 
     @Transactional
     public void persist() {

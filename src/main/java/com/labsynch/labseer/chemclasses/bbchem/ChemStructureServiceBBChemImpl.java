@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,7 +29,9 @@ import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -578,55 +581,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		return true;
 	}
 
-	private String getServiceFormat(String format) {
-		String serviceFormat = null;
-		if (format == null || format.equalsIgnoreCase("mol")) {
-			serviceFormat = "sdf";
-		} else if (format.equalsIgnoreCase("sdf")) {
-			serviceFormat = "sdf";
-		} else if (format.equalsIgnoreCase("smi")) {
-			serviceFormat = "smiles";
-		}
-		return serviceFormat;
-	}
-
 	@Override
 	public MolConvertOutputDTO toFormat(String structure, String inputFormat, String outputFormat)
 			throws IOException, CmpdRegMolFormatException {
-		// Calls preprocessor URL and gets the standardized structure from the
-		// preprocessor URL
+		// Call bbchem to conver the structure to the structure to the output format
 		MolConvertOutputDTO output = new MolConvertOutputDTO();
 
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = bbChemStructureService.getPreprocessorSettings();
-
-		// Extract the url to call
-		JsonNode urlNode = jsonNode.get("converterURL");
-		if (urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings converterURL!!");
-		}
-
-		String url = urlNode.asText();
-
-		// Create the request format
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode requestData = mapper.createObjectNode();
-
-		requestData.put("input_format", getServiceFormat(inputFormat));
-		requestData.put("output_format", getServiceFormat(outputFormat));
-
-		ArrayNode inputsNode = mapper.createArrayNode();
-		inputsNode.add(structure);
-		requestData.put("inputs", inputsNode);
-
-		// Post to the service
-		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
-		logger.debug("Got response: " + postResponse);
-
-		// Parse the response json
-		ObjectMapper responseMapper = new ObjectMapper();
-		JsonNode responseNode = responseMapper.readTree(postResponse);
-		output.setStructure(responseNode.get(0).asText());
+		output.setStructure(bbChemStructureService.convert(structure, inputFormat, outputFormat));
 		output.setFormat(outputFormat);
 		String contentUrl = "TO DO: Download Link";
 		output.setContentUrl(contentUrl);
@@ -773,20 +734,44 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException {
-		// Read the preprocessor settings as json
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = null;
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException {
+		// If appliedSettings is true, then get the settings that are currently applied rather than the settings from the configuration file
+		// This is applicable to bbchem because we want the fixed bbchem settings which are being applied during standardization which can be different than those
+		// in the configuration file
+
+		// Create new settings json node
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode settings = mapper.createObjectNode();
+
 		try {
-			jsonNode = bbChemStructureService.getPreprocessorSettings().get("standardizer_actions");
+			JsonNode preprocessorSettings = bbChemStructureService.getPreprocessorSettings();
+
+			// Get standardizer actions from the config file if appliedSettings is false
+			if (appliedSettings) {
+				settings.replace("standardizer_actions", propertiesUtilService.getStandardizerActions());
+
+			} else {
+				settings.replace("standardizer_actions", preprocessorSettings.get("standardizer_actions"));
+			}
+
+			// Hash Scheme from configs
+			settings.put("hash_scheme", preprocessorSettings.get("process_options").get("hash_scheme").asText());
+
+			// Call the health endpoint to get the version of preprocessor and schrodinger suite version we are standardizing with
+			// This is used on upgrades of BBCHem to determine whether the system needs re-standardizing
+			JsonNode bbchemHealth = bbChemStructureService.health();
+			settings.put("schrodinger_suite_version", bbchemHealth.get("suite_version").asText());
+			settings.put("preprocessor_version", bbchemHealth.get("preprocessor_version").asText());
+
 		} catch (IOException e) {
 			logger.error("Error parsing preprocessor settings json", e);
 			throw new StandardizerException("Error parsing preprocessor settings json");
 		}
 
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
-		standardizationConfigDTO.setSettings(jsonNode.toString());
+		standardizationConfigDTO.setSettings(settings.toString());
 		standardizationConfigDTO.setType("bbchem");
+		
 		standardizationConfigDTO.setShouldStandardize(true);
 		return standardizationConfigDTO;
 
@@ -1113,6 +1098,122 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		// Salt
 		fillMissingSaltStructures();
 
+	}
+
+	private ObjectNode parseSettingsToObjectNode(String settingsJsonString) {
+		// This functions parses settings json from the ACAS configs or from the standardization history table
+		// which have slightly different formats (the history table has a "settings" key) nested in the json
+		// into a uniform object node with defaults for missing keys (schrodingerSuite and preprocessorVersion)
+		// had, in previous versions, not been stored in the history table.
+		if(settingsJsonString == null || settingsJsonString.isEmpty()) {
+			return null;
+		}
+		// Empty mapper
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode inputSettings = mapper.createObjectNode();
+
+		ObjectNode returnNode = mapper.createObjectNode();
+		try {
+			inputSettings = (ObjectNode) mapper.readTree(settingsJsonString);
+			ObjectNode config = mapper.createObjectNode();
+			String hashScheme = "TAUTOMER_INSENSITIVE_LAYERS";
+			String schrodingerSuite = "unknown";
+			String processorVersion = "unknown";
+
+			if(inputSettings.get("settings") != null) {
+				inputSettings = (ObjectNode) mapper.readTree(inputSettings.get("settings").textValue());
+			}
+
+			if(inputSettings.get("standardizer_actions") != null) {
+				config = (ObjectNode) inputSettings.get("standardizer_actions");
+			}
+			returnNode.replace("config", config);
+
+			if(inputSettings.get("schrodinger_suite_version") != null) {
+				schrodingerSuite = inputSettings.get("schrodinger_suite_version").asText();
+			}
+			returnNode.put("schrodinger_suite_version", schrodingerSuite);
+
+			if(inputSettings.get("preprocessor_version") != null) {
+				processorVersion = inputSettings.get("preprocessor_version").asText();
+			}
+			returnNode.put("preprocessor_version", processorVersion);
+
+			if(inputSettings.get("hash_scheme") != null) {
+				hashScheme = inputSettings.get("hash_scheme").asText();
+			}
+			returnNode.put("hash_scheme", hashScheme);
+			
+			return returnNode;
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse lsThingJson", e);
+        }
+
+
+
+	}
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO) {
+		// This functions checks the most recent standardization history settings against the current configured settings)
+		// to check if settings are valid, if we need to re standardize and why (reasons).
+
+		// Parse the Standardization history and current configs into a common format
+		StandardizationSettingsConfigCheckResponseDTO newConfigCheck = new StandardizationSettingsConfigCheckResponseDTO();
+		ObjectNode oldSettingsNode = parseSettingsToObjectNode(mostRecentStandardizationHistory.getSettings());
+		ObjectNode newSettingsNode = parseSettingsToObjectNode(standardizationSettingsConfigDTO.getSettings());
+
+		try {
+
+			// Check if the configs are valid and get the reasons why they are not and set the applied standardizer actions to the validated response
+			// Using the configured settings, call the BBChem fix endpoint to get a valididated setting configurations
+			StandardizationSettingsConfigCheckResponseDTO configFixResponse = bbChemStructureService.configFix(newSettingsNode.get("config"));
+			ObjectMapper mapper = new ObjectMapper();
+			newConfigCheck.setValid(configFixResponse.getValid());
+			newConfigCheck.setInvalidReasons(configFixResponse.getInvalidReasons());
+
+			// We only suggest configuration changes if the configurations are valid because listing invalid reasons next to a list of suggested
+			// changes is confusing.  If an administrator fixes their configs to be valid they will then be presented with a list of suggestions
+			if(newConfigCheck.getValid()) {
+				newConfigCheck.setSuggestedConfigurationChanges(configFixResponse.getSuggestedConfigurationChanges());
+			}
+
+			propertiesUtilService.setStandardizerActions(mapper.readTree(configFixResponse.getValidatedSettings()));
+
+			// Logic to determine whether we need to restandardize
+			if(oldSettingsNode == null || oldSettingsNode.isEmpty()) {
+				// If we can find a standardization history, then check if there are any parents on the system
+				long parentCount = Parent.countParents();
+				if(parentCount > 0) {
+					// If there are parents on the system and we have no history, then we need to restandardize
+					logger.warn("Found no standardization history, and there are " + parentCount + " parents on the system. Setting needs restandardization to true.");
+					newConfigCheck.setNeedsRestandardization(true);
+					newConfigCheck.setNeedsRestandardizationReasons("No record of any standardized structures but there are " + parentCount + " parents on the system.");
+				} else {
+					// If there are 0 parents then we mark it as not needing restandardization
+					logger.warn("Old settings are empty, and there are no parents on the system. Setting needs restandardization to false");
+					newConfigCheck.setNeedsRestandardization(false);
+				}
+
+			} else {
+				// We have a previous standardization history record, so check if the settings are the same
+				StandardizationSettingsConfigCheckResponseDTO configCheckResponse = bbChemStructureService.configCheck(
+					oldSettingsNode.get("config").toString(), 
+					configFixResponse.getValidatedSettings(), 
+					oldSettingsNode.get("hash_scheme").asText(),
+					newSettingsNode.get("hash_scheme").asText(), 
+					oldSettingsNode.get("preprocessor_version").asText(), 
+					oldSettingsNode.get("schrodinger_suite_version").asText()
+				);
+				newConfigCheck.setNeedsRestandardization(configCheckResponse.getNeedsRestandardization());
+				newConfigCheck.addNeedsRestandardizationReasons(configCheckResponse.getNeedsRestandardizationReasons());
+			}
+
+			return newConfigCheck;
+		} catch (IOException e) {
+			throw new RuntimeException("Failed call to bbchem config fix service: " + newSettingsNode.get("config").asText(), e);
+		}
 	}
 
 }
