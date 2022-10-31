@@ -332,14 +332,6 @@ public class StandardizationHistory {
         this.standardizationReason = standardizationReason;
     }
 
-    public String getNeedsStandardizationReasons() {
-        return this.needsStandardiationReasons;
-    }
-
-    public void setNeedsStandardizationReasons(String needsStandardizationReasons) {
-        this.needsStandardiationReasons = needsStandardizationReasons;
-    }
-
     public Date getStandardizationStart() {
         return this.standardizationStart;
     }
