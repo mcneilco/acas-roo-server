@@ -693,8 +693,8 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			}
 			return matchMap;
 		} catch (Exception e) {
-			logger.error("Error posting to fingerprint service: " + e.getMessage());
-			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
+			logger.error("Error posting to substructure service: " + e.getMessage());
+			throw new CmpdRegMolFormatException("Error posting to substructure service: " + e.getMessage());
 		}
 	}
 
