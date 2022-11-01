@@ -48,16 +48,16 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private static final String ERROR_STRUCTURE = "ERROR_STRUCTURE";
 
 
-	private final String CONVERTER_PATH = "/converter/api/v0/convert";
+	private final String CONVERTER_PATH = "/converter/api/v0/convert/";
 	private final String EXPORTSDF_PATH = "/sdf_export/api/v0/";
 	private final String FINGERPRINT_PATH = "/fingerprint/api/v0/";
 	private final String IMAGE_PATH = "/image/api/v0/";	
 	private final String PARSESDF_PATH =  "/parse/api/v0/";	
-	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
-	private final String SPLIT_PATH = "/split/api/v0";
-	private final String SUBSTRUCTURE_PATH = "/substructure/api/v0";
+	private final String PROCESS_PATH = "/preprocessor/api/v0/process/";
+	private final String SPLIT_PATH = "/split/api/v0/";
+	private final String SUBSTRUCTURE_PATH = "/substructure/match/api/v0/";
 	private final String CONFIG_CHECK_PATH = "/preprocessor/api/v0/config/check";
-	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix";
+	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix/";
 	private final String HEALTH_PATH = "/preprocessor/api/v0/health";
 
 	@Override
