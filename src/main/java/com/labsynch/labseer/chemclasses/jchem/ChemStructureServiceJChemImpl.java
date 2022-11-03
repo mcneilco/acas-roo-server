@@ -66,8 +66,7 @@ import chemaxon.util.MolHandler;
 import org.apache.commons.io.FileUtils;
 import java.util.UUID;
 
-import chemaxon.jchem.db.UpdateHandlerException;
-import chemaxon.jchem.db.Updater;
+
 
 
 @Component
@@ -356,23 +355,6 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 		ConnectionHandler ch = new ConnectionHandler();
 		ch.setConnection(conn);
-
-		try {
-			Updater ud = new Updater(ch);
-			Updater.UpdateInfo ui = null;
-			String message = "";
-			while ((ui = ud.getNextUpdateInfo()) != null) {
-				logger.info("\n" + ui.processingMessage + "\n");
-				logger.info("Is structure change required: " + ui.isStructuralChange);
-				message = ud.performCurrentUpdate();
-				logger.info(message);
-			}
-	
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(e);
-		}
-
 
 		CacheRegistrationUtil cru = null;
 		long maxTime = propertiesUtilService.getMaxSearchTime();
