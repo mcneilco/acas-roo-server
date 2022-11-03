@@ -13,10 +13,10 @@ public class V2_4_0_6__Add_jchem_migration_to_22_12_0 implements JdbcMigration {
 
 	Logger logger = LoggerFactory.getLogger(V2_4_0_6__Add_jchem_migration_to_22_12_0.class);
 
-	// Updating jchem version
+	// Updating jchem version to 22.12.0
 
 	public void migrate(Connection conn) throws Exception {
-		logger.info("creating standardization_dry_run_structure table");
+		logger.info("Preparing to upgrade jchem version to 22.12.0");
 		conn.setAutoCommit(true);
 		logger.info("connection autocommit mode: " + conn.getAutoCommit());
 		logger.info("getTransactionIsolation  " + conn.getTransactionIsolation());
@@ -30,7 +30,7 @@ public class V2_4_0_6__Add_jchem_migration_to_22_12_0 implements JdbcMigration {
 			String message = "";
 			while ((ui = ud.getNextUpdateInfo()) != null) {
 				logger.info("\n" + ui.processingMessage + "\n");
-				logger.info("Is structure change required: " + ui.isStructuralChange);
+				logger.info("Is upgrade required: " + ui.isStructuralChange);
 				message = ud.performCurrentUpdate();
 				logger.info(message);
 			}
