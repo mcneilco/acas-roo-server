@@ -1890,7 +1890,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			Boolean hashesMatch = mostRecentStandardizationHistory.getSettingsHash() == standardizationSettingsConfigDTO.hashCode();
 			returnSettings.setNeedsRestandardization(hashesMatch);
 			if(returnSettings.getNeedsRestandardization()) {
-				returnSettings.addReason("Settings hash changed from " + mostRecentStandardizationHistory.getSettingsHash() + " to " + standardizationSettingsConfigDTO.hashCode());
+				returnSettings.addNeedsRestandardizationReason("Settings hash changed from " + mostRecentStandardizationHistory.getSettingsHash() + " to " + standardizationSettingsConfigDTO.hashCode());
 			}
 			returnSettings.setValid(true);
 			returnSettings.setValidatedSettings(standardizationSettingsConfigDTO.getSettings());

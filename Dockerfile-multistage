@@ -1,57 +1,41 @@
 ARG 	CHEMISTRY_PACKAGE=bbchem
-FROM maven:3-openjdk-8 as builder
+FROM maven:3-openjdk-11 as builder
 
 FROM 	builder as dependencies
 ARG     CHEMISTRY_PACKAGE
 ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 
 FROM 	dependencies as jchem
-COPY 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
-RUN   mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jchem -DgroupId=com.chemaxon -Dversion=16.4.25.0 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+ADD settings.xml /root/.m2/settings.xml
 
 FROM 	dependencies as bbchem
 
 FROM 	dependencies as indigo
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
-
-COPY 	pom.xml /src/pom.xml
+ADD 	pom.xml /src/pom.xml
 WORKDIR /src
-RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
+RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
+# Caching doesn't seem to work with the ChemAxon maven repo
+# RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
 
 # Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster) 
-RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
+RUN   mvn clean && \
+# RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
+RUN mvn dependency:resolve
+FROM tomcat:9.0.62-jre11-openjdk-slim-buster
 
-FROM tomcat:9.0.62-jre8-openjdk-slim-buster
-
-# Third and Last Step That Requires Significant (Relative) Amount of Time 
 RUN apt-get update && \
-    apt-get install -y \
-      curl \ 
-      libfreetype6 \
-      libfontconfig \
-      openssl 
+    apt-get install -y openssl libfontconfig libfreetype6 curl
 
 # Add nodejs for prepare config files
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
-
-# Second Slowest Step 
 RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
   apt-get install -y nodejs && \
-  npm install -g \
-    coffeescript@2.5.1 \
-    dotenv@10.0.0 \
-    dotenv-expand@5.1.0 \ 
-    flat@5.0.2 \
-    glob@7.1.6 \
-    properties@1.2.1 \ 
-    properties-parser@0.3.1 \
-    underscore@1.12.0 \
-    underscore-deep-extend@1.1.5
-
+  npm install -g coffeescript@2.5.1 properties@1.2.1 underscore@1.12.0 underscore-deep-extend@1.1.5 properties-parser@0.3.1 flat@5.0.2 glob@7.1.6 dotenv@10.0.0 dotenv-expand@5.1.0
 ENV NODE_PATH /usr/lib/node_modules
 
 # Add runner user so we don't run as root
@@ -59,10 +43,10 @@ RUN	useradd -u 1000 -ms /bin/bash runner && \
   chown -R runner:runner /usr/local/tomcat/
 
 # Allow certificates to be added by runner
-RUN chgrp runner /usr/local/openjdk-8/lib/security/cacerts && \
-    chmod g+w /usr/local/openjdk-8/lib/security/cacerts && \
+RUN chgrp runner /usr/local/openjdk-11/lib/security/cacerts && \
+    chmod g+w /usr/local/openjdk-11/lib/security/cacerts && \
     mkdir -p /usr/lib/jvm/java/jre/lib/security && \
-    ln -s /usr/local/openjdk-8/lib/security/cacerts /usr/lib/jvm/java/jre/lib/security/cacerts
+    ln -s /usr/local/openjdk-11/lib/security/cacerts /usr/lib/jvm/java/jre/lib/security/cacerts
 
 # Get acas-roo-server compiled code
 COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/acas.war
