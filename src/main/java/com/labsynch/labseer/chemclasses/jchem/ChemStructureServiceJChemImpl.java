@@ -68,9 +68,6 @@ import chemaxon.util.MolHandler;
 import org.apache.commons.io.FileUtils;
 import java.util.UUID;
 
-
-
-
 @Component
 public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
