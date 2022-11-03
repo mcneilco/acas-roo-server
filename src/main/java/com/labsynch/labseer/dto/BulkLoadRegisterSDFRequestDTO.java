@@ -16,6 +16,8 @@ public class BulkLoadRegisterSDFRequestDTO {
 
     private String filePath;
 
+    private String originalFileName;
+
     private String userName;
 
     private Date fileDate;
@@ -51,6 +53,14 @@ public class BulkLoadRegisterSDFRequestDTO {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getOriginalFileName() {
+        return this.originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public String getUserName() {

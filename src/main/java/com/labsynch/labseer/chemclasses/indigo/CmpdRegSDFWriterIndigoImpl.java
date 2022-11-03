@@ -1,6 +1,7 @@
 package com.labsynch.labseer.chemclasses.indigo;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,14 @@ public class CmpdRegSDFWriterIndigoImpl implements CmpdRegSDFWriter {
 		this.writer = indigo.writeBuffer();
 	}
 
+	@Override
+    public boolean writeMols(List<CmpdRegMolecule> cmpdRegMoleculeList) throws CmpdRegMolFormatException, IOException {
+        for (CmpdRegMolecule molecule : cmpdRegMoleculeList) {
+			writeMol(molecule);
+		}
+        return true;
+    }
+	
 	@Override
 	public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
 		CmpdRegMoleculeIndigoImpl molWrapper = (CmpdRegMoleculeIndigoImpl) molecule;

@@ -1,11 +1,13 @@
 package com.labsynch.labseer.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -667,6 +669,24 @@ public class Parent {
         return q;
     }
 
+    public static TypedQuery<Parent> findParentsByAnySaltForms(Set<SaltForm> saltForms) {
+        if (saltForms == null)
+            throw new IllegalArgumentException("The saltForms argument is required");
+        EntityManager em = Parent.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Parent AS o WHERE");
+        for (int i = 0; i < saltForms.size(); i++) {
+            if (i > 0)
+                queryBuilder.append(" OR");
+            queryBuilder.append(" :saltForms_item").append(i).append(" MEMBER OF o.saltForms");
+        }
+        TypedQuery<Parent> q = em.createQuery(queryBuilder.toString(), Parent.class);
+        int saltFormsIndex = 0;
+        for (SaltForm _saltform : saltForms) {
+            q.setParameter("saltForms_item" + saltFormsIndex++, _saltform);
+        }
+        return q;
+    }
+
     public static TypedQuery<Parent> findParentsBySaltForms(Set<SaltForm> saltForms, String sortFieldName,
             String sortOrder) {
         if (saltForms == null)
@@ -688,6 +708,38 @@ public class Parent {
         int saltFormsIndex = 0;
         for (SaltForm _saltform : saltForms) {
             q.setParameter("saltForms_item" + saltFormsIndex++, _saltform);
+        }
+        return q;
+    }
+
+    public static TypedQuery<Parent> checkForDuplicateParentByCdId(Long parentId, int[] cdIds) {
+        // Given a parent ID and list of structure ids
+        // Return a list of duplicates which have theame stereo category and stereo comment as the parent id
+        // exclude the parent id from the list
+        if(cdIds == null)
+            throw new IllegalArgumentException("The cdIds argument is required");
+        if(parentId == null)
+            throw new IllegalArgumentException("The parentId argument is required");
+
+        Parent parent = findParent(parentId);
+        if(parent == null)
+            throw new IllegalArgumentException("The parentId argument is invalid - no parent with id " + parentId + " found");
+        
+        EntityManager em = Parent.entityManager();
+        String queryBuilder = "SELECT o FROM Parent AS o WHERE o.CdId IN (:cdIds) AND o.id != :id and o.stereoCategory = :stereoCategory";
+
+        Boolean stereoCommentEmpty = parent.getStereoComment() == null || parent.getStereoComment().length() == 0;
+        if(stereoCommentEmpty) {
+            queryBuilder += " AND (o.stereoComment IS NULL or o.stereoComment = '')";
+        } else {
+            queryBuilder += " AND lower(o.stereoComment) = lower(:stereoComment)";
+        }
+        TypedQuery<Parent> q = em.createQuery(queryBuilder, Parent.class);
+        q.setParameter("cdIds", Arrays.stream(cdIds).boxed().collect( Collectors.toList() ));
+        q.setParameter("id", parent.getId());
+        q.setParameter("stereoCategory", parent.getStereoCategory());
+        if(!stereoCommentEmpty) {
+            q.setParameter("stereoComment", parent.getStereoComment());
         }
         return q;
     }

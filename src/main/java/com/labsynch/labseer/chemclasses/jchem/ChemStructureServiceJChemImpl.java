@@ -26,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -1744,7 +1746,9 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException {
+	public StandardizerSettingsConfigDTO getStandardizerSettings(Boolean appliedSettings) throws StandardizerException {
+		// Applied settings are always the same as the configured settings because we don't have a validation step
+		// which can be applied to the settings for the JChem standardizer
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
 		standardizationConfigDTO.setType("jchem");
 		standardizationConfigDTO.setShouldStandardize(false);
@@ -1878,6 +1882,19 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		// Not currently implemented for jchem as there is no use case currently to
 		// switch to jchem from another chemistry engine
 
+	}
+
+	@Override
+	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO) {
+			StandardizationSettingsConfigCheckResponseDTO returnSettings = new StandardizationSettingsConfigCheckResponseDTO();
+			Boolean hashesMatch = mostRecentStandardizationHistory.getSettingsHash() == standardizationSettingsConfigDTO.hashCode();
+			returnSettings.setNeedsRestandardization(hashesMatch);
+			if(returnSettings.getNeedsRestandardization()) {
+				returnSettings.addReason("Settings hash changed from " + mostRecentStandardizationHistory.getSettingsHash() + " to " + standardizationSettingsConfigDTO.hashCode());
+			}
+			returnSettings.setValid(true);
+			returnSettings.setValidatedSettings(standardizationSettingsConfigDTO.getSettings());
+			return returnSettings;
 	}
 
 }

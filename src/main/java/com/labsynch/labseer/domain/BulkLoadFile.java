@@ -32,6 +32,9 @@ public class BulkLoadFile {
     @Size(max = 1000)
     private String fileName;
 
+    @Size(max = 1000)
+    private String originalFileName;
+
     private int numberOfMols;
 
     private int fileSize;
@@ -50,9 +53,10 @@ public class BulkLoadFile {
     public BulkLoadFile() {
     }
 
-    public BulkLoadFile(String fileName, int numberOfMols, int fileSize, String jsonTemplate, String recordedBy,
+    public BulkLoadFile(String fileName, String originalFileName, int numberOfMols, int fileSize, String jsonTemplate, String recordedBy,
             Date recordedDate) {
         this.fileName = fileName;
+        this.originalFileName = originalFileName;
         this.numberOfMols = numberOfMols;
         this.fileSize = fileSize;
         this.jsonTemplate = jsonTemplate;
@@ -270,6 +274,14 @@ public class BulkLoadFile {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getOriginalFileName() {
+        return this.originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public int getNumberOfMols() {

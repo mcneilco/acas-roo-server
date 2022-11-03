@@ -2,6 +2,7 @@ package com.labsynch.labseer.utils;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
@@ -857,6 +858,27 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 	@Override
 	public String getPreprocessorSettings() {
 		return this.preprocessorSettings;
+	}
+	
+	JsonNode standardizerActions;
+	public void setStandardizerActions(JsonNode standardizerActions) {
+		this.standardizerActions = standardizerActions;
+	}
+
+	public JsonNode getStandardizerActions() {
+		return standardizerActions;
+	}
+
+	String ldChemURL;
+
+	@Value("${client.cmpdreg.serverSettings.liveDesign.url}")
+	public void setLDChemURL(String ldChemURL) {
+		this.ldChemURL = ldChemURL;
+	}
+
+	@Override
+	public String getLDChemURL() {
+		return this.ldChemURL;
 	}
 
 	int standardizationBatchSize;

@@ -342,6 +342,10 @@ public class MetalotServiceImpl implements MetalotService {
 					throw new SaltedCompoundException("Salted parent structure");
 				}
 			}
+			if (parentAliases.size() > 0){
+				// Validate parent aliases
+				parentAliasService.validateParentAliases(parentAliases);
+			}
 			if (!dupeParent) {
 				boolean checkForDupe = false;
 				cdId = chemService.saveStructure(parent.getMolStructure(), StructureType.PARENT, checkForDupe);
@@ -598,7 +602,7 @@ public class MetalotServiceImpl implements MetalotService {
 					oldLot.setSynthesisDate(lot.getSynthesisDate());
 					oldLot.setChemist(lot.getChemist());
 					oldLot.setModifiedBy(lot.getModifiedBy());
-					oldLot.setModifiedDate(lot.getModifiedDate());
+					oldLot.setModifiedDate(new Date());
 					oldLot.setLotMolWeight(Parent.findParent(lot.getParent().getId()).getMolWeight() + totalSaltWeight);
 					//
 					oldLot.setRetain(lot.getRetain());

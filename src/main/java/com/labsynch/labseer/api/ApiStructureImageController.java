@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import java.util.Base64;
 import java.util.List;
 
 import com.labsynch.labseer.domain.Lot;
@@ -57,6 +58,29 @@ public class ApiStructureImageController {
         headers.setExpires(0); // Expire the cache
 
         return new ResponseEntity<byte[]>(image, headers, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "/convertMol/base64", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<String> convertMolToBase64Image(@RequestBody String molStructure,
+            @RequestParam(value = "hSize", required = false) Integer hSize,
+            @RequestParam(value = "wSize", required = false) Integer wSize,
+            @RequestParam(value = "format", required = false) String format) {
+
+        byte[] image = structureImageService.convertMolToImage(molStructure, hSize, wSize, format);
+        Base64.Encoder encoder = Base64.getEncoder();
+		String encodedString = encoder.encodeToString(image);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.add("Access-Control-Allow-Headers", "Content-Type");
+        headers.add("Access-Control-Allow-Origin", "*");
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
+        headers.add("Pragma", "no-cache"); // HTTP 1.0
+        headers.setExpires(0); // Expire the cache
+
+        return new ResponseEntity<String>(encodedString, headers, HttpStatus.OK);
 
     }
 

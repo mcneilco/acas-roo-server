@@ -2,12 +2,8 @@ package com.labsynch.labseer.chemclasses.bbchem;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,39 +163,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	@Override
 	public byte[] toBinary(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize)
 			throws IOException {
-
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = bbChemStructureService.getPreprocessorSettings();
-
-		// Extract the url to call
-		JsonNode urlNode = jsonNode.get("imageURL");
-		if (urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings imageURL!!");
-		}
-		String url = urlNode.asText();
-
-		// Create the request json
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode requestData = mapper.createObjectNode();
-		String mol = "";
-		try {
-			mol = molecule.getMolStructure();
-		} catch (CmpdRegMolFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		requestData.put("molv3", mol);
-		requestData.put("format", imageFormat);
-		ObjectNode draw_options = mapper.createObjectNode();
-		draw_options.put("width", wSize);
-		draw_options.put("height", hSize);
-		requestData.put("draw_options", draw_options);
-		String request = requestData.toString();
-		logger.info("Image request" + request);
-
-		// Return the response bytes
-		return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
-
+		return bbChemStructureService.callImageService(molecule, imageFormat, hSize, wSize);
 	}
 
 	@Override

@@ -15,6 +15,8 @@ public class LsThingBrowserQueryDTO {
 
     private LsThingQueryDTO queryDTO;
 
+    private LsThingReturnDTO returnDTO;
+
     public String getQueryString() {
         return this.queryString;
     }
@@ -29,6 +31,14 @@ public class LsThingBrowserQueryDTO {
 
     public void setQueryDTO(LsThingQueryDTO queryDTO) {
         this.queryDTO = queryDTO;
+    }
+
+    public LsThingReturnDTO getReturnDTO() {
+        return this.returnDTO;
+    }
+
+    public void setReturnDTO(LsThingReturnDTO returnDTO) {
+        this.returnDTO = returnDTO;
     }
 
     public String toString() {

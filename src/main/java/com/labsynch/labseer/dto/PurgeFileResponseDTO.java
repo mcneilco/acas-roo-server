@@ -19,14 +19,17 @@ public class PurgeFileResponseDTO {
 
     private String fileName;
 
+    private String originalFileName;
+
     public PurgeFileResponseDTO() {
 
     }
 
-    public PurgeFileResponseDTO(String summary, boolean success, String fileName) {
+    public PurgeFileResponseDTO(String summary, boolean success, String fileName, String originalFileName) {
         this.summary = summary;
         this.success = success;
         this.fileName = fileName;
+        this.originalFileName = originalFileName;
     }
 
     public String toJson() {
@@ -56,6 +59,14 @@ public class PurgeFileResponseDTO {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getOriginalFileName() {
+        return this.originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public static PurgeFileResponseDTO fromJsonToPurgeFileResponseDTO(String json) {

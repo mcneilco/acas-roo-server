@@ -7,8 +7,8 @@ import javax.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
-import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
+import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.StandardizationService;
@@ -83,6 +83,7 @@ public class ApiStandardizationServicesController {
 		return new ResponseEntity<String>(jsonReport, headers, HttpStatus.OK);
 	}
 
+	@Transactional
 	@RequestMapping(value = "/dryRunSearch", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> dryRunSearch(
 			@RequestParam(value = "countOnly", required = false) Boolean countOnly,
@@ -103,6 +104,7 @@ public class ApiStandardizationServicesController {
 		}
 	}
 
+	@Transactional
 	@RequestMapping(value = "/dryRunSearchExport", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> dryRunSearchExport(
 			@RequestBody String json) throws IOException, CmpdRegMolFormatException {
@@ -114,6 +116,7 @@ public class ApiStandardizationServicesController {
 		return new ResponseEntity<String>(outputFilePath, headers, HttpStatus.OK);
 	}
 
+	@Transactional
 	@RequestMapping(value = "/dryRunReportFiles", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> dryRunReportFile(@RequestBody String filePath)
@@ -144,6 +147,7 @@ public class ApiStandardizationServicesController {
 
 	}
 
+	@Transactional
 	@RequestMapping(value = "/execute", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> execute(@RequestParam(value = "username", required = true) String username,
@@ -178,8 +182,13 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> getCurrentStandardizationSettings() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		StandardizationSettings stndardizationSettings = standardizationService.getStandardizationSettings();
-		return new ResponseEntity<String>(stndardizationSettings.toJson(), headers, HttpStatus.OK);
+		try {
+			StandardizationSettingsConfigCheckResponseDTO standardizationSettingsConfigCheckResponseDTO = standardizationService.checkStandardizationState();
+			return new ResponseEntity<String>(standardizationSettingsConfigCheckResponseDTO.toJson(), headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Caught error trying to get standardization settings: ", e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Transactional

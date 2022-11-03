@@ -94,7 +94,7 @@ public class ApiParentController {
 		HashMap<String,Object> response = new HashMap<>();
 		response.put("hasError", hasError);
 		response.put("errorMessage", errorMessage);
-		HttpStatus status = (hasError)? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK;
+		HttpStatus status = (hasError)? HttpStatus.BAD_REQUEST : HttpStatus.OK;
 		
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		return new ResponseEntity<String>(new JSONSerializer().serialize(response), headers, status);
