@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 
 		<spring-security.version>5.6.3</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
+		<jchem.version>22.12.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
@@ -109,12 +110,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
 					<artifactId>jchem-main</artifactId>
-					<version>22.12.0</version>
+					<version>${jchem.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
 					<artifactId>jchem-utils</artifactId>
-					<version>22.12.0</version>
+					<version>${jchem.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>com.google.guava</groupId>
