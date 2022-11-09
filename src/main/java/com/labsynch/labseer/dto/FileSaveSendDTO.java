@@ -38,6 +38,8 @@ public class FileSaveSendDTO {
 
 	private List<String> description = new ArrayList<String>();
 
+	private List<String> writeup = new ArrayList<String>();
+
 	@Transient
 	private List<MultipartFile> file = new ArrayList<MultipartFile>();
 
@@ -55,6 +57,8 @@ public class FileSaveSendDTO {
 
 		List<String> descriptionList = this.description;
 
+		List<String> writeupList = this.writeup;
+
 		List<FileSaveReturnDTO> fileSaveArray = new ArrayList<FileSaveReturnDTO>();
 
 		logger.debug("FileSaveSendDTO: Number of files to save: " + fileList.size());
@@ -65,6 +69,7 @@ public class FileSaveSendDTO {
 
 			if (!file.isEmpty()) {
 				String description = descriptionList.get(i);
+				String writeup = writeupList.get(i);
 				FileSaveReturnDTO fileSaveReturn = new FileSaveReturnDTO();
 				try {
 					InputStream in = file.getInputStream();
@@ -113,6 +118,7 @@ public class FileSaveSendDTO {
 					fileSaveReturn.setUploaded(true);
 					fileSaveReturn.setUrl(urlString);
 					fileSaveReturn.setDescription(description);
+					fileSaveReturn.setWriteup(writeup);
 					fileSaveReturn.setIe(this.getIe());
 					fileSaveReturn.setSubdir(this.getSubdir());
 
@@ -191,6 +197,14 @@ public class FileSaveSendDTO {
 
 	public void setDescription(List<String> description) {
 		this.description = description;
+	}
+
+	public List<String> getWriteup() {
+		return this.writeup;
+	}
+
+	public void setWriteup(List<String> writeup) {
+		this.writeup = writeup;
 	}
 
 	public void setFile(List<MultipartFile> file) {
