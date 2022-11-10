@@ -4,15 +4,22 @@
 -- that are missing the 'data column order' states
 create table tmp_expt_columns as
     select *, row_number() over (partition by experiment_id order by column_name) as column_order
-    from (select distinct experiment_id,
-                    ls_type as column_type,
-                    ls_kind as column_name,
-                    unit_kind as units,
-					tested_conc as concentration,
-                    tested_conc_unit as conc_units,
-					not public_data as hidden
-	-- we use the p_api_analysis_group_results view because it includes hidden data
-    from p_api_analysis_group_results paagr) a;
+    from (
+		select distinct e.id as experiment_id,
+			agv.ls_type as column_type,
+			agv.ls_kind as column_name,
+			agv.unit_kind as units,
+			agv.concentration,
+			agv.conc_unit as conc_units,
+			not agv.public_data as hidden
+		from protocol p
+		join experiment e on p.id = e.protocol_id and e.ignored = false
+		join experiment_analysisgroup ea on e.id = ea.experiment_id 
+		join analysis_group ag on ag.id = ea.analysis_group_id and ag.ignored = false
+		join analysis_group_state ags on ags.analysis_group_id = ag.id and ags.ignored = false and ags.ls_kind != 'dose response'
+		join analysis_group_value agv on ags.id = agv.analysis_state_id and agv.ignored = false and agv.ls_kind != 'batch code'
+		where p.ignored = false
+	) a;
 
 --Create an ls_transaction to tie all our states and values to
 insert into ls_transaction (id, comments, recorded_date, version, recorded_by)
