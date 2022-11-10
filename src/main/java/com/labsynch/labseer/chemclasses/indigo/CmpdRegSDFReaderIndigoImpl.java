@@ -33,4 +33,21 @@ public class CmpdRegSDFReaderIndigoImpl implements CmpdRegSDFReader {
 		}
 	}
 
+	@Override
+	public Collection<CmpdRegMolecule> readNextMols(int nMols) throws IOException, CmpdRegMolFormatException {
+		int molsRead = 0;
+        String sdfContents = "";
+        // read nMols MOL strings from the SDF
+        while (molsRead < nMols){
+            if(this.scanner.hasNext()) {
+                CmpdRegMoleculeIndigoImpl molecule = new CmpdRegMoleculeIndigoImpl(reader.next());
+				cmpdRegMols.add(cmpdRegMol);
+                molsRead++;
+            } else {
+                break;
+            }
+        }
+        return cmpdRegMols;
+	}
+
 }

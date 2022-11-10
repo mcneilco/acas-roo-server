@@ -137,18 +137,27 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		int numRecordsRead = 0;
 		try {
 			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
-			CmpdRegMolecule mol = null;
-			while ((numRowsToRead == -1 || numRecordsRead < numRowsToRead) && (mol = molReader.readNextMol()) != null) {
-				String[] propertyKeys = mol.getPropertyKeys();
-				if (propertyKeys.length != 0) {
-					for (String key : propertyKeys) {
-						SimpleBulkLoadPropertyDTO propDTO = new SimpleBulkLoadPropertyDTO(key);
-						propDTO.setDataType(mol.getPropertyType(key));
-						foundProperties.add(propDTO);
+			int batchSize = numRowsToRead;
+			//TODO pull from config
+			if (batchSize == -1){
+				batchSize = 250;
+			}
+			Collection<CmpdRegMolecule> mols = molReader.readNextMols(batchSize);
+			while ((numRowsToRead == -1 || numRecordsRead < numRowsToRead) && (mols.size() > 0)) {
+				for (CmpdRegMolecule mol : mols) {
+					String[] propertyKeys = mol.getPropertyKeys();
+					if (propertyKeys.length != 0) {
+						for (String key : propertyKeys) {
+							SimpleBulkLoadPropertyDTO propDTO = new SimpleBulkLoadPropertyDTO(key);
+							propDTO.setDataType(mol.getPropertyType(key));
+							foundProperties.add(propDTO);
+						}
 					}
+					numRecordsRead++;
+					logger.info("Num records read " + numRecordsRead);
 				}
-				numRecordsRead++;
-				logger.info("Num records read " + numRecordsRead);
+				// Read another batch
+				mols = molReader.readNextMols(batchSize);
 			}
 		} catch (Exception e) {
 			logger.error("Caught exception trying to read SDF properties (num records read was " + numRecordsRead + 1,
@@ -382,24 +391,33 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFWriter registeredMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(registeredSDFName);
 			HashMap<String, Integer> allAliasMaps = new HashMap<String, Integer>();
 
-			CmpdRegMolecule mol = null;
+			// CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
 			int numNewParentsLoaded = 0;
 			int numNewLotsOldParentsLoaded = 0;
 
-			while ((mol = molReader.readNextMol()) != null) {
-				numRecordsRead++;
-				try{
-					Boolean isNewParent = registerMol(mol, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
-					if(isNewParent != null) {
-						if (isNewParent)
-							numNewParentsLoaded++;
-						else
-							numNewLotsOldParentsLoaded++;
+			//TODO replace me with a config
+			int batchSize = 250;
+			// Read the next set of molecules from the SDF
+			Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
+
+			while (batchOfMols.size() > 0) {
+				for (CmpdRegMolecule mol : batchOfMols) {
+					numRecordsRead++;
+					try{
+						Boolean isNewParent = registerMol(mol, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
+						if(isNewParent != null) {
+							if (isNewParent)
+								numNewParentsLoaded++;
+							else
+								numNewLotsOldParentsLoaded++;
+						}
+					} catch (Exception e) {
+						logger.error("Error error on record " + numRecordsRead + ": " + e.getMessage());
 					}
-				} catch (Exception e) {
-					logger.error("Error error on record " + numRecordsRead + ": " + e.getMessage());
 				}
+				// Read the next batch
+				batchOfMols = molReader.readNextMols(batchSize);
 			}
 			// generate summary in two formats: HTML and plaintext
 			String summaryHtml = generateSummaryHtml(numRecordsRead, numNewParentsLoaded, numNewLotsOldParentsLoaded,
