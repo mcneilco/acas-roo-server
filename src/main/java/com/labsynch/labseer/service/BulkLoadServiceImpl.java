@@ -1623,8 +1623,10 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		if (standardizedMol == null) {
 			if (propertiesUtilService.getUseExternalStandardizerConfig()) {
 				// Standardize this single structure
-				String standardizedMolStructure = chemStructureService.standardizeStructure(mol.getMolStructure());
-				standardizedMol = moleculeFactory.getCmpdRegMolecule(standardizedMolStructure);
+				HashMap<String, String> inMap = new HashMap<String, String>();
+				inMap.put("tmp", mol.getMolStructure());
+				HashMap<String, CmpdRegMolecule> outMap = chemStructureService.standardizeStructures(inMap);
+				standardizedMol = outMap.get("tmp");
 			} else {
 				// If standardization is disabled, pass through the current mol as the "standardized" structures
 				standardizedMol = mol;
