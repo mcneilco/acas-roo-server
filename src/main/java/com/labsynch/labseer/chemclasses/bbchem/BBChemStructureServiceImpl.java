@@ -592,7 +592,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
+	public List<List<String>> getMolFragments(List<String> molfiles) throws CmpdRegMolFormatException {
 
 		String url = propertiesUtilService.getLDChemURL() + SPLIT_PATH;
 
@@ -602,15 +602,19 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		// Add the structures to the request
 		ArrayNode arrayNode = mapper.createArrayNode();
-		arrayNode.add(molfile);
+		for (String molfile : molfiles){
+			arrayNode.add(molfile);
+		}
 		requestData.replace("sdfs", arrayNode);
 
-		List<String> molStrings = new ArrayList<>();
+		List<List<String>> molStringsList = new ArrayList<List<String>>();
 		// Post to the service and parse the response
 		try {
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
+			logger.info("Making to bbchem split service");
 			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			logger.info("Got response from bbchem split service");
 			String postResponse = null;
 			if (connection.getResponseCode() != 200) {
 				logger.error("Error posting to split service: " + connection.getResponseMessage());
@@ -629,17 +633,19 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(postResponse);
 			JsonNode resultsNode = responseNode.get("results");
 			for (JsonNode resultNode : resultsNode) {
+				List<String> molStrings = new ArrayList<>();
 				JsonNode splitSDFS = resultNode.get("split_sdfs");
 				for (JsonNode sdfNode : splitSDFS) {
 					molStrings.add(sdfNode.asText());
 				}
+				molStringsList.add(molStrings);
 			}
 		} catch (Exception e) {
 			logger.error("Error posting to split service: " + e.getMessage());
 			throw new CmpdRegMolFormatException("Error posting to split service: " + e.getMessage());
 		}
 
-		return molStrings;
+		return molStringsList;
 	}
 
 	@Override

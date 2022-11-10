@@ -306,6 +306,15 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	}
 
 	@Override
+	public List<Boolean> checkForSalts(Collection<String> molfiles) throws CmpdRegMolFormatException {
+		List<Boolean> hasSaltList = new ArrayList<Boolean>();
+		for (String molfile : molfiles) {
+			hasSaltList.add(checkForSalt(molfile));
+		}
+		return hasSaltList;
+	}
+
+	@Override
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
 		CmpdRegMoleculeIndigoImpl molWrapper = (CmpdRegMoleculeIndigoImpl) inputStructure;
 		IndigoObject rawMolecule = molWrapper.molecule;
