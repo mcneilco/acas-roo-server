@@ -3,6 +3,7 @@ package com.labsynch.labseer.chemclasses.jchem;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
@@ -44,13 +45,13 @@ public class CmpdRegSDFReaderJChemImpl implements CmpdRegSDFReader {
 	@Override
 	public Collection<CmpdRegMolecule> readNextMols(int nMols) throws IOException, CmpdRegMolFormatException {
 		int molsRead = 0;
-		String sdfContents = "";
+		Collection<CmpdRegMolecule> cmpdRegMols = new ArrayList<CmpdRegMolecule>();
 		// read nMols MOL strings from the SDF
 		while (molsRead < nMols){
 			Molecule mol = this.molImporter.read();
 			if(mol != null) {
 				CmpdRegMoleculeJChemImpl molecule = new CmpdRegMoleculeJChemImpl(mol);
-				cmpdRegMols.add(cmpdRegMol);
+				cmpdRegMols.add(molecule);
 				molsRead++;
 			} else {
 				break;
