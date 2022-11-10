@@ -525,7 +525,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Lot lot;
 		// attempt to strip salts
 		try {
+			CmpdRegMolecule inputMol = mol;
 			mol = processForSaltStripping(mol, multipleFragments, mappings, results, numRecordsRead);
+			// Reset the multipleFragments boolean and standardizedMol if salt stripping changed the mol
+			if (mol != inputMol) {
+				multipleFragments = null;
+				standardizedMol = null;
+			}
 		} catch (CmpdRegMolFormatException e) {
 			String emptyMolfile = "\n" +
 					"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" +
@@ -1611,6 +1617,22 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		parent.setMolStructure(mol.getMolStructure());
 		parent.setRegistrationDate(new Date());
 		parent.setRegisteredBy(chemist);
+		// The following transient properties are used later on in registration
+		// Normally they should be populated, but when salt stripping has happened they may be blank
+		// Check and fill them in if they aren't populated.
+		if (standardizedMol == null) {
+			if (propertiesUtilService.getUseExternalStandardizerConfig()) {
+				// Standardize this single structure
+				String standardizedMolStructure = chemStructureService.standardizeStructure(mol.getMolStructure());
+				standardizedMol = moleculeFactory.getCmpdRegMolecule(standardizedMolStructure);
+			} else {
+				// If standardization is disabled, pass through the current mol as the "standardized" structures
+				standardizedMol = mol;
+			}
+		}
+		if (multipleFragments == null) {
+			multipleFragments = chemStructureService.checkForSalt(mol.getMolStructure());
+		}
 		parent.setCmpdRegMolecule(standardizedMol);
 		parent.setMultipleFragments(multipleFragments);
 
