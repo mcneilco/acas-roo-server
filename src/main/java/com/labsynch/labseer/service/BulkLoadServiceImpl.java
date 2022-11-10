@@ -401,13 +401,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFWriter registeredMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(registeredSDFName);
 			HashMap<String, Integer> allAliasMaps = new HashMap<String, Integer>();
 
-			// CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
 			int numNewParentsLoaded = 0;
 			int numNewLotsOldParentsLoaded = 0;
 			boolean done = false;
 
-			//TODO try to refactor this into a chunked reader with a clean iterator
 			int batchSize = propertiesUtilService.getStandardizationBatchSize();
 			while (!done) {
 				// Read the next set of molecules from the SDF
@@ -861,7 +859,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					"mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} else {
 			dupeParentList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.PARENT, ChemStructureService.SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-			// dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
 		}
 		if (dupeParentList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeParentList) {
@@ -1024,8 +1021,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public Parent validateParentAgainstDryRunCompound(Parent parent, int numRecordsRead,
 			Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
-		// int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(),
-		// 		StructureType.DRY_RUN);
 		int[] dupeDryRunCompoundsList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.DRY_RUN, ChemStructureService.SearchType.DUPLICATE_TAUTOMER,  -1F, -1);
 		if (dupeDryRunCompoundsList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeDryRunCompoundsList) {

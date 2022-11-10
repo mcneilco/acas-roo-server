@@ -44,18 +44,18 @@ public class CmpdRegSDFReaderJChemImpl implements CmpdRegSDFReader {
 	@Override
 	public Collection<CmpdRegMolecule> readNextMols(int nMols) throws IOException, CmpdRegMolFormatException {
 		int molsRead = 0;
-        String sdfContents = "";
-        // read nMols MOL strings from the SDF
-        while (molsRead < nMols){
+		String sdfContents = "";
+		// read nMols MOL strings from the SDF
+		while (molsRead < nMols){
 			Molecule mol = this.molImporter.read();
-            if(mol != null) {
-                CmpdRegMoleculeJChemImpl molecule = new CmpdRegMoleculeJChemImpl(mol);
+			if(mol != null) {
+				CmpdRegMoleculeJChemImpl molecule = new CmpdRegMoleculeJChemImpl(mol);
 				cmpdRegMols.add(cmpdRegMol);
-                molsRead++;
-            } else {
-                break;
-            }
-        }
-        return cmpdRegMols;
-	}
+				molsRead++;
+			} else {
+				break;
+			}
+		}
+		return cmpdRegMols;
+		}
 }

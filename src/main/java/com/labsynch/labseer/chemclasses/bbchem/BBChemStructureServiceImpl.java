@@ -510,7 +510,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
-		logger.info("Making to bbchem sdf export service");
+		logger.info("Making call to bbchem sdf export service");
 		logger.debug("requestString: " + requestString);
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
 		logger.info("Got response from bbchem sdf export service");
@@ -612,7 +612,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		try {
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
-			logger.info("Making to bbchem split service");
+			logger.info("Making call to bbchem split service");
 			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
 			logger.info("Got response from bbchem split service");
 			String postResponse = null;
