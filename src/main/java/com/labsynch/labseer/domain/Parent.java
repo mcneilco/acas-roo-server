@@ -143,6 +143,9 @@ public class Parent {
     @Transient
     private transient CmpdRegMolecule cmpdRegMolecule;
 
+    @Transient
+    private transient Boolean multipleFragments;
+
     @Transactional
     public static void deleteAllParents() {
         List<Parent> parents = Parent.findAllParents();
@@ -968,6 +971,14 @@ public class Parent {
 
     public void setCmpdRegMolecule(CmpdRegMolecule cmpdRegMolecule) {
         this.cmpdRegMolecule = cmpdRegMolecule;
+    }
+
+    public Boolean getMultipleFragments() {
+        return this.multipleFragments;
+    }
+
+    public void setMultipleFragments(Boolean multipleFragments) {
+        this.multipleFragments = multipleFragments;
     }
 
     @PersistenceContext
