@@ -837,18 +837,24 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 						Set<String> parentAliasStrings = new HashSet<>();
 						for(ParentAlias alias : parent.getParentAliases()){
-							parentAliasStrings.add(alias.toString());
+							if (! alias.isIgnored())
+							{
+								parentAliasStrings.add(alias.getAliasName());
+							}
 						}
 						Set<String> foundParentAliasStrings = new HashSet<>(); 
 						for(ParentAlias alias : foundParent.getParentAliases()){
-							foundParentAliasStrings.add(alias.toString());
+							if (! alias.isIgnored())
+							{
+							foundParentAliasStrings.add(alias.getAliasName());
+							}
 						}
 
 						for(ParentAlias alias : parent.getParentAliases())
 						{
 							// Check alias in foundParentAlias (String Comparison)
 							// if not found then equalAliases is false 
-							if(!foundParentAliasStrings.contains(alias.toString())){
+							if(! alias.isIgnored() && !foundParentAliasStrings.contains(alias.getAliasName())){
 								equalAliases = false;
 							}
 						}
@@ -861,7 +867,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							{
 								// Check alias in parentAlias (String Comparison)
 								// if not found then equal Aliases is false 
-								if(!parentAliasStrings.contains(alias.toString())){
+								if(! alias.isIgnored() && !parentAliasStrings.contains(alias.getAliasName())){
 									equalAliases = false; 
 								}
 							}
@@ -885,7 +891,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							{
 								// If oldAlias Not In UnionParentAliases (Use Previously Set<str> to Do Compare)
 									// Add to Aliases Union List 
-								if(!parentAliasStrings.contains(oldAlias.toString()))
+								if(! oldAlias.isIgnored() && !parentAliasStrings.contains(oldAlias.getAliasName()))
 								{
 									unionParentAliases.add(oldAlias);
 								}
