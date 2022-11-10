@@ -239,28 +239,39 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
 			List<String> chemists = new ArrayList<String>();
 			List<String> projects = new ArrayList<String>();
-			CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
+			//TODO replace me with a config
+			int batchSize = 250;
+			boolean done = false;
+			//TODO switch to bulk reads
 
-			while ((mol = molReader.readNextMol()) != null) {
-				numRecordsRead++;
-				String lotChemist = getStringValueFromMappings(mol, "Lot Chemist", mappings);
-				if (!chemists.contains(lotChemist)) {
-					chemists.add(lotChemist);
+			while (!done) {
+				// Read the next set of molecules from the SDF
+				Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
+				if (batchOfMols.size() == 0){
+					done = true;
+					break;
 				}
-				String lotProject = getStringValueFromMappings(mol, "Project", mappings);
-				if (lotProject != null && !projects.contains(lotProject)) {
-					projects.add(lotProject);
-				}
-
-				currentTime = new Date().getTime();
-				if (currentTime > startTime) {
-					logger.info("SPEED REPORT:");
-					logger.info("Time Elapsed:" + (currentTime - startTime));
-					logger.info("Rows Handled:" + numRecordsRead);
-					logger.info("Average speed (rows/min):"
-							+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
-				}
+				for (CmpdRegMolecule mol : batchOfMols) {
+					numRecordsRead++;
+					String lotChemist = getStringValueFromMappings(mol, "Lot Chemist", mappings);
+					if (!chemists.contains(lotChemist)) {
+						chemists.add(lotChemist);
+					}
+					String lotProject = getStringValueFromMappings(mol, "Project", mappings);
+					if (lotProject != null && !projects.contains(lotProject)) {
+						projects.add(lotProject);
+					}
+					
+					currentTime = new Date().getTime();
+					if (currentTime > startTime) {
+						logger.info("VALIDATION SPEED REPORT:");
+						logger.info("Time Elapsed:" + (currentTime - startTime));
+						logger.info("Rows Handled:" + numRecordsRead);
+						logger.info("Average speed (rows/min):"
+								+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
+					}
+				}				
 			}
 			return new BulkLoadSDFValidationPropertiesResponseDTO(chemists, projects);
 		} catch (Exception e) {
@@ -396,24 +407,31 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			int numRecordsRead = 0;
 			int numNewParentsLoaded = 0;
 			int numNewLotsOldParentsLoaded = 0;
+			boolean done = false;
 
 			//TODO replace me with a config
+			//TODO try to refactor this into a chunked reader with a clean iterator
 			int batchSize = 250;
-			// Read the next set of molecules from the SDF
-			Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
-			//TODO process in bulk
-			HashMap<String, String> origMolStructures = new LinkedHashMap<String, String>();
-			HashMap<String, CmpdRegMolecule> origMols = new LinkedHashMap<String, CmpdRegMolecule>();
-			int recNo = 0;
-			for (CmpdRegMolecule mol : batchOfMols) {
-				String key = String.valueOf(recNo);
-				origMolStructures.put(key, mol.getMolStructure());
-				origMols.put(key, mol);
-				recNo++;
-			}
-			// Standardize in bulk to increase performance
-			HashMap<String, CmpdRegMolecule> standardizedMols = chemStructureService.standardizeStructures(origMolStructures);
-			while (batchOfMols.size() > 0) {
+			while (!done) {
+				// Read the next set of molecules from the SDF
+				Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
+				if (batchOfMols.size() == 0){
+					done = true;
+					break;
+				}
+				// Process structures in bulk
+				HashMap<String, String> origMolStructures = new LinkedHashMap<String, String>();
+				HashMap<String, CmpdRegMolecule> origMols = new LinkedHashMap<String, CmpdRegMolecule>();
+				int recNo = 0;
+				for (CmpdRegMolecule mol : batchOfMols) {
+					String key = String.valueOf(recNo);
+					origMolStructures.put(key, mol.getMolStructure());
+					origMols.put(key, mol);
+					recNo++;
+				}
+				// Standardize in bulk to increase performance
+				// TODO figure out how to remove this if standardizer is disabled
+				HashMap<String, CmpdRegMolecule> standardizedMols = chemStructureService.standardizeStructures(origMolStructures);
 				for (String key : origMols.keySet()) {
 					numRecordsRead++;
 					CmpdRegMolecule origMol = origMols.get(key);
@@ -430,8 +448,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						logger.error("Error error on record " + numRecordsRead + ": " + e.getMessage());
 					}
 				}
-				// Read the next batch
-				batchOfMols = molReader.readNextMols(batchSize);
 			}
 			// generate summary in two formats: HTML and plaintext
 			String summaryHtml = generateSummaryHtml(numRecordsRead, numNewParentsLoaded, numNewLotsOldParentsLoaded,
@@ -638,7 +654,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		Long currentTime = new Date().getTime();
 		if (currentTime > startTime) {
-			logger.info("SPEED REPORT:");
+			logger.info("REGISTRATION SPEED REPORT:");
 			logger.info("Time Elapsed:" + (currentTime - startTime));
 			logger.info("Rows Handled:" + numRecordsRead);
 			logger.info("Average speed (rows/min):"
