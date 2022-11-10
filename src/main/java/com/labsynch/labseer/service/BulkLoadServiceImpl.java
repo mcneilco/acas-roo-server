@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -400,12 +401,25 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			int batchSize = 250;
 			// Read the next set of molecules from the SDF
 			Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
-
+			//TODO process in bulk
+			HashMap<String, String> origMolStructures = new LinkedHashMap<String, String>();
+			HashMap<String, CmpdRegMolecule> origMols = new LinkedHashMap<String, CmpdRegMolecule>();
+			int recNo = 0;
+			for (CmpdRegMolecule mol : batchOfMols) {
+				String key = String.valueOf(recNo);
+				origMolStructures.put(key, mol.getMolStructure());
+				origMols.put(key, mol);
+				recNo++;
+			}
+			// Standardize in bulk to increase performance
+			HashMap<String, CmpdRegMolecule> standardizedMols = chemStructureService.standardizeStructures(origMolStructures);
 			while (batchOfMols.size() > 0) {
-				for (CmpdRegMolecule mol : batchOfMols) {
+				for (String key : origMols.keySet()) {
 					numRecordsRead++;
+					CmpdRegMolecule origMol = origMols.get(key);
+					CmpdRegMolecule standardizedMol = standardizedMols.get(key);
 					try{
-						Boolean isNewParent = registerMol(mol, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
+						Boolean isNewParent = registerMol(origMol, standardizedMol, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
 						if(isNewParent != null) {
 							if (isNewParent)
 								numNewParentsLoaded++;
@@ -477,7 +491,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Boolean registerMol(CmpdRegMolecule mol, BulkLoadFile bulkLoadFile,Collection<BulkLoadPropertyMappingDTO> mappings,
+	public Boolean registerMol(CmpdRegMolecule mol, CmpdRegMolecule standardizedMol, BulkLoadFile bulkLoadFile,Collection<BulkLoadPropertyMappingDTO> mappings,
 			FileOutputStream errorCSVOutStream, FileOutputStream registeredCSVOutStream,
 			CmpdRegSDFWriter errorMolExporter, CmpdRegSDFWriter registeredMolExporter,
 			HashMap<String, Integer> allAliasMaps, int numRecordsRead, Collection<ValidationResponseDTO> results, boolean validate, String chemist, 
@@ -503,7 +517,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			return null;
 		}
 		try {
-			parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results,
+			parent = createParent(mol, standardizedMol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results,
 					numRecordsRead);
 		} catch (Exception e) {
 			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
@@ -1562,7 +1576,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	@Transactional
-	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist,
+	public Parent createParent(CmpdRegMolecule mol, CmpdRegMolecule standardizedMol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist,
 			LabelPrefixDTO labelPrefix, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception {
 		// Here we try to fetch all of the possible Lot database properties from the
 		// sdf, according to the mappings
@@ -1570,6 +1584,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		parent.setMolStructure(mol.getMolStructure());
 		parent.setRegistrationDate(new Date());
 		parent.setRegisteredBy(chemist);
+		parent.setCmpdRegMolecule(standardizedMol);
 
 		// regular fields that do not require lookups or conversions
 		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings, results, recordNumber));
