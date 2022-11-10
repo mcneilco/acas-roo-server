@@ -327,34 +327,18 @@ public class MetalotServiceImpl implements MetalotService {
 				if (hasMultipleFragments == null){
 					hasMultipleFragments = chemService.checkForSalt(parent.getMolStructure());
 				}
-				if (hasMultipleFragments) {
-					// multiple fragments
-					if (parent.getIsMixture() != null) {
-						if (!parent.getIsMixture()) {
-							ErrorMessage multifragmentError = new ErrorMessage();
-							multifragmentError.setLevel("error");
-							multifragmentError
-									.setMessage("Multiple fragments found. Please register the neutral base parent ");
-							logger.error(multifragmentError.getMessage());
-							errors.add(multifragmentError);
-							metalotError = true;
-							logger.error("found a compound with multiple fragments -- mark as an error.");
-							logger.error("Salted molfile: " + parent.getMolStructure());
-							throw new SaltedCompoundException("Salted parent structure");
-						} else {
-							// continue to save - structure is appropriately marked as a mixture
-						}
-					} else {
-						ErrorMessage multifragmentError = new ErrorMessage();
-						multifragmentError.setLevel("error");
-						multifragmentError.setMessage("Multiple fragments found. Please register the neutral base parent ");
-						logger.error(multifragmentError.getMessage());
-						errors.add(multifragmentError);
-						metalotError = true;
-						logger.error("found a compound with multiple fragments -- mark as an error.");
-						logger.error("Salted molfile: " + parent.getMolStructure());
-						throw new SaltedCompoundException("Salted parent structure");
-					}
+				// If it has multiple fragments and "isMixture" is null or false, throw an error
+				if (hasMultipleFragments && (parent.getIsMixture() == null || !parent.getIsMixture())) {
+					ErrorMessage multifragmentError = new ErrorMessage();
+					multifragmentError.setLevel("error");
+					multifragmentError
+							.setMessage("Multiple fragments found. Please register the neutral base parent ");
+					logger.error(multifragmentError.getMessage());
+					errors.add(multifragmentError);
+					metalotError = true;
+					logger.error("found a compound with multiple fragments -- mark as an error.");
+					logger.error("Salted molfile: " + parent.getMolStructure());
+					throw new SaltedCompoundException("Salted parent structure");
 				}
 			}
 			if (parentAliases.size() > 0){
