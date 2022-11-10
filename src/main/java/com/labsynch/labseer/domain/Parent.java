@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.dto.LabelPrefixDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
 
@@ -138,6 +139,9 @@ public class Parent {
 
     @Transient
     private transient LabelPrefixDTO labelPrefix;
+
+    @Transient
+    private transient CmpdRegMolecule cmpdRegMolecule;
 
     @Transactional
     public static void deleteAllParents() {
@@ -956,6 +960,14 @@ public class Parent {
 
     public void setIsMixture(Boolean isMixture) {
         this.isMixture = isMixture;
+    }
+
+    public CmpdRegMolecule getCmpdRegMolecule() {
+        return this.cmpdRegMolecule;
+    }
+
+    public void setCmpdRegMolecule(CmpdRegMolecule cmpdRegMolecule) {
+        this.cmpdRegMolecule = cmpdRegMolecule;
     }
 
     @PersistenceContext
