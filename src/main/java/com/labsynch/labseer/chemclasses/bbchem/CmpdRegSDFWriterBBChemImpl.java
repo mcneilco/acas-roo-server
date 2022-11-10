@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
@@ -26,9 +27,12 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
 
     private Writer writer;
 
+    private Collection<CmpdRegMoleculeBBChemImpl> molCache;
+
     public CmpdRegSDFWriterBBChemImpl(String fileName) {
         try {
             this.writer = new FileWriter(fileName);
+            this.molCache = new ArrayList<CmpdRegMoleculeBBChemImpl>();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             logger.error("Unable to write sdf", e);
@@ -37,46 +41,60 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
 
     public CmpdRegSDFWriterBBChemImpl() {
         this.writer = new StringWriter();
+        this.molCache = new ArrayList<CmpdRegMoleculeBBChemImpl>();
     }
 
     @Override
     public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
         CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
-        try {
-            String sdfText = bbChemStructureServices.getSDF(molWrapper.molecule);
-            this.writer.write(sdfText);
-        } catch (Exception e) {
-            logger.error("Unable to write mol", e);
-            return false;
-        }
+        this.molCache.add(molWrapper);
         return true;
     }
 
     @Override
     public boolean writeMols(List<CmpdRegMolecule> cmpdRegMoleculeList) throws CmpdRegMolFormatException, IOException {
-        try {
-            List<BBChemParentStructure> cmpdRegMoleculeBBChemImplList = new ArrayList<BBChemParentStructure>();
-            for (CmpdRegMolecule molecule : cmpdRegMoleculeList) {
-                CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
-                cmpdRegMoleculeBBChemImplList.add(molWrapper.molecule);
-            }
-            String sdfText = bbChemStructureServices.getSDF(cmpdRegMoleculeBBChemImplList);
-            this.writer.write(sdfText);
-        } catch (Exception e) {
-            logger.error("Unable to write mol", e);
-            return false;
+        for (CmpdRegMolecule molecule : cmpdRegMoleculeList) {
+            CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
+            this.molCache.add(molWrapper);
         }
         return true;
     }
 
+    private String getSDFText() {
+        // Grab all of the BBChemParentStructures out of the molCache
+        List<BBChemParentStructure> cmpdRegMoleculeBBChemImplList = new ArrayList<BBChemParentStructure>();
+        for (CmpdRegMolecule molecule : this.molCache) {
+            CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
+            cmpdRegMoleculeBBChemImplList.add(molWrapper.molecule);
+        }
+        // Convert them all to SDF text
+        try{
+            String sdfText = bbChemStructureServices.getSDF(cmpdRegMoleculeBBChemImplList);
+            return sdfText;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public void close() throws IOException {
+        String sdfText = this.getSDFText();
+        // Then write them to the file
+        this.writer.write(sdfText);
         this.writer.close();
     }
 
     @Override
     public String getBufferString() {
-        return this.writer.toString();
+        String sdfText = this.getSDFText();
+        try{
+            this.writer.write(sdfText);
+            return this.writer.toString();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

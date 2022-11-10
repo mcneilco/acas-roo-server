@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -137,18 +138,27 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		int numRecordsRead = 0;
 		try {
 			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
-			CmpdRegMolecule mol = null;
-			while ((numRowsToRead == -1 || numRecordsRead < numRowsToRead) && (mol = molReader.readNextMol()) != null) {
-				String[] propertyKeys = mol.getPropertyKeys();
-				if (propertyKeys.length != 0) {
-					for (String key : propertyKeys) {
-						SimpleBulkLoadPropertyDTO propDTO = new SimpleBulkLoadPropertyDTO(key);
-						propDTO.setDataType(mol.getPropertyType(key));
-						foundProperties.add(propDTO);
+			int batchSize = numRowsToRead;
+			// If reading the whole file, do it in batches
+			if (batchSize == -1){
+				batchSize = propertiesUtilService.getStandardizationBatchSize();
+			}
+			Collection<CmpdRegMolecule> mols = molReader.readNextMols(batchSize);
+			while ((numRowsToRead == -1 || numRecordsRead < numRowsToRead) && (mols.size() > 0)) {
+				for (CmpdRegMolecule mol : mols) {
+					String[] propertyKeys = mol.getPropertyKeys();
+					if (propertyKeys.length != 0) {
+						for (String key : propertyKeys) {
+							SimpleBulkLoadPropertyDTO propDTO = new SimpleBulkLoadPropertyDTO(key);
+							propDTO.setDataType(mol.getPropertyType(key));
+							foundProperties.add(propDTO);
+						}
 					}
+					numRecordsRead++;
+					logger.info("Num records read " + numRecordsRead);
 				}
-				numRecordsRead++;
-				logger.info("Num records read " + numRecordsRead);
+				// Read another batch
+				mols = molReader.readNextMols(batchSize);
 			}
 		} catch (Exception e) {
 			logger.error("Caught exception trying to read SDF properties (num records read was " + numRecordsRead + 1,
@@ -229,28 +239,37 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
 			List<String> chemists = new ArrayList<String>();
 			List<String> projects = new ArrayList<String>();
-			CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
-
-			while ((mol = molReader.readNextMol()) != null) {
-				numRecordsRead++;
-				String lotChemist = getStringValueFromMappings(mol, "Lot Chemist", mappings);
-				if (!chemists.contains(lotChemist)) {
-					chemists.add(lotChemist);
+			// Read records in bulk, using configured batch size
+			int batchSize = propertiesUtilService.getStandardizationBatchSize();
+			boolean done = false;
+			while (!done) {
+				// Read the next set of molecules from the SDF
+				Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
+				if (batchOfMols.size() == 0){
+					done = true;
+					break;
 				}
-				String lotProject = getStringValueFromMappings(mol, "Project", mappings);
-				if (lotProject != null && !projects.contains(lotProject)) {
-					projects.add(lotProject);
-				}
-
-				currentTime = new Date().getTime();
-				if (currentTime > startTime) {
-					logger.info("SPEED REPORT:");
-					logger.info("Time Elapsed:" + (currentTime - startTime));
-					logger.info("Rows Handled:" + numRecordsRead);
-					logger.info("Average speed (rows/min):"
-							+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
-				}
+				for (CmpdRegMolecule mol : batchOfMols) {
+					numRecordsRead++;
+					String lotChemist = getStringValueFromMappings(mol, "Lot Chemist", mappings);
+					if (!chemists.contains(lotChemist)) {
+						chemists.add(lotChemist);
+					}
+					String lotProject = getStringValueFromMappings(mol, "Project", mappings);
+					if (lotProject != null && !projects.contains(lotProject)) {
+						projects.add(lotProject);
+					}
+					
+					currentTime = new Date().getTime();
+					if (currentTime > startTime) {
+						logger.info("VALIDATION SPEED REPORT:");
+						logger.info("Time Elapsed:" + (currentTime - startTime));
+						logger.info("Rows Handled:" + numRecordsRead);
+						logger.info("Average speed (rows/min):"
+								+ (numRecordsRead / ((currentTime - startTime) / 60.0 / 1000.0)));
+					}
+				}				
 			}
 			return new BulkLoadSDFValidationPropertiesResponseDTO(chemists, projects);
 		} catch (Exception e) {
@@ -262,7 +281,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	@Transactional
 	public int saveDryRunCompound(CmpdRegMolecule mol, Parent parent, int numRecordsRead, DryRunCompound dryRunCompound)
 			throws CmpdRegMolFormatException {
-		int cdId = chemStructureService.saveStructure(mol.getMolStructure(), StructureType.DRY_RUN, false);
+		int cdId = chemStructureService.saveStructure(parent.getCmpdRegMolecule(), StructureType.DRY_RUN, false);
 		dryRunCompound = new DryRunCompound();
 		dryRunCompound.setCdId(cdId);
 		dryRunCompound.setRecordNumber(numRecordsRead);
@@ -382,23 +401,55 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFWriter registeredMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(registeredSDFName);
 			HashMap<String, Integer> allAliasMaps = new HashMap<String, Integer>();
 
-			CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
 			int numNewParentsLoaded = 0;
 			int numNewLotsOldParentsLoaded = 0;
+			boolean done = false;
 
-			while ((mol = molReader.readNextMol()) != null) {
-				numRecordsRead++;
-				try{
-					Boolean isNewParent = registerMol(mol, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
-					if(isNewParent != null) {
-						if (isNewParent)
-							numNewParentsLoaded++;
-						else
-							numNewLotsOldParentsLoaded++;
+			int batchSize = propertiesUtilService.getStandardizationBatchSize();
+			while (!done) {
+				// Read the next set of molecules from the SDF
+				Collection<CmpdRegMolecule> batchOfMols = molReader.readNextMols(batchSize);
+				if (batchOfMols.size() == 0){
+					done = true;
+					break;
+				}
+				// Process structures in bulk
+				HashMap<String, String> origMolStructures = new LinkedHashMap<String, String>();
+				HashMap<String, CmpdRegMolecule> origMols = new LinkedHashMap<String, CmpdRegMolecule>();
+				HashMap<String, CmpdRegMolecule> standardizedMols = null;
+				int recNo = 0;
+				for (CmpdRegMolecule mol : batchOfMols) {
+					String key = String.valueOf(recNo);
+					origMolStructures.put(key, mol.getMolStructure());
+					origMols.put(key, mol);
+					recNo++;
+				}
+				if (propertiesUtilService.getUseExternalStandardizerConfig()) {
+					// Standardize in bulk to increase performance
+					standardizedMols = chemStructureService.standardizeStructures(origMolStructures);
+				} else {
+					// If standardization is disabled, pass through the origMols as the "standardized" structures
+					standardizedMols = origMols;
+				}
+				// Check for multiple fragments in bulk too
+				List<Boolean> multipleFragmentsList = chemStructureService.checkForSalts(origMolStructures.values());
+				for (String key : origMols.keySet()) {
+					numRecordsRead++;
+					CmpdRegMolecule origMol = origMols.get(key);
+					CmpdRegMolecule standardizedMol = standardizedMols.get(key);
+					Boolean multipleFragments = multipleFragmentsList.get(Integer.parseInt(key));
+					try{
+						Boolean isNewParent = registerMol(origMol, standardizedMol, multipleFragments, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
+						if(isNewParent != null) {
+							if (isNewParent)
+								numNewParentsLoaded++;
+							else
+								numNewLotsOldParentsLoaded++;
+						}
+					} catch (Exception e) {
+						logger.error("Error error on record " + numRecordsRead + ": " + e.getMessage());
 					}
-				} catch (Exception e) {
-					logger.error("Error error on record " + numRecordsRead + ": " + e.getMessage());
 				}
 			}
 			// generate summary in two formats: HTML and plaintext
@@ -459,7 +510,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Boolean registerMol(CmpdRegMolecule mol, BulkLoadFile bulkLoadFile,Collection<BulkLoadPropertyMappingDTO> mappings,
+	public Boolean registerMol(CmpdRegMolecule mol, CmpdRegMolecule standardizedMol, Boolean multipleFragments, BulkLoadFile bulkLoadFile,Collection<BulkLoadPropertyMappingDTO> mappings,
 			FileOutputStream errorCSVOutStream, FileOutputStream registeredCSVOutStream,
 			CmpdRegSDFWriter errorMolExporter, CmpdRegSDFWriter registeredMolExporter,
 			HashMap<String, Integer> allAliasMaps, int numRecordsRead, Collection<ValidationResponseDTO> results, boolean validate, String chemist, 
@@ -472,7 +523,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Lot lot;
 		// attempt to strip salts
 		try {
-			mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
+			CmpdRegMolecule inputMol = mol;
+			mol = processForSaltStripping(mol, multipleFragments, mappings, results, numRecordsRead);
+			// Reset the multipleFragments boolean and standardizedMol if salt stripping changed the mol
+			if (mol != inputMol) {
+				multipleFragments = null;
+				standardizedMol = null;
+			}
 		} catch (CmpdRegMolFormatException e) {
 			String emptyMolfile = "\n" +
 					"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" +
@@ -485,7 +542,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			return null;
 		}
 		try {
-			parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results,
+			parent = createParent(mol, standardizedMol, multipleFragments, mappings, chemist, registerRequestDTO.getLabelPrefix(), results,
 					numRecordsRead);
 		} catch (Exception e) {
 			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
@@ -606,7 +663,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		Long currentTime = new Date().getTime();
 		if (currentTime > startTime) {
-			logger.info("SPEED REPORT:");
+			logger.info("REGISTRATION SPEED REPORT:");
 			logger.info("Time Elapsed:" + (currentTime - startTime));
 			logger.info("Rows Handled:" + numRecordsRead);
 			logger.info("Average speed (rows/min):"
@@ -801,7 +858,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.warn(
 					"mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} else {
-			dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
+			dupeParentList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.PARENT, ChemStructureService.SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 		}
 		if (dupeParentList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeParentList) {
@@ -901,7 +958,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			}
 		}
 		// check for multiple fragments, and if isMixture or not
-		if (chemStructureService.checkForSalt(parent.getMolStructure())) {
+		Boolean hasMultipleFragments = parent.getMultipleFragments();
+		if (hasMultipleFragments == null){
+			hasMultipleFragments = chemStructureService.checkForSalt(parent.getMolStructure());
+		}
+		if (hasMultipleFragments) {
 			// multiple fragments
 			if (parent.getIsMixture() != null) {
 				if (!parent.getIsMixture()) {
@@ -960,8 +1021,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public Parent validateParentAgainstDryRunCompound(Parent parent, int numRecordsRead,
 			Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
-		int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(),
-				StructureType.DRY_RUN);
+		int[] dupeDryRunCompoundsList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.DRY_RUN, ChemStructureService.SearchType.DUPLICATE_TAUTOMER,  -1F, -1);
 		if (dupeDryRunCompoundsList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeDryRunCompoundsList) {
 				List<DryRunCompound> foundDryRunCompounds = DryRunCompound.findDryRunCompoundsByCdId(foundParentCdId)
@@ -1544,7 +1604,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	@Transactional
-	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist,
+	public Parent createParent(CmpdRegMolecule mol, CmpdRegMolecule standardizedMol, Boolean multipleFragments, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist,
 			LabelPrefixDTO labelPrefix, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception {
 		// Here we try to fetch all of the possible Lot database properties from the
 		// sdf, according to the mappings
@@ -1552,6 +1612,26 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		parent.setMolStructure(mol.getMolStructure());
 		parent.setRegistrationDate(new Date());
 		parent.setRegisteredBy(chemist);
+		// The following transient properties are used later on in registration
+		// Normally they should be populated, but when salt stripping has happened they may be blank
+		// Check and fill them in if they aren't populated.
+		if (standardizedMol == null) {
+			if (propertiesUtilService.getUseExternalStandardizerConfig()) {
+				// Standardize this single structure
+				HashMap<String, String> inMap = new HashMap<String, String>();
+				inMap.put("tmp", mol.getMolStructure());
+				HashMap<String, CmpdRegMolecule> outMap = chemStructureService.standardizeStructures(inMap);
+				standardizedMol = outMap.get("tmp");
+			} else {
+				// If standardization is disabled, pass through the current mol as the "standardized" structures
+				standardizedMol = mol;
+			}
+		}
+		if (multipleFragments == null) {
+			multipleFragments = chemStructureService.checkForSalt(mol.getMolStructure());
+		}
+		parent.setCmpdRegMolecule(standardizedMol);
+		parent.setMultipleFragments(multipleFragments);
 
 		// regular fields that do not require lookups or conversions
 		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings, results, recordNumber));
@@ -2420,10 +2500,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return summary;
 	}
 
-	public CmpdRegMolecule processForSaltStripping(CmpdRegMolecule inputMol,
+	public CmpdRegMolecule processForSaltStripping(CmpdRegMolecule inputMol, Boolean multipleFragments,
 			Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results,
 			int recordNumber) throws CmpdRegMolFormatException {
-		boolean multipleFragments = chemStructureService.checkForSalt(inputMol.getMolStructure());
 		boolean markedAsMixture = Boolean
 				.valueOf(getStringValueFromMappings(inputMol, "Parent Is Mixture", mappings, results, recordNumber));
 		if (multipleFragments && !markedAsMixture) {
