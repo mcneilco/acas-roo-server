@@ -272,7 +272,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	@Transactional
 	public int saveDryRunCompound(CmpdRegMolecule mol, Parent parent, int numRecordsRead, DryRunCompound dryRunCompound)
 			throws CmpdRegMolFormatException {
-		int cdId = chemStructureService.saveStructure(mol.getMolStructure(), StructureType.DRY_RUN, false);
+		int cdId = chemStructureService.saveStructure(parent.getCmpdRegMolecule(), StructureType.DRY_RUN, false);
 		dryRunCompound = new DryRunCompound();
 		dryRunCompound.setCdId(cdId);
 		dryRunCompound.setRecordNumber(numRecordsRead);
@@ -833,7 +833,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.warn(
 					"mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} else {
-			dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
+			dupeParentList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.PARENT, ChemStructureService.SearchType.DUPLICATE_TAUTOMER, -1F, -1);
+			// dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
 		}
 		if (dupeParentList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeParentList) {
@@ -992,8 +993,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public Parent validateParentAgainstDryRunCompound(Parent parent, int numRecordsRead,
 			Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
-		int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(),
-				StructureType.DRY_RUN);
+		// int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(),
+		// 		StructureType.DRY_RUN);
+		int[] dupeDryRunCompoundsList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.DRY_RUN, ChemStructureService.SearchType.DUPLICATE_TAUTOMER,  -1F, -1);
 		if (dupeDryRunCompoundsList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeDryRunCompoundsList) {
 				List<DryRunCompound> foundDryRunCompounds = DryRunCompound.findDryRunCompoundsByCdId(foundParentCdId)
