@@ -67,6 +67,8 @@ public class CmpdRegSDFWriterBBChemImpl implements CmpdRegSDFWriter {
             CmpdRegMoleculeBBChemImpl molWrapper = (CmpdRegMoleculeBBChemImpl) molecule;
             cmpdRegMoleculeBBChemImplList.add(molWrapper.molecule);
         }
+        // reset the molCache now that we've taken these molecules out
+        this.molCache = new ArrayList<CmpdRegMoleculeBBChemImpl>();
         // Convert them all to SDF text
         try{
             String sdfText = bbChemStructureServices.getSDF(cmpdRegMoleculeBBChemImplList);
