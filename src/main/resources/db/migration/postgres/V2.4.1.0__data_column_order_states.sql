@@ -156,13 +156,13 @@ create table tmp_expt_column_order_data as
 	from (
 		-- This query pivots all the 'data column order' experiment values into a table of column_type, column_name, etc.
 		select e.protocol_id,
-			coalesce(col_type.code_value, col_type.string_value) as column_type, --the coalesce is used to account for having the same data in stringValues or in codeValues
-			coalesce(col_name.code_value, col_name.string_value) as column_name,
-			coalesce(col_name.code_value, col_name.string_value) as units,
+			col_type.string_value as column_type, --the coalesce is used to account for having the same data in stringValues or in codeValues
+			col_name.string_value as column_name,
+			col_name.string_value as units,
 			col_conc.numeric_value as concentration,
-		 	coalesce(col_conc_units.code_value, col_conc_units.string_value) as conc_units,
-			coalesce(hide_col.code_value, hide_col.string_value) as hide_column,
-			coalesce(cond_col.code_value, cond_col.string_value) as condition_column,
+		 	col_conc_units.string_value as conc_units,
+			hide_col.string_value as hide_column,
+			cond_col.string_value as condition_column,
 			--This query will GROUP BY all the columns above this point
 			-- For column order and experiment, we take the lowest values as the same endpoint can show up in many experiments
 			min(col_order.numeric_value) as column_order,
@@ -179,13 +179,13 @@ create table tmp_expt_column_order_data as
 		left join experiment_value col_order on col_order.experiment_state_id = es.id and col_order.ls_kind = 'column order' and col_order.ignored = false
 		group by 
 			e.protocol_id,
-			coalesce(col_type.code_value, col_type.string_value),
-			coalesce(col_name.code_value, col_name.string_value),
-			coalesce(col_name.code_value, col_name.string_value),
+			col_type.string_value,
+			col_name.string_value,
+			col_name.string_value,
 			col_conc.numeric_value,
-		 	coalesce(col_conc_units.code_value, col_conc_units.string_value),
-			coalesce(hide_col.code_value, hide_col.string_value),
-			coalesce(cond_col.code_value, cond_col.string_value)
+		 	ol_conc_units.string_value,
+			hide_col.string_value,
+			cond_col.string_value
 		) a;
 
 -- Define a function to create the protocol column order states and values
