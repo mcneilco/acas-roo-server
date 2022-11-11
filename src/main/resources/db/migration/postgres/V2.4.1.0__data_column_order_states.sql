@@ -11,7 +11,7 @@ create table tmp_expt_columns as
 			agv.unit_kind as units,
 			agv.concentration,
 			agv.conc_unit as conc_units,
-			not agv.public_data as hidden
+			not agv.public_data as hide_column
 		from protocol p
 		join experiment e on p.id = e.protocol_id and e.ignored = false
 		join experiment_analysisgroup ea on e.id = ea.experiment_id 
@@ -63,8 +63,8 @@ select add_data_column_ddict_value(conc_units, 'column conc units'::varchar) fro
 --Part 2: Create "data column order" states on experiments that are missing them
 -- Function to create a "data column order" experiment states and the values within it
 create or replace function create_expt_data_column_order_state(expt_id bigint, transaction_id bigint, column_order int, column_type varchar, column_name varchar, 
-															   units varchar, concentration float8, conc_units varchar, hidden boolean, 
-															   condition boolean) returns bigint 
+															   units varchar, concentration float8, conc_units varchar, col_time float8, time_units varchar, hide_column boolean, 
+															   condition_column boolean) returns bigint 
   as $$
 	declare
 		expt_state_id bigint;
@@ -95,40 +95,67 @@ create or replace function create_expt_data_column_order_state(expt_id bigint, t
 									  'column name', transaction_id, 'codeValue', 'codeValue_column name', true, 'ACAS', now(),
 									  0, expt_state_id;
 		-- create units value
-		insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, experiment_state_id)
-			select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column units', 'data column_column units', units, false, false,
-									  'column units', transaction_id, 'codeValue', 'codeValue_column units', true, 'ACAS', now(),
-									  0, expt_state_id;
+		if units is not null then
+			insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column units', 'data column_column units', units, false, false,
+										'column units', transaction_id, 'codeValue', 'codeValue_column units', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
 		-- create concentration value
-		insert into experiment_value (id, deleted, ignored, numeric_value,
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, experiment_state_id)
-			select nextval('value_pkseq'), false, false, concentration,
-									  'column concentration', transaction_id, 'numericValue', 'numericValue_column concentration', true, 'ACAS', now(),
-									  0, expt_state_id;
+		if concentration is not null then
+			insert into experiment_value (id, deleted, ignored, numeric_value,
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), false, false, concentration,
+										'column concentration', transaction_id, 'numericValue', 'numericValue_column concentration', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
 		-- create conc_units value
-		insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, experiment_state_id)
-			select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column conc units', 'data column_column conc units', conc_units, false, false,
-									  'column conc units', transaction_id, 'codeValue', 'codeValue_column conc units', true, 'ACAS', now(),
-									  0, expt_state_id;
+		if conc_units is not null then
+			insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column conc units', 'data column_column conc units', conc_units, false, false,
+										'column conc units', transaction_id, 'codeValue', 'codeValue_column conc units', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
+		if col_time is not null then
+			insert into experiment_value (id, deleted, ignored, numeric_value,
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), false, false, col_time,
+										'column time', transaction_id, 'numericValue', 'numericValue_column time', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
+		-- create conc_units value
+		if time_units is not null then
+			insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column time units', 'data column_column time units', time_units, false, false,
+										'column time units', transaction_id, 'codeValue', 'codeValue_column time units', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
 		-- create hidden value
-		insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, experiment_state_id)
-			select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', case when hidden then 'TRUE' else 'FALSE' end, false, false,
-									  'hide column', transaction_id, 'codeValue', 'codeValue_hide column', true, 'ACAS', now(),
-									  0, expt_state_id;
+		if hide_column is not null then
+			insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', case when hide_column then 'TRUE' else 'FALSE' end, false, false,
+										'hide column', transaction_id, 'codeValue', 'codeValue_hide column', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
 		-- create condition value
-		insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, experiment_state_id)
-			select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', case when condition then 'TRUE' else 'FALSE' end, false, false,
-									  'condition column', transaction_id, 'codeValue', 'codeValue_condition column', true, 'ACAS', now(),
-									  0, expt_state_id;
+		if condition_column is not null then
+			insert into experiment_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, experiment_state_id)
+				select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', case when condition_column then 'TRUE' else 'FALSE' end, false, false,
+										'condition column', transaction_id, 'codeValue', 'codeValue_condition column', true, 'ACAS', now(),
+										0, expt_state_id;
+		end if;
 		
 		return expt_state_id;
 	end
@@ -136,7 +163,7 @@ $$ language plpgsql;
 
 -- Create 'data column order' states and values for all experiments which are missing them
 select create_expt_data_column_order_state(experiment_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
-										   column_order::int, column_type, column_name, units, concentration, conc_units, hidden, false)
+										   column_order::int, column_type, column_name, units, concentration, conc_units, hide_column, false)
 	from tmp_expt_columns where experiment_id in
 		(select e.id from experiment e
 			where not exists (
@@ -197,7 +224,7 @@ create table tmp_expt_column_order_data as
 -- Define a function to create the protocol column order states and values
 -- this is nearly identical to the function above, just using protocol instead of experiment
 create or replace function create_protocol_data_column_order_state(protocol_id bigint, transaction_id bigint, column_order int, column_type varchar, column_name varchar, 
-															   units varchar, concentration float8, conc_units varchar, hide_column varchar, 
+															   units varchar, concentration float8, conc_units varchar, col_time float8, time_units varchar, hide_column varchar, 
 															   condition_column varchar) returns bigint 
   as $$
 	declare
@@ -229,40 +256,67 @@ create or replace function create_protocol_data_column_order_state(protocol_id b
 									  'column name', transaction_id, 'codeValue', 'codeValue_column name', true, 'ACAS', now(),
 									  0, protocol_state_id;
 		-- create units value
-		insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, protocol_state_id)
-			select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column units', 'data column_column units', units, false, false,
-									  'column units', transaction_id, 'codeValue', 'codeValue_column units', true, 'ACAS', now(),
-									  0, protocol_state_id;
+		if units is not null then
+			insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, protocol_state_id)
+				select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column units', 'data column_column units', units, false, false,
+										'column units', transaction_id, 'codeValue', 'codeValue_column units', true, 'ACAS', now(),
+										0, protocol_state_id;
+		end if;
 		-- create concentration value
-		insert into protocol_value (id, deleted, ignored, numeric_value,
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, protocol_state_id)
-			select nextval('value_pkseq'), false, false, concentration,
-									  'column concentration', transaction_id, 'numericValue', 'numericValue_column concentration', true, 'ACAS', now(),
-									  0, protocol_state_id;
+		if units is not null then
+			insert into protocol_value (id, deleted, ignored, numeric_value,
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, protocol_state_id)
+				select nextval('value_pkseq'), false, false, concentration,
+										'column concentration', transaction_id, 'numericValue', 'numericValue_column concentration', true, 'ACAS', now(),
+										0, protocol_state_id;
+		end if;
 		-- create conc_units value
+		if units is not null then
 		insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
 									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
 									  version, protocol_state_id)
 			select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column conc units', 'data column_column conc units', conc_units, false, false,
 									  'column conc units', transaction_id, 'codeValue', 'codeValue_column conc units', true, 'ACAS', now(),
 									  0, protocol_state_id;
+		end if;
+		if col_time is not null then
+			insert into protocol_value (id, deleted, ignored, numeric_value,
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, protocol_state_id)
+				select nextval('value_pkseq'), false, false, col_time,
+										'column time', transaction_id, 'numericValue', 'numericValue_column time', true, 'ACAS', now(),
+										0, protocol_state_id;
+		end if;
+		-- create conc_units value
+		if time_units is not null then
+			insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, protocol_state_id)
+				select nextval('value_pkseq'), 'data column', 'ACAS DDICT', 'column time units', 'data column_column time units', time_units, false, false,
+										'column time units', transaction_id, 'codeValue', 'codeValue_column time units', true, 'ACAS', now(),
+										0, protocol_state_id;
+		end if;
 		-- create hidden value
-		insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, protocol_state_id)
-			select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', hide_column, false, false,
-									  'hide column', transaction_id, 'codeValue', 'codeValue_hide column', true, 'ACAS', now(),
-									  0, protocol_state_id;
+		if hide_column is not null then
+			insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, protocol_state_id)
+				select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', hide_column, false, false,
+										'hide column', transaction_id, 'codeValue', 'codeValue_hide column', true, 'ACAS', now(),
+										0, protocol_state_id;
+		end if;
 		-- create condition value
-		insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
-									  ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
-									  version, protocol_state_id)
-			select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', condition_column, false, false,
-									  'condition column', transaction_id, 'codeValue', 'codeValue_condition column', true, 'ACAS', now(),
-									  0, protocol_state_id;
+		if condition_column is not null then
+			insert into protocol_value (id, code_kind, code_origin, code_type, code_type_and_kind, code_value, deleted, ignored, 
+										ls_kind, ls_transaction, ls_type, ls_type_and_kind, public_data, recorded_by, recorded_date, 
+										version, protocol_state_id)
+				select nextval('value_pkseq'), 'boolean', 'ACAS DDICT', 'boolean', 'boolean_boolean', condition_column, false, false,
+										'condition column', transaction_id, 'codeValue', 'codeValue_condition column', true, 'ACAS', now(),
+										0, protocol_state_id;
+		end if;
 		
 		return protocol_state_id;
 	end
@@ -270,7 +324,7 @@ $$ language plpgsql;
 
 -- Create states and values on any protocol that is missing data column order states
 select create_protocol_data_column_order_state(protocol_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
-										   new_column_order::int, column_type, column_name, units, concentration, conc_units, hide_column, condition_column)
+										   new_column_order::int, column_type, column_name, units, concentration, conc_units, column_time, time_units, hide_column, condition_column)
 	from tmp_expt_column_order_data where protocol_id in
 		(select p.id from protocol p
 			where not exists (
@@ -345,7 +399,7 @@ select fix_protocol_string_values('condition column', 'boolean', 'boolean');
 drop table tmp_expt_columns;
 drop table tmp_expt_column_order_data;
 drop function add_data_column_ddict_value(varchar, varchar);
-drop function create_expt_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, boolean, boolean);
-drop function create_protocol_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, varchar, varchar);
+drop function create_expt_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, float8, varchar, boolean, boolean);
+drop function create_protocol_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, float8, varchar, varchar, varchar);
 drop function fix_experiment_string_values(varchar, varchar, varchar);
 drop function fix_protocol_string_values(varchar, varchar, varchar);
