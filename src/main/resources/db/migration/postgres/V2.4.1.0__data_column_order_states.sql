@@ -27,7 +27,7 @@ insert into ls_transaction (id, comments, recorded_date, version, recorded_by)
 
 -- Part 1: Fill in 'data column' DDict Values based on saved data
 -- Create a reusable function to insert missing ddict values
-create or replace function add_data_column_order_ddict_value(val varchar, ls_kind varchar) returns bigint as $$
+create or replace function add_data_column_ddict_value(val varchar, ls_kind varchar) returns bigint as $$
 	insert into ddict_value (id, ignored, code_name, label_text, ls_type, ls_kind, ls_type_and_kind, short_name, version)
 		select
 			nextval('ddict_value_pkseq') as id,
@@ -50,13 +50,13 @@ create or replace function add_data_column_order_ddict_value(val varchar, ls_kin
 	$$ language sql;
 
 --column name
-select add_data_column_order_ddict_value(column_name, 'column name'::varchar) from
+select add_data_column_ddict_value(column_name, 'column name'::varchar) from
 (select distinct column_name from tmp_expt_columns) a;
 --units
-select add_data_column_order_ddict_value(units, 'column units'::varchar) from
+select add_data_column_ddict_value(units, 'column units'::varchar) from
 (select distinct units from tmp_expt_columns) a where a.units is not null;
 --conc units
-select add_data_column_order_ddict_value(conc_units, 'column conc units'::varchar) from
+select add_data_column_ddict_value(conc_units, 'column conc units'::varchar) from
 (select distinct conc_units from tmp_expt_columns) a where a.conc_units is not null;
 --End Part 1
 
@@ -338,7 +338,7 @@ select fix_protocol_string_values('condition column', 'boolean', 'boolean');
 -- Cleanup: drop tables and functions created during this migration
 drop table tmp_expt_columns;
 drop table tmp_expt_column_order_data;
-drop function add_data_column_order_ddict_value(varchar, varchar);
+drop function add_data_column_ddict_value(varchar, varchar);
 drop function create_expt_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, boolean, boolean);
 drop function create_protocol_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, varchar, varchar);
 drop function fix_experiment_string_values(varchar, varchar, varchar);
