@@ -163,6 +163,8 @@ create table tmp_expt_column_order_data as
 		 	col_conc_units.string_value as conc_units,
 			hide_col.string_value as hide_column,
 			cond_col.string_value as condition_column,
+			col_time.numeric_value as column_time,
+			col_time_units.string_value as time_units,
 			--This query will GROUP BY all the columns above this point
 			-- For column order and experiment, we take the lowest values as the same endpoint can show up in many experiments
 			min(col_order.numeric_value) as column_order,
@@ -177,15 +179,19 @@ create table tmp_expt_column_order_data as
 		left join experiment_value hide_col on hide_col.experiment_state_id = es.id and hide_col.ls_kind = 'hide column' and hide_col.ignored = false
 		left join experiment_value cond_col on cond_col.experiment_state_id = es.id and cond_col.ls_kind = 'condition column' and cond_col.ignored = false
 		left join experiment_value col_order on col_order.experiment_state_id = es.id and col_order.ls_kind = 'column order' and col_order.ignored = false
+		left join experiment_value col_time on col_time.experiment_state_id = es.id and col_time.ls_kind = 'column time' and col_time.ignored = false
+		left join experiment_value col_time_units on col_time_units.experiment_state_id = es.id and col_time_units.ls_kind = 'column time units' and col_time_units.ignored = false
 		group by 
 			e.protocol_id,
 			col_type.string_value,
 			col_name.string_value,
 			col_name.string_value,
 			col_conc.numeric_value,
-		 	ol_conc_units.string_value,
+		 	col_conc_units.string_value,
 			hide_col.string_value,
-			cond_col.string_value
+			cond_col.string_value,
+			col_time.numeric_value,
+			col_time_units.string_value
 		) a;
 
 -- Define a function to create the protocol column order states and values
