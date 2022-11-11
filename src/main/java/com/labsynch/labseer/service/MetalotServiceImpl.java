@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -225,10 +226,18 @@ public class MetalotServiceImpl implements MetalotService {
 		String dupeParentNames = "";
 		if (parent.getId() == null) {
 			logger.debug("this is a new parent");
-			String molStructure;
 			if (propertiesUtilService.getUseExternalStandardizerConfig()) {
-				molStructure = chemService.standardizeStructure(parent.getMolStructure());
-				parent.setMolStructure(molStructure);
+				// Check if we already have a standardized CmpdRegMolecule attached
+				// BulkLoadServiceImpl attaches one for performance reasons
+				if (parent.getCmpdRegMolecule() == null){
+					//TODO refactor into chemService.getStandardizedMolecule(String);
+					HashMap<String, String> inMap = new HashMap<String, String>();
+					inMap.put("tmp", parent.getMolStructure());
+					HashMap<String, CmpdRegMolecule> stdzMap = chemService.standardizeStructures(inMap);
+					parent.setCmpdRegMolecule(stdzMap.get("tmp"));
+				}
+				// Set the parent's structure to the standardized MOL string
+				parent.setMolStructure(parent.getCmpdRegMolecule().getMolStructure());
 			}
 			int dupeParentCount = 0;
 			if (!metaLot.isSkipParentDupeCheck()) {
@@ -313,27 +322,17 @@ public class MetalotServiceImpl implements MetalotService {
 				metalotError = true;
 				throw new DupeParentException("Duplicate parent structure");
 
-			} else if (chemService.checkForSalt(parent.getMolStructure())) {
-				// multiple fragments
-				if (parent.getIsMixture() != null) {
-					if (!parent.getIsMixture()) {
-						ErrorMessage multifragmentError = new ErrorMessage();
-						multifragmentError.setLevel("error");
-						multifragmentError
-								.setMessage("Multiple fragments found. Please register the neutral base parent ");
-						logger.error(multifragmentError.getMessage());
-						errors.add(multifragmentError);
-						metalotError = true;
-						logger.error("found a compound with multiple fragments -- mark as an error.");
-						logger.error("Salted molfile: " + parent.getMolStructure());
-						throw new SaltedCompoundException("Salted parent structure");
-					} else {
-						// continue to save - structure is appropriately marked as a mixture
-					}
-				} else {
+			} else {
+				Boolean hasMultipleFragments = parent.getMultipleFragments();
+				if (hasMultipleFragments == null){
+					hasMultipleFragments = chemService.checkForSalt(parent.getMolStructure());
+				}
+				// If it has multiple fragments and "isMixture" is null or false, throw an error
+				if (hasMultipleFragments && (parent.getIsMixture() == null || !parent.getIsMixture())) {
 					ErrorMessage multifragmentError = new ErrorMessage();
 					multifragmentError.setLevel("error");
-					multifragmentError.setMessage("Multiple fragments found. Please register the neutral base parent ");
+					multifragmentError
+							.setMessage("Multiple fragments found. Please register the neutral base parent ");
 					logger.error(multifragmentError.getMessage());
 					errors.add(multifragmentError);
 					metalotError = true;
@@ -348,7 +347,11 @@ public class MetalotServiceImpl implements MetalotService {
 			}
 			if (!dupeParent) {
 				boolean checkForDupe = false;
-				cdId = chemService.saveStructure(parent.getMolStructure(), StructureType.PARENT, checkForDupe);
+				// If the parent doesn't have a CmpdRegMolecule attached, create one and attach it
+				if (parent.getCmpdRegMolecule() == null) {
+					parent.setCmpdRegMolecule(chemService.toMolecule(parent.getMolStructure()));
+				}
+				cdId = chemService.saveStructure(parent.getCmpdRegMolecule(), StructureType.PARENT, checkForDupe);
 				if (cdId == -1) {
 					logger.error("Bad molformat. Please fix the molfile: " + parent.getMolStructure());
 					throw new CmpdRegMolFormatException();
@@ -363,12 +366,12 @@ public class MetalotServiceImpl implements MetalotService {
 					}
 					DecimalFormat dExactMass = new DecimalFormat("#.######");
 					parent.setExactMass(
-							Double.valueOf(dExactMass.format(chemService.getExactMass(parent.getMolStructure()))));
+							Double.valueOf(dExactMass.format(parent.getCmpdRegMolecule().getExactMass())));
 					DecimalFormat dMolWeight = new DecimalFormat("#.###");
 					parent.setMolWeight(
-							Double.valueOf(dMolWeight.format(chemService.getMolWeight(parent.getMolStructure()))));
+							Double.valueOf(dMolWeight.format(parent.getCmpdRegMolecule().getMass())));
 
-					parent.setMolFormula(chemService.getMolFormula(parent.getMolStructure()));
+					parent.setMolFormula(parent.getCmpdRegMolecule().getFormula());
 					// add unique constraint to parent corp name as well (parent and lot)
 					boolean corpNameAlreadyExists = checkCorpNameAlreadyExists(parent.getCorpName());
 					while (corpNameAlreadyExists) {

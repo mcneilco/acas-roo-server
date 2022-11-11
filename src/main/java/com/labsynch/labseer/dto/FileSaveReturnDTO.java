@@ -34,6 +34,8 @@ public class FileSaveReturnDTO {
 
     private String description;
 
+    private String writeup;
+
     private Boolean uploaded;
 
     private Boolean ie;
@@ -150,6 +152,14 @@ public class FileSaveReturnDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getWriteup() {
+        return this.writeup;
+    }
+
+    public void setWriteup(String writeup) {
+        this.writeup = writeup;
     }
 
     public Boolean getUploaded() {

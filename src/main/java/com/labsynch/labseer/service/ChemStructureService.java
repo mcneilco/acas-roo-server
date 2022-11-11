@@ -2,7 +2,9 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
@@ -62,6 +64,8 @@ public interface ChemStructureService {
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException;
 
 	boolean checkForSalt(String molfile) throws CmpdRegMolFormatException;
+
+	public List<Boolean> checkForSalts(Collection<String> molfiles) throws CmpdRegMolFormatException;
 
 	double getExactMass(String molStructure) throws CmpdRegMolFormatException;
 

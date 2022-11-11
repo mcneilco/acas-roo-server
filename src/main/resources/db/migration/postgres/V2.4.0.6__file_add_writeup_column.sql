@@ -1,0 +1,1 @@
+ALTER TABLE file_list ADD COLUMN writeup TEXT;
