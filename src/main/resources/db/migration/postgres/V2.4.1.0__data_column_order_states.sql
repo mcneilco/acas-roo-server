@@ -11,6 +11,8 @@ create table tmp_expt_columns as
 			agv.unit_kind as units,
 			agv.concentration,
 			agv.conc_unit as conc_units,
+			agv_time.numeric_value as col_time,
+			agv_time.unit_kind as time_units,
 			not agv.public_data as hide_column
 		from protocol p
 		join experiment e on p.id = e.protocol_id and e.ignored = false
@@ -18,6 +20,7 @@ create table tmp_expt_columns as
 		join analysis_group ag on ag.id = ea.analysis_group_id and ag.ignored = false
 		join analysis_group_state ags on ags.analysis_group_id = ag.id and ags.ignored = false and ags.ls_kind != 'dose response'
 		join analysis_group_value agv on ags.id = agv.analysis_state_id and agv.ignored = false and agv.ls_kind != 'batch code'
+		left join analysis_group_value agv_time on ags.id = agv_time.analysis_state_id and agv_time.ignored = false and agv_time.ls_kind = 'time'
 		where p.ignored = false
 	) a;
 
@@ -58,6 +61,9 @@ select add_data_column_ddict_value(units, 'column units'::varchar) from
 --conc units
 select add_data_column_ddict_value(conc_units, 'column conc units'::varchar) from
 (select distinct conc_units from tmp_expt_columns) a where a.conc_units is not null;
+--time units
+select add_data_column_ddict_value(time_units, 'column time units'::varchar) from
+(select distinct time_units from tmp_expt_columns) a where a.time_units is not null;
 --End Part 1
 
 --Part 2: Create "data column order" states on experiments that are missing them
@@ -163,7 +169,7 @@ $$ language plpgsql;
 
 -- Create 'data column order' states and values for all experiments which are missing them
 select create_expt_data_column_order_state(experiment_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
-										   column_order::int, column_type, column_name, units, concentration, conc_units, hide_column, false)
+										   column_order::int, column_type, column_name, units, concentration, conc_units, col_time, time_units, hide_column, false)
 	from tmp_expt_columns where experiment_id in
 		(select e.id from experiment e
 			where not exists (
