@@ -19,7 +19,7 @@ create table tmp_expt_columns as
 		join experiment_analysisgroup ea on e.id = ea.experiment_id 
 		join analysis_group ag on ag.id = ea.analysis_group_id and ag.ignored = false
 		join analysis_group_state ags on ags.analysis_group_id = ag.id and ags.ignored = false and ags.ls_kind != 'dose response'
-		join analysis_group_value agv on ags.id = agv.analysis_state_id and agv.ignored = false and agv.ls_kind != 'batch code'
+		join analysis_group_value agv on ags.id = agv.analysis_state_id and agv.ignored = false and agv.ls_kind not in ('batch code', 'time')
 		left join analysis_group_value agv_time on ags.id = agv_time.analysis_state_id and agv_time.ignored = false and agv_time.ls_kind = 'time'
 		where p.ignored = false
 	) a;
@@ -65,6 +65,29 @@ select add_data_column_ddict_value(conc_units, 'column conc units'::varchar) fro
 select add_data_column_ddict_value(time_units, 'column time units'::varchar) from
 (select distinct time_units from tmp_expt_columns) a where a.time_units is not null;
 --End Part 1
+
+-- Part 2: Create missing value_kinds for new codeValues
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'column name', 'codeValue_column name', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'column type', 'codeValue_column type', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'column units', 'codeValue_column units', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'column conc units', 'codeValue_column conc units', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'column time units', 'codeValue_column time units', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'hide column', 'codeValue_hide column', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
+insert into value_kind (id, kind_name, ls_type_and_kind, version, ls_type) 
+	select nextval('value_kind_pkseq'), 'condition column', 'codeValue_condition column', 0, (select id from value_type where type_name = 'codeValue')
+	on conflict do nothing;
 
 --Part 2: Create "data column order" states on experiments that are missing them
 -- Function to create a "data column order" experiment states and the values within it
