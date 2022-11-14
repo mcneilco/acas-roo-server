@@ -837,15 +837,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 						Set<String> parentAliasStrings = new HashSet<>();
 						for(ParentAlias alias : parent.getParentAliases()){
-							if (! alias.isIgnored())
-							{
+							if (! alias.isIgnored()) {
 								parentAliasStrings.add(alias.getAliasName());
 							}
 						}
 						Set<String> foundParentAliasStrings = new HashSet<>(); 
 						for(ParentAlias alias : foundParent.getParentAliases()){
-							if (! alias.isIgnored())
-							{
+							if (! alias.isIgnored()) {
 							foundParentAliasStrings.add(alias.getAliasName());
 							}
 						}
@@ -863,8 +861,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						// Only need to do this if no problems found in previous loop; otherwise redundant 
 						// to processs that occurs after
 						{
-							for(ParentAlias alias : foundParent.getParentAliases())
-							{
+							for(ParentAlias alias : foundParent.getParentAliases()) {
 								// Check alias in parentAlias (String Comparison)
 								// if not found then equal Aliases is false 
 								if(! alias.isIgnored() && !parentAliasStrings.contains(alias.getAliasName())){
@@ -874,25 +871,20 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						}	
 
 						// If Incoming Parent and Found Parent Have Equal Aliases 
-						if(equalAliases)
-						{
+						if(equalAliases) {
 							// No Changes or Modifications Needed; Can Break Loop
 							// Continue 
 							parent = foundParent;
 							break searchResultLoop; 
-						}
-						else
-						{
+						} else { 
 							Set<ParentAlias> unionParentAliases = parent.getParentAliases();
 							// Parent Would Be Found Parent w/ Appropriate Updates
 							parent = foundParent;
 							// Update Parent Object to Have "Union" of All Aliases 
-							for(ParentAlias oldAlias : parent.getParentAliases())
-							{
+							for(ParentAlias oldAlias : parent.getParentAliases()) {
 								// If oldAlias Not In UnionParentAliases (Use Previously Set<str> to Do Compare)
 									// Add to Aliases Union List 
-								if(! oldAlias.isIgnored() && !parentAliasStrings.contains(oldAlias.getAliasName()))
-								{
+								if(! oldAlias.isIgnored() && !parentAliasStrings.contains(oldAlias.getAliasName())) {
 									unionParentAliases.add(oldAlias);
 								}
 							}
