@@ -549,7 +549,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			return null;
 		}
 		try {
-			parent = validateParent(parent, mappings, numRecordsRead, results);
+			parent = validateParent(parent, chemist, mappings, numRecordsRead, results);
 		} catch (PersistenceException rollbackException) {
 			logError(rollbackException, numRecordsRead, mol, mappings, errorMolExporter, results,
 					errorCSVOutStream);
@@ -825,7 +825,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String warning = categoryCode + ": " + categoryDescription;
 	}
 
-	public Parent validateParent(Parent parent, Collection<BulkLoadPropertyMappingDTO> mappings, int numRecordsRead,
+	public Parent validateParent(Parent parent, String chemist, Collection<BulkLoadPropertyMappingDTO> mappings, int numRecordsRead,
 			Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
 		// Search for the parent structure + stereo category
@@ -882,9 +882,19 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							|| foundParent.getCorpName().contains(parent.getLabelPrefix().getLabelPrefix()));
 					if (sameStereoCategory & sameStereoComment
 							& (sameCorpName | (noCorpName & sameCorpPrefixOrNoPrefix))) {
-						// parents match
-						parent = foundParent;
-						break searchResultLoop;
+						// parents match (based on above criteria)
+						boolean equalAliases = compareParentAliases(parent, foundParent);
+						// If Incoming Parent and Found Parent Have Equal Aliases 
+						if(equalAliases) {
+							// No Changes or Modifications Needed; Can Break Loop
+							// Continue 
+							parent = foundParent;
+							break searchResultLoop; 
+						} else { 
+							// Need to Update Aliases of Matching Parent to Be Union of Two Sets
+							parent = updateParentAliases(parent, foundParent, chemist); 		
+							break searchResultLoop; 					
+						}
 					} else if (sameStereoCategory & sameStereoComment & !sameCorpName & !noCorpName) {
 						// corp name conflict
 						logger.error(
@@ -2316,6 +2326,95 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Collection<ContainerBatchCodeDTO> responseDTOs = containerService.getContainerDTOsByBatchCodes(batchCodeList);
 		return responseDTOs;
 
+	}
+
+	private boolean compareParentAliases(Parent parent, Parent foundParent){
+		boolean equalAliases = true; // assumption is aliases are same unless proven to be false
+
+		// Need to Create String Sets to Do 
+		// "Is alias (str) of parent in aliases of foundParent (set of strs)?" (and vice versa) logic 
+
+		// Note: This is not the most efficient / concise code to do this process
+		// however due to readability and the assumingly small number of aliases 
+		// parents will have this is fine 
+
+		Set<String> parentAliasStrings = new HashSet<>();
+		for(ParentAlias alias : parent.getParentAliases()){
+			if (! alias.isIgnored()) {
+				parentAliasStrings.add(alias.getAliasName());
+			}
+		}
+		Set<String> foundParentAliasStrings = new HashSet<>(); 
+		for(ParentAlias alias : foundParent.getParentAliases()){
+			if (! alias.isIgnored()) {
+			foundParentAliasStrings.add(alias.getAliasName());
+			}
+		}
+
+		for(ParentAlias alias : parent.getParentAliases())
+		{
+			// Check alias in foundParentAlias (String Comparison)
+			// if not found then equalAliases is false 
+			if(! alias.isIgnored() && !foundParentAliasStrings.contains(alias.getAliasName())){
+				equalAliases = false;
+			}
+		}
+
+		if(equalAliases) 
+		// Only need to do this if no problems found in previous loop; otherwise redundant 
+		// to processs that occurs after
+		{
+			for(ParentAlias alias : foundParent.getParentAliases()) {
+				// Check alias in parentAlias (String Comparison)
+				// if not found then equal Aliases is false 
+				if(! alias.isIgnored() && !parentAliasStrings.contains(alias.getAliasName())){
+					equalAliases = false; 
+				}
+			}
+		}	
+
+		return equalAliases;
+	}
+
+	private Parent updateParentAliases(Parent parent, Parent foundParent, String chemist) {
+
+		// Need to Create String Sets to Do 
+		// "Is alias (str) of parent in aliases of foundParent (set of strs)?" (and vice versa) logic 
+
+		// Note: This is not the most efficient / concise code to do this process
+		// however due to readability and the assumingly small number of aliases 
+		// parents will have this is fine 
+
+		Set<String> parentAliasStrings = new HashSet<>();
+		for(ParentAlias alias : parent.getParentAliases()){
+			if (! alias.isIgnored()) {
+				parentAliasStrings.add(alias.getAliasName());
+			}
+		}
+		Set<String> foundParentAliasStrings = new HashSet<>(); 
+		for(ParentAlias alias : foundParent.getParentAliases()){
+			if (! alias.isIgnored()) {
+				foundParentAliasStrings.add(alias.getAliasName());
+			}
+		}
+
+		Set<ParentAlias> unionParentAliases = parent.getParentAliases();
+		// Parent Would Be Found Parent w/ Appropriate Updates
+		parent = foundParent;
+		// Update Parent Object to Have "Union" of All Aliases 
+		for(ParentAlias oldAlias : parent.getParentAliases()) {
+			// If oldAlias Not In UnionParentAliases (Use Previously Set<str> to Do Compare)
+				// Add to Aliases Union List 
+			if(! oldAlias.isIgnored() && !parentAliasStrings.contains(oldAlias.getAliasName())) {
+				unionParentAliases.add(oldAlias);
+			}
+		}
+		parent.setParentAliases(unionParentAliases);
+		// If Alias List Updated Then Updated Modified By and Modified Date 
+		parent.setModifiedDate(new Date());
+		parent.setModifiedBy(chemist);
+
+		return parent;
 	}
 
 	public String generateSuccessfulCheckHtml(int numberOfParents,
