@@ -3,14 +3,14 @@
 -- We create an artificial "column_order" that will only be used for experiments
 -- that are missing the 'data column order' states
 create table tmp_expt_columns as
-    select *, row_number() over (partition by experiment_id order by column_name) as column_order
-    from (
+	select *, row_number() over (partition by experiment_id order by column_name) as column_order
+	from (
 		select distinct e.id as experiment_id,
 			agv.ls_type as column_type,
 			agv.ls_kind as column_name,
 			agv.unit_kind as units,
-			agv.concentration,
-			agv.conc_unit as conc_units,
+			agv_batch_code.concentration,
+			agv_batch_code.conc_unit as conc_units,
 			agv_time.numeric_value as col_time,
 			agv_time.unit_kind as time_units,
 			not agv.public_data as hide_column
@@ -20,6 +20,7 @@ create table tmp_expt_columns as
 		join analysis_group ag on ag.id = ea.analysis_group_id and ag.ignored = false
 		join analysis_group_state ags on ags.analysis_group_id = ag.id and ags.ignored = false and ags.ls_kind != 'dose response'
 		join analysis_group_value agv on ags.id = agv.analysis_state_id and agv.ignored = false and agv.ls_kind not in ('batch code', 'time')
+		join analysis_group_value agv_batch_code on ags.id = agv_batch_code.analysis_state_id and agv_batch_code.ignored = false and agv_batch_code.ls_kind = 'batch code'
 		left join analysis_group_value agv_time on ags.id = agv_time.analysis_state_id and agv_time.ignored = false and agv_time.ls_kind = 'time'
 		where p.ignored = false
 	) a;
