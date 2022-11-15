@@ -828,6 +828,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public Parent validateParent(Parent parent, String chemist, Collection<BulkLoadPropertyMappingDTO> mappings, int numRecordsRead,
 			Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
+		// Grab the parent's CmpdRegMolecule in case it is lost when overwriting the parent variable
+		CmpdRegMolecule standardizedMol = parent.getCmpdRegMolecule();
 		// Search for the parent structure + stereo category
 		if (parent.getStereoCategory() == null)
 			throw new MissingPropertyException("Parent Stereo Category must be provided");
@@ -1024,6 +1026,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		// Validate lot aliases locally and in the database
 		parentAliasService.validateParentAliases(parent.getParentAliases());
+
+		// If the parent's cmpdRegMolecule was lost, put it back
+		if (parent.getCmpdRegMolecule() == null){
+			parent.setCmpdRegMolecule(standardizedMol);
+		}
 
 		return parent;
 	}
