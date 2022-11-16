@@ -344,7 +344,7 @@ public class MetalotServiceImpl implements MetalotService {
 			}
 			if (parentAliases.size() > 0){
 				// Validate parent aliases
-				parentAliasService.validateParentAliases(parentAliases);
+				parentAliasService.validateParentAliases(parent.getId(), parentAliases);
 			}
 			if (!dupeParent) {
 				boolean checkForDupe = false;
