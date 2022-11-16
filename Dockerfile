@@ -33,7 +33,7 @@ RUN  sed -i 's/<Connector port="8080"/<Connector address="${listen.address}" por
 
 # Add nodejs for prepare config files
 ENV NPM_CONFIG_LOGLEVEL warn
-ENV NODE_VERSION 14.x
+ENV NODE_VERSION 18.x
 
 # Second Slowest Step 
 RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
