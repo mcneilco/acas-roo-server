@@ -33,7 +33,7 @@ public class ParentAliasServiceImpl implements ParentAliasService {
 		logger.debug(ParentAlias.toJsonArray(aliasesToBeSaved));
 		Set<ParentAlias> savedAliases = new HashSet<ParentAlias>();
 		if (aliasesToBeSaved != null && !aliasesToBeSaved.isEmpty()) {
-			validateParentAliases(aliasesToBeSaved);
+			validateParentAliases(parent.getId(), aliasesToBeSaved);
 			for (ParentAlias aliasToBeSaved : aliasesToBeSaved) {
 				logger.debug(aliasToBeSaved.toJson());
 				aliasToBeSaved.setParent(parent);
@@ -51,7 +51,7 @@ public class ParentAliasServiceImpl implements ParentAliasService {
 	}
 
 	@Override
-	public void validateParentAliases(Set<ParentAlias> aliasesToBeSaved) throws NonUniqueAliasException {
+	public void validateParentAliases(Long parentId, Set<ParentAlias> aliasesToBeSaved) throws NonUniqueAliasException {
 
 		// Check for unique parent aliases in what is being passed in
 		if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
@@ -76,7 +76,8 @@ public class ParentAliasServiceImpl implements ParentAliasService {
 					List<ParentAlias> foundAliases = ParentAlias
 							.findParentAliasesByAliasNameEquals(aliasToBeSaved.getAliasName())
 							.getResultList();
-					foundAliases.removeIf(alias -> alias.isIgnored() | alias.isDeleted());
+					foundAliases.removeIf(alias -> alias.isIgnored() | alias.isDeleted() | 
+											(alias.getParent() != null && alias.getParent().getId() == parentId));
 					for (ParentAlias foundAlias : foundAliases) {
 						if (aliasToBeSaved.getId() != null
 								&& aliasToBeSaved.getId().equals(foundAlias.getId())) {
@@ -97,7 +98,7 @@ public class ParentAliasServiceImpl implements ParentAliasService {
 		Set<ParentAlias> aliasesToBeSaved = parentAliases;
 		Set<ParentAlias> savedAliases = new HashSet<ParentAlias>();
 		if (aliasesToBeSaved != null && !aliasesToBeSaved.isEmpty()) {
-			validateParentAliases(aliasesToBeSaved);
+			validateParentAliases(parent.getId(), aliasesToBeSaved);
 			for (ParentAlias aliasToBeSaved : aliasesToBeSaved) {
 				// Check for unique parent aliases in the database
 				aliasToBeSaved.setParent(parent);

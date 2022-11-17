@@ -1025,7 +1025,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 								+ parent.getCorpName() + " db corp name: " + foundParent.getCorpName());
 		}
 		// Validate lot aliases locally and in the database
-		parentAliasService.validateParentAliases(parent.getParentAliases());
+		parentAliasService.validateParentAliases(parent.getId(), parent.getParentAliases());
 
 		// If the parent's cmpdRegMolecule was lost, put it back
 		if (parent.getCmpdRegMolecule() == null){
