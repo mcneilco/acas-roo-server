@@ -1766,7 +1766,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		if (lookUpString != null) {
 			// found LiveDesign Corp Name
 			logger.info("Found one or more parent alias: " + lookUpProperty + "  " + lookUpString);
-			String[] aliases = lookUpString.split(";");
+			// Split on semicolon and trim whitespace
+			String[] aliases = Arrays.stream(lookUpString.split(";")).map(String::trim).toArray(String[]::new);
 			if (parent.getParentAliases() == null) {
 				logger.info("---------- the parent Alias set is null ----------------");
 				parent.setParentAliases(new HashSet<ParentAlias>());
