@@ -38,6 +38,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.labsynch.labseer.dto.LotsByProjectDTO;
+import com.labsynch.labseer.dto.ParentLotAssayDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -50,7 +51,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.ConstructorResult;
+import javax.persistence.ColumnResult;
 
+
+@SqlResultSetMapping(name = "ParentLotAssayResult", classes = {
+    @ConstructorResult(targetClass = ParentLotAssayDTO.class,
+            columns = {
+                    @ColumnResult(name = "lotCorpName"),
+                    @ColumnResult(name = "lotProject"),
+                    @ColumnResult(name = "protocolCodeName"),
+                    @ColumnResult(name = "protocolName"),
+                    @ColumnResult(name = "experimentCodeName"),
+                    @ColumnResult(name = "experimentName"),
+                    @ColumnResult(name = "experimentProject"),
+                    @ColumnResult(name = "analysisGroupType"),
+                    @ColumnResult(name = "analysisGroupKind"),
+                    @ColumnResult(name = "analysisGroupUnit"),
+                    @ColumnResult(name = "analysisGroupOperator"),
+                    @ColumnResult(name = "analysisGroupNumericValue"),
+                    @ColumnResult(name = "analysisGroupStringValue"),
+                    @ColumnResult(name = "analysisGroupPublicData")
+            })
+})
 @Entity
 @Configurable
 @Transactional

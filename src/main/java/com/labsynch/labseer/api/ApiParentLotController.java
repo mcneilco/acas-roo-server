@@ -7,6 +7,7 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
+import com.labsynch.labseer.dto.ParentLotAssayDTO;
 import com.labsynch.labseer.dto.ParentLotCodeDTO;
 import com.labsynch.labseer.dto.ReparentLotDTO;
 import com.labsynch.labseer.dto.ReparentLotResponseDTO;
@@ -181,6 +182,17 @@ public class ApiParentLotController {
 			logger.error("Caught exception updating lot metadata", e);
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/getAssayLinkedToParentLot", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getAssayLinkedToParentLot(@RequestBody String corporateName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<ParentLotAssayDTO> parentLotAssayDTOs = parentLotService.getAssayLinkedToParentLot(corporateName);
+		return new ResponseEntity<String>(ParentLotAssayDTO.toJsonArray(parentLotAssayDTOs), headers, HttpStatus.OK);
+		// return new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 
 }

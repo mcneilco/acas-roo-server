@@ -1,5 +1,8 @@
 package com.labsynch.labseer.dto;
 
+import java.util.Collection;
+
+import flexjson.JSONSerializer;
 
 public class ParentLotAssayDTO {
     private String lotCorpName;
@@ -128,5 +131,15 @@ public class ParentLotAssayDTO {
 
     public void setAnalysisGroupPublicData(boolean analysisGroupPublicData) {
         this.analysisGroupPublicData = analysisGroupPublicData;
+    }
+
+    public static String toJsonArray(Collection<ParentLotAssayDTO> collection) {
+        return new JSONSerializer()
+                .exclude("*.class").serialize(collection);
+    }
+
+    public static String toJsonArray(Collection<ParentLotAssayDTO> collection, String[] fields) {
+        return new JSONSerializer()
+                .include(fields).exclude("*.class").serialize(collection);
     }
 }
