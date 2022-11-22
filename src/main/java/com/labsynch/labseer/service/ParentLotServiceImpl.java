@@ -155,9 +155,11 @@ public class ParentLotServiceImpl implements ParentLotService {
 	 * @return
 	 */
 	@Override
+	@Transactional
 	public List<ParentLotAssayDTO> getAssayLinkedToParentLot(String corporateName) {
 		// TODO: Specific to Lot matches.
-		Lot lot = Lot.findLotsByCorpNameEquals(corporateName).getSingleResult();
+		// TypedQuery<Lot> q1 = Lot.findLotsByCorpNameEquals(corporateName);
+		// List<Lot> lots = q1.getResultList();
 		EntityManager em = Lot.entityManager();
 		Query q = em.createNativeQuery("select paagr.tested_lot as lot_corp_name, "
 			+ "lot.project as lot_project, "
