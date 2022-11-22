@@ -184,15 +184,19 @@ public class ApiParentLotController {
 		}
 	}
 
-	@Transactional
+	// @Transactional
 	@RequestMapping(value = "/getAssayLinkedToParentLot", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getAssayLinkedToParentLot(@RequestBody String corporateName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		Collection<ParentLotAssayDTO> parentLotAssayDTOs = parentLotService.getAssayLinkedToParentLot(corporateName);
-		return new ResponseEntity<String>(ParentLotAssayDTO.toJsonArray(parentLotAssayDTOs), headers, HttpStatus.OK);
-		// return new ResponseEntity<String>(headers, HttpStatus.OK);
+		try{
+			Collection<ParentLotAssayDTO> parentLotAssayDTOs = parentLotService.getAssayLinkedToParentLot(corporateName);
+			return new ResponseEntity<String>(ParentLotAssayDTO.toJsonArray(parentLotAssayDTOs), headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Caught exception in getAssayLinkedToParentLot", e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }
