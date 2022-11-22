@@ -20,6 +20,37 @@ public class ParentLotAssayDTO {
     private String analysisGroupStringValue;
     private boolean analysisGroupPublicData;
 
+    public ParentLotAssayDTO(String lotCorpName,
+                             String lotProject,
+                             String protocolCodeName,
+                             String protocolName,
+                             String experimentCodeName,
+                             String experimentName,
+                             String experimentProject,
+                             String analysisGroupType,
+                             String analysisGroupKind,
+                             String analysisGroupUnit,
+                             String analysisGroupOperator,
+                             float analysisGroupNumericValue,
+                             String analysisGroupStringValue,
+                             boolean analysisGroupPublicData
+    ){
+        this.lotCorpName = lotCorpName;
+        this.lotProject = lotProject;
+        this.protocolCodeName = protocolCodeName;
+        this.protocolName = protocolName;
+        this.experimentCodeName = experimentCodeName;
+        this.experimentName = experimentName;
+        this.experimentProject = experimentProject;
+        this.analysisGroupType = analysisGroupType;
+        this.analysisGroupKind = analysisGroupKind;
+        this.analysisGroupUnit = analysisGroupUnit;
+        this.analysisGroupOperator = analysisGroupOperator;
+        this.analysisGroupNumericValue = analysisGroupNumericValue;
+        this.analysisGroupStringValue = analysisGroupStringValue;
+        this.analysisGroupPublicData = analysisGroupPublicData;
+    }
+
 
     public String getLotCorpName() {
         return this.lotCorpName;
