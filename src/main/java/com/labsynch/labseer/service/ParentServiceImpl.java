@@ -12,7 +12,6 @@ import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CompoundType;
-import com.labsynch.labseer.domain.DryRunCompound;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
