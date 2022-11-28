@@ -94,10 +94,6 @@ public class DryRunCompound {
         return entityManager().createQuery("SELECT o FROM DryRunCompound o", DryRunCompound.class).getResultList();
     }
 
-    public static List<DryRunCompound> findDryRunCompoundsByParentId(Long parentId) {
-        return entityManager().createQuery("SELECT o FROM DryRunCompound o WHERE o.parentId = :parentId", DryRunCompound.class).setParameter("parentId", parentId).getResultList();
-    }
-
     public static List<DryRunCompound> findAllDryRunCompounds(String sortFieldName, String sortOrder) {
         String jpaQuery = "SELECT o FROM DryRunCompound o";
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {

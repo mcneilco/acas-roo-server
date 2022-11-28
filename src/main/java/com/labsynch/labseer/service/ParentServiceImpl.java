@@ -18,6 +18,7 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.ParentAnnotation;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ParentAliasDTO;
@@ -334,7 +335,7 @@ public class ParentServiceImpl implements ParentService {
 	@Transactional
 	public void deleteParent(Parent parent) {
 		
-		for(DryRunCompound d : DryRunCompound.findDryRunCompoundsByParentId(parent.getId())) {
+		for(StandardizationDryRunCompound d : StandardizationDryRunCompound.findStandardizationDryRunCompoundsByParent(parent)) {
 			d.remove();
 		}
 
