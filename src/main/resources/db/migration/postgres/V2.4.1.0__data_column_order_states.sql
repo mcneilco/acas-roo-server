@@ -1,3 +1,5 @@
+do $script$
+begin
 -- As part of ACAS-413
 -- Setup a temp table with all the existing experiment columns
 -- We create an artificial "column_order" that will only be used for experiments
@@ -24,6 +26,13 @@ create table tmp_expt_columns as
 		left join analysis_group_value agv_time on ags.id = agv_time.analysis_state_id and agv_time.ignored = false and agv_time.ls_kind = 'time'
 		where p.ignored = false
 	) a;
+
+-- Exit early if there is no expt data as this indicates a fresh system
+if not exists (select * from tmp_expt_columns)
+then
+	drop table tmp_expt_columns;
+	return;
+end if;
 
 --Create an ls_transaction to tie all our states and values to
 insert into ls_transaction (id, comments, recorded_date, version, recorded_by)
@@ -433,3 +442,5 @@ drop function create_expt_data_column_order_state(bigint, bigint, int, varchar, 
 drop function create_protocol_data_column_order_state(bigint, bigint, int, varchar, varchar, varchar, float8, varchar, float8, varchar, varchar, varchar);
 drop function fix_experiment_string_values(varchar, varchar, varchar);
 drop function fix_protocol_string_values(varchar, varchar, varchar);
+
+end $script$
