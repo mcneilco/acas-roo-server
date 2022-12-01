@@ -242,7 +242,7 @@ create table tmp_expt_column_order_data as
 		select e.protocol_id,
 			col_type.string_value as column_type, --the coalesce is used to account for having the same data in stringValues or in codeValues
 			col_name.string_value as column_name,
-			col_name.string_value as units,
+			col_units.string_value as units,
 			col_conc.numeric_value as concentration,
 		 	col_conc_units.string_value as conc_units,
 			hide_col.string_value as hide_column,
@@ -269,7 +269,7 @@ create table tmp_expt_column_order_data as
 			e.protocol_id,
 			col_type.string_value,
 			col_name.string_value,
-			col_name.string_value,
+			col_units.string_value,
 			col_conc.numeric_value,
 		 	col_conc_units.string_value,
 			hide_col.string_value,
