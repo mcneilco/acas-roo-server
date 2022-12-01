@@ -81,16 +81,16 @@ create or replace function add_data_column_ddict_value(val varchar, ls_kind varc
 	$$ language sql;
 
 --column name
-select add_data_column_ddict_value(column_name, 'column name'::varchar) from
+perform add_data_column_ddict_value(column_name, 'column name'::varchar) from
 (select distinct column_name from tmp_expt_columns) a;
 --units
-select add_data_column_ddict_value(units, 'column units'::varchar) from
+perform add_data_column_ddict_value(units, 'column units'::varchar) from
 (select distinct units from tmp_expt_columns) a where a.units is not null;
 --conc units
-select add_data_column_ddict_value(conc_units, 'column conc units'::varchar) from
+perform add_data_column_ddict_value(conc_units, 'column conc units'::varchar) from
 (select distinct conc_units from tmp_expt_columns) a where a.conc_units is not null;
 --time units
-select add_data_column_ddict_value(time_units, 'column time units'::varchar) from
+perform add_data_column_ddict_value(time_units, 'column time units'::varchar) from
 (select distinct time_units from tmp_expt_columns) a where a.time_units is not null;
 --End Part 1
 
@@ -219,7 +219,7 @@ create or replace function create_expt_data_column_order_state(expt_id bigint, t
 $$ language plpgsql;
 
 -- Create 'data column order' states and values for all experiments which are missing them
-select create_expt_data_column_order_state(experiment_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
+perform create_expt_data_column_order_state(experiment_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
 										   column_order::int, column_type, column_name, units, concentration, conc_units, col_time, time_units, hide_column, false)
 	from tmp_expt_columns where experiment_id in
 		(select e.id from experiment e
@@ -380,7 +380,7 @@ create or replace function create_protocol_data_column_order_state(protocol_id b
 $$ language plpgsql;
 
 -- Create states and values on any protocol that is missing data column order states
-select create_protocol_data_column_order_state(protocol_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
+perform create_protocol_data_column_order_state(protocol_id, (select id from ls_transaction where comments = 'V2.4.1.0 data column order states migration'),
 										   new_column_order::int, column_type, column_name, units, concentration, conc_units, column_time, time_units, hide_column, condition_column)
 	from tmp_expt_column_order_data where protocol_id in
 		(select p.id from protocol p
@@ -415,12 +415,12 @@ create or replace function fix_experiment_string_values(ls_kind varchar, code_ty
 $$ language plpgsql;
 
 --migrate experiment values
-select fix_experiment_string_values('column type', 'data column', 'column type');
-select fix_experiment_string_values('column name', 'data column', 'column name');
-select fix_experiment_string_values('column units', 'data column', 'column units');
-select fix_experiment_string_values('column conc units', 'data column', 'column conc units');
-select fix_experiment_string_values('hide column', 'boolean', 'boolean');
-select fix_experiment_string_values('condition column', 'boolean', 'boolean');
+perform fix_experiment_string_values('column type', 'data column', 'column type');
+perform fix_experiment_string_values('column name', 'data column', 'column name');
+perform fix_experiment_string_values('column units', 'data column', 'column units');
+perform fix_experiment_string_values('column conc units', 'data column', 'column conc units');
+perform fix_experiment_string_values('hide column', 'boolean', 'boolean');
+perform fix_experiment_string_values('condition column', 'boolean', 'boolean');
 
 -- function for migrating protocol values
 create or replace function fix_protocol_string_values(ls_kind varchar, code_type varchar, code_kind varchar) returns int as $$
@@ -445,12 +445,12 @@ create or replace function fix_protocol_string_values(ls_kind varchar, code_type
 $$ language plpgsql;
 
 --migrate protocol values
-select fix_protocol_string_values('column type', 'data column', 'column type');
-select fix_protocol_string_values('column name', 'data column', 'column name');
-select fix_protocol_string_values('column units', 'data column', 'column units');
-select fix_protocol_string_values('column conc units', 'data column', 'column conc units');
-select fix_protocol_string_values('hide column', 'boolean', 'boolean');
-select fix_protocol_string_values('condition column', 'boolean', 'boolean');
+perform fix_protocol_string_values('column type', 'data column', 'column type');
+perform fix_protocol_string_values('column name', 'data column', 'column name');
+perform fix_protocol_string_values('column units', 'data column', 'column units');
+perform fix_protocol_string_values('column conc units', 'data column', 'column conc units');
+perform fix_protocol_string_values('hide column', 'boolean', 'boolean');
+perform fix_protocol_string_values('condition column', 'boolean', 'boolean');
 
 -- Cleanup: drop tables and functions created during this migration
 drop table tmp_expt_columns;
