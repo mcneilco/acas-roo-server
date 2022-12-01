@@ -41,6 +41,24 @@ insert into ls_transaction (id, comments, recorded_date, version, recorded_by)
 -- Part 1: Fill in 'data column' DDict Values based on saved data
 -- Create a reusable function to insert missing ddict values
 create or replace function add_data_column_ddict_value(val varchar, ls_kind varchar) returns bigint as $$
+	--create ddict type if not exists
+	insert into ddict_type (id, ignored, name, version)
+		select nextval('ddict_type_pkseq') as id, false as ignored, 'data column', 0
+		where not exists (select * from ddict_type where name = 'data column');
+	--create ddict kind if not exists
+	insert into ddict_kind (id, ignored, ls_type, ls_type_and_kind, name, version)
+		select
+			nextval('ddict_kind_pkseq') as id,
+			false as ignored,
+			'data column' as ls_type,
+			'data column_'||ls_kind as ls_type_and_kind,
+			ls_kind as name,
+			0 as version
+			where not exists (
+				select * from ddict_kind where ls_type = 'data column' and name = ls_kind
+			);
+
+	--create ddict value if not exists
 	insert into ddict_value (id, ignored, code_name, label_text, ls_type, ls_kind, ls_type_and_kind, short_name, version)
 		select
 			nextval('ddict_value_pkseq') as id,
