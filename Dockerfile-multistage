@@ -14,7 +14,8 @@ FROM 	dependencies as bbchem
 FROM 	dependencies as indigo
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
-ADD 	pom.xml /src/pom.xml
+
+COPY 	pom.xml /src/pom.xml
 WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 # Caching doesn't seem to work with the ChemAxon maven repo
