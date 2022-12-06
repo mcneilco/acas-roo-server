@@ -21,10 +21,9 @@ RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_P
 ADD 	. /src
 
 # Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster) 
-RUN   mvn clean && \
-# RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
+RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
-RUN mvn dependency:resolve
+
 FROM tomcat:9.0.62-jre11-openjdk-slim-buster
 
 # Third and Last Step That Requires Significant (Relative) Amount of Time 
