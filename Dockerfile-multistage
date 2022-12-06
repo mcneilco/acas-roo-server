@@ -17,9 +17,7 @@ FROM 	${CHEMISTRY_PACKAGE} as compile
 
 COPY 	pom.xml /src/pom.xml
 WORKDIR /src
-RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
-# Caching doesn't seem to work with the ChemAxon maven repo
-# RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
+RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
 
 # Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster) 
