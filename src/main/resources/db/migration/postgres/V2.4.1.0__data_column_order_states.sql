@@ -63,7 +63,7 @@ create or replace function add_data_column_ddict_value(val varchar, ls_kind varc
 		select
 			nextval('ddict_value_pkseq') as id,
 			false as ignored,
-			'DDICT-' || lpad(nextval('labelseq_1_ddict_id_codename_document_datadictionary'):: text, 6, '0'::text) as code_name,
+			'DDICT-' || lpad((select nextval(db_sequence) from label_sequence where label_prefix = 'DDICT'):: text, 6, '0'::text) as code_name,
 			val as label_text,
 			'data column' as ls_type,
 			ls_kind as ls_kind,
