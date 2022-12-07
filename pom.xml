@@ -60,10 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	</scm>
 	<repositories>
 		<repository>
-			<id>Chemaxon Public Repository</id>
-			<url>https://hub.chemaxon.com/artifactory/libs-release</url>
-		</repository>
-		<repository>
 			<id>spring-release</id>
 			<name>Spring Release</name>
 			<url>https://repo.spring.io/release</url>
@@ -106,6 +102,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<repositories>
+				<repository>
+					<id>Chemaxon Public Repository</id>
+					<url>https://hub.chemaxon.com/artifactory/libs-release</url>
+				</repository>
+			</repositories>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>

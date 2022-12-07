@@ -7,7 +7,10 @@ ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 
 FROM 	dependencies as jchem
 # Added settings.xml that can contain creds for accessing repositories
-ADD settings.xml /root/.m2/settings.xml
+COPY 	pom.xml /src/pom.xml
+WORKDIR /src
+ADD settings.xml /settings.xml
+RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE} -s /settings.xml
 
 FROM 	dependencies as bbchem
 
