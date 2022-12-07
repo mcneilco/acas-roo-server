@@ -11,9 +11,9 @@ import chemaxon.jchem.db.UpdateHandlerException;
 import chemaxon.jchem.db.Updater;
 import chemaxon.util.ConnectionHandler;
 
-public class V2_4_0_6__Upgrade_Jchem_Tables implements JdbcMigration {
+public class V2_4_0_8__Upgrade_Jchem_Tables implements JdbcMigration {
 
-	Logger logger = LoggerFactory.getLogger(V2_4_0_6__Upgrade_Jchem_Tables.class);
+	Logger logger = LoggerFactory.getLogger(V2_4_0_8__Upgrade_Jchem_Tables.class);
 
 	public void migrate(Connection conn) throws Exception {
 		logger.info("ATTEMPTING TO UPGRADE JCHEM TABLES");
