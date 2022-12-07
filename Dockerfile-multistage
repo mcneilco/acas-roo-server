@@ -1,31 +1,19 @@
 ARG 	CHEMISTRY_PACKAGE=bbchem
 FROM maven:3-openjdk-11 as builder
 
-FROM 	builder as dependencies
+FROM 	builder as compile
 ARG     CHEMISTRY_PACKAGE
 ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 
-FROM 	dependencies as jchem
-# Added settings.xml that can contain creds for accessing repositories
-COPY 	pom.xml /src/pom.xml
-WORKDIR /src
 ADD settings.xml /settings.xml
-RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE} -s /settings.xml
-
-FROM 	dependencies as bbchem
-
-FROM 	dependencies as indigo
-
-FROM 	${CHEMISTRY_PACKAGE} as compile
-
 COPY 	pom.xml /src/pom.xml
 WORKDIR /src
-RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
+RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}  -s /settings.xml
 ADD 	. /src
 
 # Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster) 
 RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
-        mvn compile war:war -P ${CHEMISTRY_PACKAGE}
+        mvn compile war:war -P ${CHEMISTRY_PACKAGE} 
 
 FROM tomcat:9.0.62-jre11-openjdk-slim-buster
 
