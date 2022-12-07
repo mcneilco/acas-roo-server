@@ -69,6 +69,8 @@ public class FileList {
 
     private String filePath;
 
+    private String writeup;
+
     public MultipartFile getFile() {
         return file;
     }
@@ -316,7 +318,7 @@ public class FileList {
     transient EntityManager entityManager;
 
     public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lot",
-            "description", "name", "type", "size", "url", "ie", "uploaded", "file", "fileName", "subdir", "filePath");
+            "description", "name", "type", "size", "url", "ie", "uploaded", "file", "fileName", "subdir", "filePath", "writeup");
 
     public static final EntityManager entityManager() {
         EntityManager em = new FileList().entityManager;
@@ -421,5 +423,13 @@ public class FileList {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getWriteup() {
+        return this.writeup;
+    }
+
+    public void setWriteup(String writeup) {
+        this.writeup = writeup;
     }
 }

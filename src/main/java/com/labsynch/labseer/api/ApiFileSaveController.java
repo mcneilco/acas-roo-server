@@ -41,6 +41,7 @@ public class ApiFileSaveController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public HttpEntity<String> create(@RequestParam("description[]") List<String> description,
+			@RequestParam("writeup[]") List<String> writeup,
 			@RequestParam("subdir") String subdir,
 			@RequestParam("ie") boolean ie,
 			@RequestParam("file[]") List<MultipartFile> file) {
@@ -49,6 +50,7 @@ public class ApiFileSaveController {
 
 		FileSaveSendDTO fileSave = new FileSaveSendDTO();
 		fileSave.setDescription(description);
+		fileSave.setWriteup(writeup);
 		fileSave.setFile(file);
 		fileSave.setIe(ie);
 		fileSave.setSubdir(subdir);
