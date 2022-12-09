@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<description>ACAS Java persistence layer</description>
 	<properties>
 		<aspectj.version>1.9.7</aspectj.version>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
@@ -41,9 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<log4j.version>2.17.2</log4j.version>
 		<spring.version>5.3.20</spring.version>
 		<querydsl.version>3.4.3</querydsl.version>
-		<spring-security.version>5.6.4</spring-security.version>
+		<spring-security.version>5.6.3</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
-		<jchem.version>16.4.25.0</jchem.version>
+		<jchem.version>22.12.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
@@ -101,23 +101,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<repositories>
+				<repository>
+					<id>Chemaxon Public Repository</id>
+					<url>https://hub.chemaxon.com/artifactory/libs-release</url>
+				</repository>
+			</repositories>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
-					<artifactId>jchem</artifactId>
+					<artifactId>jchem-main</artifactId>
 					<version>${jchem.version}</version>
 				</dependency>
-				<!-- JCHEM 16 requires dom4j 1.3. This depdendency can be removed when we upgrade jchem to jchem > 17 -->
 				<dependency>
-					<groupId>dom4j</groupId>
-					<artifactId>dom4j</artifactId>
-					<version>1.3</version>
+					<groupId>com.chemaxon</groupId>
+					<artifactId>jchem-utils</artifactId>
+					<version>${jchem.version}</version>
 				</dependency>
-				<!-- JHEM 16 requires trove4j https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
 				<dependency>
-					<groupId>net.sf.trove4j</groupId>
-					<artifactId>trove4j</artifactId>
-					<version>3.0.3</version>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+					<version>23.0</version>
+				</dependency>
+				<!-- org.apache.commons was added to fix CVE-2022-42889 in jchem 22.12.0
+				it can be removed when upgrading to October 27th, 2022: JChem Base 22.19.0
+				which addresesed CVE-2022-42889 -->
+				<dependency>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-text</artifactId>
+					<version>1.10.0</version>
 				</dependency>
 			</dependencies>
 			<properties>

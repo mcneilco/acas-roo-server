@@ -528,6 +528,10 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		int[] hitList = searcher.getResults();
