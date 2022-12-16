@@ -1746,16 +1746,21 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return parent;
 	}
 
+	private String[] splitAndTrim(String lookUpString) {
+		String[] aliases = Arrays.stream(lookUpString.split(";")) // Split on semicolon
+				.map(String::trim) // trim whitespace
+				.filter(Objects::nonNull) //remove nulls
+				.filter(Predicate.not(String::isEmpty)) // remove empty strings
+				.toArray(String[]::new);
+		return aliases;
+	}
+
 	public Parent addParentAlias(Parent parent, String lsType, String lsKind,
 			String lookUpProperty, String lookUpString) {
 
 		if (lookUpString != null) {
 			// Split on semicolon and trim
-			String[] aliases = Arrays.stream(lookUpString.split(";")) // Split on semicolon
-				.map(String::trim) // trim whitespace
-				.filter(Objects::nonNull) //remove nulls
-				.filter(Predicate.not(String::isEmpty)) // remove empty strings
-				.toArray(String[]::new);
+			String[] aliases = splitAndTrim(lookUpString);
 			if (aliases.length > 0){
 				logger.info("Found one or more parent alias: " + lookUpProperty + "  " + lookUpString);
 			}
@@ -1784,11 +1789,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		if (lookUpString != null) {
 			// Split on semicolon and trim
-			String[] aliases = Arrays.stream(lookUpString.split(";")) // Split on semicolon
-				.map(String::trim) // trim whitespace
-				.filter(Objects::nonNull) //remove nulls
-				.filter(Predicate.not(String::isEmpty)) // remove empty strings
-				.toArray(String[]::new);
+			String[] aliases = splitAndTrim(lookUpString);
 			if (aliases.length > 0){
 				logger.info("Found one or more lot alias: " + lookUpProperty + "  " + lookUpString);
 			}
