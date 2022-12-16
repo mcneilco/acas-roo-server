@@ -17,7 +17,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1420,11 +1422,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			String aliasKind = "default";
 			for (String lookUpStringEntry : lookUpStringList) {
 				lot = addLotAlias(lot, aliasType, aliasKind, lookUpProperty, lookUpStringEntry);
-				logger.info("------------- adding alias set to the lot -------------------");
-				String[] fields = { "lotAliases" };
-				if (logger.isDebugEnabled())
-					if (logger.isDebugEnabled())
-						logger.debug(lot.toJson(fields));
 			}
 		}
 
@@ -1683,10 +1680,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			String aliasKind = "LiveDesign Corp Name";
 			for (String lookUpStringEntry : lookUpStringList) {
 				parent = addParentAlias(parent, aliasType, aliasKind, lookUpProperty, lookUpStringEntry);
-				logger.info("------------- adding alias set to the parent -------------------");
-				String[] fields = { "parentAliases" };
-				if (logger.isDebugEnabled())
-					logger.debug(parent.toJson(fields));
 			}
 		}
 
@@ -1697,10 +1690,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			String aliasKind = "Common Name";
 			for (String lookUpStringEntry : lookUpStringList) {
 				parent = addParentAlias(parent, aliasType, aliasKind, lookUpProperty, lookUpStringEntry);
-				logger.info("------------- adding alias set to the parent -------------------");
-				String[] fields = { "parentAliases" };
-				if (logger.isDebugEnabled())
-					logger.debug(parent.toJson(fields));
 			}
 		}
 
@@ -1711,10 +1700,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			String aliasKind = "default";
 			for (String lookUpStringEntry : lookUpStringList) {
 				parent = addParentAlias(parent, aliasType, aliasKind, lookUpProperty, lookUpStringEntry);
-				logger.info("------------- adding alias set to the parent -------------------");
-				String[] fields = { "parentAliases" };
-				if (logger.isDebugEnabled())
-					logger.debug(parent.toJson(fields));
 			}
 		}
 
@@ -1761,14 +1746,24 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return parent;
 	}
 
+	private String[] splitAndTrim(String lookUpString) {
+		String[] aliases = Arrays.stream(lookUpString.split(";")) // Split on semicolon
+				.map(String::trim) // trim whitespace
+				.filter(Objects::nonNull) //remove nulls
+				.filter(Predicate.not(String::isEmpty)) // remove empty strings
+				.toArray(String[]::new);
+		return aliases;
+	}
+
 	public Parent addParentAlias(Parent parent, String lsType, String lsKind,
 			String lookUpProperty, String lookUpString) {
 
 		if (lookUpString != null) {
-			// found LiveDesign Corp Name
-			logger.info("Found one or more parent alias: " + lookUpProperty + "  " + lookUpString);
-			// Split on semicolon and trim whitespace
-			String[] aliases = Arrays.stream(lookUpString.split(";")).map(String::trim).toArray(String[]::new);
+			// Split on semicolon and trim
+			String[] aliases = splitAndTrim(lookUpString);
+			if (aliases.length > 0){
+				logger.info("Found one or more parent alias: " + lookUpProperty + "  " + lookUpString);
+			}
 			if (parent.getParentAliases() == null) {
 				logger.info("---------- the parent Alias set is null ----------------");
 				parent.setParentAliases(new HashSet<ParentAlias>());
@@ -1793,9 +1788,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			String lookUpProperty, String lookUpString) {
 
 		if (lookUpString != null) {
-			// found LiveDesign Corp Name
-			logger.info("Found one or more lot alias: " + lookUpProperty + "  " + lookUpString);
-			String[] aliases = lookUpString.split(";");
+			// Split on semicolon and trim
+			String[] aliases = splitAndTrim(lookUpString);
+			if (aliases.length > 0){
+				logger.info("Found one or more lot alias: " + lookUpProperty + "  " + lookUpString);
+			}
 			if (lot.getLotAliases() == null) {
 				logger.info("---------- the lot Alias set is null ----------------");
 				lot.setLotAliases(new HashSet<LotAlias>());
