@@ -61,6 +61,7 @@ perform add_data_column_ddict_value(code_value, 'column name'::varchar) from
 	AND es.ls_kind = 'data column order'
 	AND ev.ls_kind = 'column name'
 	AND ev.code_value IS NOT NULL
+	AND LENGTH(ev.code_value) > 0
 	AND NOT exists(
 		SELECT 1 FROM ddict_value dv WHERE dv.ls_type = ev.code_type AND dv.ls_kind = ev.code_kind AND dv.short_name = ev.code_value
 )) a;
@@ -77,6 +78,7 @@ perform add_data_column_ddict_value(code_value, 'column units'::varchar) from
 	AND es.ls_kind = 'data column order'
 	AND ev.ls_kind = 'column units'
 	AND ev.code_value IS NOT NULL
+	AND LENGTH(ev.code_value) > 0
 	AND NOT exists(
 		SELECT 1 FROM ddict_value dv WHERE dv.ls_type = ev.code_type AND dv.ls_kind = ev.code_kind AND dv.short_name = ev.code_value
 )) a;
@@ -93,6 +95,7 @@ perform add_data_column_ddict_value(code_value, 'column conc units'::varchar) fr
 	AND es.ls_kind = 'data column order'
 	AND ev.ls_kind = 'column conc units'
 	AND ev.code_value IS NOT NULL
+	AND LENGTH(ev.code_value) > 0
 	AND NOT exists(
 		SELECT 1 FROM ddict_value dv WHERE dv.ls_type = ev.code_type AND dv.ls_kind = ev.code_kind AND dv.short_name = ev.code_value
 )) a;
@@ -109,6 +112,7 @@ perform add_data_column_ddict_value(code_value, 'column time units'::varchar) fr
 	AND es.ls_kind = 'data column order'
 	AND ev.ls_kind = 'column time units'
 	AND ev.code_value IS NOT NULL
+	AND LENGTH(ev.code_value) > 0
 	AND NOT exists(
 		SELECT 1 FROM ddict_value dv WHERE dv.ls_type = ev.code_type AND dv.ls_kind = ev.code_kind AND dv.short_name = ev.code_value
 )) a;
