@@ -51,13 +51,13 @@ public interface ExperimentService {
 	public Collection<Experiment> findExperimentsByMetadataJson(
 			List<StringCollectionDTO> metaDataList);
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName)
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName, Boolean includeDeleted)
 			throws TooManyResultsException;
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, List<String> projects)
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, List<String> projects, Boolean includeDeleted)
 			throws TooManyResultsException;
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query) throws TooManyResultsException;
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, Boolean includeDeleted) throws TooManyResultsException;
 
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);
 

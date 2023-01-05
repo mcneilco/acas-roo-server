@@ -1086,9 +1086,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 	}
 
 	@Override
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, String userName)
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, String userName, Boolean includeDeleted)
 			throws TooManyResultsException {
-		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString);
+		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString, includeDeleted);
 		if (propertiesUtilService.getRestrictExperiments()) {
 			Collection<LsThing> projects = authorService.getUserProjects(userName);
 			List<String> allowedProjectCodeNames = new ArrayList<String>();
@@ -1119,9 +1119,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 	}
 
 	@Override
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, List<String> projects)
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, List<String> projects, Boolean includeDeleted)
 			throws TooManyResultsException {
-		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString);
+		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString, includeDeleted);
 		if (propertiesUtilService.getRestrictExperiments()) {
 			projects.add("unassigned");
 			Collection<Experiment> results = new HashSet<Experiment>();
@@ -1147,7 +1147,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}
 	}
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString)
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, Boolean includeDeleted)
 			throws TooManyResultsException {
 		// make our HashSets: experimentIdList will be filled/cleared/refilled for each
 		// term
@@ -1210,12 +1210,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 		// ignored or deleted
 		Collection<Experiment> result = new HashSet<Experiment>();
 		for (Experiment experiment : experimentList) {
-			// For Experiment Browser, we want to see soft deleted (ignored=true,
+			// For Experiment Browser, we generally want to see soft deleted (ignored=true,
 			// deleted=false), but not hard deleted (ignored=deleted=true)
-			if (experiment.isDeleted()) {
-				logger.debug("removing a deleted experiment from the results");
-			} else {
+			// But the includeDeleted flag will include hard deleted experiments too
+			if (!experiment.isDeleted() || includeDeleted){
 				result.add(experiment);
+			} else {
+				logger.debug("removing a deleted experiment from the results");
 			}
 		}
 		return result;
