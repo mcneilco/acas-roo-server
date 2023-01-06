@@ -1194,6 +1194,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "CELL LINE"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "TARGET ORIGIN"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ASSAY STAGE"));
+			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROJECT"));
 
 			resultsByTerm.put(term, new HashSet<Long>(experimentIdList));
 			experimentAllIdList.addAll(experimentIdList);
@@ -1391,6 +1392,16 @@ public class ExperimentServiceImpl implements ExperimentService {
 		if (searchBy == "NOTEBOOK") {
 			Collection<ExperimentValue> experimentValues = ExperimentValue
 					.findExperimentValuesByLsKindEqualsAndStringValueLike("notebook", queryString).getResultList();
+			if (!experimentValues.isEmpty()) {
+				for (ExperimentValue experimentValue : experimentValues) {
+					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+				}
+			}
+			experimentValues.clear();
+		}
+		if (searchBy == "PROJECT") {
+			Collection<ExperimentValue> experimentValues = ExperimentValue
+					.findExperimentValuesByLsKindEqualsAndCodeValueLike("project", queryString).getResultList();
 			if (!experimentValues.isEmpty()) {
 				for (ExperimentValue experimentValue : experimentValues) {
 					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
