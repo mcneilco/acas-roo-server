@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -1025,7 +1026,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 								+ parent.getCorpName() + " db corp name: " + foundParent.getCorpName());
 		}
 		// Validate lot aliases locally and in the database
-		parentAliasService.validateParentAliases(parent.getParentAliases());
+		parentAliasService.validateParentAliases(parent.getId(), parent.getParentAliases());
 
 		// If the parent's cmpdRegMolecule was lost, put it back
 		if (parent.getCmpdRegMolecule() == null){
@@ -1766,7 +1767,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		if (lookUpString != null) {
 			// found LiveDesign Corp Name
 			logger.info("Found one or more parent alias: " + lookUpProperty + "  " + lookUpString);
-			String[] aliases = lookUpString.split(";");
+			// Split on semicolon and trim whitespace
+			String[] aliases = Arrays.stream(lookUpString.split(";")).map(String::trim).toArray(String[]::new);
 			if (parent.getParentAliases() == null) {
 				logger.info("---------- the parent Alias set is null ----------------");
 				parent.setParentAliases(new HashSet<ParentAlias>());
@@ -2391,31 +2393,30 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		// Note: This is not the most efficient / concise code to do this process
 		// however due to readability and the assumingly small number of aliases 
 		// parents will have this is fine 
-
-		Set<String> parentAliasStrings = new HashSet<>();
+		HashMap<String, ParentAlias> newAliases = new HashMap<String, ParentAlias>();
 		for(ParentAlias alias : parent.getParentAliases()){
 			if (! alias.isIgnored()) {
-				parentAliasStrings.add(alias.getAliasName());
+				newAliases.put(alias.getAliasName(), alias);
 			}
 		}
-		Set<String> foundParentAliasStrings = new HashSet<>(); 
+		HashMap<String, ParentAlias> existingParentAliases = new HashMap<String, ParentAlias>();
 		for(ParentAlias alias : foundParent.getParentAliases()){
 			if (! alias.isIgnored()) {
-				foundParentAliasStrings.add(alias.getAliasName());
+				existingParentAliases.put(alias.getAliasName(), alias);
 			}
 		}
-
-		Set<ParentAlias> unionParentAliases = parent.getParentAliases();
+		// Create a set to hold the union of all unique aliases
+		// Start with the existing aliases
+		Set<ParentAlias> unionParentAliases = foundParent.getParentAliases();
+		// Find any new aliases not already in the old set, and add them
+		Set<String> newAliasStrings = newAliases.keySet().stream().filter(e -> 
+			!existingParentAliases.keySet().contains(e)).collect(Collectors.toSet());
+		for(String newAliasString : newAliasStrings) {
+			unionParentAliases.add(newAliases.get(newAliasString));
+		}
 		// Parent Would Be Found Parent w/ Appropriate Updates
 		parent = foundParent;
 		// Update Parent Object to Have "Union" of All Aliases 
-		for(ParentAlias oldAlias : parent.getParentAliases()) {
-			// If oldAlias Not In UnionParentAliases (Use Previously Set<str> to Do Compare)
-				// Add to Aliases Union List 
-			if(! oldAlias.isIgnored() && !parentAliasStrings.contains(oldAlias.getAliasName())) {
-				unionParentAliases.add(oldAlias);
-			}
-		}
 		parent.setParentAliases(unionParentAliases);
 		// If Alias List Updated Then Updated Modified By and Modified Date 
 		parent.setModifiedDate(new Date());

@@ -28,3 +28,9 @@ ACAS-Roo Server
 
 * Repo owner or admin
 * Other community or team contact
+
+
+## JChem Changes
+
+* For JChem and Java 11, there are new changes that use the JChem Maven repository for the build process
+* This requires additional authentication changes that reference ~/.m2/settings.xml

@@ -680,6 +680,14 @@ public class StandardizationDryRunCompound {
 				.getSingleResult();
 	}
 
+	public static List<StandardizationDryRunCompound> findStandardizationDryRunCompoundsByParent(Parent parent) {
+		if (parent == null)
+			return null;
+		return entityManager().createQuery(
+				"SELECT o FROM StandardizationDryRunCompound o WHERE o.parent = :parent", StandardizationDryRunCompound.class)
+				.setParameter("parent", parent).getResultList();
+	}
+
 	public static List<StandardizationDryRunCompound> findAllStandardizationDryRunCompounds() {
 		return entityManager()
 				.createQuery("SELECT o FROM StandardizationDryRunCompound o", StandardizationDryRunCompound.class)
