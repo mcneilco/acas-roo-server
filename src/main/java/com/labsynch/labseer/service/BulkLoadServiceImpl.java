@@ -868,7 +868,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		if (dupeParentList.length > 0) {
 			// If we find a duplicate parent, we want to maintain the multiple fragments boolean we already have to save time since we have already checked for this
 			// and it is a transient property which wil be null on the found parent we may be overwriting with
-			boolean multipleFragments = parent.getMultipleFragments();
+			Boolean multipleFragments = parent.getMultipleFragments();
 			searchResultLoop: for (int foundParentCdId : dupeParentList) {
 				List<Parent> foundParents = Parent.findParentsByCdId(foundParentCdId).getResultList();
 
