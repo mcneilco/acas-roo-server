@@ -21,54 +21,30 @@ SELECT nextval('value_pkseq'), false, false, 'status', 'ACAS DDICT', 'experiment
 								'experiment status', (select id from ls_transaction where comments = 'V2.4.2.0 overwritten experiment status'), 
                 'codeValue', 'codeValue_experiment status', true, 'ACAS', now(),
 								0, subquery.exp_state_id
-FROM 
-    (SELECT e.id AS exp_id,
-    e.code_name || '::' || el.label_text as experiment_name,
-    e.code_name,
-    el.label_text,
-    es.id as exp_state_id
-    FROM experiment e
-    JOIN experiment_label el
-    ON e.id=el.experiment_id
-    JOIN experiment_state es
-    ON e.id=es.experiment_id
-    JOIN experiment_value ev
-    ON Es.Id=Ev.Experiment_State_Id
-    WHERE e.ignored ='1' and e.deleted = '1'
-    AND es.ls_kind='experiment metadata' Group By E.Id, E.Code_Name, El.Label_Text, es.id)
-    AS subquery;
-
-
-
+FROM
+    (SELECT DISTINCT es.id as exp_state_id
+     FROM experiment e
+              JOIN experiment_state es
+                   ON e.id = es.experiment_id
+              JOIN experiment_value ev
+                   ON es.id = ev.experiment_state_id
+     WHERE e.ignored ='1'
+       AND e.deleted = '1'
+       AND es.ls_kind='experiment metadata')
+        AS subquery;
 
 UPDATE
-    experiment_value
-SET
-    ignored = '1'  -- Ignoring Any Experiment Status Where Experiment is "Deleted" and "Ignored" (i.e. Our new definition of "Overwritten")
-FROM
-    (SELECT e.id AS id,
-    e.code_name || '::' || el.label_text as experiment_name,
-    e.code_name,
-    el.label_text,
-    e.Ls_Type_And_Kind as kind,
-    e.recorded_by,
-    e.recorded_date,
-    e.short_description,
-    e.protocol_id,
-    MAX( CASE ev.ls_kind WHEN 'experiment status' THEN ev.code_value ELSE null END ) AS status,
-    es.id as exp_state_id
-	FROM experiment e
-	JOIN experiment_label el
-	ON e.id=el.experiment_id
-	JOIN experiment_state es
-	ON e.id=es.experiment_id
-	JOIN experiment_value ev
-	ON Es.Id=Ev.Experiment_State_Id
-	WHERE e.ignored ='1' and e.deleted = '1' -- Criteria for Experiment Being Overwritten 
-	AND es.ls_kind='experiment metadata' Group By E.Id, E.Code_Name, E.Ls_Type_And_Kind, E.Recorded_By, E.Recorded_Date, E.Short_Description, E.Protocol_Id, El.Label_Text, exp_state_id)
-	AS subquery
-WHERE 
-	experiment_value.ls_kind = 'experiment status' and experiment_value.code_value != 'overwritten' and experiment_value.experiment_state_id = subquery.exp_state_id;
-
-
---- Check w/ select * from experiment_value WHERE experiment_value.ls_kind = 'experiment status';
+    experiment_value ev
+SET 
+    ignored = true -- Ignoring Any Experiment Status Where Experiment is "Deleted" and "Ignored" (i.e. Our new definition of "Overwritten")
+FROM 
+    experiment e
+    JOIN experiment_state es ON e.id = es.experiment_id
+WHERE ev.experiment_state_id = es.id
+  AND ev.ls_kind = 'experiment status'
+  AND ev.code_value != 'overwritten' -- Don't want to ignore something that's already overwritten from above 
+  AND ev.ignored = false
+  AND es.ls_kind = 'experiment metadata'
+  AND e.ignored = '1'
+  AND e.deleted = '1'; -- Criteria for Experiment Being Overwritten
+  
