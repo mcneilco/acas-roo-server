@@ -165,6 +165,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					mostRecentHistory.setStandardizationStatus("complete");
 					mostRecentHistory.setStandardizationUser("acas");
 					mostRecentHistory.setStandardizationReason("Initial standardization record");
+					// Get the applied standardizer settings
+					StandardizerSettingsConfigDTO appliedStandardizerSettings = chemStructureService.getStandardizerSettings(true);
+					mostRecentHistory.setSettings(appliedStandardizerSettings.toJson());
+					mostRecentHistory.setSettingsHash(appliedStandardizerSettings.hashCode());
 					mostRecentHistory.persist();
 
 				}
