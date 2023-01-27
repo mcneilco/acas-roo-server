@@ -980,7 +980,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 
 		// Only run mixture check if we have not identified an already existing parent
-		if(parent.getId() != null) {
+		if(parent.getId() == null) {
 			// check for multiple fragments, and if isMixture or not
 			Boolean hasMultipleFragments = parent.getMultipleFragments();
 			if (hasMultipleFragments == null){
