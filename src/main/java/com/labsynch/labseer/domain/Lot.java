@@ -405,7 +405,11 @@ public class Lot {
         }
 		criteria.where(criteriaBuilder.and(predicateList.toArray( new Predicate[0])));
         TypedQuery<Integer> q = em.createQuery(criteria);
-        return q.getSingleResult();
+        Integer result = q.getSingleResult();
+        if(result == null) {
+            result = 0;
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
