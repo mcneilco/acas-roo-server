@@ -103,8 +103,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " fingerprint tasks");
+		logger.info("Invoking " + tasks.size() + " structure fingerprint tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
+		logger.info("Got responses from all " + tasks.size() + " structure fingerprint tasks");
+		logger.info("Processing " + results.size() + " structure fingerprint responses");
 		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for (Future<Response> response : results) {
 			String responseBody;
@@ -134,7 +136,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			}
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " fingerprint tasks");
+		logger.info("Finished processing " + results.size() + " structure fingerprint responses");
 
 		// The output array is guaranteed to be in the same order as its inputs
 		// Sort the response hashmap by the keys
@@ -254,8 +256,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " process tasks");
+		logger.info("Invoking " + tasks.size() + " structure process tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
+		logger.info("Got responses from all " + tasks.size() + " structure process tasks");
+		logger.info("Processing " + results.size() + " structure process responses");
 		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for (Future<Response> response : results) {
 			String responseBody;
@@ -280,7 +284,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(responseBody);
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " process tasks");
+		logger.info("Finished processing " + results.size() + " structure process responses");
 
 		// Sort the response hashmap by the keys
 		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
