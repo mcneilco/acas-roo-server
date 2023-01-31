@@ -52,6 +52,7 @@ import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SolutionUnit;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
@@ -2587,6 +2588,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Collection<Parent> parents = Parent.findParentsByBulkLoadFileEquals(bulkLoadFile).getResultList();
 		numParents = parents.size();
 		for (Parent parent : parents) {
+
+			// Delete any StandardizationDryRunCompounds that are associated with the parent
+			for(StandardizationDryRunCompound s : StandardizationDryRunCompound.findStandardizationDryRunCompoundsByParent(parent)) {
+				s.remove();
+			}
+
 			chemStructureService.deleteStructure(StructureType.PARENT, parent.getCdId());
 			for (ParentAlias alias : parent.getParentAliases()) {
 				alias.remove();
