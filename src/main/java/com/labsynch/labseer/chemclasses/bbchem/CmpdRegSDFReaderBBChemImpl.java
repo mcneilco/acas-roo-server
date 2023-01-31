@@ -3,6 +3,8 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Scanner;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
@@ -45,6 +47,32 @@ public class CmpdRegSDFReaderBBChemImpl implements CmpdRegSDFReader {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Collection<CmpdRegMolecule> readNextMols(int nMols) throws IOException, CmpdRegMolFormatException {
+        int molsRead = 0;
+        String sdfContents = "";
+        // read nMols MOL strings from the SDF
+        while (molsRead < nMols){
+            if(this.scanner.hasNext()) {
+                sdfContents += scanner.next();
+                sdfContents += "$$$$\n";
+                molsRead++;
+            } else {
+                break;
+            }
+        }
+        Collection<CmpdRegMolecule> cmpdRegMols = new ArrayList<CmpdRegMolecule>();
+        if (sdfContents.length() > 0){
+            Collection<BBChemParentStructure> molecules = bbChemStructureService.parseSDF(sdfContents);
+            for (BBChemParentStructure molecule : molecules) {
+                CmpdRegMolecule cmpdRegMol = new CmpdRegMoleculeBBChemImpl(molecule, bbChemStructureService);
+                cmpdRegMols.add(cmpdRegMol);
+            }
+        }
+        
+        return cmpdRegMols;
     }
 
 }

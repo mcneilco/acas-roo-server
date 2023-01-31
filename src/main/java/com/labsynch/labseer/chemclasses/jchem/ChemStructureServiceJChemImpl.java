@@ -528,6 +528,10 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		int[] hitList = searcher.getResults();
@@ -555,6 +559,15 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		} catch (Exception e) {
 			throw new CmpdRegMolFormatException(e);
 		}
+	}
+
+	@Override
+	public List<Boolean> checkForSalts(Collection<String> molfiles) throws CmpdRegMolFormatException {
+		List<Boolean> hasSaltList = new ArrayList<Boolean>();
+		for (String molfile : molfiles) {
+			hasSaltList.add(checkForSalt(molfile));
+		}
+		return hasSaltList;
 	}
 
 	@Override

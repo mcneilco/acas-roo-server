@@ -48,16 +48,16 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	private static final String ERROR_STRUCTURE = "ERROR_STRUCTURE";
 
 
-	private final String CONVERTER_PATH = "/converter/api/v0/convert/";
+	private final String CONVERTER_PATH = "/converter/api/v0/convert";
 	private final String EXPORTSDF_PATH = "/sdf_export/api/v0/";
 	private final String FINGERPRINT_PATH = "/fingerprint/api/v0/";
 	private final String IMAGE_PATH = "/image/api/v0/";	
 	private final String PARSESDF_PATH =  "/parse/api/v0/";	
-	private final String PROCESS_PATH = "/preprocessor/api/v0/process/";
+	private final String PROCESS_PATH = "/preprocessor/api/v0/process";
 	private final String SPLIT_PATH = "/split/api/v0/";
 	private final String SUBSTRUCTURE_PATH = "/substructure/match/api/v0/";
 	private final String CONFIG_CHECK_PATH = "/preprocessor/api/v0/config/check";
-	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix/";
+	private final String CONFIG_FIX_PATH = "/preprocessor/api/v0/config/fix";
 	private final String HEALTH_PATH = "/preprocessor/api/v0/health";
 
 	@Override
@@ -103,8 +103,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " fingerprint tasks");
+		logger.info("Invoking " + tasks.size() + " structure fingerprint tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
+		logger.info("Got responses from all " + tasks.size() + " structure fingerprint tasks");
+		logger.info("Processing " + results.size() + " structure fingerprint responses");
 		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for (Future<Response> response : results) {
 			String responseBody;
@@ -134,7 +136,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			}
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " fingerprint tasks");
+		logger.info("Finished processing " + results.size() + " structure fingerprint responses");
 
 		// The output array is guaranteed to be in the same order as its inputs
 		// Sort the response hashmap by the keys
@@ -254,8 +256,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " process tasks");
+		logger.info("Invoking " + tasks.size() + " structure process tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
+		logger.info("Got responses from all " + tasks.size() + " structure process tasks");
+		logger.info("Processing " + results.size() + " structure process responses");
 		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for (Future<Response> response : results) {
 			String responseBody;
@@ -280,7 +284,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(responseBody);
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " process tasks");
+		logger.info("Finished processing " + results.size() + " structure process responses");
 
 		// Sort the response hashmap by the keys
 		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
@@ -510,7 +514,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
-		logger.info("Making to bbchem sdf export service");
+		logger.info("Making call to bbchem sdf export service");
 		logger.debug("requestString: " + requestString);
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
 		logger.info("Got response from bbchem sdf export service");
@@ -592,7 +596,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
+	public List<List<String>> getMolFragments(List<String> molfiles) throws CmpdRegMolFormatException {
 
 		String url = propertiesUtilService.getLDChemURL() + SPLIT_PATH;
 
@@ -602,15 +606,19 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		// Add the structures to the request
 		ArrayNode arrayNode = mapper.createArrayNode();
-		arrayNode.add(molfile);
+		for (String molfile : molfiles){
+			arrayNode.add(molfile);
+		}
 		requestData.replace("sdfs", arrayNode);
 
-		List<String> molStrings = new ArrayList<>();
+		List<List<String>> molStringsList = new ArrayList<List<String>>();
 		// Post to the service and parse the response
 		try {
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
+			logger.info("Making call to bbchem split service");
 			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			logger.info("Got response from bbchem split service");
 			String postResponse = null;
 			if (connection.getResponseCode() != 200) {
 				logger.error("Error posting to split service: " + connection.getResponseMessage());
@@ -629,17 +637,19 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(postResponse);
 			JsonNode resultsNode = responseNode.get("results");
 			for (JsonNode resultNode : resultsNode) {
+				List<String> molStrings = new ArrayList<>();
 				JsonNode splitSDFS = resultNode.get("split_sdfs");
 				for (JsonNode sdfNode : splitSDFS) {
 					molStrings.add(sdfNode.asText());
 				}
+				molStringsList.add(molStrings);
 			}
 		} catch (Exception e) {
 			logger.error("Error posting to split service: " + e.getMessage());
 			throw new CmpdRegMolFormatException("Error posting to split service: " + e.getMessage());
 		}
 
-		return molStrings;
+		return molStringsList;
 	}
 
 	@Override

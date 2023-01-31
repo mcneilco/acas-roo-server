@@ -1031,22 +1031,20 @@ public class ApiExperimentController {
 	// return new ResponseEntity<String>(headers, HttpStatus.OK);
 	// }
 
-	// @RequestMapping(value = "/seldelete/{id}", method = RequestMethod.DELETE,
-	// headers = "Accept=application/json")
-	// public ResponseEntity<String> trueDeleteById(@PathVariable("id") Long id) {
-	// Experiment experiment = Experiment.findExperiment(id);
-	// HttpHeaders headers = new HttpHeaders();
-	// headers.add("Content-Type", "application/json; charset=utf-8");
-	// if (experiment == null) {
-	// return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	// }
-	// long startTime = new Date().getTime();
-	// Experiment.removeExperimentFullCascade(id);
-	// long endTime = new Date().getTime();
-	// long totalTime = endTime - startTime;
-	// logger.info(" total elapsed time: " + totalTime + " ms");
-	// return new ResponseEntity<String>(headers, HttpStatus.OK);
-	// }
+	@RequestMapping(value = "/seldelete/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	public ResponseEntity<String> selDeleteById(@PathVariable("id") Long id) {
+		Experiment experiment = Experiment.findExperiment(id);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		if (experiment == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		// Set experiment status to "overwritten"
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(),
+				"metadata", "experiment metadata", "codeValue", "experiment status", "overwritten");
+		experiment.logicalDelete();
+		return new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/browser/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
 	public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
@@ -1659,6 +1657,7 @@ public class ApiExperimentController {
 	public ResponseEntity<String> experimentBrowserSearch(
 			@RequestParam(value = "userName", required = false) String userName,
 			@RequestParam(value = "projects", required = false) List<String> projects,
+			@RequestParam(value = "includeDeleted", required = false) Boolean includeDeleted,
 			@RequestParam(value = "q", required = true) String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
@@ -1667,18 +1666,21 @@ public class ApiExperimentController {
 
 		try {
 			String result;
+			if (includeDeleted == null) {
+				includeDeleted = false;
+			}
 			if (userName == null && projects == null) {
 				logger.info("--------- accesing experiment search without userName ---------------");
 				result = Experiment
-						.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
+						.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, includeDeleted));
 				return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 			} else if (projects == null) {
 				result = Experiment.toJsonArrayStubWithProt(
-						experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName));
+						experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName, includeDeleted));
 				return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 			} else {
 				result = Experiment.toJsonArrayStubWithProt(
-						experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, projects));
+						experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, projects, includeDeleted));
 				return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {

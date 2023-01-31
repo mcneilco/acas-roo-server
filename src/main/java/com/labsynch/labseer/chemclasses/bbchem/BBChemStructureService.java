@@ -31,7 +31,7 @@ public interface BBChemStructureService {
 
     public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException;
 
-    public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException;
+    public List<List<String>> getMolFragments(List<String> molfile) throws CmpdRegMolFormatException;
 
     public HashMap<? extends AbstractBBChemStructure, Boolean> substructureMatch(String queryMol,
             List<? extends AbstractBBChemStructure> needMatchMolFiles) throws CmpdRegMolFormatException;

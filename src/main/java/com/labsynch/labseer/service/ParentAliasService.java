@@ -21,5 +21,5 @@ public interface ParentAliasService {
 
 	Parent updateParentAliasByTypeAndKind(Parent parent, String lsType, String lsKind, String aliasList);
 
-	void validateParentAliases(Set<ParentAlias> aliasesToBeSaved) throws NonUniqueAliasException;
+	void validateParentAliases(Long parentId, Set<ParentAlias> aliasesToBeSaved) throws NonUniqueAliasException;
 }

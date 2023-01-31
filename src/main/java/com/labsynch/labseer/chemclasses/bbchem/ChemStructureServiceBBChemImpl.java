@@ -5,6 +5,8 @@ import static java.lang.Math.toIntExact;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -522,11 +524,26 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
 		// Get all fragments
-		List<String> allFrags = bbChemStructureService.getMolFragments(molfile);
+		List<String> allFrags = bbChemStructureService.getMolFragments(Arrays.asList(molfile)).get(0);
 		if (allFrags.size() > 1.0) {
 			foundNonCovalentSalt = true;
 		}
 		return foundNonCovalentSalt;
+	}
+
+	@Override
+	public List<Boolean> checkForSalts(Collection<String> molfiles) throws CmpdRegMolFormatException {
+		List<Boolean> hasSaltList = new ArrayList<Boolean>();
+		List<List<String>> fragmentsList = bbChemStructureService.getMolFragments(new ArrayList(molfiles));
+		for (List<String> allFrags : fragmentsList) {
+			if (allFrags.size() > 1.0) {
+				hasSaltList.add(true);
+			}
+			else{
+				hasSaltList.add(false);
+			}
+		}
+		return hasSaltList;
 	}
 
 	@Override
@@ -622,7 +639,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
 
 		// Get all fragments
-		List<String> allFrags = bbChemStructureService.getMolFragments(inputStructure.getMolStructure());
+		List<String> allFrags = bbChemStructureService.getMolFragments(Arrays.asList(inputStructure.getMolStructure())).get(0);
 
 		// Loop through the fragments and search for salts that match
 		// If a fragment matches, add it to the salt counts

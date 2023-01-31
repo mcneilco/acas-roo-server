@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -205,7 +206,9 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			Query query = em.createNativeQuery(baseQuery + bingoFunction + orderBy);
 
 			query.setParameter("queryMol", mol.molfile());
-			query.setMaxResults(maxResults);
+			if (maxResultCount > -1) {
+				query.setMaxResults(maxResults);
+			}
 
 			// May need additional research / decisions around which options to use
 			// Basic Indigo search types corresponding to JChem search types
@@ -303,6 +306,15 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 		return foundNonCovalentSalt;
 
+	}
+
+	@Override
+	public List<Boolean> checkForSalts(Collection<String> molfiles) throws CmpdRegMolFormatException {
+		List<Boolean> hasSaltList = new ArrayList<Boolean>();
+		for (String molfile : molfiles) {
+			hasSaltList.add(checkForSalt(molfile));
+		}
+		return hasSaltList;
 	}
 
 	@Override
