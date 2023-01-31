@@ -56,23 +56,23 @@ import javax.persistence.ConstructorResult;
 import javax.persistence.ColumnResult;
 
 
-@SqlResultSetMapping(name = "ParentLotAssayResult", classes = {
+@SqlResultSetMapping(name = "ParentLotAssayDTO", classes = {
     @ConstructorResult(targetClass = ParentLotAssayDTO.class,
             columns = {
-                    @ColumnResult(name = "lotCorpName"),
-                    @ColumnResult(name = "lotProject"),
-                    @ColumnResult(name = "protocolCodeName"),
-                    @ColumnResult(name = "protocolName"),
-                    @ColumnResult(name = "experimentCodeName"),
-                    @ColumnResult(name = "experimentName"),
-                    @ColumnResult(name = "experimentProject"),
-                    @ColumnResult(name = "analysisGroupType"),
-                    @ColumnResult(name = "analysisGroupKind"),
-                    @ColumnResult(name = "analysisGroupUnit"),
-                    @ColumnResult(name = "analysisGroupOperator"),
-                    @ColumnResult(name = "analysisGroupNumericValue"),
-                    @ColumnResult(name = "analysisGroupStringValue"),
-                    @ColumnResult(name = "analysisGroupPublicData")
+                    @ColumnResult(name = "lot_corp_name", type = String.class),
+                    @ColumnResult(name = "lot_project", type = String.class),
+                    @ColumnResult(name = "protocol_code", type = String.class),
+                    @ColumnResult(name = "protocol_name", type = String.class),
+                    @ColumnResult(name = "experiment_code", type = String.class),
+                    @ColumnResult(name = "experiment_name", type = String.class),
+                    @ColumnResult(name = "experiment_project", type = String.class),
+                    @ColumnResult(name = "ag_type", type = String.class),
+                    @ColumnResult(name = "ag_kind", type = String.class),
+                    @ColumnResult(name = "ag_units", type = String.class),
+                    @ColumnResult(name = "ag_operator", type = String.class),
+                    @ColumnResult(name = "ag_numeric_value", type = Float.class),
+                    @ColumnResult(name = "ag_string_value", type = String.class),
+                    @ColumnResult(name = "ag_public_data", type = Boolean.class)
             })
 })
 @Entity

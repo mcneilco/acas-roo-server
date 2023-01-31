@@ -168,21 +168,22 @@ public class ParentLotServiceImpl implements ParentLotService {
 			+ "ae.code_name as experiment_code, "
 			+ "ae.label_text as experiment_name, "
 			+ "ae.project as experiment_project, "
-			+ "paagr.ls_type as agv_type, "
-			+ "paagr.ls_kind as result_type, "
-			+ "paagr.unit_kind as units, "
-			+ "paagr.operator_kind as operator, "
-			+ "paagr.numeric_value, "
-			+ "paagr.string_value, "
-			+ "paagr.public_data "
+			+ "paagr.ls_type as ag_type, "
+			+ "paagr.ls_kind as ag_kind, "
+			+ "paagr.unit_kind as ag_units, "
+			+ "paagr.operator_kind as ag_operator, "
+			+ "paagr.numeric_value as ag_numeric_value, "
+			+ "paagr.string_value as ag_string_value, "
+			+ "paagr.public_data as ag_public_data "
 			+ "from p_api_analysis_group_results paagr "
 			+ "join api_experiment ae on paagr.experiment_id = ae.id "
 			+ "join api_protocol ap on ae.protocol_id = ap.protocol_id "
 			+ "join lot on paagr.tested_lot = lot.corp_name "
 			+ "where paagr.tested_lot = :corporateName "
-			+ "order by paagr.ls_kind; ", "ParentLotAssayResult");
+			+ "order by paagr.ls_kind;");
 		q.setParameter("corporateName", corporateName);
 		List<ParentLotAssayDTO> parentLotAssayDTOs = (List<ParentLotAssayDTO>) q.getResultList();
+		logger.info("Found " + parentLotAssayDTOs.size() + " assay results for lot/parent " + corporateName + ".");
 		return parentLotAssayDTOs;
 	}
 }
