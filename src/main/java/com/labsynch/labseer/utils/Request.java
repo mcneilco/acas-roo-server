@@ -33,6 +33,8 @@ public class Request implements Callable<Response> {
     public Response call() {
         try {
             obj = new URL(url);
+            long startTime = System.currentTimeMillis();
+            logger.debug("Request " + id + " - Opening connection to " + url );
             con = (HttpURLConnection) obj.openConnection();
             String charset = "UTF-8";
             con.setRequestMethod("POST");
@@ -40,10 +42,12 @@ public class Request implements Callable<Response> {
             con.setRequestProperty("Accept", "application/json");
             con.setRequestProperty("Accept-Charset", charset);
             con.setRequestProperty("Content-Type", "application/json");
+            logger.debug("Request " + id + " - Sending request to " + url);
             OutputStream output = con.getOutputStream();
             output.write(json.getBytes());
 
             int responseCode = con.getResponseCode();
+            logger.debug("Request " + id + " - Response code: " + responseCode + " in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds");
             InputStream inputStream = null;
             if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
                 inputStream = con.getInputStream();
@@ -51,9 +55,10 @@ public class Request implements Callable<Response> {
                 inputStream = con.getErrorStream();
             }
             String body = IOUtils.toString(inputStream);
+            logger.debug("Request " + id + " - Returning response body in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds");
             return new Response(id, responseCode, body);
         } catch (IOException e) {
-            logger.error("Error in Request", e);
+            logger.error("Request " + id + " - Error in Request", e);
             response = "{\"output\":\"some error occurred\"}";
             return new Response(id, 404, response);
         }
