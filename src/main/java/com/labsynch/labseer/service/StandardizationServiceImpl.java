@@ -401,7 +401,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	@Transactional
-	public int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException {
+	public int dupeCheckStandardizationStructures() {
 		List<Long> dryRunIds = StandardizationDryRunCompound.findAllIds().getResultList();
 
 		Long startTime = new Date().getTime();
@@ -441,13 +441,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return(totalNewDuplicateCount);
 	}
 
-	private int dupeCheckStandardizationStructuresBatch(List<Long> dryRunIds)  throws CmpdRegMolFormatException {
-		int totalNewDuplicateCount = 0;
-		for (Long dryRunId : dryRunIds) {
-			int newDuplicates = dupeCheckStandardizationStructure(dryRunId);
-			totalNewDuplicateCount = totalNewDuplicateCount + newDuplicates;
-		}
-		return totalNewDuplicateCount;
+	private int dupeCheckStandardizationStructuresBatch(List<Long> dryRunIds) {
+		return dryRunIds.parallelStream()
+			.mapToInt(dryRunId -> {
+				try {
+					return dupeCheckStandardizationStructure(dryRunId);
+				} catch (CmpdRegMolFormatException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.sum();
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
