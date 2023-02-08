@@ -65,7 +65,7 @@ public class CmpdRegBatchCodeDTO {
 			if (countExperimentValueBatchCodes() > 0) {
 				linkedDataExists = true;
 				logger.debug("Found Experiment values referencing provided batch codes. Retrieving experiment info.");
-				addUniqueExperiments(findExperimentCodeTableDTOsFromExperimentValueBatchCodes());
+				addUniqueExperiments(findExperimentBatchCodeDTOsFromExperimentValueBatchCodes());
 			}
 		} catch (Exception e) {
 			ErrorMessageDTO error = new ErrorMessageDTO();
@@ -76,17 +76,17 @@ public class CmpdRegBatchCodeDTO {
 		if (countAnalysisGroupValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found AnalysisGroup values referencing provided batch codes. Retrieving experiment info.");
-			addUniqueExperiments(findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes());
+			addUniqueExperiments(findExperimentBatchCodeDTOsFromAnalysisGroupValueBatchCodes());
 		}
 		if (countTreatmentGroupValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found TreatmentGroup values referencing provided batch codes. Retrieving experiment info.");
-			addUniqueExperiments(findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes());
+			addUniqueExperiments(findExperimentBatchCodeDTOsFromTreatmentGroupValueBatchCodes());
 		}
 		if (countSubjectValueBatchCodes() > 0) {
 			linkedDataExists = true;
 			logger.debug("Found Subject values referencing provided batch codes. Retrieving experiment info.");
-			addUniqueExperiments(findExperimentCodeTableDTOsFromSubjectValueBatchCodes());
+			addUniqueExperiments(findExperimentBatchCodeDTOsFromSubjectValueBatchCodes());
 		}
 		if (countProtocolValueBatchCodes() > 0) {
 			linkedDataExists = true;
@@ -103,7 +103,7 @@ public class CmpdRegBatchCodeDTO {
 		// dedupeLinkedExperiments();
 	}
 
-	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromExperimentValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protcolCode, e.codeName as experimentCode, el.labelText as experimentName, ev.codeValue as comments, count(ev.id) as description) "
 				+ "FROM ExperimentValue ev "
@@ -136,7 +136,7 @@ public class CmpdRegBatchCodeDTO {
 		return experimentBatchCodeDTOs;
 	}
 
-	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromAnalysisGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, agv.codeValue as comments, count(agv2.id) || ' results' as description) "
 				+ "FROM AnalysisGroupValue agv "
@@ -172,7 +172,7 @@ public class CmpdRegBatchCodeDTO {
 		return experimentBatchCodeDTOs;
 	}
 
-	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromSubjectValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromSubjectValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, sv.codeValue as comments, count(sv2.id) || ' raw results' as description) "
 				+ "FROM SubjectValue sv "
@@ -211,7 +211,7 @@ public class CmpdRegBatchCodeDTO {
 		return experimentBatchCodeDTOs;
 	}
 
-	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromTreatmentGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, tgv.codeValue as comments) "
 				+ "FROM TreatmentGroupValue tgv "

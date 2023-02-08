@@ -11,6 +11,7 @@ public class ExperimentBatchCodeDTO {
 
     private String protocolCode;
     
+    // TODO: Just use "code" and "name".
     private String experimentCode;
     private String experimentName;
     
