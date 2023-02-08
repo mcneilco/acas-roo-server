@@ -12,6 +12,8 @@ public interface SaltStructureService {
 
 	public Salt update(Salt salt) throws CmpdRegMolFormatException;
 
+	public Salt saveStructureNoDupeCheck(Salt salt) throws CmpdRegMolFormatException;
+
 	public Salt edit(Salt oldSalt, Salt newSalt);
 
 	List<Salt> saveMissingStructures() throws StructureSaveException;
