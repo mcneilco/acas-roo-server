@@ -330,7 +330,7 @@ public class SaltServiceImpl implements SaltService {
 				// Adds Linked Experiments to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage(batchDTO.getLinkedExperiments().size() + " Associated Experiment(s): " + batchDTO.getLinkedExperiments().stream().map(e -> e.getCode() + '(' + e.getName() + ")").collect(Collectors.toList()));;
+				error.setMessage(batchDTO.getLinkedExperiments().size() + " Associated Experiment(s): " + batchDTO.getLinkedExperiments().stream().map(e -> e.getExperimentCode() + '(' + e.getExperimentName() + ")").collect(Collectors.toList()));;
 				warnings.add(error);
 			}
 			

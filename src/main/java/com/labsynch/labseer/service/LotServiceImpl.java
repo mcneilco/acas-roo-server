@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeExperimentDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.LotDTO;
@@ -661,8 +662,8 @@ public class LotServiceImpl implements LotService {
 
 		// Experiments
 		if (batchDTO.getLinkedExperiments() != null && batchDTO.getLinkedExperiments().size() > 0) {
-			for (CodeTableDTO experimentCodeTableDTO : batchDTO.getLinkedExperiments()) {
-				experimentService.deleteExperimentDataByBatchCode(experimentCodeTableDTO.getCode(), lot.getCorpName());
+			for (CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO : batchDTO.getLinkedExperiments()) {
+				experimentService.deleteExperimentDataByBatchCode(cmpdRegBatchCodeExperimentDTO.getExperimentCode(), lot.getCorpName());
 			}
 		}
 

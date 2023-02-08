@@ -95,6 +95,7 @@ import org.springframework.transaction.annotation.Transactional;
 import flexjson.JSONSerializer;
 
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+import com.labsynch.labseer.dto.CmpdRegBatchCodeExperimentDTO;
 
 @Service
 public class BulkLoadServiceImpl implements BulkLoadService {
@@ -2511,15 +2512,15 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				logger.debug(batchDTO.toJson());
 		if (batchDTO.getLinkedDataExists()) {
 			logger.info("Found experimental data in ACAS for some compounds.");
-			for (CodeTableDTO experimentCodeTable : batchDTO.getLinkedExperiments()) {
-				String experimentCodeAndName = experimentCodeTable.getCode() + " ( " + experimentCodeTable.getName()
+			for (CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO : batchDTO.getLinkedExperiments()) {
+				String experimentCodeAndName = cmpdRegBatchCodeExperimentDTO.getExperimentCode() + " ( " + cmpdRegBatchCodeExperimentDTO.getExperimentName()
 						+ " )";
-				if (acasDependencies.containsKey(experimentCodeTable.getComments())) {
-					acasDependencies.get(experimentCodeTable.getComments()).add(experimentCodeAndName);
+				if (acasDependencies.containsKey(cmpdRegBatchCodeExperimentDTO.getComments())) {
+					acasDependencies.get(cmpdRegBatchCodeExperimentDTO.getComments()).add(experimentCodeAndName);
 				} else {
 					HashSet<String> codes = new HashSet<String>();
 					codes.add(experimentCodeAndName);
-					acasDependencies.put(experimentCodeTable.getComments(), codes);
+					acasDependencies.put(cmpdRegBatchCodeExperimentDTO.getComments(), codes);
 				}
 			}
 		}
