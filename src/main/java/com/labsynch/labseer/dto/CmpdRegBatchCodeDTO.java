@@ -43,7 +43,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Boolean linkedDataExists;
 
-	private Collection<CmpdRegBatchCodeExperimentDTO> linkedExperiments;
+	private Collection<ExperimentBatchCodeDTO> linkedExperiments;
 
 	private Collection<ContainerBatchCodeDTO> linkedContainers;
 
@@ -59,7 +59,7 @@ public class CmpdRegBatchCodeDTO {
 	@Transactional
 	public void checkForDependentData() {
 		linkedDataExists = false;
-		linkedExperiments = new HashSet<CmpdRegBatchCodeExperimentDTO>();
+		linkedExperiments = new HashSet<ExperimentBatchCodeDTO>();
 		errors = new HashSet<ErrorMessageDTO>();
 		try {
 			if (countExperimentValueBatchCodes() > 0) {
@@ -103,7 +103,7 @@ public class CmpdRegBatchCodeDTO {
 		// dedupeLinkedExperiments();
 	}
 
-	private Collection<CmpdRegBatchCodeExperimentDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protcolCode, e.codeName as experimentCode, el.labelText as experimentName, ev.codeValue as comments, count(ev.id) as description) "
 				+ "FROM ExperimentValue ev "
@@ -123,20 +123,20 @@ public class CmpdRegBatchCodeDTO {
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
 
-		Collection<CmpdRegBatchCodeExperimentDTO> cmpdRegBatchCodeExperimentDTOs = new HashSet<CmpdRegBatchCodeExperimentDTO>();
+		Collection<ExperimentBatchCodeDTO> experimentBatchCodeDTOs = new HashSet<ExperimentBatchCodeDTO>();
 		for (Map<String, String> map : q.getResultList()) {
-			CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO = new CmpdRegBatchCodeExperimentDTO();
-			cmpdRegBatchCodeExperimentDTO.setProtocolCode(map.get("protocolCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentCode(map.get("experimentCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentName(map.get("experimentName"));
-			cmpdRegBatchCodeExperimentDTO.setComments(map.get("comments"));
-			cmpdRegBatchCodeExperimentDTO.setDescription(map.get("description"));
-			cmpdRegBatchCodeExperimentDTOs.add(cmpdRegBatchCodeExperimentDTO);
+			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
+			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
+			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
+			experimentBatchCodeDTO.setComments(map.get("comments"));
+			experimentBatchCodeDTO.setDescription(map.get("description"));
+			experimentBatchCodeDTOs.add(experimentBatchCodeDTO);
 		}
-		return cmpdRegBatchCodeExperimentDTOs;
+		return experimentBatchCodeDTOs;
 	}
 
-	private Collection<CmpdRegBatchCodeExperimentDTO> findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, agv.codeValue as comments, count(agv2.id) || ' results' as description) "
 				+ "FROM AnalysisGroupValue agv "
@@ -159,20 +159,20 @@ public class CmpdRegBatchCodeDTO {
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
 
-		Collection<CmpdRegBatchCodeExperimentDTO> cmpdRegBatchCodeExperimentDTOs = new HashSet<CmpdRegBatchCodeExperimentDTO>();
+		Collection<ExperimentBatchCodeDTO> experimentBatchCodeDTOs = new HashSet<ExperimentBatchCodeDTO>();
 		for (Map<String, String> map : q.getResultList()) {
-			CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO = new CmpdRegBatchCodeExperimentDTO();
-			cmpdRegBatchCodeExperimentDTO.setProtocolCode(map.get("protocolCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentCode(map.get("experimentCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentName(map.get("experimentName"));
-			cmpdRegBatchCodeExperimentDTO.setComments(map.get("comments"));
-			cmpdRegBatchCodeExperimentDTO.setDescription(String.valueOf(map.get("description")));
-			cmpdRegBatchCodeExperimentDTOs.add(cmpdRegBatchCodeExperimentDTO);
+			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
+			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
+			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
+			experimentBatchCodeDTO.setComments(map.get("comments"));
+			experimentBatchCodeDTO.setDescription(String.valueOf(map.get("description")));
+			experimentBatchCodeDTOs.add(experimentBatchCodeDTO);
 		}
-		return cmpdRegBatchCodeExperimentDTOs;
+		return experimentBatchCodeDTOs;
 	}
 
-	private Collection<CmpdRegBatchCodeExperimentDTO> findExperimentCodeTableDTOsFromSubjectValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromSubjectValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, sv.codeValue as comments, count(sv2.id) || ' raw results' as description) "
 				+ "FROM SubjectValue sv "
@@ -198,20 +198,20 @@ public class CmpdRegBatchCodeDTO {
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
 
-		Collection<CmpdRegBatchCodeExperimentDTO> cmpdRegBatchCodeExperimentDTOs = new HashSet<CmpdRegBatchCodeExperimentDTO>();
+		Collection<ExperimentBatchCodeDTO> experimentBatchCodeDTOs = new HashSet<ExperimentBatchCodeDTO>();
 		for (Map<String, String> map : q.getResultList()) {
-			CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO = new CmpdRegBatchCodeExperimentDTO();
-			cmpdRegBatchCodeExperimentDTO.setProtocolCode(map.get("protocolCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentCode(map.get("experimentCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentName(map.get("experimentName"));
-			cmpdRegBatchCodeExperimentDTO.setComments(map.get("comments"));
-			cmpdRegBatchCodeExperimentDTO.setDescription(map.get("description"));
-			cmpdRegBatchCodeExperimentDTOs.add(cmpdRegBatchCodeExperimentDTO);
+			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
+			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
+			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
+			experimentBatchCodeDTO.setComments(map.get("comments"));
+			experimentBatchCodeDTO.setDescription(map.get("description"));
+			experimentBatchCodeDTOs.add(experimentBatchCodeDTO);
 		}
-		return cmpdRegBatchCodeExperimentDTOs;
+		return experimentBatchCodeDTOs;
 	}
 
-	private Collection<CmpdRegBatchCodeExperimentDTO> findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes() {
+	private Collection<ExperimentBatchCodeDTO> findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
 		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, tgv.codeValue as comments) "
 				+ "FROM TreatmentGroupValue tgv "
@@ -236,16 +236,16 @@ public class CmpdRegBatchCodeDTO {
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
 
-		Collection<CmpdRegBatchCodeExperimentDTO> cmpdRegBatchCodeExperimentDTOs = new HashSet<CmpdRegBatchCodeExperimentDTO>();
+		Collection<ExperimentBatchCodeDTO> experimentBatchCodeDTOs = new HashSet<ExperimentBatchCodeDTO>();
 		for (Map<String, String> map : q.getResultList()) {
-			CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO = new CmpdRegBatchCodeExperimentDTO();
-			cmpdRegBatchCodeExperimentDTO.setProtocolCode(map.get("protocolCode"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentCode(map.get("code"));
-			cmpdRegBatchCodeExperimentDTO.setExperimentName(map.get("name"));
-			cmpdRegBatchCodeExperimentDTO.setComments(map.get("comments"));
-			cmpdRegBatchCodeExperimentDTOs.add(cmpdRegBatchCodeExperimentDTO);
+			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
+			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setExperimentCode(map.get("code"));
+			experimentBatchCodeDTO.setExperimentName(map.get("name"));
+			experimentBatchCodeDTO.setComments(map.get("comments"));
+			experimentBatchCodeDTOs.add(experimentBatchCodeDTO);
 		}
-		return cmpdRegBatchCodeExperimentDTOs;
+		return experimentBatchCodeDTOs;
 	}
 
 	private int countSubjectValueBatchCodes() {
@@ -386,26 +386,26 @@ public class CmpdRegBatchCodeDTO {
 		return q.getSingleResult().intValue();
 	}
 
-	private void addUniqueExperiments(Collection<CmpdRegBatchCodeExperimentDTO> cmpdRegBatchCodeExperimentDTOs) {
-		for (CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO : cmpdRegBatchCodeExperimentDTOs) {
+	private void addUniqueExperiments(Collection<ExperimentBatchCodeDTO> experimentBatchCodeDTOs) {
+		for (ExperimentBatchCodeDTO experimentBatchCodeDTO : experimentBatchCodeDTOs) {
 			Boolean addIt = true;
-			for(CmpdRegBatchCodeExperimentDTO experimentCodeTable : linkedExperiments) {
-				if(cmpdRegBatchCodeExperimentDTO.getExperimentCode().equals(experimentCodeTable.getExperimentCode())) {
+			for(ExperimentBatchCodeDTO experimentCodeTable : linkedExperiments) {
+				if(experimentBatchCodeDTO.getExperimentCode().equals(experimentCodeTable.getExperimentCode())) {
 					addIt = false;
-					if(cmpdRegBatchCodeExperimentDTO.getDescription() != null) {
+					if(experimentBatchCodeDTO.getDescription() != null) {
 						if(experimentCodeTable.getDescription() == null) {
 							// Just set the description
-							experimentCodeTable.setDescription(cmpdRegBatchCodeExperimentDTO.getDescription());
+							experimentCodeTable.setDescription(experimentBatchCodeDTO.getDescription());
 						} else {
 							// Add the description to the existing description
-							experimentCodeTable.setDescription(experimentCodeTable.getDescription() + " and " + cmpdRegBatchCodeExperimentDTO.getDescription());
+							experimentCodeTable.setDescription(experimentCodeTable.getDescription() + " and " + experimentBatchCodeDTO.getDescription());
 						}
 					}
 					break;
 				}
 			}
 			if(addIt) {
-				linkedExperiments.add(cmpdRegBatchCodeExperimentDTO);
+				linkedExperiments.add(experimentBatchCodeDTO);
 			}
 		}
 	}
@@ -426,11 +426,11 @@ public class CmpdRegBatchCodeDTO {
 		this.linkedDataExists = linkedDataExists;
 	}
 
-	public Collection<CmpdRegBatchCodeExperimentDTO> getLinkedExperiments() {
+	public Collection<ExperimentBatchCodeDTO> getLinkedExperiments() {
 		return this.linkedExperiments;
 	}
 
-	public void setLinkedExperiments(Collection<CmpdRegBatchCodeExperimentDTO> linkedExperiments) {
+	public void setLinkedExperiments(Collection<ExperimentBatchCodeDTO> linkedExperiments) {
 		this.linkedExperiments = linkedExperiments;
 	}
 

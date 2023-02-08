@@ -39,9 +39,9 @@ public class CmpdRegBatchCodeDTOTest {
 		// check for duplicate codes
 		ArrayList<String> codeList = new ArrayList<String>();
 		HashSet<String> codeSet = new HashSet<String>();
-		for (CmpdRegBatchCodeExperimentDTO cmpdRegBatchCodeExperimentDTO : cmpdRegBatchCodeDTO.getLinkedExperiments()) {
-			codeList.add(cmpdRegBatchCodeExperimentDTO.getExperimentCode());
-			codeSet.add(cmpdRegBatchCodeExperimentDTO.getExperimentCode());
+		for (ExperimentBatchCodeDTO experimentBatchCodeDTO : cmpdRegBatchCodeDTO.getLinkedExperiments()) {
+			codeList.add(experimentBatchCodeDTO.getExperimentCode());
+			codeSet.add(experimentBatchCodeDTO.getExperimentCode());
 		}
 		Assert.assertEquals(codeSet.size(), codeList.size());
 

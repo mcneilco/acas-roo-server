@@ -7,7 +7,7 @@ import flexjson.JSONSerializer;
 import flexjson.JSONDeserializer;
 
 
-public class CmpdRegBatchCodeExperimentDTO {
+public class ExperimentBatchCodeDTO {
 
     private String protocolCode;
     
@@ -19,10 +19,10 @@ public class CmpdRegBatchCodeExperimentDTO {
 
     private Boolean ignored;
 
-    public CmpdRegBatchCodeExperimentDTO() {
+    public ExperimentBatchCodeDTO() {
     }
 
-    public CmpdRegBatchCodeExperimentDTO(String protocolCode, String experimentCode,
+    public ExperimentBatchCodeDTO(String protocolCode, String experimentCode,
 			String experimentName, String description, String comments, Boolean ignored) {
 		this.protocolCode = protocolCode;
 		this.experimentCode = experimentCode;
@@ -84,15 +84,15 @@ public class CmpdRegBatchCodeExperimentDTO {
         return new JSONSerializer().exclude("*.class").serialize(this);
     }
 
-    public static CmpdRegBatchCodeExperimentDTO fromJson(String json) {
-        return new JSONDeserializer<CmpdRegBatchCodeExperimentDTO>().use(null, CmpdRegBatchCodeExperimentDTO.class).deserialize(json);
+    public static ExperimentBatchCodeDTO fromJson(String json) {
+        return new JSONDeserializer<ExperimentBatchCodeDTO>().use(null, ExperimentBatchCodeDTO.class).deserialize(json);
     }
 
-    public static String toJsonArray(Collection<CmpdRegBatchCodeExperimentDTO> collection) {
+    public static String toJsonArray(Collection<ExperimentBatchCodeDTO> collection) {
         return new JSONSerializer().exclude("*.class").serialize(collection);
     }
 
-    public static Collection<CmpdRegBatchCodeExperimentDTO> fromJsonArray(String json) {
-        return new JSONDeserializer<List<CmpdRegBatchCodeExperimentDTO>>().use("values", CmpdRegBatchCodeExperimentDTO.class).deserialize(json);
+    public static Collection<ExperimentBatchCodeDTO> fromJsonArray(String json) {
+        return new JSONDeserializer<List<ExperimentBatchCodeDTO>>().use("values", ExperimentBatchCodeDTO.class).deserialize(json);
     }
 }
