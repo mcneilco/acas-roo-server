@@ -105,12 +105,13 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromExperimentValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protcolCode, e.codeName as experimentCode, el.labelText as experimentName, ev.codeValue as comments, count(ev.id) as description) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, ev.codeValue as comments, count(ev.id) as description) "
 				+ "FROM ExperimentValue ev "
 				+ "JOIN ev.lsState as es "
 				+ "JOIN es.experiment as e "
 				+ "LEFT OUTER JOIN e.lsLabels as el "
 				+ "JOIN e.protocol as p "
+				+ "LEFT OUTER JOIN p.lsLabels as pl on pl.ignored = false "
 				+ "WHERE el.lsKind = 'experiment name' "
 				+ "AND ev.lsKind = 'batch code' "
 				+ "AND ev.ignored = false "
@@ -118,7 +119,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
 				+ "AND ev.codeValue IN :batchCodes "
-				+ "GROUP BY p.codeName, e.codeName, el.labelText, ev.codeValue";
+				+ "GROUP BY p.codeName, pl.labelText, e.codeName, el.labelText, ev.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -127,6 +128,7 @@ public class CmpdRegBatchCodeDTO {
 		for (Map<String, String> map : q.getResultList()) {
 			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
 			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setProtocolName(map.get("protocolName"));
 			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
 			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
 			experimentBatchCodeDTO.setComments(map.get("comments"));
@@ -138,7 +140,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromAnalysisGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, agv.codeValue as comments, count(agv2.id) || ' results' as description) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, agv.codeValue as comments, count(agv2.id) || ' results' as description) "
 				+ "FROM AnalysisGroupValue agv "
 				+ "JOIN agv.lsState as ags "
 				+ "JOIN ags.analysisGroup as ag "
@@ -146,6 +148,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "LEFT OUTER JOIN e.lsLabels as el ON el.ignored = false "
 				+ "LEFT OUTER JOIN ags.lsValues agv2 ON agv2.lsKind <> 'batch code' AND agv2.ignored = false "
 				+ "JOIN e.protocol as p "
+				+ "LEFT OUTER JOIN p.lsLabels as pl ON pl.ignored = false "
 				+ "WHERE el.lsKind = 'experiment name' "
 				+ "AND agv.lsType = 'codeValue' "
 				+ "AND agv.lsKind = 'batch code' "
@@ -154,7 +157,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND agv.codeValue IN :batchCodes "
-				+ "GROUP BY p.codeName, e.codeName, el.labelText, agv.codeValue";
+				+ "GROUP BY p.codeName, pl.labelText, e.codeName, el.labelText, agv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -163,6 +166,7 @@ public class CmpdRegBatchCodeDTO {
 		for (Map<String, String> map : q.getResultList()) {
 			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
 			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setProtocolName(map.get("protocolName"));
 			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
 			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
 			experimentBatchCodeDTO.setComments(map.get("comments"));
@@ -174,7 +178,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromSubjectValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, sv.codeValue as comments, count(sv2.id) || ' raw results' as description) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, sv.codeValue as comments, count(sv2.id) || ' raw results' as description) "
 				+ "FROM SubjectValue sv "
 				+ "JOIN sv.lsState as ss "
 				+ "JOIN ss.subject as s "
@@ -184,6 +188,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "LEFT OUTER JOIN e.lsLabels as el ON el.ignored = false "
 				+ "LEFT OUTER JOIN ss.lsValues as sv2 ON sv2.lsKind <> 'batch code' AND sv2.ignored = false AND ss.lsType = 'data' and ss.lsKind = 'results' "
 				+ "JOIN e.protocol as p "
+				+ "LEFT OUTER JOIN p.lsLabels as pl ON pl.ignored = false "
 				+ "WHERE el.lsKind = 'experiment name' "
 				+ "AND sv.lsKind = 'batch code' "
 				+ "AND sv.ignored = false "
@@ -193,7 +198,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND ag.ignored = false "
 				+ "AND e.ignored = false "
 				+ "AND sv.codeValue IN :batchCodes "
-				+ "GROUP BY p.codeName, e.codeName, el.labelText, sv.codeValue";
+				+ "GROUP BY p.codeName, pl.labelText, e.codeName, el.labelText, sv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -202,6 +207,7 @@ public class CmpdRegBatchCodeDTO {
 		for (Map<String, String> map : q.getResultList()) {
 			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
 			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setProtocolName(map.get("protocolName"));
 			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
 			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
 			experimentBatchCodeDTO.setComments(map.get("comments"));
@@ -213,7 +219,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromTreatmentGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, e.codeName as experimentCode, el.labelText as experimentName, tgv.codeValue as comments) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, tgv.codeValue as comments) "
 				+ "FROM TreatmentGroupValue tgv "
 				+ "JOIN tgv.lsState as tgs "
 				+ "JOIN tgs.treatmentGroup as tg "
@@ -221,6 +227,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "JOIN ag.experiments as e "
 				+ "LEFT OUTER JOIN e.lsLabels as el "
 				+ "JOIN e.protocol as p "
+				+ "LEFT OUTER JOIN p.lsLabels as pl on pl.ignored = false "
 				+ "WHERE el.lsKind = 'experiment name' "
 				+ "AND tgv.lsType = 'codeValue' "
 				+ "AND tgv.lsKind = 'batch code' "
@@ -231,7 +238,7 @@ public class CmpdRegBatchCodeDTO {
 				+ "AND e.ignored = false "
 				+ "AND el.ignored = false "
 				+ "AND tgv.codeValue IN :batchCodes "
-				+ "GROUP BY p.codeName, e.codeName, el.labelText, tgv.codeValue";
+				+ "GROUP BY p.codeName, pl.labelText, e.codeName, el.labelText, tgv.codeValue";
 
 		TypedQuery<Map> q = em.createQuery(sql, Map.class);
 		q.setParameter("batchCodes", this.batchCodes);
@@ -240,6 +247,7 @@ public class CmpdRegBatchCodeDTO {
 		for (Map<String, String> map : q.getResultList()) {
 			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
 			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
+			experimentBatchCodeDTO.setProtocolName(map.get("protocolName"));
 			experimentBatchCodeDTO.setExperimentCode(map.get("code"));
 			experimentBatchCodeDTO.setExperimentName(map.get("name"));
 			experimentBatchCodeDTO.setComments(map.get("comments"));

@@ -10,6 +10,7 @@ import flexjson.JSONDeserializer;
 public class ExperimentBatchCodeDTO {
 
     private String protocolCode;
+    private String protocolName;
     
     // TODO: Just use "code" and "name".
     private String experimentCode;
@@ -23,9 +24,10 @@ public class ExperimentBatchCodeDTO {
     public ExperimentBatchCodeDTO() {
     }
 
-    public ExperimentBatchCodeDTO(String protocolCode, String experimentCode,
+    public ExperimentBatchCodeDTO(String protocolCode, String protocolName, String experimentCode,
 			String experimentName, String description, String comments, Boolean ignored) {
 		this.protocolCode = protocolCode;
+        this.protocolName = protocolName;
 		this.experimentCode = experimentCode;
 		this.experimentName = experimentName;
 		this.description = description;
@@ -39,6 +41,14 @@ public class ExperimentBatchCodeDTO {
 
     public void setProtocolCode(String protocolCode) {
         this.protocolCode = protocolCode;
+    }
+
+    public String getProtocolName() {
+        return this.protocolName;
+    }
+
+    public void setProtocolName(String protocolName) {
+        this.protocolName = protocolName;
     }
 
     public String getExperimentCode() {
