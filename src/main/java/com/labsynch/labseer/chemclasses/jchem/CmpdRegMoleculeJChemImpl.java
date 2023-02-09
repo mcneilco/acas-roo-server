@@ -90,8 +90,8 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 	};
 
 	@Override
-	public String getFormula() {
-		return this.molecule.getFormula();
+	public String getFormula(boolean stopNeutralization) {
+		return this.molecule.getFormula(stopNeutralization);
 	}
 
 	@Override
@@ -100,12 +100,12 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public Double getMass() {
+	public Double getMass(boolean stopNeutralization) {
 		return this.molecule.getMass();
 	}
 
 	@Override
-	public int getTotalCharge() {
+	public int getTotalCharge(boolean stopNeutralization) {
 		return this.molecule.getTotalCharge();
 	}
 

@@ -146,8 +146,8 @@ public class SaltServiceImpl implements SaltService {
 		salt.setOriginalStructure(MoleculeUtil.exportMolAsText(mol, "mol"));
 		salt.setAbbrev(MoleculeUtil.getMolProperty(mol, "code"));
 		salt.setName(MoleculeUtil.getMolProperty(mol, "Name"));
-		salt.setFormula(mol.getFormula());
-		salt.setMolWeight(mol.getMass());
+		salt.setFormula(mol.getFormula(true));
+		salt.setMolWeight(mol.getMass(true));
 
 		logger.debug("salt code: " + salt.getAbbrev());
 		logger.debug("salt name: " + salt.getName());

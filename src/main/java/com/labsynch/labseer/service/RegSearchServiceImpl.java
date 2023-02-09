@@ -71,13 +71,13 @@ public class RegSearchServiceImpl implements RegSearchService {
 
 			regSearchDTO.setAsDrawnImage(convertToBase64(mol, format, hSize, wSize));
 			regSearchDTO.setAsDrawnStructure(mol.getMolStructure());
-			regSearchDTO.setAsDrawnMolFormula(mol.getFormula());
+			regSearchDTO.setAsDrawnMolFormula(mol.getFormula(false));
 			regSearchDTO.setAsDrawnExactMass(mol.getExactMass());
 			if (propertiesUtilService.getUseExactMass()) {
 				regSearchDTO.setAsDrawnMolWeight(mol.getExactMass());
 
 			} else {
-				regSearchDTO.setAsDrawnMolWeight(mol.getMass());
+				regSearchDTO.setAsDrawnMolWeight(mol.getMass(false));
 
 			}
 			int[] parentHits = chemStructureService.searchMolStructures(MoleculeUtil.exportMolAsText(mol, "mol"),

@@ -17,13 +17,13 @@ public interface BBChemStructureService {
 
     public JsonNode getPreprocessorSettings() throws IOException;
 
-    public JsonNode postToProcessService(String molfile) throws IOException;
+    public JsonNode postToProcessService(String molfile, Boolean stopNeutralization) throws IOException;
 
-    public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints)
+    public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints, Boolean stopNeutralization)
             throws CmpdRegMolFormatException;
 
     public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures,
-            Boolean includeFingerprints) throws CmpdRegMolFormatException;
+            Boolean includeFingerprints, Boolean stopNeutralization) throws CmpdRegMolFormatException;
 
     public String getSDF(BBChemParentStructure structure) throws IOException;
 

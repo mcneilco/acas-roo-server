@@ -168,7 +168,7 @@ public class LoadFullCompoundsUtil {
 		lot.setSynthesisDate(new Date());
 		lot.setChemist(lotChemist.getUserName());
 		lot.setSaltForm(saltForm);
-		lot.setLotMolWeight(mol.getMass());
+		lot.setLotMolWeight(mol.getMass(false));
 		lot.setIsVirtual(false);
 
 		String supplierCode;

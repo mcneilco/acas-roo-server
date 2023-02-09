@@ -79,7 +79,7 @@ public class MoleculeUtil {
 
 	public static String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
 		CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
-		return mol.getFormula();
+		return mol.getFormula(false);
 	}
 
 }
