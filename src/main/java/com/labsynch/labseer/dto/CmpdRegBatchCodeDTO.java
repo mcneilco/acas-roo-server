@@ -248,8 +248,8 @@ public class CmpdRegBatchCodeDTO {
 			ExperimentBatchCodeDTO experimentBatchCodeDTO = new ExperimentBatchCodeDTO();
 			experimentBatchCodeDTO.setProtocolCode(map.get("protocolCode"));
 			experimentBatchCodeDTO.setProtocolName(map.get("protocolName"));
-			experimentBatchCodeDTO.setExperimentCode(map.get("code"));
-			experimentBatchCodeDTO.setExperimentName(map.get("name"));
+			experimentBatchCodeDTO.setExperimentCode(map.get("experimentCode"));
+			experimentBatchCodeDTO.setExperimentName(map.get("experimentName"));
 			experimentBatchCodeDTO.setComments(map.get("comments"));
 			experimentBatchCodeDTOs.add(experimentBatchCodeDTO);
 		}
