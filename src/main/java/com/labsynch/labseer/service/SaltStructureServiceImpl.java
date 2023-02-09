@@ -28,7 +28,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 	Logger logger = LoggerFactory.getLogger(SaltStructureService.class);
 
 	@Override
-	public Salt saveStructure(Salt salt) throws CmpdRegMolFormatException {
+	public Salt saveStructure(Salt salt, boolean checkForDupes) throws CmpdRegMolFormatException {
 
 		CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
 		salt.setOriginalStructure(salt.getMolStructure());
@@ -54,13 +54,11 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 			int[] dupeMols = chemStructureService.checkDupeMol(salt.getMolStructure(), StructureType.SALT);
 			logger.debug("number of matching salt structures: " + dupeMols.length);
 		} else {
-			boolean checkForDupes = true;
 			int cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT, checkForDupes);
 			salt.setCdId(cdId);
 		}
 
 		return salt;
-
 	}
 
 	@Override

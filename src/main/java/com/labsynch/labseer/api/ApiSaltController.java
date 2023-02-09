@@ -283,7 +283,7 @@ public class ApiSaltController {
 		}
 		if (validSalt & !dryrun) {
 			try {
-				salt = saltStructureService.saveStructure(salt);
+				salt = saltStructureService.saveStructure(salt, false);
 			} catch (CmpdRegMolFormatException e) {
 				logger.error("Error saving salt: " + e.getMessage());
 				validSalt = false;
@@ -304,7 +304,16 @@ public class ApiSaltController {
 			errors.add(error);
 
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
-		} else if (salt.getCdId() > 0 || (validSalt & dryrun)) { // Continue If Valid Registered or Valid Salt in Dryrun
+		} 
+		else if (salt.getCdId() == 0 & !dryrun)
+		{
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("error");
+			error.setMessage("Duplicate salt found in system.");
+			errors.add(error);
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+		}
+		else if (salt.getCdId() > 0 || (validSalt & dryrun)) { // Continue If Valid Registered or Valid Salt in Dryrun
 			if(!dryrun) {
 				salt.persist();
 			}
