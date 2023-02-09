@@ -283,7 +283,7 @@ public class ApiSaltController {
 		}
 		if (validSalt & !dryrun) {
 			try {
-				salt = saltStructureService.saveStructureNoDupeCheck(salt);
+				salt = saltStructureService.saveStructure(salt, false);
 			} catch (CmpdRegMolFormatException e) {
 				logger.error("Error saving salt: " + e.getMessage());
 				validSalt = false;

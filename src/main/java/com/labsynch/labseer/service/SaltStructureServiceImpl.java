@@ -28,7 +28,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 	Logger logger = LoggerFactory.getLogger(SaltStructureService.class);
 
 	@Override
-	public Salt saveStructure(Salt salt) throws CmpdRegMolFormatException {
+	public Salt saveStructure(Salt salt, boolean checkForDupes) throws CmpdRegMolFormatException {
 
 		CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
 		salt.setOriginalStructure(salt.getMolStructure());
@@ -54,7 +54,6 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 			int[] dupeMols = chemStructureService.checkDupeMol(salt.getMolStructure(), StructureType.SALT);
 			logger.debug("number of matching salt structures: " + dupeMols.length);
 		} else {
-			boolean checkForDupes = true;
 			int cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT, checkForDupes);
 			salt.setCdId(cdId);
 		}
@@ -92,29 +91,6 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 			return null;
         }
 
-	}
-
-	public Salt saveStructureNoDupeCheck(Salt salt) throws CmpdRegMolFormatException {
-		CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
-		salt.setOriginalStructure(salt.getMolStructure());
-		salt.setMolStructure(mol.getMolStructure());
-		salt.setFormula(mol.getFormula());
-		if (propertiesUtilService.getUseExactMass()) {
-			salt.setMolWeight(mol.getExactMass());
-		} else {
-			salt.setMolWeight(mol.getMass());
-		}
-		salt.setCharge(mol.getTotalCharge());
-
-		logger.debug("salt code: " + salt.getAbbrev());
-		logger.debug("salt name: " + salt.getName());
-		logger.debug("salt structure: " + salt.getMolStructure());
-
-		boolean checkForDupes = false;
-		int cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT, checkForDupes);
-		salt.setCdId(cdId);
-
-		return salt;
 	}
 
     public Salt edit(Salt oldSalt, Salt newSalt){
