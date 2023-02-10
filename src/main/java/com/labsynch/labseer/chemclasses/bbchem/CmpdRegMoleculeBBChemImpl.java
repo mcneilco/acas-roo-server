@@ -63,14 +63,14 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public String getFormula() {
+	public String getFormula(boolean skipNeutralization) {
 		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			return null;
 		} else if (this.molecule.getMolecularFormula() != null) {
 			return this.molecule.getMolecularFormula();
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, skipNeutralization);
 				return this.molecule.getMolecularFormula();
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
@@ -87,7 +87,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 			return this.molecule.getExactMolWeight();
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, false);
 				return this.molecule.getExactMolWeight();
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
@@ -97,14 +97,14 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public Double getMass() {
+	public Double getMass(boolean skipNeutralization) {
 		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			return null;
 		} else if (this.molecule.getAverageMolWeight() != null) {
 			return this.molecule.getAverageMolWeight();
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, skipNeutralization);
 				return this.molecule.getAverageMolWeight();
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
@@ -114,15 +114,15 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public int getTotalCharge() {
+	public int getTotalCharge(boolean skipNeutralization) {
 		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			return -1;
-		} else if (this.molecule.getTotalCharge() != null) {
-			return this.molecule.getTotalCharge();
+		} else if (this.molecule.getTotalCharge(skipNeutralization) != null) {
+			return this.molecule.getTotalCharge(skipNeutralization);
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
-				return this.molecule.getTotalCharge();
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, skipNeutralization);
+				return this.molecule.getTotalCharge(skipNeutralization);
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
 				return -1;
@@ -138,7 +138,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 			return this.molecule.getSmiles();
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, false);
 				return this.molecule.getSmiles();
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());

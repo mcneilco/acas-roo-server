@@ -369,9 +369,9 @@ public class MetalotServiceImpl implements MetalotService {
 							Double.valueOf(dExactMass.format(parent.getCmpdRegMolecule().getExactMass())));
 					DecimalFormat dMolWeight = new DecimalFormat("#.###");
 					parent.setMolWeight(
-							Double.valueOf(dMolWeight.format(parent.getCmpdRegMolecule().getMass())));
+							Double.valueOf(dMolWeight.format(parent.getCmpdRegMolecule().getMass(false))));
 
-					parent.setMolFormula(parent.getCmpdRegMolecule().getFormula());
+					parent.setMolFormula(parent.getCmpdRegMolecule().getFormula(false));
 					// add unique constraint to parent corp name as well (parent and lot)
 					boolean corpNameAlreadyExists = checkCorpNameAlreadyExists(parent.getCorpName());
 					while (corpNameAlreadyExists) {

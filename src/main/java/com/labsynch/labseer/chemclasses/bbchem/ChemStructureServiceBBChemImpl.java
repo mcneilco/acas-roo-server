@@ -87,10 +87,10 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				| searchType == SearchType.EXACT) {
 			// We don't need to do fingerprint matching for these searches so pass false
 			// here
-			serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, false);
+			serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, false, false);
 		} else {
 			// We need to do fingerprint matching for these searches so pass true here
-			serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
+			serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, true, false);
 		}
 		if (serviceBBChemStructure.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			throw new CmpdRegMolFormatException(serviceBBChemStructure.getRegistrationComment());
@@ -304,7 +304,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 					&& (bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null)) {
 				logger.info(
 						"Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
-				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
+				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true, false);
 			}
 
 			if (structureType == StructureType.PARENT) {
@@ -404,7 +404,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		try {
 			// Process the molfile and calculate fingerprints = true
-			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
+			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile, true, false);
 			// Save the structure
 			return saveStructure(bbChemStructure, structureType, checkForDupes);
 		} catch (CmpdRegMolFormatException e) {
@@ -416,7 +416,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public double getMolWeight(String molStructure) throws CmpdRegMolFormatException {
 		// Calculates the average molecular weight of a molecule
-		return bbChemStructureService.getProcessedStructure(molStructure, false).getAverageMolWeight();
+		return bbChemStructureService.getProcessedStructure(molStructure, false, false).getAverageMolWeight();
 	}
 
 	@Override
@@ -426,12 +426,12 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public String toMolfile(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure, false).getMol();
+		return bbChemStructureService.getProcessedStructure(molStructure, false, false).getMol();
 	}
 
 	@Override
 	public String toSmiles(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure, false).getSmiles();
+		return bbChemStructureService.getProcessedStructure(molStructure, false, false).getSmiles();
 	}
 
 	@Override
@@ -443,7 +443,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public String toInchi(String molStructure) {
 		try {
-			return bbChemStructureService.getProcessedStructure(molStructure, false).getInchi();
+			return bbChemStructureService.getProcessedStructure(molStructure, false, false).getInchi();
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error calculating inchi: ", e);
 			return null;
@@ -453,7 +453,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public boolean updateStructure(String molStructure, StructureType structureType, int cdId) {
 		try {
-			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure, true);
+			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure, true, false);
 			return updateStructure(bbChemStructure, structureType, cdId);
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error processing molfile: ");
@@ -468,7 +468,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			logger.info(
 					"Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
 			try {
-				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
+				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true, false);
 			} catch (CmpdRegMolFormatException e) {
 				logger.error("Error processing molfile: " + e.getMessage());
 				return false;
@@ -517,7 +517,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure, false).getMolecularFormula();
+		return bbChemStructureService.getProcessedStructure(molStructure, false, false).getMolecularFormula();
 	}
 
 	@Override
@@ -556,7 +556,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public double getExactMass(String molStructure) throws CmpdRegMolFormatException {
 		// Processor doesn't return exact mass so we need to populate it and then return
 		// it
-		BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure, false);
+		BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure, false, false);
 		return bbChemStructure.getExactMolWeight();
 	}
 
@@ -680,7 +680,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		// Get processed structures (hashes and include fingerprints)
 		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService
-				.getProcessedStructures(structures, true);
+				.getProcessedStructures(structures, true, false);
 
 		// Return hashmap
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
@@ -717,8 +717,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException {
 		try {
-			BBChemParentStructure queryStructure = bbChemStructureService.getProcessedStructure(queryMol, false);
-			BBChemParentStructure targetStructure = bbChemStructureService.getProcessedStructure(targetMol, false);
+			BBChemParentStructure queryStructure = bbChemStructureService.getProcessedStructure(queryMol, false, false);
+			BBChemParentStructure targetStructure = bbChemStructureService.getProcessedStructure(targetMol, false, false);
 			return queryStructure.getReg() == targetStructure.getReg();
 		} catch (Exception e) {
 			logger.error("Error in standardizedMolCompare: ", e);
@@ -736,7 +736,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		// }
 		// ]
 		try {
-			JsonNode responseNode = bbChemStructureService.postToProcessService(molFile);
+			JsonNode responseNode = bbChemStructureService.postToProcessService(molFile, false);
 			JsonNode errorCodeNode = responseNode.get(0).get("error_code");
 			if (errorCodeNode != null && errorCodeNode.asText().equals("4004")) {
 				return true;
@@ -921,7 +921,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		logger.info("Finished fetching " + group.size() + " " + StructureType.PARENT + " molstructures to save");
 		logger.info("Started processing " + structureIdParentMolStructureMap.size() + " parent structures");
 		HashMap<String, BBChemParentStructure> processedStructures = bbChemStructureService
-				.getProcessedStructures(structureIdParentMolStructureMap, true);
+				.getProcessedStructures(structureIdParentMolStructureMap, true, false);
 		logger.info("Finished processing " + structureIdParentMolStructureMap.size() + " " + StructureType.PARENT
 				+ " structures");
 		logger.info("Started saving " + processedStructures.size() + " " + StructureType.PARENT + " structures");
@@ -1000,7 +1000,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		logger.info("Started processing " + structureIdSaltFormMolStructureMap.size() + " "
 				+ StructureType.SALT_FORM + " structures");
 		HashMap<String, BBChemParentStructure> processedStructures = bbChemStructureService
-				.getProcessedStructures(structureIdSaltFormMolStructureMap, true);
+				.getProcessedStructures(structureIdSaltFormMolStructureMap, true, false);
 		logger.info("Finished processing " + structureIdSaltFormMolStructureMap.size() + " "
 				+ StructureType.SALT_FORM + " structures");
 		logger.info("Started saving " + processedStructures.size() + " " + StructureType.SALT_FORM + " structures");
@@ -1081,7 +1081,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		logger.info("Started processing " + structureIdSaltMolStructureMap.size() + " "
 				+ StructureType.SALT + " structures");
 		HashMap<String, BBChemParentStructure> processedStructures = bbChemStructureService
-				.getProcessedStructures(structureIdSaltMolStructureMap, true);
+				.getProcessedStructures(structureIdSaltMolStructureMap, true, false);
 		logger.info("Finished processing " + structureIdSaltMolStructureMap.size() + " "
 				+ StructureType.SALT + " structures");
 		logger.info("Started saving " + processedStructures.size() + " " + StructureType.SALT + " structures");

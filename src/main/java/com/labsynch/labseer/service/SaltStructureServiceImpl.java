@@ -33,13 +33,9 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
 		salt.setOriginalStructure(salt.getMolStructure());
 		salt.setMolStructure(mol.getMolStructure());
-		salt.setFormula(mol.getFormula());
-		if (propertiesUtilService.getUseExactMass()) {
-			salt.setMolWeight(mol.getExactMass());
-		} else {
-			salt.setMolWeight(mol.getMass());
-		}
-		salt.setCharge(mol.getTotalCharge());
+		salt.setFormula(mol.getFormula(true));
+		salt.setMolWeight(mol.getMass(true)); 
+		salt.setCharge(mol.getTotalCharge(true));
 
 		logger.debug("salt code: " + salt.getAbbrev());
 		logger.debug("salt name: " + salt.getName());
@@ -68,9 +64,9 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 			CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
 			salt.setOriginalStructure(salt.getMolStructure());
 			salt.setMolStructure(mol.getMolStructure());
-			salt.setFormula(mol.getFormula());
-			salt.setMolWeight(mol.getMass());
-			salt.setCharge(mol.getTotalCharge());
+			salt.setFormula(mol.getFormula(true)); // skipNeutralization == true for the 3 methods here
+			salt.setMolWeight(mol.getMass(true));
+			salt.setCharge(mol.getTotalCharge(true));
 
 			logger.debug("salt code: " + salt.getAbbrev());
 			logger.debug("salt name: " + salt.getName());
@@ -114,7 +110,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
         try
         {
             CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
-		    weight = mol.getMass();
+		    weight = mol.getMass(true); // skipNeutralization == true
             return weight;
         }
         catch (CmpdRegMolFormatException e)
@@ -129,7 +125,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
         try
         {
             CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
-		    formula = mol.getFormula();
+		    formula = mol.getFormula(true); // skipNeutralization == true
             return formula;
         }
         catch (CmpdRegMolFormatException e)
@@ -144,7 +140,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
         try
         {
             CmpdRegMolecule mol = chemStructureService.toMolecule(salt.getMolStructure());
-		    charge = mol.getTotalCharge();
+		    charge = mol.getTotalCharge(true); // skipNeutralization == true
             return charge;
         }
         catch (CmpdRegMolFormatException e)

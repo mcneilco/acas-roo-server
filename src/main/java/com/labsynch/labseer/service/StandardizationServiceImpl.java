@@ -329,7 +329,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			stndznCompound.setRegistrationStatus(cmpdRegMolecule.getRegistrationStatus());
 			stndznCompound.setRegistrationComment(cmpdRegMolecule.getRegistrationComment());
 
-			Double newMolWeight = cmpdRegMolecule.getMass();
+			Double newMolWeight = cmpdRegMolecule.getMass(false);
 			if (newMolWeight != null) {
 				DecimalFormat dMolWeight = new DecimalFormat("#.###");
 				stndznCompound.setNewMolWeight(Double.valueOf(dMolWeight.format(newMolWeight)));
@@ -771,14 +771,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				parent.setExactMass(null);
 			}
 
-			if (cmpdRegMolecule.getMass() != null) {
+			if (cmpdRegMolecule.getMass(false) != null) {
 				DecimalFormat dMolWeight = new DecimalFormat("#.###");
-				parent.setMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass())));
+				parent.setMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass(false))));
 			} else {
 				parent.setMolWeight(null);
 			}
 
-			parent.setMolFormula(cmpdRegMolecule.getFormula());
+			parent.setMolFormula(cmpdRegMolecule.getFormula(false));
 
 			pIds.add(parent.getId());
 
