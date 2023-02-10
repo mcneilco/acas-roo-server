@@ -105,7 +105,9 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromExperimentValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, ev.codeValue as comments, count(ev.id) as description) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, "
+				+ "e.codeName as experimentCode, el.labelText as experimentName, ev.codeValue as comments, "
+				+ "count(ev.id) as description) "
 				+ "FROM ExperimentValue ev "
 				+ "JOIN ev.lsState as es "
 				+ "JOIN es.experiment as e "
@@ -138,7 +140,9 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromAnalysisGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, agv.codeValue as comments, count(agv2.id) || ' results' as description) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, "
+				+ "e.codeName as experimentCode, el.labelText as experimentName, agv.codeValue as comments, "
+				+ "count(agv2.id) || ' results' as description) "
 				+ "FROM AnalysisGroupValue agv "
 				+ "JOIN agv.lsState as ags "
 				+ "JOIN ags.analysisGroup as ag "
@@ -175,7 +179,9 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromSubjectValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, sv.codeValue as comments, count(sv2.id) || ' raw results' as description) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, "
+				+ "e.codeName as experimentCode, el.labelText as experimentName, sv.codeValue as comments, "
+				+ "count(sv2.id) || ' raw results' as description) "
 				+ "FROM SubjectValue sv "
 				+ "JOIN sv.lsState as ss "
 				+ "JOIN ss.subject as s "
@@ -215,7 +221,8 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<ExperimentBatchCodeDTO> findExperimentBatchCodeDTOsFromTreatmentGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, e.codeName as experimentCode, el.labelText as experimentName, tgv.codeValue as comments) "
+		String sql = "SELECT DISTINCT NEW MAP(p.codeName as protocolCode, pl.labelText as protocolName, "
+				+ "e.codeName as experimentCode, el.labelText as experimentName, tgv.codeValue as comments) "
 				+ "FROM TreatmentGroupValue tgv "
 				+ "JOIN tgv.lsState as tgs "
 				+ "JOIN tgs.treatmentGroup as tg "
@@ -391,16 +398,16 @@ public class CmpdRegBatchCodeDTO {
 	private void addUniqueExperiments(Collection<ExperimentBatchCodeDTO> experimentBatchCodeDTOs) {
 		for (ExperimentBatchCodeDTO experimentBatchCodeDTO : experimentBatchCodeDTOs) {
 			Boolean addIt = true;
-			for(ExperimentBatchCodeDTO experimentCodeTable : linkedExperiments) {
-				if(experimentBatchCodeDTO.getExperimentCode().equals(experimentCodeTable.getExperimentCode())) {
+			for(ExperimentBatchCodeDTO existingExperimentBatchCodeDTO : linkedExperiments) {
+				if(experimentBatchCodeDTO.getExperimentCode().equals(existingExperimentBatchCodeDTO.getExperimentCode())) {
 					addIt = false;
 					if(experimentBatchCodeDTO.getDescription() != null) {
-						if(experimentCodeTable.getDescription() == null) {
+						if(existingExperimentBatchCodeDTO.getDescription() == null) {
 							// Just set the description
-							experimentCodeTable.setDescription(experimentBatchCodeDTO.getDescription());
+							existingExperimentBatchCodeDTO.setDescription(experimentBatchCodeDTO.getDescription());
 						} else {
 							// Add the description to the existing description
-							experimentCodeTable.setDescription(experimentCodeTable.getDescription() + " and " + experimentBatchCodeDTO.getDescription());
+							existingExperimentBatchCodeDTO.setDescription(existingExperimentBatchCodeDTO.getDescription() + " and " + experimentBatchCodeDTO.getDescription());
 						}
 					}
 					break;
