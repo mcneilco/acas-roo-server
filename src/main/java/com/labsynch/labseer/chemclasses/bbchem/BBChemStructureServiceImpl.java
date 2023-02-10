@@ -203,7 +203,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		return groups;
 	}
 
-	private JsonNode postToProcessService(HashMap<String, String> structures, Boolean stopNeutralization) throws IOException {
+	private JsonNode postToProcessService(HashMap<String, String> structures, Boolean skipNeutralization) throws IOException {
 
 		String url = propertiesUtilService.getLDChemURL() + PROCESS_PATH;
 
@@ -219,7 +219,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		// Get the standardizer actions
 		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
 
-		if(stopNeutralization){
+		if(skipNeutralization){
 			((ObjectNode)standardizerActions).put("NEUTRALIZE", "false");
 		}
 
@@ -305,21 +305,21 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public JsonNode postToProcessService(String molfile, Boolean stopNeutralization) throws IOException {
+	public JsonNode postToProcessService(String molfile, Boolean skipNeutralization) throws IOException {
 
 		// New hashamp
 		HashMap<String, String> structures = new HashMap<String, String>();
 		// Add the molfile to the hashmap
 		structures.put("mol", molfile);
 		// Post to the service
-		JsonNode jsonNode = postToProcessService(structures, stopNeutralization);
+		JsonNode jsonNode = postToProcessService(structures, skipNeutralization);
 
 		return jsonNode;
 	}
 
 	@Override
 	public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures,
-			Boolean includeFingerprints, Boolean stopNeutralization) throws CmpdRegMolFormatException {
+			Boolean includeFingerprints, Boolean skipNeutralization) throws CmpdRegMolFormatException {
 
 		// Return map
 		HashMap<String, BBChemParentStructure> processedStructures = new HashMap<String, BBChemParentStructure>();
@@ -328,7 +328,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		try {
 			JsonNode responseNode;
 			try {
-				responseNode = postToProcessService(structures, stopNeutralization);
+				responseNode = postToProcessService(structures, skipNeutralization);
 			} catch (IOException e) {
 				throw new CmpdRegMolFormatException(e);
 			}
@@ -456,7 +456,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints, Boolean stopNeutralization)
+	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints, Boolean skipNeutralization)
 			throws CmpdRegMolFormatException {
 		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
 		// Post to the service and parse the response
@@ -466,7 +466,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			structures.put("molstructure", molfile);
 
 			HashMap<String, BBChemParentStructure> processedStructuresHashMap = getProcessedStructures(structures,
-					includeFingerprints, stopNeutralization);
+					includeFingerprints, skipNeutralization);
 
 			// Get the first structure
 			bbChemStructure = processedStructuresHashMap.get("molstructure");

@@ -83,7 +83,7 @@ public class CmpdRegMoleculeIndigoImpl implements CmpdRegMolecule {
 	};
 
 	@Override
-	public String getFormula(boolean stopNeutralization) {
+	public String getFormula(boolean skipNeutralization) {
 		return this.molecule.grossFormula();
 	}
 
@@ -93,12 +93,12 @@ public class CmpdRegMoleculeIndigoImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public Double getMass(boolean stopNeutralization) {
+	public Double getMass(boolean skipNeutralization) {
 		return (double) this.molecule.molecularWeight();
 	}
 
 	@Override
-	public int getTotalCharge(boolean stopNeutralization) {
+	public int getTotalCharge(boolean skipNeutralization) {
 		int totalCharge = 0;
 		for (IndigoObject atom : this.molecule.iterateAtoms()) {
 			totalCharge += atom.charge();

@@ -63,14 +63,14 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public String getFormula(boolean stopNeutralization) {
+	public String getFormula(boolean skipNeutralization) {
 		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			return null;
 		} else if (this.molecule.getMolecularFormula() != null) {
 			return this.molecule.getMolecularFormula();
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, stopNeutralization);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, skipNeutralization);
 				return this.molecule.getMolecularFormula();
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
@@ -97,14 +97,14 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public Double getMass(boolean stopNeutralization) {
+	public Double getMass(boolean skipNeutralization) {
 		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			return null;
 		} else if (this.molecule.getAverageMolWeight() != null) {
 			return this.molecule.getAverageMolWeight();
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, stopNeutralization);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, skipNeutralization);
 				return this.molecule.getAverageMolWeight();
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
@@ -114,15 +114,15 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	@Override
-	public int getTotalCharge(boolean stopNeutralization) {
+	public int getTotalCharge(boolean skipNeutralization) {
 		if (this.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			return -1;
-		} else if (this.molecule.getTotalCharge(stopNeutralization) != null) {
-			return this.molecule.getTotalCharge(stopNeutralization);
+		} else if (this.molecule.getTotalCharge(skipNeutralization) != null) {
+			return this.molecule.getTotalCharge(skipNeutralization);
 		} else {
 			try {
-				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, stopNeutralization);
-				return this.molecule.getTotalCharge(stopNeutralization);
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false, skipNeutralization);
+				return this.molecule.getTotalCharge(skipNeutralization);
 			} catch (CmpdRegMolFormatException e) {
 				logger.error(e.getMessage());
 				return -1;

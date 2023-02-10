@@ -323,7 +323,7 @@ public abstract class AbstractBBChemStructure {
         this.averageMolWeight = averageMolWeight;
     }
 
-    public Integer getTotalCharge(boolean stopNeutralization) {
+    public Integer getTotalCharge(boolean skipNeutralization) {
         return this.totalCharge;
     }
 
