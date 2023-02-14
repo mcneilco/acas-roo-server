@@ -220,7 +220,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
 
 		if(skipNeutralization){
-			((ObjectNode)standardizerActions).put("NEUTRALIZE", "false");
+			((ObjectNode)standardizerActions).put("NEUTRALIZE", false);
 		}
 
 		options.replace("standardizer_actions", standardizerActions);
