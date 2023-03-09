@@ -653,7 +653,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	@Override
 	public double getMolWeight(String molStructure) throws CmpdRegMolFormatException {
 		CmpdRegMoleculeIndigoImpl mol = new CmpdRegMoleculeIndigoImpl(molStructure);
-		return mol.getMass();
+		return mol.getMass(false);
 	}
 
 	@Override
@@ -665,7 +665,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	@Override
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
 		CmpdRegMoleculeIndigoImpl mol = new CmpdRegMoleculeIndigoImpl(molStructure);
-		return mol.getFormula();
+		return mol.getFormula(false);
 	}
 
 	@Override

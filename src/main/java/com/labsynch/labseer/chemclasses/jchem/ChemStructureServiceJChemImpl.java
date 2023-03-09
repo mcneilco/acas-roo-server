@@ -1303,7 +1303,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 
 		if (!badStructureFlag) {
-			return mol.getMass();
+			return mol.getMass(false);
 		} else {
 			return 0d;
 		}
@@ -1341,7 +1341,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 
 		if (!badStructureFlag) {
-			return mol.getFormula();
+			return mol.getFormula(false);
 		} else {
 			return null;
 		}

@@ -647,7 +647,7 @@ public class ExperimentServiceTests {
 		Long id = 2123L;
 		String query = "EXPERIMENT 4 EXPT-00000006";
 		Experiment experiment = Experiment.findExperiment(id);
-		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		Assert.assertEquals(1, experiments.size());
 		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
 		experiments.clear();
@@ -657,7 +657,7 @@ public class ExperimentServiceTests {
 		experiment.setIgnored(true);
 		experiment.merge();
 		experiment.flush();
-		experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		experiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		Assert.assertEquals(1, experiments.size());
 		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
 		experiments.clear();
@@ -674,7 +674,7 @@ public class ExperimentServiceTests {
 		experiment.setIgnored(true);
 		experiment.merge();
 		experiment.flush();
-		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		Assert.assertEquals(0, experiments.size());
 
 	}
@@ -706,7 +706,7 @@ public class ExperimentServiceTests {
 	@Test
 	public void searchTest2() throws TooManyResultsException {
 		String query = "EXPT-00000012";
-		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		logger.debug("RESULTS: " + "NUMBER OF EXPERIMENTS: " + experiments.size() + experiments.toString());
 	}
 
@@ -779,24 +779,24 @@ public class ExperimentServiceTests {
 	public void experimentBrowserSearchTest2() throws Exception {
 		String query = "EXPERIMENT 5";
 		logger.info("Searching with the query: " + query);
-		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		logger.info("Found: " + resultExperiments.toString());
 		Assert.assertTrue(resultExperiments.size() > 0);
 		query = "\"EXPERIMENT 5\"";
 		logger.info("Searching with the query: " + query);
-		Collection<Experiment> resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Collection<Experiment> resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		logger.info("Found: " + resultExperiments2.toString());
 		Assert.assertTrue(resultExperiments2.size() > 0);
 		Assert.assertTrue(resultExperiments.size() != resultExperiments2.size());
 
 		query = "EXPERIMENT 50";
 		logger.info("Searching with the query: " + query);
-		resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		logger.info("Found: " + resultExperiments.toString());
 		Assert.assertTrue(resultExperiments.size() > 0);
 		query = "\"EXPERIMENT 50\"";
 		logger.info("Searching with the query: " + query);
-		resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		logger.info("Found: " + resultExperiments2.toString());
 		Assert.assertTrue(resultExperiments2.size() > 0);
 		Assert.assertEquals(resultExperiments.iterator().next().getCodeName(),
@@ -808,7 +808,7 @@ public class ExperimentServiceTests {
 	public void experimentBrowser_dateSearch() throws Exception {
 		String query = "2015-05-08";
 		logger.info("Searching with the query: " + query);
-		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query, false);
 		logger.info("Found: " + resultExperiments.toString());
 		Assert.assertTrue(resultExperiments.size() > 0);
 

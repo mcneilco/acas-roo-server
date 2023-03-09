@@ -165,6 +165,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					mostRecentHistory.setStandardizationStatus("complete");
 					mostRecentHistory.setStandardizationUser("acas");
 					mostRecentHistory.setStandardizationReason("Initial standardization record");
+					// Get the applied standardizer settings
+					StandardizerSettingsConfigDTO appliedStandardizerSettings = chemStructureService.getStandardizerSettings(true);
+					mostRecentHistory.setSettings(appliedStandardizerSettings.toJson());
+					mostRecentHistory.setSettingsHash(appliedStandardizerSettings.hashCode());
 					mostRecentHistory.persist();
 
 				}
@@ -325,7 +329,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			stndznCompound.setRegistrationStatus(cmpdRegMolecule.getRegistrationStatus());
 			stndznCompound.setRegistrationComment(cmpdRegMolecule.getRegistrationComment());
 
-			Double newMolWeight = cmpdRegMolecule.getMass();
+			Double newMolWeight = cmpdRegMolecule.getMass(false);
 			if (newMolWeight != null) {
 				DecimalFormat dMolWeight = new DecimalFormat("#.###");
 				stndznCompound.setNewMolWeight(Double.valueOf(dMolWeight.format(newMolWeight)));
@@ -397,7 +401,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	@Transactional
-	public int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException {
+	public int dupeCheckStandardizationStructures() {
 		List<Long> dryRunIds = StandardizationDryRunCompound.findAllIds().getResultList();
 
 		Long startTime = new Date().getTime();
@@ -437,13 +441,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return(totalNewDuplicateCount);
 	}
 
-	private int dupeCheckStandardizationStructuresBatch(List<Long> dryRunIds)  throws CmpdRegMolFormatException {
-		int totalNewDuplicateCount = 0;
-		for (Long dryRunId : dryRunIds) {
-			int newDuplicates = dupeCheckStandardizationStructure(dryRunId);
-			totalNewDuplicateCount = totalNewDuplicateCount + newDuplicates;
-		}
-		return totalNewDuplicateCount;
+	private int dupeCheckStandardizationStructuresBatch(List<Long> dryRunIds) {
+		return dryRunIds.parallelStream()
+			.mapToInt(dryRunId -> {
+				try {
+					return dupeCheckStandardizationStructure(dryRunId);
+				} catch (CmpdRegMolFormatException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.sum();
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -764,14 +771,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				parent.setExactMass(null);
 			}
 
-			if (cmpdRegMolecule.getMass() != null) {
+			if (cmpdRegMolecule.getMass(false) != null) {
 				DecimalFormat dMolWeight = new DecimalFormat("#.###");
-				parent.setMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass())));
+				parent.setMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass(false))));
 			} else {
 				parent.setMolWeight(null);
 			}
 
-			parent.setMolFormula(cmpdRegMolecule.getFormula());
+			parent.setMolFormula(cmpdRegMolecule.getFormula(false));
 
 			pIds.add(parent.getId());
 

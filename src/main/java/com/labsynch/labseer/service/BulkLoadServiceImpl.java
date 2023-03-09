@@ -52,6 +52,7 @@ import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SolutionUnit;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
@@ -866,6 +867,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			dupeParentList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.PARENT, ChemStructureService.SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 		}
 		if (dupeParentList.length > 0) {
+			// If we find a duplicate parent, we want to maintain the multiple fragments boolean we already have to save time since we have already checked for this
+			// and it is a transient property which wil be null on the found parent we may be overwriting with
+			Boolean multipleFragments = parent.getMultipleFragments();
 			searchResultLoop: for (int foundParentCdId : dupeParentList) {
 				List<Parent> foundParents = Parent.findParentsByCdId(foundParentCdId).getResultList();
 
@@ -894,6 +898,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							// No Changes or Modifications Needed; Can Break Loop
 							// Continue 
 							parent = foundParent;
+							// Add the multiple fragments boolean back to the parent
+							// from the transient property we calculated earlier
+							parent.setMultipleFragments(multipleFragments);
 							break searchResultLoop; 
 						} else { 
 							// Need to Update Aliases of Matching Parent to Be Union of Two Sets
@@ -972,25 +979,29 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 		}
-		// check for multiple fragments, and if isMixture or not
-		Boolean hasMultipleFragments = parent.getMultipleFragments();
-		if (hasMultipleFragments == null){
-			hasMultipleFragments = chemStructureService.checkForSalt(parent.getMolStructure());
-		}
-		if (hasMultipleFragments) {
-			// multiple fragments
-			if (parent.getIsMixture() != null) {
-				if (!parent.getIsMixture()) {
+
+		// Only run mixture check if we have not identified an already existing parent
+		if(parent.getId() == null) {
+			// check for multiple fragments, and if isMixture or not
+			Boolean hasMultipleFragments = parent.getMultipleFragments();
+			if (hasMultipleFragments == null){
+				hasMultipleFragments = chemStructureService.checkForSalt(parent.getMolStructure());
+			}
+			if (hasMultipleFragments) {
+				// multiple fragments
+				if (parent.getIsMixture() != null) {
+					if (!parent.getIsMixture()) {
+						logger.error("Multiple fragments detected. Please fix or mark \"Parent Is Mixture\" as true");
+						throw new SaltedCompoundException(
+								"Multiple fragments detected. Please fix or mark \"Parent Is Mixture\" as true");
+					} else {
+						// do nothing - structure is appropriately marked as a mixture
+					}
+				} else {
 					logger.error("Multiple fragments detected. Please fix or mark \"Parent Is Mixture\" as true");
 					throw new SaltedCompoundException(
 							"Multiple fragments detected. Please fix or mark \"Parent Is Mixture\" as true");
-				} else {
-					// do nothing - structure is appropriately marked as a mixture
 				}
-			} else {
-				logger.error("Multiple fragments detected. Please fix or mark \"Parent Is Mixture\" as true");
-				throw new SaltedCompoundException(
-						"Multiple fragments detected. Please fix or mark \"Parent Is Mixture\" as true");
 			}
 		}
 		// If parent has not already been identified, see if the corpName is provided
@@ -2577,6 +2588,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Collection<Parent> parents = Parent.findParentsByBulkLoadFileEquals(bulkLoadFile).getResultList();
 		numParents = parents.size();
 		for (Parent parent : parents) {
+
+			// Delete any StandardizationDryRunCompounds that are associated with the parent
+			for(StandardizationDryRunCompound s : StandardizationDryRunCompound.findStandardizationDryRunCompoundsByParent(parent)) {
+				s.remove();
+			}
+
 			chemStructureService.deleteStructure(StructureType.PARENT, parent.getCdId());
 			for (ParentAlias alias : parent.getParentAliases()) {
 				alias.remove();

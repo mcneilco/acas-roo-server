@@ -79,7 +79,7 @@ public class V2_0_7_1__Recalculate_exact_mass implements SpringJdbcMigration {
 	private double getMolWeight(String molStructure) {
 		try {
 			CmpdRegMolecule molecule = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
-			return molecule.getMass();
+			return molecule.getMass(false);
 		} catch (Exception e) {
 			return 0d;
 		}

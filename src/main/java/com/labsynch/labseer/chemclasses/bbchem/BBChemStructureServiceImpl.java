@@ -103,8 +103,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " fingerprint tasks");
+		logger.info("Invoking " + tasks.size() + " structure fingerprint tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
+		logger.info("Got responses from all " + tasks.size() + " structure fingerprint tasks");
+		logger.info("Processing " + results.size() + " structure fingerprint responses");
 		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for (Future<Response> response : results) {
 			String responseBody;
@@ -134,7 +136,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			}
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " fingerprint tasks");
+		logger.info("Finished processing " + results.size() + " structure fingerprint responses");
 
 		// The output array is guaranteed to be in the same order as its inputs
 		// Sort the response hashmap by the keys
@@ -201,7 +203,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		return groups;
 	}
 
-	private JsonNode postToProcessService(HashMap<String, String> structures) throws IOException {
+	private JsonNode postToProcessService(HashMap<String, String> structures, Boolean skipNeutralization) throws IOException {
 
 		String url = propertiesUtilService.getLDChemURL() + PROCESS_PATH;
 
@@ -216,6 +218,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 
 		// Get the standardizer actions
 		JsonNode standardizerActions = propertiesUtilService.getStandardizerActions();
+
+		if(skipNeutralization){
+			((ObjectNode)standardizerActions).put("NEUTRALIZE", false);
+		}
 
 		options.replace("standardizer_actions", standardizerActions);
 		requestData.replace("options", options);
@@ -254,8 +260,10 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " process tasks");
+		logger.info("Invoking " + tasks.size() + " structure process tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
+		logger.info("Got responses from all " + tasks.size() + " structure process tasks");
+		logger.info("Processing " + results.size() + " structure process responses");
 		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for (Future<Response> response : results) {
 			String responseBody;
@@ -280,7 +288,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(responseBody);
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " process tasks");
+		logger.info("Finished processing " + results.size() + " structure process responses");
 
 		// Sort the response hashmap by the keys
 		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
@@ -297,21 +305,21 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public JsonNode postToProcessService(String molfile) throws IOException {
+	public JsonNode postToProcessService(String molfile, Boolean skipNeutralization) throws IOException {
 
 		// New hashamp
 		HashMap<String, String> structures = new HashMap<String, String>();
 		// Add the molfile to the hashmap
 		structures.put("mol", molfile);
 		// Post to the service
-		JsonNode jsonNode = postToProcessService(structures);
+		JsonNode jsonNode = postToProcessService(structures, skipNeutralization);
 
 		return jsonNode;
 	}
 
 	@Override
 	public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures,
-			Boolean includeFingerprints) throws CmpdRegMolFormatException {
+			Boolean includeFingerprints, Boolean skipNeutralization) throws CmpdRegMolFormatException {
 
 		// Return map
 		HashMap<String, BBChemParentStructure> processedStructures = new HashMap<String, BBChemParentStructure>();
@@ -320,7 +328,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 		try {
 			JsonNode responseNode;
 			try {
-				responseNode = postToProcessService(structures);
+				responseNode = postToProcessService(structures, skipNeutralization);
 			} catch (IOException e) {
 				throw new CmpdRegMolFormatException(e);
 			}
@@ -448,7 +456,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 	}
 
 	@Override
-	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints)
+	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints, Boolean skipNeutralization)
 			throws CmpdRegMolFormatException {
 		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
 		// Post to the service and parse the response
@@ -458,7 +466,7 @@ public class BBChemStructureServiceImpl implements BBChemStructureService {
 			structures.put("molstructure", molfile);
 
 			HashMap<String, BBChemParentStructure> processedStructuresHashMap = getProcessedStructures(structures,
-					includeFingerprints);
+					includeFingerprints, skipNeutralization);
 
 			// Get the first structure
 			bbChemStructure = processedStructuresHashMap.get("molstructure");

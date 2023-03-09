@@ -19,13 +19,13 @@ public interface CmpdRegMolecule {
 
 	public String getMolStructure() throws CmpdRegMolFormatException;
 
-	public String getFormula();
+	public String getFormula(boolean skipNeutralization);
 
 	public Double getExactMass();
 
-	public Double getMass();
+	public Double getMass(boolean skipNeutralization);
 
-	public int getTotalCharge();
+	public int getTotalCharge(boolean skipNeutralization);
 
 	public String getSmiles();
 

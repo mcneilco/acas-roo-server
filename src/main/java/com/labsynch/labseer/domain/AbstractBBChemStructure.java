@@ -112,7 +112,7 @@ public abstract class AbstractBBChemStructure {
         this.setSimilarity(updatedBbChemStructure.getSimilarity());
         this.setExactMolWeight(updatedBbChemStructure.getExactMolWeight());
         this.setAverageMolWeight(updatedBbChemStructure.getAverageMolWeight());
-        this.setTotalCharge(updatedBbChemStructure.getTotalCharge());
+        this.setTotalCharge(updatedBbChemStructure.getTotalCharge(false));
         this.setSmiles(updatedBbChemStructure.getSmiles());
         this.setMolecularFormula(updatedBbChemStructure.getMolecularFormula());
         this.setStandardizationStatus(updatedBbChemStructure.getStandardizationStatus());
@@ -323,7 +323,7 @@ public abstract class AbstractBBChemStructure {
         this.averageMolWeight = averageMolWeight;
     }
 
-    public Integer getTotalCharge() {
+    public Integer getTotalCharge(boolean skipNeutralization) {
         return this.totalCharge;
     }
 
