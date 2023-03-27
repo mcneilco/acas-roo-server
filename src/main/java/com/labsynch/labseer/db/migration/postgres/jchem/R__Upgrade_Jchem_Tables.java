@@ -58,7 +58,7 @@ public class R__Upgrade_Jchem_Tables implements JdbcMigration, MigrationInfoProv
     @Override
     public Integer getChecksum() {
 		String jchemVersion = VersionInfo.getVersion();
-		System.out.println("R__Upgrade_Jchem_Tables is checking jChem Version:" + jchemVersion);
+		logger.info("R__Upgrade_Jchem_Tables is checking jChem Version:" + jchemVersion);
         return jchemVersion.hashCode();
     }	
 
