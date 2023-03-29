@@ -279,8 +279,14 @@ public class SaltForm implements Comparable {
 			predicateList.add(predicate);
 		}
 		if (searchParams.getFormattedCorpNameList() != null) {
-			logger.debug("incoming corpNameList :" + searchParams.getFormattedCorpNameList().toString());
-			Predicate predicate = saltFormParent.get("corpName").in(searchParams.getFormattedCorpNameList());
+			List<String> corpNames = searchParams.getFormattedCorpNameList();
+			logger.debug("incoming corpNameList :" + corpNames.toString());
+			ArrayList<Predicate> corpNameLikePredicates = new ArrayList<Predicate>();
+			for (String corpName : corpNames) {
+				Predicate predicate = criteriaBuilder.like(saltFormParent.get("corpName"), '%' + corpName);
+				corpNameLikePredicates.add(predicate);
+			}
+			Predicate predicate = criteriaBuilder.or(corpNameLikePredicates.toArray(new Predicate[0]));
 			predicateList.add(predicate);
 		}
 		if (searchParams.getAlias() != null && !searchParams.getAlias().equals("")) {
