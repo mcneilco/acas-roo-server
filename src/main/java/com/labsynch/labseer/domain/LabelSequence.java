@@ -23,21 +23,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import com.labsynch.labseer.utils.SimpleUtil;
-import com.labsynch.labseer.utils.SimpleUtil.DbType;
-
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
+import org.hibernate.annotations.Where;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
@@ -47,23 +45,36 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.utils.ExcludeNulls;
+import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.utils.SimpleUtil.DbType;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
+// Tell hibernate about our partial index unique constraint
+@Table(name = "label_sequence", uniqueConstraints = {
+    @UniqueConstraint(name = "label_sequence_thing_label_prefix_key", columnNames = {"thing_type_and_kind", "label_type_and_kind", "label_prefix"})
+})
+@Where(clause = "ignored = false")
 public class LabelSequence {
 
     @NotNull
     @Size(max = 255)
+    @Column(name = "thing_type_and_kind")
     private String thingTypeAndKind;
 
     @NotNull
     @Size(max = 255)
+    @Column(name = "label_type_and_kind")
     private String labelTypeAndKind;
 
     @NotNull
     @Size(max = 50)
+    @Column(name = "label_prefix")
     private String labelPrefix;
 
     @Size(max = 10)
