@@ -36,7 +36,7 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 						.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(
 								labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind())
 						.getSingleResult();
-				logger.info("Found existing LabelSequence: '" + savedLabelSequence.getThingTypeAndKind() + "'' "
+				logger.info("Found existing LabelSequence: '" + savedLabelSequence.getThingTypeAndKind() + "' '"
 						+ savedLabelSequence.getLabelTypeAndKind() + "'");
 			} catch (NoResultException e) {
 				logger.info("No existing LabelSequence found, creating new one");
