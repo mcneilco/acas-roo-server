@@ -186,15 +186,16 @@ public class SearchFormServiceImpl implements SearchFormService {
 		if (!searchParams.getCorpNameList().equals("")) {
 			logger.info("got a corp name list search!");
 			String[] inputListArray = searchParams.getCorpNameList().split("[\\s,;\\n\\r]+");
-			List<String> formattedCorpNameList = new ArrayList<String>();
+			HashSet<String> uniqueCorpNames = new HashSet<>();
 			for (String corpName : inputListArray) {
-				logger.info(corpNameService.formatCorpName(corpNameService.parseParentNumber(corpName)));
-				formattedCorpNameList.add(corpName);
-				formattedCorpNameList.add(corpNameService.formatCorpName(corpNameService.parseParentNumber(corpName)));
-
+				uniqueCorpNames.add(corpName);
+				// Remove the prefix, lot.
+				String parentNumber = corpNameService.parseParentNumber(corpName).toString();
+				uniqueCorpNames.add(parentNumber);
 			}
-			searchParams.setFormattedCorpNameList(formattedCorpNameList);
-			logger.info(formattedCorpNameList.toString());
+			List<String> corpNames = new ArrayList<String>(uniqueCorpNames);
+			logger.info(corpNames.toString());
+			searchParams.setFormattedCorpNameList(corpNames);
 		}
 		// Check if corpNameFrom and corpNameTo are both set -- will search for a range
 		// of parents if both set
