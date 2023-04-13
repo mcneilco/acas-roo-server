@@ -91,7 +91,7 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getFormula(boolean skipNeutralization) {
-		return this.molecule.getFormula();
+		return this.molecule.getFormula(skipNeutralization);
 	}
 
 	@Override
