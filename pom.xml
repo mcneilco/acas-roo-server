@@ -123,6 +123,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<artifactId>guava</artifactId>
 					<version>23.0</version>
 				</dependency>
+				<dependency>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+					<version>3.12.0</version>
+				</dependency>
 			</dependencies>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
