@@ -13,6 +13,8 @@ DECLARE
 BEGIN
     FOREACH table_name IN ARRAY table_names
     LOOP 
-        EXECUTE 'ALTER TABLE ' || table_name || ' ALTER COLUMN substructure TYPE bit(2112) USING substructure || B''1''::bit(64);';
+        -- Truncate the table to avoid any issues with the new column length acas will fill it back on startup.
+        EXECUTE 'TRUNCATE TABLE ' || table_name;
+        EXECUTE 'ALTER TABLE ' || table_name || ' ALTER COLUMN substructure TYPE bit(2112)';
     END LOOP;
 END $$;
