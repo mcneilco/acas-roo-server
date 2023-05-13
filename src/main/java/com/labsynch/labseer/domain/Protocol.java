@@ -129,8 +129,14 @@ public class Protocol extends AbstractThing {
         return updatedProtocol;
     }
 
-    public static List<com.labsynch.labseer.domain.Protocol> findProtocolByProtocolName(String protocolName) {
-        List<ProtocolLabel> foundProtocolLabels = ProtocolLabel.findProtocolLabelsByName(protocolName).getResultList();
+    public static List<com.labsynch.labseer.domain.Protocol> findProtocolByProtocolName(String protocolName, boolean useLike) {
+        List<ProtocolLabel> foundProtocolLabels;
+        if (useLike) {
+            foundProtocolLabels = ProtocolLabel.findProtocolLabelsByName(protocolName).getResultList();
+        } else {
+            foundProtocolLabels = ProtocolLabel.findProtocolLabelsByNameLike(protocolName).getResultList();
+        }
+        
         List<Protocol> protocolList = new ArrayList<Protocol>();
         for (ProtocolLabel protocolLabel : foundProtocolLabels) {
             Protocol protocol = Protocol.findProtocol(protocolLabel.getProtocol().getId());

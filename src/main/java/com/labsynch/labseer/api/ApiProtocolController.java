@@ -371,7 +371,7 @@ public class ApiProtocolController {
         String protocolName = restOfTheUrl.split("protocolname\\/")[1].replaceAll("/$", "");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolByProtocolName(protocolName)),
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolByProtocolName(protocolName, false)),
                 headers, HttpStatus.OK);
     }
 
@@ -382,7 +382,18 @@ public class ApiProtocolController {
             @RequestParam("protocolName") String protocolName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolByProtocolName(protocolName)),
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolByProtocolName(protocolName, false)),
+                headers, HttpStatus.OK);
+    }
+
+    @Transactional
+    @RequestMapping(params = "FindByProtocolNameLike", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> jsonFindProtocolsByProtocolNameLikeGet(
+            @RequestParam("protocolName") String protocolName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolByProtocolName(protocolName, true)),
                 headers, HttpStatus.OK);
     }
 
