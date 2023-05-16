@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,17 +40,20 @@ public class ApiFileSaveController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiFileSaveController.class);
 
 	@RequestMapping(method = RequestMethod.POST)
-	public HttpEntity<String> create(@RequestBody FileSaveSendDTO fileSave) {
-		
-	  
+	public HttpEntity<String> create(@RequestParam("description[]") List<String> description,
+			@RequestParam("writeup[]") List<String> writeup,
+			@RequestParam("subdir") String subdir,
+			@RequestParam("ie") boolean ie,
+			@RequestParam("file[]") List<MultipartFile> file) {
+
 		logger.debug("receiving the post file");
 
-		// FileSaveSendDTO fileSave = new FileSaveSendDTO();
-		// fileSave.setDescription(description);
-		// fileSave.setWriteup(writeup);
-		// fileSave.setFile(file);
-		// fileSave.setIe(ie);
-		// fileSave.setSubdir(subdir);
+		FileSaveSendDTO fileSave = new FileSaveSendDTO();
+		fileSave.setDescription(description);
+		fileSave.setWriteup(writeup);
+		fileSave.setFile(file);
+		fileSave.setIe(ie);
+		fileSave.setSubdir(subdir);
 
 		logger.debug("subdir to save to: " + fileSave.getSubdir());
 		logger.debug("ie mode: " + fileSave.getIe());
