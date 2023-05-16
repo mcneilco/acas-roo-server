@@ -40,100 +40,67 @@ public class FileSaveSendDTO {
 
 	private List<String> writeup = new ArrayList<String>();
 
+	private List<Long> size = new ArrayList<Long>();
+
+	private List<String> contentType = new ArrayList<String>();
+
 	@Transient
-	private List<MultipartFile> file = new ArrayList<MultipartFile>();
+	private List<String> file = new ArrayList<String>();
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
-	public List<MultipartFile> getFile() {
+	public List<String> getFile() {
 		return file;
 	}
 
 	// save file to disk, save filename , file size to database
 	public List<FileSaveReturnDTO> saveFile() {
 
-		List<MultipartFile> fileList = this.file;
+		List<String> fileList = this.file;
 
 		List<String> descriptionList = this.description;
 
 		List<String> writeupList = this.writeup;
+
+		List<Long> sizeList = this.size;
+
+		List<String> contentTypeList = this.contentType;
 
 		List<FileSaveReturnDTO> fileSaveArray = new ArrayList<FileSaveReturnDTO>();
 
 		logger.debug("FileSaveSendDTO: Number of files to save: " + fileList.size());
 		for (int i = 0; i < fileList.size(); i++) {
 			logger.debug("current file number: " + i);
-			MultipartFile file = fileList.get(i);
+			String file = fileList.get(i);
 			logger.debug("is the file empty: " + file.isEmpty());
 
 			if (!file.isEmpty()) {
 				String description = descriptionList.get(i);
 				String writeup = writeupList.get(i);
+				Long size = sizeList.get(i);
+				String contentType = contentTypeList.get(i);
 				FileSaveReturnDTO fileSaveReturn = new FileSaveReturnDTO();
-				try {
-					InputStream in = file.getInputStream();
-					String rootSavePath = propertiesUtilService.getNotebookSavePath();
-					logger.debug(rootSavePath);
-					String savePath = rootSavePath + this.getSubdir() + File.separator;
-					logger.debug(savePath);
-					String saveFileName = savePath + file.getOriginalFilename();
-					logger.debug(saveFileName);
-					boolean createdDir = new File(savePath).mkdirs();
-					if (createdDir) {
-						logger.debug("new directory created " + savePath);
-					} else {
-						logger.error("unable to create the directory " + savePath);
-					}
-					logger.debug(" Saving file: " + file.getOriginalFilename() + " to  " + saveFileName);
 
-					// URL encode the file name
-					String charset = "UTF-8";
-					String urlString = "getFile?fileUrl=" + URLEncoder.encode(saveFileName, charset);
+				// Get the file name from the string file path
+				File aFile = new File(file);
 
-					logger.debug("url string " + urlString);
+				fileSaveReturn.setName(aFile.getName());
+				fileSaveReturn.setSize(size);
+				fileSaveReturn.setType(contentType);
+				// fileSaveReturn.setUrl(urlString);
 
-					FileOutputStream f = new FileOutputStream(saveFileName);
+				fileSaveReturn.setUploaded(true);
+				fileSaveReturn.setDescription(description);
+				fileSaveReturn.setWriteup(writeup);
+				fileSaveReturn.setIe(this.getIe());
+				fileSaveReturn.setSubdir(this.getSubdir());
 
-					int ch = 0;
-					while ((ch = in.read()) != -1) {
-						f.write(ch);
-					}
-					f.flush();
-					f.close();
+				logger.debug("Ready to save the file " + fileSaveReturn.getType() + "  " + fileSaveReturn.getName()
+						+ " " + fileSaveReturn.getUrl());
 
-					String contentType = null;
-					contentType = MimeTypeUtil.getContentTypeFromExtension(file.getOriginalFilename());
-					if (contentType == null) {
-						// logger.debug("content type was null -- try to get it from the file itself");
-						// contentType = file.getContentType();
-						logger.debug("unknown content type -- set to default binary type");
-						contentType = MimeTypeUtil.getContentTypeFromExtension("fileName.defaultbin");
+				fileSaveArray.add(fileSaveReturn);
 
-					}
-
-					fileSaveReturn.setName(file.getOriginalFilename());
-					fileSaveReturn.setSize(file.getSize());
-					fileSaveReturn.setType(contentType);
-					fileSaveReturn.setUploaded(true);
-					fileSaveReturn.setUrl(urlString);
-					fileSaveReturn.setDescription(description);
-					fileSaveReturn.setWriteup(writeup);
-					fileSaveReturn.setIe(this.getIe());
-					fileSaveReturn.setSubdir(this.getSubdir());
-
-					logger.debug("Ready to save the file " + fileSaveReturn.getType() + "  " + fileSaveReturn.getName()
-							+ " " + fileSaveReturn.getUrl());
-
-					fileSaveArray.add(fileSaveReturn);
-
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		}
 
@@ -207,7 +174,7 @@ public class FileSaveSendDTO {
 		this.writeup = writeup;
 	}
 
-	public void setFile(List<MultipartFile> file) {
+	public void setFile(List<String> file) {
 		this.file = file;
 	}
 
@@ -218,4 +185,21 @@ public class FileSaveSendDTO {
 	public void setPropertiesUtilService(PropertiesUtilService propertiesUtilService) {
 		this.propertiesUtilService = propertiesUtilService;
 	}
+
+	public List<Long> getSize() {
+		return this.size;
+	}
+
+	public void setSize(List<Long> size) {
+		this.size = size;
+	}
+
+	public List<String> getContentType() {
+		return this.contentType;
+	}
+
+	public void setContentType(List<String> contentType) {
+		this.contentType = contentType;
+	}
+
 }
