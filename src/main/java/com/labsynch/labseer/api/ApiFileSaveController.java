@@ -47,13 +47,6 @@ public class ApiFileSaveController {
 	  
 		logger.debug("receiving the post file");
 
-		// FileSaveSendDTO fileSave = new FileSaveSendDTO();
-		// fileSave.setDescription(description);
-		// fileSave.setWriteup(writeup);
-		// fileSave.setFile(file);
-		// fileSave.setIe(ie);
-		// fileSave.setSubdir(subdir);
-
 		logger.debug("subdir to save to: " + fileSave.getSubdir());
 		logger.debug("ie mode: " + fileSave.getIe());
 
@@ -67,110 +60,6 @@ public class ApiFileSaveController {
 		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(FileSaveReturnDTO.toJsonArray(fileSaveArray), headers, HttpStatus.OK);
-	}
-
-	@RequestMapping(value = "/getFile", method = RequestMethod.GET)
-	public void getfile(@RequestParam("fileUrl") String fileUrl,
-			HttpServletResponse response,
-			Model model) {
-
-		logger.debug("raw query url: " + fileUrl);
-
-		// removing hack that was required due to Node pipe error.
-		// fileUrl = fileUrl.replace("/", File.separator);
-		// logger.debug("replacing with File.separator " + File.separator);
-		// logger.debug("modified query url: " + fileUrl);
-
-		String searchFileUrl = "getFile?fileUrl=" + fileUrl; // this is an ugly hack -- we should clean up this code
-																// better to use the fileList id as a handle
-
-		// It would be better to get the content type from the database instead of from
-		// the file (performance)
-		// However, I am concerned about getting the info by the fileUrl -- is it unique
-		// prefer to get the unique ID to work with
-
-		File readFile = new File(fileUrl);
-		FileInputStream fis = null;
-		BufferedInputStream bis = null;
-		String fileName = readFile.getName();
-
-		String fileType = MimeTypeUtil.getContentTypeFromExtension(fileName);
-		logger.debug("Incoming file url: " + fileUrl);
-		logger.debug("here is the file name from the file itself: " + fileName);
-		logger.debug("here is the absolute file name from the file itself: " + readFile.getAbsoluteFile());
-
-		try {
-			response.setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
-			// response.setHeader("Cache-Control","no-store, no-cache, must-revalidate");
-			// response.setHeader("Pragma","no-cache");
-
-			String mimeType = null;
-
-			if (fileType == null) {
-				logger.debug("file extension is not a known type");
-				List<FileList> fileLists = FileList.findFileListsByUrlEquals(searchFileUrl).getResultList();
-				FileList fileList = null;
-				int numberOfFiles = fileLists.size();
-				logger.debug("number of files found with the same url: " + numberOfFiles);
-				if (numberOfFiles > 0) {
-					fileList = fileLists.get(numberOfFiles - 1); // just get a single element - the most recent file
-				} else {
-					logger.error("did not find any files for the given url " + searchFileUrl);
-
-				}
-				logger.debug("here is the file type from the database object: " + fileList.getType());
-				mimeType = fileList.getType();
-			} else {
-				logger.debug("here is the file type from the file object: " + fileType);
-				mimeType = fileType;
-			}
-			logger.debug("the mime type for the file is " + mimeType);
-
-			response.setContentType(mimeType);
-
-			OutputStream out = response.getOutputStream();
-
-			logger.debug("reading the file");
-			fis = new FileInputStream(readFile);
-			bis = new BufferedInputStream(fis);
-			IOUtils.copy(bis, out);
-			out.flush();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@RequestMapping(value = "/showSavedFile/{id}", method = RequestMethod.GET)
-	public String showdoc(@PathVariable("id") Long id,
-			HttpServletResponse response,
-			Model model) {
-
-		FileList fileList = FileList.findFileList(id);
-
-		File readFile = new File(fileList.getFilePath());
-		FileInputStream fis = null;
-		BufferedInputStream bis = null;
-
-		try {
-			response.setHeader("Content-Disposition", "inline;filename=\"" + fileList.getFileName() + "\"");
-			OutputStream out = response.getOutputStream();
-			response.setContentType(fileList.getType());
-
-			fis = new FileInputStream(readFile);
-			bis = new BufferedInputStream(fis);
-
-			IOUtils.copy(bis, out);
-			out.flush();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }
