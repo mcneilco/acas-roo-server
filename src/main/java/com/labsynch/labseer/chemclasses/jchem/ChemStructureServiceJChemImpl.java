@@ -736,12 +736,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				boolean coloringEnabled = true;
 				Color hitColor = Color.blue;
 				Color nonHitColor = Color.black;
-				hitColorOptions.coloring = true;
-				hitColorOptions.hitColor = hitColor;
-				hitColorOptions.nonHitColor = nonHitColor;
-				// hitColorOptions.setColoringEnabled(coloringEnabled);
-				// hitColorOptions.setHitColor(hitColor);
-				// hitColorOptions.setNonHitColor(nonHitColor);
+				// hitColorOptions.coloring = true;
+				// hitColorOptions.hitColor = hitColor;
+				// hitColorOptions.nonHitColor = nonHitColor;
+				hitColorOptions.setColoringEnabled(coloringEnabled);
+				hitColorOptions.setHitColor(hitColor);
+				hitColorOptions.setNonHitColor(nonHitColor);
 
 			} else if (searchType == SearchType.SIMILARITY) {
 				searchOptions = new JChemSearchOptions(SearchConstants.SIMILARITY);
@@ -983,12 +983,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				boolean coloringEnabled = true;
 				Color hitColor = Color.blue;
 				Color nonHitColor = Color.black;
-				hitColorOptions.coloring = true;
-				hitColorOptions.hitColor = hitColor;
-				hitColorOptions.nonHitColor = nonHitColor;
-				// hitColorOptions.setColoringEnabled(coloringEnabled);
-				// hitColorOptions.setHitColor(hitColor);
-				// hitColorOptions.setNonHitColor(nonHitColor);
+				// hitColorOptions.coloring = true;
+				// hitColorOptions.hitColor = hitColor;
+				// hitColorOptions.nonHitColor = nonHitColor;
+				hitColorOptions.setColoringEnabled(coloringEnabled);
+				hitColorOptions.setHitColor(hitColor);
+				hitColorOptions.setNonHitColor(nonHitColor);
 
 			} else if (searchType == SearchType.SIMILARITY) {
 				searchOptions = new JChemSearchOptions(SearchConstants.SIMILARITY);
@@ -1302,8 +1302,8 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			badStructureFlag = true;
 		}
 
-		if (!badStructureFlag) {
-			return mol.getMass(false);
+		if ((!badStructureFlag) && (mol != null)) {
+			return mol.getMass();
 		} else {
 			return 0d;
 		}
@@ -1340,8 +1340,8 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			badStructureFlag = true;
 		}
 
-		if (!badStructureFlag) {
-			return mol.getFormula(false);
+		if ((!badStructureFlag) && (mol != null)) {
+			return mol.getFormula();
 		} else {
 			return null;
 		}
