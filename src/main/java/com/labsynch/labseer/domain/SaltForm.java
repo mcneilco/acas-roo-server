@@ -29,7 +29,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Order;
 import javax.validation.constraints.Size;
 
 import com.labsynch.labseer.dto.SearchFormDTO;
@@ -239,6 +241,7 @@ public class SaltForm implements Comparable {
 
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
+		List<Order> orderList = new ArrayList<Order>();
 
 		if (searchParams.getChemist() != null && !searchParams.getChemist().equals("anyone")) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
@@ -282,12 +285,24 @@ public class SaltForm implements Comparable {
 			List<String> corpNames = searchParams.getFormattedCorpNameList();
 			logger.debug("incoming corpNameList :" + corpNames.toString());
 			ArrayList<Predicate> corpNameLikePredicates = new ArrayList<Predicate>();
+			Expression<Double> maxSimilarity = null;
 			for (String corpName : corpNames) {
 				Predicate predicate = criteriaBuilder.like(saltFormParent.get("corpName"), '%' + corpName);
 				corpNameLikePredicates.add(predicate);
+				Expression<Double> similarity = criteriaBuilder.function("similarity", Double.class, saltFormParent.get("corpName"), criteriaBuilder.literal(corpName));
+				if (maxSimilarity == null) {
+					maxSimilarity = similarity;
+				}
+				else {
+					maxSimilarity = criteriaBuilder.selectCase().when(criteriaBuilder.greaterThan(similarity, maxSimilarity), similarity).otherwise(maxSimilarity).as(Double.class);
+				}
+				logger.info("Processing corpName: " + corpName);
 			}
 			Predicate predicate = criteriaBuilder.or(corpNameLikePredicates.toArray(new Predicate[0]));
 			predicateList.add(predicate);
+			if (maxSimilarity != null) {
+				orderList.add(criteriaBuilder.desc(maxSimilarity));
+			}
 		}
 		if (searchParams.getAlias() != null && !searchParams.getAlias().equals("")) {
 			Predicate predicate = null;
@@ -335,6 +350,7 @@ public class SaltForm implements Comparable {
 
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
+		criteria.orderBy(orderList);
 		TypedQuery<SaltForm> q = em.createQuery(criteria);
 
 		if (searchParams.getMaxSynthDate() != null) {
