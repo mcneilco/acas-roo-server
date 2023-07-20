@@ -613,7 +613,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 
 	private SearchFormReturnDTO filterSearchResultsByProject(SearchFormReturnDTO searchResults, List<String> projects) {
 		if (!searchResults.getFoundCompounds().isEmpty()) {
-			Collection<SearchCompoundReturnDTO> filteredFoundCompounds = new HashSet<SearchCompoundReturnDTO>();
+			Collection<SearchCompoundReturnDTO> filteredFoundCompounds = new ArrayList<SearchCompoundReturnDTO>();
 			for (SearchCompoundReturnDTO foundCompound : searchResults.getFoundCompounds()) {
 				List<SearchLotDTO> filteredFoundLots = new ArrayList<SearchLotDTO>();
 				for (SearchLotDTO foundLot : foundCompound.getLotIDs()) {

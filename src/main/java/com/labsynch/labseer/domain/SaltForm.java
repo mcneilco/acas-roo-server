@@ -289,18 +289,28 @@ public class SaltForm implements Comparable {
 			for (String corpName : corpNames) {
 				Predicate predicate = criteriaBuilder.like(saltFormParent.get("corpName"), '%' + corpName);
 				corpNameLikePredicates.add(predicate);
-				Expression<Double> similarity = criteriaBuilder.function("similarity", Double.class, saltFormParent.get("corpName"), criteriaBuilder.literal(corpName));
+				// Using pg_trgm.similarity to order results based on how similar the value is to
+				// the formatted corporate names.
+				Expression<Double> similarity = criteriaBuilder.function(
+					"similarity",
+					Double.class,
+					saltFormParent.get("corpName"),
+					criteriaBuilder.literal(corpName)
+				);
 				if (maxSimilarity == null) {
 					maxSimilarity = similarity;
 				}
 				else {
-					maxSimilarity = criteriaBuilder.selectCase().when(criteriaBuilder.greaterThan(similarity, maxSimilarity), similarity).otherwise(maxSimilarity).as(Double.class);
+					maxSimilarity = criteriaBuilder.selectCase()
+						.when(criteriaBuilder.greaterThan(similarity, maxSimilarity), similarity)
+						.otherwise(maxSimilarity)
+						.as(Double.class);
 				}
-				logger.info("Processing corpName: " + corpName);
 			}
 			Predicate predicate = criteriaBuilder.or(corpNameLikePredicates.toArray(new Predicate[0]));
 			predicateList.add(predicate);
 			if (maxSimilarity != null) {
+				// Rows with a higher similarity will be ordered first.
 				orderList.add(criteriaBuilder.desc(maxSimilarity));
 			}
 		}
