@@ -1118,6 +1118,45 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	}
 
+	public Collection<Experiment> findExperimentsByProtocolCodeName(String codeName, List<String> projects)
+			throws TooManyResultsException, NoResultException {
+		List<Protocol> protocols = Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList();
+			
+		if (protocols.size() > 1) {
+			logger.error("ERROR: multiple protocols found with the same code name");
+			throw new RuntimeException("ERROR: multiple protocols found with the same code name");
+		} else if (protocols.size() < 1) {
+			logger.warn("WARN: no protocols found with the query code name");
+			throw new NoResultException("WARN: no protocols found with the query code name");
+		}
+
+		Collection<Experiment> rawResults = Experiment.findExperimentsByProtocol(protocols.get(0)).getResultList();
+		if (propertiesUtilService.getRestrictExperiments()) {
+			projects.add("unassigned");
+			Collection<Experiment> results = new HashSet<Experiment>();
+			for (Experiment rawResult : rawResults) {
+				String experimentProject = null;
+				for (ExperimentState state : rawResult.getLsStates()) {
+					if (!state.isIgnored() && !state.isDeleted()) {
+						for (ExperimentValue value : state.getLsValues()) {
+							if (value.getLsKind().equals("project") && !value.getDeleted() && !value.getIgnored()) {
+								experimentProject = value.getCodeValue();
+								break;
+							}
+						}
+					}
+				}
+				if (projects.contains(experimentProject)) {
+					results.add(rawResult);
+				}
+			}
+			return results;
+		} else {
+			return rawResults;
+		}
+			
+	}
+
 	@Override
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, List<String> projects, Boolean includeDeleted)
 			throws TooManyResultsException {
