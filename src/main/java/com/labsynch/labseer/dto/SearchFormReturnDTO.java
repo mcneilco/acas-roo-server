@@ -15,7 +15,7 @@ import flexjson.transformer.DateTransformer;
 
 public class SearchFormReturnDTO {
 
-	private Collection<SearchCompoundReturnDTO> foundCompounds = new HashSet<SearchCompoundReturnDTO>();
+	private Collection<SearchCompoundReturnDTO> foundCompounds = new ArrayList<SearchCompoundReturnDTO>();
 
 	private boolean lotsWithheld;
 
