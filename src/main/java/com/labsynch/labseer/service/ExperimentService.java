@@ -51,6 +51,10 @@ public interface ExperimentService {
 	public Collection<Experiment> findExperimentsByMetadataJson(
 			List<StringCollectionDTO> metaDataList);
 
+    
+    public Collection<Experiment> findExperimentsByProtocolCodeName(String query, List<String> projects)
+    throws TooManyResultsException;
+    
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName, Boolean includeDeleted)
 			throws TooManyResultsException;
 
