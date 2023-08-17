@@ -1124,7 +1124,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			
 		if (protocols.size() > 1) {
 			logger.error("ERROR: multiple protocols found with the same code name");
-			throw new RuntimeException("ERROR: multiple protocols found with the same code name");
+			throw new TooManyResultsException("ERROR: multiple protocols found with the same code name");
 		} else if (protocols.size() < 1) {
 			logger.warn("WARN: no protocols found with the query code name");
 			throw new NoResultException("WARN: no protocols found with the query code name");
