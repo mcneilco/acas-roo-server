@@ -26,7 +26,7 @@ public class MimeTypeUtil {
 			mimeTypeStream = ApiFileSaveController.class.getClassLoader().getResourceAsStream(MIME_PROP_FILE);
 			Properties mimeTypeProps = new Properties();
 			mimeTypeProps.load(mimeTypeStream);
-			contentType = mimeTypeProps.getProperty(fileExtension);
+			contentType = mimeTypeProps.getProperty(fileExtension.toLowerCase());
 			logger.debug("here is the file contentType: " + contentType);
 
 		} catch (IOException e) {
