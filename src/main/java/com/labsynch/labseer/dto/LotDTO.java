@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.LotAlias;
@@ -67,7 +68,7 @@ public class LotDTO {
 	private Double totalAmountStored;
 	private String totalAmountStoredUnitsCode;
 	private String vendorCode;
-	private String vendorId;
+	private String vendorID;
 	private String saltFormCorpName;
 	private String casNumber;
 	private String saltAbbrevs;
@@ -598,12 +599,12 @@ public class LotDTO {
 		this.vendorCode = vendorCode;
 	}
 
-	public String getVendorId() {
-		return this.vendorId;
+	public String getVendorID() {
+		return this.vendorID;
 	}
 
-	public void setVendorId(String vendorId) {
-		this.vendorId = vendorId;
+	public void setVendorID(String vendorID) {
+		this.vendorID = vendorID;
 	}
 
 	public String getSaltFormCorpName() {

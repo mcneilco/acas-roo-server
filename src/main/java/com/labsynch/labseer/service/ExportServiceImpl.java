@@ -181,8 +181,8 @@ public class ExportServiceImpl implements ExportService {
 				mol.setProperty("Supplier", lotDTO.getSupplier());
 			if (lotDTO.getSupplierID() != null)
 				mol.setProperty("Supplier ID", lotDTO.getSupplierID());
-			if (lotDTO.getVendorId() != null)
-				mol.setProperty("Vendor ID", lotDTO.getVendorId());
+			if (lotDTO.getVendorID() != null)
+				mol.setProperty("Vendor ID", lotDTO.getVendorID());
 			if (lotDTO.getSupplierLot() != null)
 				mol.setProperty("Supplier Lot", lotDTO.getSupplierLot());
 			if (lotDTO.getSynthesisDate() != null)
