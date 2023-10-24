@@ -725,8 +725,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					((metalotReturn.getMetalot().getLot().getSupplierID() == null) ? ""
 							: metalotReturn.getMetalot().getLot().getSupplierID()));
 			mol.setProperty("Registered Lot Vendor ID",
-					((metalotReturn.getMetalot().getLot().getVendorId() == null) ? ""
-							: metalotReturn.getMetalot().getLot().getVendorId()));
+					((metalotReturn.getMetalot().getLot().getVendorID() == null) ? ""
+							: metalotReturn.getMetalot().getLot().getVendorID()));
 			if (!parentAliasList.isEmpty()) {
 				for (String alias : parentAliasList) {
 					if (allParentAliases.length() == 0)
@@ -1384,7 +1384,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		lot.setColor(getStringValueFromMappings(mol, "Lot Color", mappings, results, recordNumber));
 		lot.setSupplier(getStringValueFromMappings(mol, "Lot Supplier", mappings, results, recordNumber));
 		lot.setSupplierID(getStringValueFromMappings(mol, "Lot Supplier ID", mappings, results, recordNumber));
-		lot.setVendorId(getStringValueFromMappings(mol, "Lot Vendor ID", mappings, results, recordNumber));
+		lot.setVendorID(getStringValueFromMappings(mol, "Lot Vendor ID", mappings, results, recordNumber));
 		lot.setComments(getStringValueFromMappings(mol, "Lot Comments", mappings, results, recordNumber));
 		lot.setSupplierLot(getStringValueFromMappings(mol, "Lot Supplier Lot", mappings, results, recordNumber));
 		lot.setMeltingPoint(getNumericValueFromMappings(mol, "Lot Melting Point", mappings, results, recordNumber));
