@@ -148,7 +148,7 @@ public class Lot {
 
     @Size(max = 255)
     @Column(name = "vendorid")
-    private String vendorId;
+    private String vendorID;
 
     @ManyToOne
     @JoinColumn(name = "salt_form")
@@ -898,12 +898,12 @@ public class Lot {
         this.vendor = vendor;
     }
 
-    public String getVendorId() {
-        return this.vendorId;
+    public String getVendorID() {
+        return this.vendorID;
     }
 
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
+    public void setVendorID(String vendorID) {
+        this.vendorID = vendorID;
     }
 
     public Set<FileList> getFileLists() {
@@ -1074,7 +1074,7 @@ public class Lot {
             "registeredBy", "modifiedDate", "modifiedBy", "barcode", "color", "notebookPage", "amount", "amountUnits",
             "solutionAmount", "solutionAmountUnits", "supplier", "supplierID", "purity", "purityOperator",
             "purityMeasuredBy", "chemist", "percentEE", "comments", "isVirtual", "ignore", "physicalState", "vendor",
-            "vendorId", "saltForm", "fileLists", "retain", "retainUnits", "retainLocation", "meltingPoint",
+            "vendorID", "saltForm", "fileLists", "retain", "retainUnits", "retainLocation", "meltingPoint",
             "boilingPoint", "supplierLot", "project", "parent", "bulkLoadFile", "lambda", "absorbance", "stockSolvent",
             "stockLocation", "observedMassOne", "observedMassTwo", "tareWeight", "tareWeightUnits", "totalAmountStored",
             "totalAmountStoredUnits", "lotAliases", "storageLocation");
