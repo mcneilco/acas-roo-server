@@ -609,24 +609,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		if (validate) {
 			try {
-				parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, results);
-				// Check list of aliases within file being bulkloaded
-				if (!propertiesUtilService.getAllowDuplicateParentAliases()) {
-					for (ParentAlias alias : parent.getParentAliases()) {
-						// Skip ignored and deleted aliases
-						if (alias.isDeleted() | alias.isIgnored()) {
-							continue;
-						}
-						// Make sure the parent doesn't already have this alias name
-						if (allAliasMaps.get(alias.getAliasName()) == null) {
-							allAliasMaps.put(alias.getAliasName(), numRecordsRead);
-						} else {
-							throw new NonUniqueAliasException(
-									"Within File, Parent Alias " + alias.getAliasName()
-											+ " is not unique");
-						}
-					}
-				}
+				parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, allAliasMaps, results);
 				saveDryRunCompound(mol, parent, numRecordsRead, dryRunCompound);
 
 			} catch (TransactionSystemException rollbackException) {
@@ -1050,15 +1033,16 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	public Parent validateParentAgainstDryRunCompound(Parent parent, int numRecordsRead,
-			Collection<ValidationResponseDTO> validationResponse)
+			HashMap<String, Integer> allAliasMaps, Collection<ValidationResponseDTO> validationResponse)
 			throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception {
 		int[] dupeDryRunCompoundsList = chemStructureService.searchMolStructures(parent.getCmpdRegMolecule(), StructureType.DRY_RUN, ChemStructureService.SearchType.DUPLICATE_TAUTOMER,  -1F, -1);
+		DupeParentException dupeException = null;
+		int existingParentCdId = -1;
 		if (dupeDryRunCompoundsList.length > 0) {
 			searchResultLoop: for (int foundParentCdId : dupeDryRunCompoundsList) {
 				List<DryRunCompound> foundDryRunCompounds = DryRunCompound.findDryRunCompoundsByCdId(foundParentCdId)
 						.getResultList();
 
-				DupeParentException dupeException = null;
 				String categoryDescription;
 				for (DryRunCompound foundDryRunCompound : foundDryRunCompounds) {
 					// same structure
@@ -1093,6 +1077,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					if (sameStereoCategory & sameStereoComment
 							& (sameCorpName | (noCorpName & (noCorpNameDryRunCompound | sameCorpPrefixOrNoPrefix)))) {
 						// parents match
+						existingParentCdId = foundParentCdId;
 						break searchResultLoop;
 					} else if (sameStereoCategory & sameStereoComment & !sameCorpName & !noCorpName) {
 						// corp name conflict
@@ -1169,7 +1154,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					}
 				}
 				if (dupeException != null) {
-					throw dupeException;
+					break;
 				}
 			}
 		} else {
@@ -1183,13 +1168,38 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if (dryRunCmpds.size() > 0) {
 					logger.error("Within file, parent corp name already exists for a different parent structure: "
 							+ dryRunCmpds.get(0).getCorpName());
-					throw new DupeParentException("Within file, parent corp name " + dryRunCmpds.get(0).getCorpName()
+					dupeException = new DupeParentException("Within file, parent corp name " + dryRunCmpds.get(0).getCorpName()
 							+ " already exists for a different parent structure record number "
 							+ dryRunCmpds.get(0).getRecordNumber());
 				}
 			}
 		}
-
+		if (dupeException != null) {
+			throw dupeException;
+		} else {
+			if (!propertiesUtilService.getAllowDuplicateParentAliases() && parent.getId() == null && existingParentCdId == -1) {
+				// We now know:
+				//   we are enforcing unique aliases
+				//   this isn't a dupe structure (didn't already throw dupe exception)
+				//   this isn't an existing parent (existing parent id is null)
+				//   this isn't a second batch of a parent that already exists in the file (existing parent cd id is -1)
+				//   This means that the parent is new and we need to check for duplicate aliases using our map of all aliases
+				for (ParentAlias alias : parent.getParentAliases()) {
+					// Skip ignored and deleted aliases
+					if (alias.isDeleted() | alias.isIgnored()) {
+						continue;
+					}
+					// Make sure the parent doesn't already have this alias name
+					if (allAliasMaps.get(alias.getAliasName()) == null) {
+						allAliasMaps.put(alias.getAliasName(), numRecordsRead);
+					} else {
+						throw new NonUniqueAliasException(
+								"Within File, Parent Alias " + alias.getAliasName()
+										+ " is not unique");
+					}
+				}
+			}
+		}
 		return parent;
 	}
 
