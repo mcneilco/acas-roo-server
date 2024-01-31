@@ -246,7 +246,7 @@ public class ApiExperimentController {
 				}
 			}
 		} else if (protocolKind == null && protocolName != null) {
-			List<Protocol> protocols = Protocol.findProtocolByProtocolName(protocolName);
+			List<Protocol> protocols = Protocol.findProtocolByProtocolName(protocolName, false);
 			for (Protocol protocol : protocols) {
 				List<Experiment> experiments = Experiment.findExperimentsByProtocol(protocol).getResultList();
 				for (Experiment experiment : experiments) {

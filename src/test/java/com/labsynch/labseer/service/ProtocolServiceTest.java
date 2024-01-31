@@ -46,7 +46,7 @@ public class ProtocolServiceTest {
 
 	// @Test
 	public void FindProtocolByName_Test10() {
-		List<Protocol> protocols = Protocol.findProtocolByProtocolName("test");
+		List<Protocol> protocols = Protocol.findProtocolByProtocolName("test", false);
 		logger.info("Found number of protocols: " + protocols.size());
 		for (Protocol protocol : protocols) {
 			logger.info(protocol.toJson());
