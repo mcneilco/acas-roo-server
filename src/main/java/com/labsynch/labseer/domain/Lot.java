@@ -614,7 +614,7 @@ public class Lot {
 
         EntityManager em = Lot.entityManager();
         String query = "SELECT new com.labsynch.labseer.dto.LotsByProjectDTO( "
-                + "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project) "
+                + "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project, lt.chemist as chemist) "
                 + "FROM Lot AS lt "
                 + "JOIN lt.saltForm sltfrm "
                 + "JOIN sltfrm.parent prnt "
