@@ -14,6 +14,8 @@ public class LotsByProjectDTO {
     private String parentCorpName;
     private String project;
     private String chemist;
+    private String vendor;
+    private String supplier;
 
     public LotsByProjectDTO(
             long id,
@@ -22,7 +24,9 @@ public class LotsByProjectDTO {
             Date registrationDate,
             String parentCorpName,
             String project,
-            String chemist) {
+            String chemist,
+            String vendor,
+            String supplier) {
 
         this.id = id;
         this.lotCorpName = lotCorpName;
@@ -31,6 +35,8 @@ public class LotsByProjectDTO {
         this.parentCorpName = parentCorpName;
         this.project = project;
         this.chemist = chemist;
+        this.vendor = vendor;
+        this.supplier = supplier;
     }
 
     public LotsByProjectDTO() {
@@ -59,6 +65,22 @@ public class LotsByProjectDTO {
 
     public void setChemist(String chemist) {
         this.chemist = chemist;
+    }
+
+    public String getVendor() {
+        return this.vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getSupplier() {
+        return this.supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
     }
 
     public Integer getLotNumber() {
