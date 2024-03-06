@@ -618,7 +618,7 @@ public class Lot {
                 + "FROM Lot AS lt "
                 + "JOIN lt.saltForm sltfrm "
                 + "JOIN sltfrm.parent prnt "
-                + "JOIN lt.vendor vnd "
+                + "LEFT JOIN lt.vendor vnd "
                 + "WHERE lt.project in (:projects) ";
 
         logger.debug("sql query " + query);
