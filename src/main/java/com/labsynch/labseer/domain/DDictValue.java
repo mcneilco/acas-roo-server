@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.TypedQuery;
 import javax.persistence.Version;
@@ -566,6 +567,39 @@ public class DDictValue {
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
         return q;
+    }
+
+    public static List<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(String lsType, String lsKind, String labelText) {
+        if (lsType == null || lsType.length() == 0)
+            throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0)
+            throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = DDictValue.entityManager();
+
+        // Format the search text to match any word in the label text
+        // e.g. "word1 word2" -> "word1:* & word2:*"
+        String[] parts = labelText.trim().split("\\s+");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i] + ":*";
+        }
+        String formattedLabelText = String.join(" & ", parts);
+        
+        // Native query to use full text search
+        String sql = 
+        "SELECT * " +
+        "FROM ddict_value " +
+        "WHERE ls_type = :lsType " +
+        "AND ls_kind = :lsKind " +
+        "AND to_tsvector('english', lower(label_text)) @@ to_tsquery('english', :labelText) " +
+        "ORDER BY ts_rank(to_tsvector('english', lower(label_text)), to_tsquery('english', :labelText)) DESC";
+        
+        Query q = em.createNativeQuery(sql, DDictValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("labelText", formattedLabelText);
+        @SuppressWarnings("unchecked")
+        List<DDictValue> results = q.getResultList();
+        return results;
     }
 
     public static TypedQuery<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind,
