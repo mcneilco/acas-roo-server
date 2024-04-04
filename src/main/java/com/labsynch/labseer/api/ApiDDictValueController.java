@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.TypedQuery;
+
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -323,7 +325,7 @@ public class ApiDDictValueController {
 			@PathVariable("lsType") String lsType,
 			@PathVariable("lsKind") String lsKind,
 			@PathVariable("format") String format,
-			@RequestParam(value = "maxHits", defaultValue = "100", required = false) Integer maxHits,
+			@RequestParam(value = "maxHits", required = false) Integer maxHits,
 			@RequestParam(value = "shortName", defaultValue = "", required = false) String shortName,
 			@RequestParam(value = "labelTextSearchTerm", defaultValue = "", required = false) String labelTextSearchTerm) {
 
@@ -344,13 +346,17 @@ public class ApiDDictValueController {
 
 		List<DDictValue> dDictResults;
 		if (labelTextSearchTerm.isEmpty() && shortName.isEmpty()) {
-			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind)
-				.setMaxResults(maxHits)
-				.getResultList();
+			TypedQuery<DDictValue> dDictResultsQuery = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind);
+			if (maxHits != null) {
+				dDictResultsQuery = dDictResultsQuery.setMaxResults(maxHits);
+			}
+			dDictResults = dDictResultsQuery.getResultList();
 		} else if (!shortName.isEmpty()) {
-			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName)
-				.setMaxResults(maxHits)
-				.getResultList();
+			TypedQuery<DDictValue> dDictResultsQuery = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName);
+			if (maxHits != null) {
+				dDictResultsQuery = dDictResultsQuery.setMaxResults(maxHits);
+			}
+			dDictResults = dDictResultsQuery.getResultList();
 		} else {
 			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(lsType, lsKind, labelTextSearchTerm, maxHits);
 		}

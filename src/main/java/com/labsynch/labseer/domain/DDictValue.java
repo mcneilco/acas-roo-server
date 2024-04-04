@@ -599,8 +599,12 @@ public class DDictValue {
         q.setParameter("lsKind", lsKind);
         q.setParameter("labelText", labelText.toLowerCase());
         q.setParameter("formattedLabelText", formattedLabelText);
+        if (maxHits != null) {
+            q = q.setMaxResults(maxHits);
+        }
+
         @SuppressWarnings("unchecked")
-        List<DDictValue> results = q.setMaxResults(maxHits).getResultList();
+        List<DDictValue> results = q.getResultList();
         return results;
     }
 
