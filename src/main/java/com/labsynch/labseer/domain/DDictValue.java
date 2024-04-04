@@ -590,13 +590,15 @@ public class DDictValue {
         "FROM ddict_value " +
         "WHERE ls_type = :lsType " +
         "AND ls_kind = :lsKind " +
-        "AND to_tsvector('english', lower(label_text)) @@ to_tsquery('english', :labelText) " +
-        "ORDER BY ts_rank(to_tsvector('english', lower(label_text)), to_tsquery('english', :labelText)) DESC";
-        
+        "AND to_tsvector('english', lower(label_text)) @@ to_tsquery('english', :formattedLabelText) " +
+        "ORDER BY (lower(label_text) = :labelText) DESC, " +
+        "ts_rank(to_tsvector('english', lower(label_text)), to_tsquery('english', :formattedLabelText)) DESC";
+
         Query q = em.createNativeQuery(sql, DDictValue.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
-        q.setParameter("labelText", formattedLabelText);
+        q.setParameter("labelText", labelText.toLowerCase());
+        q.setParameter("formattedLabelText", formattedLabelText);
         @SuppressWarnings("unchecked")
         List<DDictValue> results = q.setMaxResults(maxHits).getResultList();
         return results;

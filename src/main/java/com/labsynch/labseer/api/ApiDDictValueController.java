@@ -357,7 +357,10 @@ public class ApiDDictValueController {
 
 		if (format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
-			codeTables = CodeTableDTO.sortCodeTables(codeTables);
+			// labelText searches have their own sort order so we don't need to sort them
+			if (labelTextSearchTerm.isEmpty()) {
+				codeTables = CodeTableDTO.sortCodeTables(codeTables);
+			}
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);
