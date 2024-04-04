@@ -569,7 +569,7 @@ public class DDictValue {
         return q;
     }
 
-    public static List<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(String lsType, String lsKind, String labelText) {
+    public static List<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(String lsType, String lsKind, String labelText, Integer maxHits) {
         if (lsType == null || lsType.length() == 0)
             throw new IllegalArgumentException("The lsType argument is required");
         if (lsKind == null || lsKind.length() == 0)
@@ -598,7 +598,7 @@ public class DDictValue {
         q.setParameter("lsKind", lsKind);
         q.setParameter("labelText", formattedLabelText);
         @SuppressWarnings("unchecked")
-        List<DDictValue> results = q.getResultList();
+        List<DDictValue> results = q.setMaxResults(maxHits).getResultList();
         return results;
     }
 

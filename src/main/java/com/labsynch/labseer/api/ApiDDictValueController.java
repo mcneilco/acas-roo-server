@@ -323,6 +323,7 @@ public class ApiDDictValueController {
 			@PathVariable("lsType") String lsType,
 			@PathVariable("lsKind") String lsKind,
 			@PathVariable("format") String format,
+			@RequestParam(value = "maxHits", defaultValue = "100", required = false) Integer maxHits,
 			@RequestParam(value = "shortName", defaultValue = "", required = false) String shortName,
 			@RequestParam(value = "labelTextSearchTerm", defaultValue = "", required = false) String labelTextSearchTerm) {
 
@@ -343,11 +344,15 @@ public class ApiDDictValueController {
 
 		List<DDictValue> dDictResults;
 		if (labelTextSearchTerm.isEmpty() && shortName.isEmpty()) {
-			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind)
+				.setMaxResults(maxHits)
+				.getResultList();
 		} else if (!shortName.isEmpty()) {
-			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName).getResultList();
+			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName)
+				.setMaxResults(maxHits)
+				.getResultList();
 		} else {
-			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(lsType, lsKind, labelTextSearchTerm);
+			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(lsType, lsKind, labelTextSearchTerm, maxHits);
 		}
 
 		if (format != null && format.equalsIgnoreCase("codeTable")) {
