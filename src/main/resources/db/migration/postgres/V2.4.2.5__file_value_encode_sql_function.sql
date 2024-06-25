@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION encode_file_value(text)
             CASE WHEN bytes > 1
                 -- Skip encoding of these characters
                 -- - Alphanumeric characters: `0-9`, `a-z`, `A-Z`
-                -- - Unreserved characters: `-`, `_`, [`.`](command:_github.copilot.openRelativePath?%5B%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2FUsers%2Fbbolt%2Fschrodinger%2FACAS-753-url-enncode-file-values%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%5D "/Users/bbolt/schrodinger/ACAS-753-url-enncode-file-values"), `~`
+                -- - Unreserved characters: `-`, `_`, `.`, `~`
                 -- - Sub-delimiters (used in certain contexts but often considered safe): `!`, `$`, `&`, `'`, `(`, `)`, `*`, `+`, `,`, `;`, `=`
                 OR c !~ '[/0-9a-zA-Z\-_\.~!$&()*+,;]+' THEN
                 -- Replacement explaination:
