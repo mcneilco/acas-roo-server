@@ -148,7 +148,7 @@ public class Lot {
 
     @Size(max = 255)
     @Column(name = "vendorid")
-    private String vendorId;
+    private String vendorID;
 
     @ManyToOne
     @JoinColumn(name = "salt_form")
@@ -618,10 +618,11 @@ public class Lot {
 
         EntityManager em = Lot.entityManager();
         String query = "SELECT new com.labsynch.labseer.dto.LotsByProjectDTO( "
-                + "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project) "
+                + "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project, lt.chemist as chemist, vnd.name as vendorName, vnd.code as vendorCode, lt.supplier as supplier) "
                 + "FROM Lot AS lt "
                 + "JOIN lt.saltForm sltfrm "
                 + "JOIN sltfrm.parent prnt "
+                + "LEFT JOIN lt.vendor vnd "
                 + "WHERE lt.project in (:projects) ";
 
         logger.debug("sql query " + query);
@@ -898,12 +899,12 @@ public class Lot {
         this.vendor = vendor;
     }
 
-    public String getVendorId() {
-        return this.vendorId;
+    public String getVendorID() {
+        return this.vendorID;
     }
 
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
+    public void setVendorID(String vendorID) {
+        this.vendorID = vendorID;
     }
 
     public Set<FileList> getFileLists() {
@@ -1074,7 +1075,7 @@ public class Lot {
             "registeredBy", "modifiedDate", "modifiedBy", "barcode", "color", "notebookPage", "amount", "amountUnits",
             "solutionAmount", "solutionAmountUnits", "supplier", "supplierID", "purity", "purityOperator",
             "purityMeasuredBy", "chemist", "percentEE", "comments", "isVirtual", "ignore", "physicalState", "vendor",
-            "vendorId", "saltForm", "fileLists", "retain", "retainUnits", "retainLocation", "meltingPoint",
+            "vendorID", "saltForm", "fileLists", "retain", "retainUnits", "retainLocation", "meltingPoint",
             "boilingPoint", "supplierLot", "project", "parent", "bulkLoadFile", "lambda", "absorbance", "stockSolvent",
             "stockLocation", "observedMassOne", "observedMassTwo", "tareWeight", "tareWeightUnits", "totalAmountStored",
             "totalAmountStoredUnits", "lotAliases", "storageLocation");

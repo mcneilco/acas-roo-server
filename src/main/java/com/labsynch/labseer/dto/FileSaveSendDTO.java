@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -58,6 +59,11 @@ public class FileSaveSendDTO {
 		List<String> descriptionList = this.description;
 
 		List<String> writeupList = this.writeup;
+
+		// If writeupList is empty, fill it with empty strings to match the size of fileList
+		if (writeupList.isEmpty()) {
+			writeupList = new ArrayList<>(Collections.nCopies(fileList.size(), ""));
+		}	
 
 		List<FileSaveReturnDTO> fileSaveArray = new ArrayList<FileSaveReturnDTO>();
 

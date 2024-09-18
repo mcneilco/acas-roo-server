@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.TypedQuery;
+
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -322,7 +324,10 @@ public class ApiDDictValueController {
 	public ResponseEntity<java.lang.String> getDDictValuesByTypeKindFormat(
 			@PathVariable("lsType") String lsType,
 			@PathVariable("lsKind") String lsKind,
-			@PathVariable("format") String format) {
+			@PathVariable("format") String format,
+			@RequestParam(value = "maxHits", required = false) Integer maxHits,
+			@RequestParam(value = "shortName", defaultValue = "", required = false) String shortName,
+			@RequestParam(value = "labelTextSearchTerm", defaultValue = "", required = false) String labelTextSearchTerm) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
@@ -331,12 +336,37 @@ public class ApiDDictValueController {
 			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
 		}
 
-		List<DDictValue> dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind)
-				.getResultList();
+		// throw an error if the user tries to search by codeName and label text
+		if (!shortName.isEmpty() && !labelTextSearchTerm.isEmpty()) {
+			ErrorMessage errorMessage = new ErrorMessage();
+			errorMessage.setErrorLevel("error");
+			errorMessage.setMessage("Cannot search by codeName and labelTextSearchTerm at the same time");
+			return new ResponseEntity<String>(errorMessage.toJson(), headers, HttpStatus.BAD_REQUEST);
+		}
+
+		List<DDictValue> dDictResults;
+		if (labelTextSearchTerm.isEmpty() && shortName.isEmpty()) {
+			TypedQuery<DDictValue> dDictResultsQuery = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind);
+			if (maxHits != null) {
+				dDictResultsQuery = dDictResultsQuery.setMaxResults(maxHits);
+			}
+			dDictResults = dDictResultsQuery.getResultList();
+		} else if (!shortName.isEmpty()) {
+			TypedQuery<DDictValue> dDictResultsQuery = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName);
+			if (maxHits != null) {
+				dDictResultsQuery = dDictResultsQuery.setMaxResults(maxHits);
+			}
+			dDictResults = dDictResultsQuery.getResultList();
+		} else {
+			dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndLabelTextSearch(lsType, lsKind, labelTextSearchTerm, maxHits);
+		}
 
 		if (format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
-			codeTables = CodeTableDTO.sortCodeTables(codeTables);
+			// labelText searches have their own sort order so we don't need to sort them
+			if (labelTextSearchTerm.isEmpty()) {
+				codeTables = CodeTableDTO.sortCodeTables(codeTables);
+			}
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);

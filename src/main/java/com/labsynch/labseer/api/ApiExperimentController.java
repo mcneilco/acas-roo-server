@@ -44,6 +44,7 @@ import com.labsynch.labseer.dto.SubjectStateValueDTO;
 import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
@@ -1634,20 +1635,19 @@ public class ApiExperimentController {
 	@RequestMapping(value = "/protocol/{codeName}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<java.lang.String> jsonFindExperimentsByProtocolCodeName(
-			@PathVariable("codeName") String codeName, @RequestParam(value = "with", required = false) String with) {
+			@PathVariable("codeName") String codeName, @RequestParam(value = "projects", required = false) List<String> projects, @RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<Protocol> protocols = Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList();
-		if (protocols.size() == 1) {
+		try {
+			Collection<Experiment> experiments = experimentService.findExperimentsByProtocolCodeName(codeName, projects);
 			return new ResponseEntity<String>(
-					Experiment.toJsonArrayStub(Experiment.findExperimentsByProtocol(protocols.get(0)).getResultList()),
+					Experiment.toJsonArrayStub(experiments),
 					headers, HttpStatus.OK);
-		} else if (protocols.size() > 1) {
-			logger.error("ERROR: multiple protocols found with the same code name");
-			return new ResponseEntity<String>("[ ]", headers, HttpStatus.CONFLICT);
-		} else {
-			logger.warn("WARN: no protocols found with the query code name");
+		} catch (NoResultException e) {
 			return new ResponseEntity<String>("[ ]", headers, HttpStatus.NOT_FOUND);
+
+		} catch (TooManyResultsException e) {
+			return new ResponseEntity<String>("[ ]", headers, HttpStatus.CONFLICT);
 		}
 	}
 
