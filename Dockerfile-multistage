@@ -15,7 +15,7 @@ ADD 	. /src
 RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE} 
 
-FROM tomcat:9.0.62-jre11-openjdk-slim-buster
+FROM tomcat:9.0.97-jdk11-temurin-jammy
 
 # Third and Last Step That Requires Significant (Relative) Amount of Time 
 RUN apt-get update && \
@@ -50,10 +50,10 @@ RUN	useradd -u 1000 -ms /bin/bash runner && \
   chown -R runner:runner /usr/local/tomcat/
 
 # Allow certificates to be added by runner
-RUN chgrp runner /usr/local/openjdk-11/lib/security/cacerts && \
-    chmod g+w /usr/local/openjdk-11/lib/security/cacerts && \
+RUN chgrp runner $JAVA_HOME/lib/security/cacerts && \
+    chmod g+w $JAVA_HOME/lib/security/cacerts && \
     mkdir -p /usr/lib/jvm/java/jre/lib/security && \
-    ln -s /usr/local/openjdk-11/lib/security/cacerts /usr/lib/jvm/java/jre/lib/security/cacerts
+    ln -s $JAVA_HOME/lib/security/cacerts /usr/lib/jvm/java/jre/lib/security/cacerts
 
 # Get acas-roo-server compiled code
 COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/acas.war
