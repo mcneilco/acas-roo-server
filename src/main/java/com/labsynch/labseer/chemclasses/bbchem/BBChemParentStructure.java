@@ -32,7 +32,7 @@ public class BBChemParentStructure extends AbstractBBChemStructure {
         EntityManager em = BBChemParentStructure.entityManager();
         String fingerprintString = SimpleUtil.bitSetToString(substructure);
         Query q = em.createNativeQuery(
-                "SELECT o.* FROM bbchem_parent_structure AS o WHERE (o.substructure \\& CAST(:fingerprintString AS bit(2112))) = CAST(:fingerprintString AS bit(2112))  ",
+                "SELECT o.* FROM bbchem_parent_structure AS o WHERE (o.substructure \\& CAST(:fingerprintString AS bit(2048))) = CAST(:fingerprintString AS bit(2048))  ",
                 BBChemParentStructure.class);
         q.setParameter("fingerprintString", fingerprintString);
         if (maxResults > -1) {
