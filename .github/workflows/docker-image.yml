@@ -2,8 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ release/* ]
-  create:
+    branches: [ "release/*", "master" ]
     tags: "**"
 jobs:
   acas-roo-server:
