@@ -232,7 +232,7 @@ public class SaltServiceImpl implements SaltService {
 		newSalt.setMolWeight(saltStructureService.calculateWeight(newSalt));
 		newSalt.setCharge(saltStructureService.calculateCharge(newSalt));
 
-		if(newSalt.getMolWeight() != oldSalt.getMolWeight()){
+		if(Double.compare(newSalt.getMolWeight(), oldSalt.getMolWeight()) != 0){
 			ErrorMessage warning = new ErrorMessage();
 			warning.setLevel("warning");
 			warning.setMessage("The weight of this salt will be changed.");
