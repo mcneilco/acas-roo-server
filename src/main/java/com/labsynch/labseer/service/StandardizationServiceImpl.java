@@ -108,8 +108,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return;
 		}
 
-		// Fail any dry runs or standardizations that are still in progress from when the server was last up
-		failRunnningStandardization();
 		try{
 			checkStandardizationState();
 		} catch (Exception e) {
