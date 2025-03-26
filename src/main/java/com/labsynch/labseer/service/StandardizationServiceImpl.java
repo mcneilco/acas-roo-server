@@ -80,7 +80,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
-	private void failRunnningStandardization() {
+	public void failRunnningStandardization() {
 		// Cancel all running standardization histories as failed
 		List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
 		for (StandardizationHistory history : histories) {
