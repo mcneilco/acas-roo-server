@@ -80,7 +80,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
-	private void failRunnningStandardization() {
+	public void failRunnningStandardization() {
 		// Cancel all running standardization histories as failed
 		List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
 		for (StandardizationHistory history : histories) {
@@ -108,8 +108,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return;
 		}
 
-		// Fail any dry runs or standardizations that are still in progress from when the server was last up
-		failRunnningStandardization();
 		try{
 			checkStandardizationState();
 		} catch (Exception e) {
