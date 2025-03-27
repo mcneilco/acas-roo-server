@@ -389,14 +389,15 @@ public class SaltServiceImpl implements SaltService {
 			// Update Lot Corp Name If Format Uses Salt Abbrev
 			if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")) {
 				String newCorpName = lotService.generateCorpName(lot);
-				if (! newCorpName.equals(lot.getCorpName())) // Check to See If There is Indded a Change in the Name
+				if (! newCorpName.equals(lot.getCorpName())) // Check to See If There is Indeed a Change in the Name
 				{
+					String oldCorpName = lot.getCorpName();
 					lot.setCorpName(newCorpName);
-					// If Lot Corp Name Change, Cascade the Udpdate to “Batch Code” Values Within Analysis Groups and Lot Inventory Containers	
-					assayService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService");
-					containerService.renameBatchCode(lot.getCorpName(), newCorpName, "SaltService", null);
+					// If Lot Corp Name Change, Cascade the Update to “Batch Code” Values Within Analysis Groups and Lot Inventory Containers	
+					assayService.renameBatchCode(oldCorpName, newCorpName, "SaltService");
+					containerService.renameBatchCode(oldCorpName, newCorpName, "SaltService", null);
 
-					logger.info("new lot corp name: " + lot.getCorpName());
+					logger.info("new lot corp name: " + newCorpName);
 					// Recalculate Lot Molecular Weights
 					lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));	
 				} 
