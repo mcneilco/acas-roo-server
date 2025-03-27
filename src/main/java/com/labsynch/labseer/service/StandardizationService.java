@@ -42,4 +42,6 @@ public interface StandardizationService {
 
 	StandardizationSettingsConfigCheckResponseDTO checkStandardizationState() throws StandardizerException;
 
+	void failRunnningStandardization();
+
 }

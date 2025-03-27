@@ -212,4 +212,12 @@ public class ApiStandardizationServicesController {
 		return new ResponseEntity<String>(dryRunStats, headers, HttpStatus.OK);
 	}
 
+	@Transactional
+	@RequestMapping(value = "/failRunnningStandardization", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> failRunnningStandardization() {
+		HttpHeaders headers = new HttpHeaders();
+		standardizationService.failRunnningStandardization();
+		return new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
+
 }
