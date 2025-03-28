@@ -855,4 +855,68 @@ public class StandardizationDryRunCompound {
 		return new JSONDeserializer<List<StandardizationDryRunCompound>>()
 				.use("values", StandardizationDryRunCompound.class).deserialize(json);
 	}
+
+    @Transactional
+    public static List<Long> fetchUnlockedParentIds(int limit) {
+		String sql = "SELECT p.id " +
+		"FROM parent p " +
+		"WHERE NOT EXISTS (" +
+		"    SELECT 1 " +
+		"    FROM standardization_dry_run_compound s " +
+		"    WHERE s.parent_id = p.id" +
+		") " +
+		"ORDER BY p.id ASC " +
+		"FOR UPDATE SKIP LOCKED " +
+		"LIMIT :limit";
+
+		return StandardizationDryRunCompound.entityManager()
+				.createNativeQuery(sql)
+				.setParameter("limit", limit)
+				.getResultList();
+    }
+
+	@Transactional
+	public static Boolean isDryRunStandardizationTablePopulated() {
+		// The dry run standardization table is populated if all parent ids exist in the table
+		String query = "SELECT COUNT(p.id) " +
+					   "FROM Parent p " +
+					   "WHERE NOT EXISTS (" +
+					   "    SELECT 1 " +
+					   "    FROM StandardizationDryRunCompound s " +
+					   "    WHERE s.parent.id = p.id" +
+					   ")";
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery(query, Long.class)
+				.getSingleResult() == 0;
+	}
+
+	@Transactional
+	public static List<Long> fetchUnprocessedDryRunStandardizationIds(int limit) {
+		// Return a list of dryRunStandardization ids which have not yet been processed by deduplication
+		//  where getRegistrationStatus is not ERROR
+		//  and changedStructure is not null. It will return them locked for update
+		String sql = "SELECT s.id " +
+				"FROM standardization_dry_run_compound s " +
+				"WHERE s.registration_status != 'ERROR' " +
+				"AND s.changed_structure IS NOT NULL " +
+				"ORDER BY s.id ASC " +
+				"FOR UPDATE SKIP LOCKED " +
+				"LIMIT :limit";
+		return StandardizationDryRunCompound.entityManager()
+				.createNativeQuery(sql)
+				.setParameter("limit", limit)
+				.getResultList();
+	}
+
+	@Transactional
+	public static Boolean isDupeCheckComplete() {
+		// Verifies that there are no more unprocessed dry run standardization rows
+		String query = "SELECT COUNT(s.id) " +
+					   "FROM StandardizationDryRunCompound s " +
+					   "WHERE s.registrationStatus != 'ERROR' " +
+					   "AND s.changedStructure IS NOT NULL";
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery(query, Long.class)
+				.getSingleResult() == 0;
+	}
 }

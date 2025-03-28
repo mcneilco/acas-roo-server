@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xmlns="http://java.sun.com/xml/ns/javaee"
+		 xmlns:task="http://www.springframework.org/schema/task"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-							 http://java.sun.com/xml/ns/javaee/web-app_4_0.xsd"
+							 http://java.sun.com/xml/ns/javaee/web-app_4_0.xsd
+							 http://www.springframework.org/schema/task
+							 http://www.springframework.org/schema/task/spring-task.xsd"
 		 version="4.0">
 
 	<display-name>acas</display-name>
@@ -19,7 +22,10 @@
 	<!-- Configure the Spring context loader listener -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath*:META-INF/spring/applicationContext*.xml</param-value>
+		<param-value>
+			classpath*:META-INF/spring/applicationContext*.xml
+			WEB-INF/spring/task-scheduler-config.xml
+		</param-value>
 	</context-param>
 
 	<filter>
@@ -158,6 +164,22 @@
 	<servlet-mapping>
 		<servlet-name>acas</servlet-name>
 		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<!-- TaskScheduler configuration -->
+	<servlet>
+		<servlet-name>taskScheduler</servlet-name>
+		<servlet-class>org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</servlet-class>
+		<init-param>
+			<param-name>poolSize</param-name>
+			<param-value>10</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>taskScheduler</servlet-name>
+		<url-pattern>/tasks/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

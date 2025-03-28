@@ -47,6 +47,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class StandardizationServiceImpl implements StandardizationService, ApplicationListener<ContextRefreshedEvent> {
@@ -79,6 +80,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
+
+	Boolean standardizationDryRunRunningInThisWorker = false;
 
 	public void failRunnningStandardization() {
 		// Cancel all running standardization histories as failed
@@ -207,70 +210,37 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
-	@Transactional
-	public int populateStandardizationDryRunTable()
+	public void populateStandardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
-		List<Long> parentIds = Parent.getParentIds();
-
-		Long startTime = new Date().getTime();
-
-		int batchSize = propertiesUtilService.getStandardizationBatchSize();
-		int nonMatchingCmpds = 0;
-		int totalCount = parentIds.size();
-		logger.info("number of parents to check: " + totalCount);
-
-		Integer runNumber = StandardizationDryRunCompound.findMaxRunNumber().getSingleResult();
-		if (runNumber == null) {
-			runNumber = 1;
-		} else {
-			runNumber++;
-		}
-		float percent = 0;
-		int p = 0;
-		float previousPercent = percent;
-		previousPercent = percent;
-
-		// Split parent ids into groups of batchSize
-		List<List<Long>> parentIdGroups = SimpleUtil.splitArrayIntoGroups(parentIds, batchSize);
-
-		// Do a bulk standardization
-		for (List<Long> pIdGroup : parentIdGroups) {
-			dryrunStandardizeBatch(pIdGroup, nonMatchingCmpds, runNumber);
-			p = p + pIdGroup.size();
-
-			// Compute your percentage.
-			percent = (float) Math.floor(p * 100f / totalCount);
-			if (percent != previousPercent) {
-				Long currentTime = new Date().getTime();
-				// Output if different from the last time.
-				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
-						+ totalCount + ") average speed (rows/min):"
-						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
-				currentTime = new Date().getTime();
-				logger.debug("Time Elapsed:" + (currentTime - startTime));
+		while (true) {
+			int processedCount = dryrunStandardizeBatch();
+			if (processedCount == 0 && StandardizationDryRunCompound.isDryRunStandardizationTablePopulated()) {
+				break;
 			}
-			// Update the percentage.
-			previousPercent = percent;
+			dryrunStandardizeBatch();
 		}
-		logger.info("total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
-		return (nonMatchingCmpds);
 	}
 
-	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	private void dryrunStandardizeBatch(List<Long> pIdGroup, int nonMatchingCmpds, int runNumber) throws StandardizerException, CmpdRegMolFormatException {
+	private int dryrunStandardizeBatch() throws StandardizerException, CmpdRegMolFormatException {
 		Parent parent;
 		StandardizationDryRunCompound stndznCompound;
 		Date qcDate = new Date();
 		Integer cdId = 0;
+		Integer runNumber = 0;
 
-		logger.info("Starting batch of " + pIdGroup.size() + " parents");
+		List<Long> parentIds = StandardizationDryRunCompound.fetchUnlockedParentIds(propertiesUtilService.getStandardizationBatchSize());
+		if(parentIds.isEmpty()) {
+			logger.info("No more parents to process for standardization dry run");
+			return 0; // No more parents to process
+		}
+		logger.info("Starting batch of " + parentIds.size() + " parents");
 		// Create standardization hashmap
 		HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
 		HashMap<String, String> parentIdsToAsDrawnStructs = new HashMap<String, String>();
-		HashMap<Long, String> parentAsDrawnMap = Lot.getOriginallyDrawnAsStructuresByParentIds(pIdGroup);
+		HashMap<Long, String> parentAsDrawnMap = Lot.getOriginallyDrawnAsStructuresByParentIds(parentIds);
 		HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
-		for (Long parentId : pIdGroup) {
+		for (Long parentId : parentIds) {
 			parent = Parent.findParent(parentId);
 			parents.put(parentId, parent);
 
@@ -297,7 +267,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
 		logger.info("Standardization took " + standardizationTime + " seconds");
 
-		logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
+		logger.info("Starting saving of " + parentIds.size() + " dry run structures");
 		long structureSaveStart = new Date().getTime();
 
 		// Save the standardized dry run structures and return the hashmap of String
@@ -310,9 +280,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		long saveTime = (structureSaveEnd - structureSaveStart) / 1000;
 		logger.info("Saving took " + saveTime + " seconds");
 
-		logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
+		logger.info("Starting saving of " + parentIds.size() + " standardization dry run compounds");
 		long dryRunCompoundSaveStart = new Date().getTime();
-		for (Long parentId : pIdGroup) {
+		for (Long parentId : parentIds) {
 			parent = parents.get(parentId);
 			stndznCompound = new StandardizationDryRunCompound();
 			stndznCompound.setRunNumber(runNumber);
@@ -353,7 +323,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				stndznCompound.setDisplayChange(true);
 				stndznCompound.setSyncStatus(SyncStatus.READY);
 				logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-				nonMatchingCmpds++;
 			}
 			String asDrawnStruct = parentIdsToAsDrawnStructs.get(parentId.toString(parentId));
 			boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
@@ -362,7 +331,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			if (!asDrawnDisplaySame) {
 				stndznCompound.setAsDrawnDisplayChange(true);
 				logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-				nonMatchingCmpds++;
 			}
 
 			cdId = parentIdToStructureId.get(parentId.toString());
@@ -380,6 +348,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Convert the ms time to seconds
 		long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
 		logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
+		return parentIds.size();
 	}
 	
 	private String getParentAlias(Parent parent) {
@@ -398,48 +367,19 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
-	@Transactional
-	public int dupeCheckStandardizationStructures() {
-		List<Long> dryRunIds = StandardizationDryRunCompound.findAllIds().getResultList();
-
-		Long startTime = new Date().getTime();
-
-		int totalCount = dryRunIds.size();
-		logger.debug("number of compounds found in dry run table: " + totalCount);
-		int totalNewDuplicateCount = 0;
-
-		// Split parent ids into groups of batchSize of 1
-		// We tested this with large batch sizes and it was faster doing 1 per transaction
-		int batchSize = propertiesUtilService.getStandardizationBatchSize();
-		List<List<Long>> dryRunIdGroups = SimpleUtil.splitArrayIntoGroups(dryRunIds, batchSize);
-
-		float percent = 0;
-		float previousPercent = percent;
-		previousPercent = percent;
-
-		int p = 1;
-		// Do a bulk standardization
-		for (List<Long> dIdGroup : dryRunIdGroups) {
-			totalNewDuplicateCount = totalNewDuplicateCount + dupeCheckStandardizationStructuresBatch(dIdGroup);
-			p = p+dIdGroup.size();
-
-			// Compute your percentage.
-			percent = (float) Math.floor(p * 100f / totalCount);
-			if (percent != previousPercent) {
-				Long currentTime = new Date().getTime();
-				// Output if different from the last time.
-				logger.info("checking for standardization duplicates " + percent + "% complete (" + p + "/"
-						+ totalCount + ") average speed (rows/min):"
-						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
-				logger.debug("Time Elapsed:" + (currentTime - startTime));
+	public void dupeCheckStandardizationStructures() {
+		while(true) {
+			int processedCount = dupeCheckStandardizationStructuresBatch();
+			if(processedCount == 0 && StandardizationDryRunCompound.isDupeCheckComplete()) {
+				logger.info("No more dry run compounds to process for duplicate check");
+				break; // No more dry run compounds to process
 			}
-			// Update the percentage.
-			previousPercent = percent;
 		}
-		return(totalNewDuplicateCount);
 	}
 
-	private int dupeCheckStandardizationStructuresBatch(List<Long> dryRunIds) {
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private int dupeCheckStandardizationStructuresBatch() {
+		List<Long> dryRunIds = StandardizationDryRunCompound.fetchUnprocessedDryRunStandardizationIds(propertiesUtilService.getStandardizationBatchSize());
 		return dryRunIds.parallelStream()
 			.mapToInt(dryRunId -> {
 				try {
@@ -451,7 +391,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			.sum();
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	private int dupeCheckStandardizationStructure(Long dryRunId) throws CmpdRegMolFormatException {
 
 		int[] hits;
@@ -887,35 +826,32 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	public void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
-
-		StandardizationHistory stndznHistory = this.setCurrentStandardizationDryRunStatus("running");
+		logger.info("standardization dry run initialized");
 		try {
-			runDryRun();
+			reset();
+			setCurrentStandardizationDryRunStatus("running");
+			checkForDryRunStandardization();
 		} catch (Exception e) {
+			StandardizationHistory stndznHistory = setCurrentStandardizationDryRunStatus("running");
 			logger.error("error running dry run", e);
 			stndznHistory.setDryRunComplete(new Date());
 			stndznHistory.setDryRunStatus("failed");
 			stndznHistory.merge();
 			throw e;
 		}
+	}
 
+	private void runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
+		logger.info("populating dry run table complete");
+		populateStandardizationDryRunTable();
+		dupeCheckStandardizationStructures();
+		logger.info("standardization dry run complete");
+		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 		stndznHistory.setDryRunComplete(new Date());
 		stndznHistory.setDryRunStatus("complete");
 		stndznHistory
 				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getReadyStandardizationChangesCount());
 		stndznHistory.merge();
-	}
-
-	private int runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
-		logger.info("standardization dry run initialized");
-		logger.info("step 1/3: resetting dry run table");
-		this.reset();
-		logger.info("step 2/3: populating dry run table");
-		this.populateStandardizationDryRunTable();
-		logger.info("step 3/3: checking for standardization duplicates");
-		int numberOfDisplayChanges = this.dupeCheckStandardizationStructures();
-		logger.info("standardization dry run complete");
-		return numberOfDisplayChanges;
 	}
 
 	public StandardizationHistory getMostRecentStandardizationHistory() {
@@ -927,5 +863,48 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return null;
 		}
 	}
+
+	@Transactional
+	public void finalizeDryRun() throws StandardizerException {
+		//Check for any parent ids not in dry run table - This varifies that population completed.
+		//Check if all dry run compounds have...
+		//  -- getRegistrationStatus is ERROR
+		//  -- or dryRunCompound changedStructure is filled in
+        if (getMostRecentStandardizationHistory().getDryRunStatus().equals("running")) {
+            return;
+        }
+		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+		stndznHistory.setDryRunComplete(new Date());
+		stndznHistory.setDryRunStatus("complete");
+		stndznHistory
+				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getReadyStandardizationChangesCount());
+		stndznHistory.merge();
+	};
+		
+
+    @Scheduled(fixedDelay = 60000) // Runs every 60 seconds
+    public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
+        //Avoid running the process if we are already in the middle of a dry run on this worker.
+		//i.e. i.e. if its manually called or if takes longer than a minute to run.
+		if(standardizationDryRunRunningInThisWorker) {
+			return; // Avoid running multiple dry runs in parallel
+		}
+		standardizationDryRunRunningInThisWorker = true;
+		try {
+			if (!getMostRecentStandardizationHistory().getDryRunStatus().equals("running")) {
+				standardizationDryRunRunningInThisWorker = false;
+				return;
+			}
+			logger.info("Dry run is running, executing dry run process");
+			runDryRun();
+			finalizeDryRun();
+			logger.info("Dry run process completed");
+		} catch (Exception e) {
+			logger.error("Error during dry run process", e);
+			standardizationDryRunRunningInThisWorker = false;
+		}
+		// Set the status to complete if we reach here.
+		standardizationDryRunRunningInThisWorker = false;
+    }
 }
 
