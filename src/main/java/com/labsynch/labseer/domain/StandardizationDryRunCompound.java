@@ -66,9 +66,9 @@ public class StandardizationDryRunCompound {
 
 	private boolean asDrawnDisplayChange;
 
-	private int newDuplicateCount;
+	private Integer newDuplicateCount;
 
-	private int existingDuplicateCount;
+	private Integer existingDuplicateCount;
 
 	private String alias;
 
@@ -137,6 +137,13 @@ public class StandardizationDryRunCompound {
 	public static int getReadyStandardizationChangesCount() {
 		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class).setParameter("syncStatus", SyncStatus.READY).getSingleResult().intValue();
+	}
+
+	@Transactional
+	public static int rowCount() {
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery("SELECT COUNT(o) FROM StandardizationDryRunCompound o", Long.class).getSingleResult()
+				.intValue();
 	}
 
 	public StandardizationHistory fetchStats() {
@@ -448,19 +455,19 @@ public class StandardizationDryRunCompound {
 		this.asDrawnDisplayChange = asDrawnDisplayChange;
 	}
 
-	public int getNewDuplicateCount() {
+	public Integer getNewDuplicateCount() {
 		return this.newDuplicateCount;
 	}
 
-	public void setNewDuplicateCount(int newDuplicateCount) {
+	public void setNewDuplicateCount(Integer newDuplicateCount) {
 		this.newDuplicateCount = newDuplicateCount;
 	}
 
-	public int getExistingDuplicateCount() {
+	public Integer getExistingDuplicateCount() {
 		return this.existingDuplicateCount;
 	}
 
-	public void setExistingDuplicateCount(int existingDuplicateCount) {
+	public void setExistingDuplicateCount(Integer existingDuplicateCount) {
 		this.existingDuplicateCount = existingDuplicateCount;
 	}
 
@@ -883,8 +890,8 @@ public class StandardizationDryRunCompound {
 	}
 
 	@Transactional
-	public static Boolean isDryRunStandardizationTablePopulated() {
-		// The dry run standardization table is populated if all parent ids exist in the table
+	public static int countRemainingParentsNotInStandardizationDryRunCompound() {
+		// Count how many parents have not been added to the standardization dry run compound table
 		String query = "SELECT COUNT(p.id) " +
 					   "FROM Parent p " +
 					   "WHERE NOT EXISTS (" +
@@ -894,7 +901,7 @@ public class StandardizationDryRunCompound {
 					   ")";
 		return StandardizationDryRunCompound.entityManager()
 				.createQuery(query, Long.class)
-				.getSingleResult() == 0;
+				.getSingleResult().intValue();
 	}
 
 	@Transactional
@@ -904,7 +911,7 @@ public class StandardizationDryRunCompound {
 		String sql = "SELECT s.id " +
 					 "FROM standardization_dry_run_compound s " +
 					 "WHERE s.registration_status != 'ERROR' " +
-					 "AND s.changed_structure IS NOT NULL " +
+					 "AND s.existing_duplicate_count IS NULL " +
 					 "ORDER BY s.id ASC " +
 					 "FOR UPDATE SKIP LOCKED " +
 					 "LIMIT :limit";
@@ -922,14 +929,14 @@ public class StandardizationDryRunCompound {
 	}
 
 	@Transactional
-	public static Boolean isDupeCheckComplete() {
+	public static int countUnprocessedDryRunStandardizationIds() {
 		// Verifies that there are no more unprocessed dry run standardization rows
 		String query = "SELECT COUNT(s.id) " +
 					   "FROM StandardizationDryRunCompound s " +
 					   "WHERE s.registrationStatus != 'ERROR' " +
-					   "AND s.changedStructure IS NULL";
+					   "AND s.existingDuplicateCount IS NULL";
 		return StandardizationDryRunCompound.entityManager()
 				.createQuery(query, Long.class)
-				.getSingleResult() == 0;
+				.getSingleResult().intValue();
 	}
 }

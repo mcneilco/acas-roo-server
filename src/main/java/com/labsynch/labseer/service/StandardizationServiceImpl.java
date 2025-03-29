@@ -214,7 +214,15 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		while (true) {
 			int processedCount = dryrunStandardizeBatch();
-			if (processedCount == 0 && StandardizationDryRunCompound.isDryRunStandardizationTablePopulated()) {
+			int remainingToBeProcessed = StandardizationDryRunCompound.countRemainingParentsNotInStandardizationDryRunCompound();
+			if(processedCount > 0) {
+				int totalProcessed = StandardizationDryRunCompound.rowCount();
+				double percentProcessed = (double) totalProcessed / (double) (totalProcessed + remainingToBeProcessed) * 100.0;
+				logger.info("Processed " + processedCount + " dry run compounds, total processed: " + totalProcessed
+						+ ", remaining to be processed: " + remainingToBeProcessed
+						+ ", percent processed: " + String.format("%.2f", percentProcessed) + "%");
+			} else if (remainingToBeProcessed == 0) {
+				logger.info("No more parents to process for dry run standardization, exiting");
 				break;
 			}
 		}
@@ -370,10 +378,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		while(true) {
 			logger.info("Starting duplicate check for standardization dry run structures");
 			int processedCount = dupeCheckStandardizationStructuresBatch();
-			logger.info("Processed " + processedCount + " dry run compounds for duplicate check");
-			if(processedCount == 0 && StandardizationDryRunCompound.isDupeCheckComplete()) {
-				logger.info("No more dry run compounds to process for duplicate check");
-				break; // No more dry run compounds to process
+			int remainingToBeProcessed = StandardizationDryRunCompound.countUnprocessedDryRunStandardizationIds();
+			if(processedCount > 0) {
+				int totalProcessed = StandardizationDryRunCompound.rowCount() - remainingToBeProcessed;
+				double percentProcessed = (double) totalProcessed / (double) (totalProcessed + remainingToBeProcessed) * 100.0;
+				logger.info("Processed " + processedCount + " dry run compounds, total processed: " + totalProcessed
+						+ ", remaining to be processed: " + remainingToBeProcessed
+						+ ", percent processed: " + String.format("%.2f", percentProcessed) + "%");
+			} else if (remainingToBeProcessed == 0) {
+				logger.info("No more dry run compounds to process for duplicate check, exiting");
+				break;
 			}
 		}
 	}
@@ -381,11 +395,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	private int dupeCheckStandardizationStructuresBatch() {
 		List<Long> dryRunIds = StandardizationDryRunCompound.fetchUnprocessedDryRunStandardizationIds(propertiesUtilService.getStandardizationBatchSize());
-		return dryRunIds.parallelStream()
+		int processedCount = dryRunIds.stream()
 			.mapToInt(dryRunId -> {
 				try {
-					int dupeCount = dupeCheckStandardizationStructure(dryRunId);
-					return dupeCount;
+					dupeCheckStandardizationStructure(dryRunId);
+					return 1;
 				} catch(Exception e) {
 					logger.error("Error checking for duplicates for dry run compound with ID: " + dryRunId, e);
 					// In case of an error we return 0 to indicate that this compound was not processed.
@@ -394,6 +408,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				}
 			})
 			.sum();
+
+		return processedCount;
 	}
 
 	private int dupeCheckStandardizationStructure(Long dryRunId) throws CmpdRegMolFormatException {
@@ -502,7 +518,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 		}
-	
+		logger.info("Processed dry run compound with ID: " + dryRunId + ", new duplicates: " + dryRunCompound.getNewDuplicateCount());
 		return (totalNewDuplicateCount);
 	}
 
@@ -833,7 +849,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		logger.info("standardization dry run initialized");
 		try {
+			logger.info("step 1/3: resetting dry run table");
 			reset();
+			logger.info("setting dry run standardization status to running");
 			setCurrentStandardizationDryRunStatus("running");
 			checkForDryRunStandardization();
 		} catch (Exception e) {
@@ -847,8 +865,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	private void runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
-		logger.info("populating dry run table complete");
+		logger.info("step 2/3: populating dry run table");
 		populateStandardizationDryRunTable();
+		logger.info("step 3/3: checking for standardization duplicates");
 		dupeCheckStandardizationStructures();
 		logger.info("standardization dry run complete");
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
@@ -903,7 +922,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			logger.info("Dry run is running, executing dry run process");
 			runDryRun();
-			finalizeDryRun();
 			logger.info("Dry run process completed");
 		} catch (Exception e) {
 			logger.error("Error during dry run process", e);
