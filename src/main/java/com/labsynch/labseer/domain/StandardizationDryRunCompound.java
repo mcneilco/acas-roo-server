@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 
 import static java.lang.Math.toIntExact;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -856,24 +857,30 @@ public class StandardizationDryRunCompound {
 				.use("values", StandardizationDryRunCompound.class).deserialize(json);
 	}
 
-    @Transactional
-    public static List<Long> fetchUnlockedParentIds(int limit) {
+	@Transactional
+	public static List<Long> fetchUnlockedParentIds(int limit) {
 		String sql = "SELECT p.id " +
-		"FROM parent p " +
-		"WHERE NOT EXISTS (" +
-		"    SELECT 1 " +
-		"    FROM standardization_dry_run_compound s " +
-		"    WHERE s.parent_id = p.id" +
-		") " +
-		"ORDER BY p.id ASC " +
-		"FOR UPDATE SKIP LOCKED " +
-		"LIMIT :limit";
+					"FROM parent p " +
+					"WHERE NOT EXISTS (" +
+					"    SELECT 1 " +
+					"    FROM standardization_dry_run_compound s " +
+					"    WHERE s.parent_id = p.id" +
+					") " +
+					"ORDER BY p.id ASC " +
+					"FOR UPDATE SKIP LOCKED " +
+					"LIMIT :limit";
 
-		return StandardizationDryRunCompound.entityManager()
+		@SuppressWarnings("unchecked")
+		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
 				.createNativeQuery(sql)
 				.setParameter("limit", limit)
 				.getResultList();
-    }
+
+		// Convert BigInteger to Long
+		return result.stream()
+					.map(BigInteger::longValue)
+					.collect(Collectors.toList());
+	}
 
 	@Transactional
 	public static Boolean isDryRunStandardizationTablePopulated() {
@@ -893,19 +900,25 @@ public class StandardizationDryRunCompound {
 	@Transactional
 	public static List<Long> fetchUnprocessedDryRunStandardizationIds(int limit) {
 		// Return a list of dryRunStandardization ids which have not yet been processed by deduplication
-		//  where getRegistrationStatus is not ERROR
-		//  and changedStructure is not null. It will return them locked for update
+		// where getRegistrationStatus is not ERROR and changedStructure is not null. It will return them locked for update
 		String sql = "SELECT s.id " +
-				"FROM standardization_dry_run_compound s " +
-				"WHERE s.registration_status != 'ERROR' " +
-				"AND s.changed_structure IS NOT NULL " +
-				"ORDER BY s.id ASC " +
-				"FOR UPDATE SKIP LOCKED " +
-				"LIMIT :limit";
-		return StandardizationDryRunCompound.entityManager()
+					 "FROM standardization_dry_run_compound s " +
+					 "WHERE s.registration_status != 'ERROR' " +
+					 "AND s.changed_structure IS NOT NULL " +
+					 "ORDER BY s.id ASC " +
+					 "FOR UPDATE SKIP LOCKED " +
+					 "LIMIT :limit";
+	
+		@SuppressWarnings("unchecked")
+		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
 				.createNativeQuery(sql)
 				.setParameter("limit", limit)
 				.getResultList();
+	
+		// Convert BigInteger to Long
+		return result.stream()
+					 .map(BigInteger::longValue)
+					 .collect(Collectors.toList());
 	}
 
 	@Transactional
@@ -914,7 +927,7 @@ public class StandardizationDryRunCompound {
 		String query = "SELECT COUNT(s.id) " +
 					   "FROM StandardizationDryRunCompound s " +
 					   "WHERE s.registrationStatus != 'ERROR' " +
-					   "AND s.changedStructure IS NOT NULL";
+					   "AND s.changedStructure IS NULL";
 		return StandardizationDryRunCompound.entityManager()
 				.createQuery(query, Long.class)
 				.getSingleResult() == 0;

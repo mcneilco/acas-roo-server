@@ -217,7 +217,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			if (processedCount == 0 && StandardizationDryRunCompound.isDryRunStandardizationTablePopulated()) {
 				break;
 			}
-			dryrunStandardizeBatch();
 		}
 	}
 
@@ -231,7 +230,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 		List<Long> parentIds = StandardizationDryRunCompound.fetchUnlockedParentIds(propertiesUtilService.getStandardizationBatchSize());
 		if(parentIds.isEmpty()) {
-			logger.info("No more parents to process for standardization dry run");
+			logger.info("No more parent ids to process");
 			return 0; // No more parents to process
 		}
 		logger.info("Starting batch of " + parentIds.size() + " parents");
@@ -369,7 +368,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public void dupeCheckStandardizationStructures() {
 		while(true) {
+			logger.info("Starting duplicate check for standardization dry run structures");
 			int processedCount = dupeCheckStandardizationStructuresBatch();
+			logger.info("Processed " + processedCount + " dry run compounds for duplicate check");
 			if(processedCount == 0 && StandardizationDryRunCompound.isDupeCheckComplete()) {
 				logger.info("No more dry run compounds to process for duplicate check");
 				break; // No more dry run compounds to process
@@ -383,8 +384,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return dryRunIds.parallelStream()
 			.mapToInt(dryRunId -> {
 				try {
-					return dupeCheckStandardizationStructure(dryRunId);
-				} catch (CmpdRegMolFormatException e) {
+					int dupeCount = dupeCheckStandardizationStructure(dryRunId);
+					return dupeCount;
+				} catch(Exception e) {
+					logger.error("Error checking for duplicates for dry run compound with ID: " + dryRunId, e);
+					// In case of an error we return 0 to indicate that this compound was not processed.
+					// This will allow the loop to continue processing other compounds.
 					throw new RuntimeException(e);
 				}
 			})
@@ -891,7 +896,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 		standardizationDryRunRunningInThisWorker = true;
 		try {
-			if (!getMostRecentStandardizationHistory().getDryRunStatus().equals("running")) {
+			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
 				standardizationDryRunRunningInThisWorker = false;
 				return;
 			}
