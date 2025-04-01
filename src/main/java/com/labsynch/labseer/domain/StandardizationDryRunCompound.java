@@ -56,7 +56,7 @@ public class StandardizationDryRunCompound {
 
 	private String existingDuplicates;
 
-	private boolean changedStructure;
+	private Boolean changedStructure;
 
 	private Double newMolWeight;
 
@@ -696,6 +696,14 @@ public class StandardizationDryRunCompound {
 				.setParameter("parent", parent).getResultList();
 	}
 
+	public static StandardizationDryRunCompound findStandardizationDryRunCompoundByParentId(Long parentId) {
+		if (parentId == null)
+			return null;
+		return entityManager().createQuery(
+				"SELECT o FROM StandardizationDryRunCompound o WHERE o.parent.id = :parentId", StandardizationDryRunCompound.class)
+				.setParameter("parentId", parentId).getSingleResult();
+	}
+
 	public static List<StandardizationDryRunCompound> findAllStandardizationDryRunCompounds() {
 		return entityManager()
 				.createQuery("SELECT o FROM StandardizationDryRunCompound o", StandardizationDryRunCompound.class)
@@ -913,6 +921,31 @@ public class StandardizationDryRunCompound {
 					 "WHERE s.registration_status != 'ERROR' " +
 					 "AND s.existing_duplicate_count IS NULL " +
 					 "ORDER BY s.id ASC " +
+					 "FOR UPDATE SKIP LOCKED " +
+					 "LIMIT :limit";
+	
+		@SuppressWarnings("unchecked")
+		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
+				.createNativeQuery(sql)
+				.setParameter("limit", limit)
+				.getResultList();
+	
+		// Convert BigInteger to Long
+		return result.stream()
+					 .map(BigInteger::longValue)
+					 .collect(Collectors.toList());
+	}
+
+	@Transactional
+	public static List<Long> fetchUnprocessedParentIds(int limit) {
+		// Fetch a list of parent IDs that are associated with unprocessed dry run standardization rows
+		// and lock the parent rows for update
+		String sql = "SELECT p.id " +
+					 "FROM parent p " +
+					 "JOIN standardization_dry_run_compound s ON p.id = s.parent_id " +
+					 "WHERE s.registration_status != 'ERROR' " +
+					 "AND s.existing_duplicate_count IS NULL " +
+					 "ORDER BY p.id ASC " +
 					 "FOR UPDATE SKIP LOCKED " +
 					 "LIMIT :limit";
 	
