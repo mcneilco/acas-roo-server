@@ -712,11 +712,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			setCurrentStandardizationDryRunStatus("running");
 			checkForDryRunStandardization();
 		} catch (Exception e) {
-			StandardizationHistory stndznHistory = setCurrentStandardizationDryRunStatus("running");
 			logger.error("error running dry run", e);
-			stndznHistory.setDryRunComplete(new Date());
-			stndznHistory.setDryRunStatus("failed");
-			stndznHistory.merge();
+			finalizeDryRun("failed");
 			throw e;
 		}
 	}
@@ -726,15 +723,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		populateStandardizationDryRunTable();
 		logger.info("step 3/3: checking for standardization duplicates");
 		dupeCheckStandardizationStructures();
-		logger.info("standardization dry run complete");
-		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
-		stndznHistory.setDryRunComplete(new Date());
-		stndznHistory.setDryRunStatus("complete");
-		stndznHistory
-				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getReadyStandardizationChangesCount());
-		stndznHistory.merge();
+		finalizeDryRun("complete");
 	}
 
+	@Transactional
 	public StandardizationHistory getMostRecentStandardizationHistory() {
 		List<StandardizationHistory> standardizationSettingses = StandardizationHistory
 				.findStandardizationHistoryEntries(0, 1, "id", "DESC");
@@ -746,27 +738,28 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
-	public void finalizeDryRun() throws StandardizerException {
+	public void finalizeDryRun(String status) throws StandardizerException {
 		//Check for any parent ids not in dry run table - This varifies that population completed.
 		//Check if all dry run compounds have...
 		//  -- getRegistrationStatus is ERROR
 		//  -- or dryRunCompound changedStructure is filled in
-        if (getMostRecentStandardizationHistory().getDryRunStatus().equals("running")) {
+        if (!getMostRecentStandardizationHistory().getDryRunStatus().equals("running")) {
             return;
         }
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 		stndznHistory.setDryRunComplete(new Date());
-		stndznHistory.setDryRunStatus("complete");
+		stndznHistory.setDryRunStatus(status);
 		stndznHistory
 				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getReadyStandardizationChangesCount());
 		stndznHistory.merge();
+		logger.info("Set dry run to " + status);
 	};
 		
 
     @Scheduled(fixedDelay = 60000) // Runs every 60 seconds
     public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
         //Avoid running the process if we are already in the middle of a dry run on this worker.
-		//i.e. i.e. if its manually called or if takes longer than a minute to run.
+		//i.e. if its manually called or if takes longer than a minute to run.
 		if(standardizationDryRunRunningInThisWorker) {
 			return; // Avoid running multiple dry runs in parallel
 		}
