@@ -13,9 +13,9 @@ public interface StandardizationService {
 
 	void reset();
 
-	int populateStandardizationDryRunTable() throws CmpdRegMolFormatException, IOException, StandardizerException;
+	void populateStandardizationDryRunTable() throws CmpdRegMolFormatException, IOException, StandardizerException;
 
-	int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException;
+	void dupeCheckStandardizationStructures() throws CmpdRegMolFormatException;
 
 	String getStandardizationDryRunReportFiles(String sdfFileName) throws IOException, CmpdRegMolFormatException;
 

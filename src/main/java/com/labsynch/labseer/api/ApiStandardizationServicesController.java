@@ -58,10 +58,8 @@ public class ApiStandardizationServicesController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		logger.info("checking parent structs and saving to dry run table");
-		int numberOfDisplayChanges = 0;
-		numberOfDisplayChanges = standardizationService.populateStandardizationDryRunTable();
-		logger.info("number of compounds with display change: " + numberOfDisplayChanges);
-		return new ResponseEntity<String>(" Compound check done. " + numberOfDisplayChanges, headers, HttpStatus.OK);
+		standardizationService.populateStandardizationDryRunTable();
+		return new ResponseEntity<String>(" Compound check done.", headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/dryRun", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -134,16 +132,14 @@ public class ApiStandardizationServicesController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		logger.info("checking parent structs and saving to stanardization dryrun compound table");
-		int numberOfDisplayChanges = 0;
 		try {
-			numberOfDisplayChanges = standardizationService.dupeCheckStandardizationStructures();
+			standardizationService.dupeCheckStandardizationStructures();
 		} catch (CmpdRegMolFormatException e) {
 			return new ResponseEntity<String>("Encountered error in searching: " + e.toString(), headers,
 					HttpStatus.BAD_REQUEST);
 		}
-		logger.info("number of compounds with display change: " + numberOfDisplayChanges);
 		return new ResponseEntity<String>(
-				"Qc Compound check done. Number of display changes: " + numberOfDisplayChanges, headers, HttpStatus.OK);
+				"Qc Compound check done.", headers, HttpStatus.OK);
 
 	}
 
