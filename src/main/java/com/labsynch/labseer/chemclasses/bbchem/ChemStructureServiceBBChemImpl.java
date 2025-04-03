@@ -1243,6 +1243,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	
 	@Transactional
 	public static void updateExistingDuplicates() {
+		// Existing Duplicates: List of parent corp names that were already the same structure as the standardized structure taking into account tautomers, stereo comments and stereo categories.
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 	
 		String sql = "WITH old_duplicates AS ( " +
@@ -1283,6 +1284,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	
 	@Transactional
 	public static void updateNewDuplicates() {
+		// New Duplicates: List of parent corp names that are now the same structure as the standardized structure taking into account tautomers, stereo comments and stereo categories.
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 	
 		String newDuplicatesSql = "WITH new_duplicates AS ( " +
@@ -1329,6 +1331,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	
 	@Transactional
 	public static void updateChangedStructure() {
+		// # Structures Changed: Standardized structure is no longer the same as it's parent structure taking into account tautomers.
+		// i.e. reg hashes no longer match
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 		String changedStructureSql = "WITH structure_comparison AS ( " +
 									 "    SELECT " +
