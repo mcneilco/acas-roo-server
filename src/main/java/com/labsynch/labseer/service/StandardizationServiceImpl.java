@@ -208,7 +208,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	@Transactional
-	public int populateStandardizationDryRunTable()
+	public void populateStandardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		List<Long> parentIds = Parent.getParentIds();
 
@@ -253,7 +253,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			previousPercent = percent;
 		}
 		logger.info("total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
-		return (nonMatchingCmpds);
+		return;
 	}
 
 	
@@ -399,167 +399,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	@Transactional
-	public int dupeCheckStandardizationStructures() {
-		List<Long> dryRunIds = StandardizationDryRunCompound.findAllIds().getResultList();
-
-		Long startTime = new Date().getTime();
-
-		int totalCount = dryRunIds.size();
-		logger.debug("number of compounds found in dry run table: " + totalCount);
-		int totalNewDuplicateCount = 0;
-
-		// Split parent ids into groups of batchSize of 1
-		// We tested this with large batch sizes and it was faster doing 1 per transaction
-		int batchSize = propertiesUtilService.getStandardizationBatchSize();
-		List<List<Long>> dryRunIdGroups = SimpleUtil.splitArrayIntoGroups(dryRunIds, batchSize);
-
-		float percent = 0;
-		float previousPercent = percent;
-		previousPercent = percent;
-
-		int p = 1;
-		// Do a bulk standardization
-		for (List<Long> dIdGroup : dryRunIdGroups) {
-			totalNewDuplicateCount = totalNewDuplicateCount + dupeCheckStandardizationStructuresBatch(dIdGroup);
-			p = p+dIdGroup.size();
-
-			// Compute your percentage.
-			percent = (float) Math.floor(p * 100f / totalCount);
-			if (percent != previousPercent) {
-				Long currentTime = new Date().getTime();
-				// Output if different from the last time.
-				logger.info("checking for standardization duplicates " + percent + "% complete (" + p + "/"
-						+ totalCount + ") average speed (rows/min):"
-						+ (p / ((currentTime - startTime) / 60.0 / 1000.0)));
-				logger.debug("Time Elapsed:" + (currentTime - startTime));
-			}
-			// Update the percentage.
-			previousPercent = percent;
-		}
-		return(totalNewDuplicateCount);
-	}
-
-	private int dupeCheckStandardizationStructuresBatch(List<Long> dryRunIds) {
-		return dryRunIds.parallelStream()
-			.mapToInt(dryRunId -> {
-				try {
-					return dupeCheckStandardizationStructure(dryRunId);
-				} catch (CmpdRegMolFormatException e) {
-					throw new RuntimeException(e);
-				}
-			})
-			.sum();
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	private int dupeCheckStandardizationStructure(Long dryRunId) throws CmpdRegMolFormatException {
-
-		int[] hits;
-		StandardizationDryRunCompound dryRunCompound;
-		String newDuplicateCorpNames = "";
-		String oldDuplicateCorpNames = "";
-		int newDupeCount = 0;
-		int oldDuplicateCount = 0;
-		String tmpStructureKey = "TmpStructureKey01";
-		int totalNewDuplicateCount = 0;
-
-		dryRunCompound = StandardizationDryRunCompound.findStandardizationDryRunCompound(dryRunId);
-
-		if (dryRunCompound.getRegistrationStatus() == RegistrationStatus.ERROR) {
-			logger.info("skipping dupe check for compound with registration status "
-					+ dryRunCompound.getRegistrationStatus() + ": " + dryRunCompound.getParent().getCorpName());
-		} else {
-			logger.debug("query compound: " + dryRunCompound.getParent().getCorpName());
-
-			// NEW DUPLICATES
-			// Search the Dry Run Standardization structures using the newly Standardized Dry Run structure to get a list of duplicates that will exist on the system when the standardization is complete
-
-			// Get the structure from the dry run compound
-			HashMap<String, Integer> dryRunChemStructureHashMap = new HashMap<String, Integer>();
-			dryRunChemStructureHashMap.put(tmpStructureKey, dryRunCompound.getCdId());
-			HashMap<String, CmpdRegMolecule> standardizationDryRunMolecules = chemStructureService.getCmpdRegMolecules(
-				dryRunChemStructureHashMap,
-					StructureType.STANDARDIZATION_DRY_RUN);
-
-			// Query for structure matches against Dry Run Standarization
-			// Pass -1F for simlarityPercent (non nullable int required in function
-			// signature not used in DUPLICATE_TAUTOMER searches)
-			// Pass -1 for maxResults (non nullable int required in function signature we
-			// don't want to limit the hit counts here)
-			hits = chemStructureService.searchMolStructures(standardizationDryRunMolecules.get(tmpStructureKey),
-					StructureType.STANDARDIZATION_DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-
-			// Check for duplicates (stereo category, stereo comment matches with cdId hit list)
-			List<StandardizationDryRunCompound> dryRunDupes = StandardizationDryRunCompound.checkForDuplicateStandardizationDryRunCompoundByCdId(dryRunCompound.getId(), hits).getResultList();
-			newDupeCount = dryRunDupes.size();
-			if(newDupeCount > 0) {
-				newDuplicateCorpNames = dryRunDupes
-					.stream()
-					.map(d -> d.getParent().getCorpName())
-					.collect(
-						Collectors.joining(";")
-					);
-				logger.info("found dry run dupe - query: '" + dryRunCompound.getParent().getCorpName() + "' dupes list: "
-					+ newDuplicateCorpNames);	
-			}
-
-			dryRunCompound.setNewDuplicateCount(newDupeCount);
-			if (!newDuplicateCorpNames.equals("")) {
-				dryRunCompound.setNewDuplicates(newDuplicateCorpNames);
-			}
-
-			// CHANGED STURCTURE check to see if the newly standardized structure still gets a hit when searching for parents if not then it's a changed structure
-			hits = chemStructureService.searchMolStructures(standardizationDryRunMolecules.get(tmpStructureKey),
-					StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-
-			// If not then we mark the structure as changed
-			int parentCdId = dryRunCompound.getParent().getCdId();
-			if(Arrays.stream(hits).anyMatch(x -> x == parentCdId)) {
-				dryRunCompound.setChangedStructure(false);
-			} else {
-				dryRunCompound.setChangedStructure(true);
-				dryRunCompound.setSyncStatus(SyncStatus.READY);
-			}
-
-			// OLD DUPLICATES
-			// Search for Parent structures using the Parent structure to get a list of duplicates that existed on the system before the dry run
-
-			// Get the structure from the parent
-			HashMap<String, Integer> parentStructureHashMap = new HashMap<String, Integer>();
-			parentStructureHashMap.put(tmpStructureKey, dryRunCompound.getParent().getCdId());
-			HashMap<String, CmpdRegMolecule> parentCmpdRegMolecules = chemStructureService.getCmpdRegMolecules(
-				parentStructureHashMap,
-					StructureType.PARENT);
-
-			// Query for structure matches against Parent
-			// Pass -1F for simlarityPercent (non nullable int required in function
-			// signature not used in DUPLICATE_TAUTOMER searches)
-			// Pass -1 for maxResults (non nullable int required in function signature we
-			// don't want to limit the hit counts here)
-			hits = chemStructureService.searchMolStructures(parentCmpdRegMolecules.get(tmpStructureKey),
-					StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
-			
-			// Check for duplicates (stereo category, stereo comment matches with cdId hit list)
-			List<Parent> parentDupes = Parent.checkForDuplicateParentByCdId(dryRunCompound.getParent().getId(), hits).getResultList();
-			oldDuplicateCount = parentDupes.size();
-			if(oldDuplicateCount > 0) {
-				oldDuplicateCorpNames = parentDupes
-					.stream()
-					.map(p -> p.getCorpName())
-					.collect(
-						Collectors.joining(";")
-					);
-				logger.info("found dupe parents - query: '" + dryRunCompound.getParent().getCorpName() + "' dupes list: "
-					+ oldDuplicateCorpNames);	
-			}
-			dryRunCompound.setExistingDuplicateCount(oldDuplicateCount);
-			if (!oldDuplicateCorpNames.equals("")) {
-				dryRunCompound.setExistingDuplicates(oldDuplicateCorpNames);
-			}
-
-		}
-	
-		return (totalNewDuplicateCount);
+	public void dupeCheckStandardizationStructures() {
+		chemStructureService.populateDuplicateChangedStructures(propertiesUtilService.getStandardizationBatchSize());
 	}
 
 	@Override
@@ -906,16 +747,15 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		stndznHistory.merge();
 	}
 
-	private int runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
+	private void runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		logger.info("standardization dry run initialized");
 		logger.info("step 1/3: resetting dry run table");
 		this.reset();
 		logger.info("step 2/3: populating dry run table");
 		this.populateStandardizationDryRunTable();
 		logger.info("step 3/3: checking for standardization duplicates");
-		int numberOfDisplayChanges = this.dupeCheckStandardizationStructures();
+		dupeCheckStandardizationStructures();
 		logger.info("standardization dry run complete");
-		return numberOfDisplayChanges;
 	}
 
 	public StandardizationHistory getMostRecentStandardizationHistory() {
