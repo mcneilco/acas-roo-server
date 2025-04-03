@@ -711,7 +711,7 @@ public class StandardizationDryRunCompound {
 		String sql = "SELECT p.id " +
 					 "FROM parent p " +
 					 "JOIN standardization_dry_run_compound s ON p.id = s.parent_id " +
-					 "WHERE s.registration_status != 'ERROR' " +
+					 "WHERE s.registration_status != '" + RegistrationStatus.ERROR + "' " +
 					 "AND s.existing_duplicate_count IS NULL " +
 					 "ORDER BY p.id ASC " +
 					 "FOR UPDATE SKIP LOCKED " +
@@ -734,7 +734,7 @@ public class StandardizationDryRunCompound {
 		// Verifies that there are no more unprocessed dry run standardization rows
 		String query = "SELECT COUNT(s.id) " +
 					   "FROM StandardizationDryRunCompound s " +
-					   "WHERE s.registrationStatus != 'ERROR' " +
+					   "WHERE s.registrationStatus != '" + RegistrationStatus.ERROR + "' " +
 					   "AND s.existingDuplicateCount IS NULL";
 		return StandardizationDryRunCompound.entityManager()
 				.createQuery(query, Long.class)
