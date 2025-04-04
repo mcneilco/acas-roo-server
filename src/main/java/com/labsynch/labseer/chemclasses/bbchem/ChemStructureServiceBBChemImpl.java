@@ -1297,8 +1297,6 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 								  "    JOIN " +
 								  "        standardization_dry_run_compound sdr1 ON p1.id = sdr1.parent_id " +
 								  "    JOIN " +
-								  "        bbchem_parent_structure bps1 ON p1.cd_id = bps1.id " +
-								  "    JOIN " +
 								  "        bbchem_standardization_dry_run_structure bss1 ON sdr1.cd_id = bss1.id " +
 								  "    JOIN " +
 								  "        bbchem_standardization_dry_run_structure bss2 ON bss1.reg = bss2.reg " +
