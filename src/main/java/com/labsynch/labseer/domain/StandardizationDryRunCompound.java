@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 
 import static java.lang.Math.toIntExact;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class StandardizationDryRunCompound {
 
 	private String existingDuplicates;
 
-	private boolean changedStructure;
+	private Boolean changedStructure;
 
 	private Double newMolWeight;
 
@@ -65,9 +66,9 @@ public class StandardizationDryRunCompound {
 
 	private boolean asDrawnDisplayChange;
 
-	private int newDuplicateCount;
+	private Integer newDuplicateCount;
 
-	private int existingDuplicateCount;
+	private Integer existingDuplicateCount;
 
 	private String alias;
 
@@ -136,6 +137,13 @@ public class StandardizationDryRunCompound {
 	public static int getReadyStandardizationChangesCount() {
 		String querySQL = "SELECT count(o.id) FROM StandardizationDryRunCompound o WHERE o.syncStatus = :syncStatus";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class).setParameter("syncStatus", SyncStatus.READY).getSingleResult().intValue();
+	}
+
+	@Transactional
+	public static int rowCount() {
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery("SELECT COUNT(o) FROM StandardizationDryRunCompound o", Long.class).getSingleResult()
+				.intValue();
 	}
 
 	public StandardizationHistory fetchStats() {
@@ -447,19 +455,19 @@ public class StandardizationDryRunCompound {
 		this.asDrawnDisplayChange = asDrawnDisplayChange;
 	}
 
-	public int getNewDuplicateCount() {
+	public Integer getNewDuplicateCount() {
 		return this.newDuplicateCount;
 	}
 
-	public void setNewDuplicateCount(int newDuplicateCount) {
+	public void setNewDuplicateCount(Integer newDuplicateCount) {
 		this.newDuplicateCount = newDuplicateCount;
 	}
 
-	public int getExistingDuplicateCount() {
+	public Integer getExistingDuplicateCount() {
 		return this.existingDuplicateCount;
 	}
 
-	public void setExistingDuplicateCount(int existingDuplicateCount) {
+	public void setExistingDuplicateCount(Integer existingDuplicateCount) {
 		this.existingDuplicateCount = existingDuplicateCount;
 	}
 
@@ -688,6 +696,51 @@ public class StandardizationDryRunCompound {
 				.setParameter("parent", parent).getResultList();
 	}
 
+	public static StandardizationDryRunCompound findStandardizationDryRunCompoundByParentId(Long parentId) {
+		if (parentId == null)
+			return null;
+		return entityManager().createQuery(
+				"SELECT o FROM StandardizationDryRunCompound o WHERE o.parent.id = :parentId", StandardizationDryRunCompound.class)
+				.setParameter("parentId", parentId).getSingleResult();
+	}
+
+	@Transactional
+	public static List<Long> fetchUnprocessedParentIds(int limit) {
+		// Fetch a list of parent IDs that are associated with unprocessed dry run standardization rows
+		// and lock the parent rows for update
+		String sql = "SELECT p.id " +
+					 "FROM parent p " +
+					 "JOIN standardization_dry_run_compound s ON p.id = s.parent_id " +
+					 "WHERE s.registration_status != '" + RegistrationStatus.ERROR + "' " +
+					 "AND s.existing_duplicate_count IS NULL " +
+					 "ORDER BY p.id ASC " +
+					 "FOR UPDATE SKIP LOCKED " +
+					 "LIMIT :limit";
+	
+		@SuppressWarnings("unchecked")
+		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
+				.createNativeQuery(sql)
+				.setParameter("limit", limit)
+				.getResultList();
+	
+		// Convert BigInteger to Long
+		return result.stream()
+					 .map(BigInteger::longValue)
+					 .collect(Collectors.toList());
+	}
+
+	@Transactional
+	public static int countUnprocessedDryRunStandardizationIds() {
+		// Verifies that there are no more unprocessed dry run standardization rows
+		String query = "SELECT COUNT(s.id) " +
+					   "FROM StandardizationDryRunCompound s " +
+					   "WHERE s.registrationStatus != '" + RegistrationStatus.ERROR + "' " +
+					   "AND s.existingDuplicateCount IS NULL";
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery(query, Long.class)
+				.getSingleResult().intValue();
+	}
+
 	public static List<StandardizationDryRunCompound> findAllStandardizationDryRunCompounds() {
 		return entityManager()
 				.createQuery("SELECT o FROM StandardizationDryRunCompound o", StandardizationDryRunCompound.class)
@@ -855,4 +908,6 @@ public class StandardizationDryRunCompound {
 		return new JSONDeserializer<List<StandardizationDryRunCompound>>()
 				.use("values", StandardizationDryRunCompound.class).deserialize(json);
 	}
+
+
 }
