@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -22,15 +21,15 @@ import javax.persistence.TypedQuery;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound.SyncStatus;
 import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
@@ -1231,6 +1230,134 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		} catch (IOException e) {
 			throw new RuntimeException("Failed call to bbchem config fix service: " + newSettingsNode.get("config").asText(), e);
 		}
+	}
+
+
+	@Transactional
+	public void populateDuplicateChangedStructures(int batchSize) {
+		// Update existing, new and changed structures
+		updateExistingDuplicates();
+		updateNewDuplicates();
+		updateChangedStructure();
+	}
+	
+	@Transactional
+	public static void updateExistingDuplicates() {
+		// Existing Duplicates: List of parent corp names that were already the same structure as the standardized structure taking into account tautomers, stereo comments and stereo categories.
+		EntityManager em = StandardizationDryRunCompound.entityManager();
+	
+		String sql = "WITH old_duplicates AS ( " +
+					 "    SELECT " +
+					 "        p1.id AS parent_id, " +
+					 "        COUNT(DISTINCT p2.corp_name) AS duplicate_count, " +
+					 "        STRING_AGG(DISTINCT p2.corp_name, ';') AS duplicate_corp_names " +
+					 "    FROM " +
+					 "        parent p1 " +
+					 "    JOIN " +
+					 "        bbchem_parent_structure bps1 ON p1.cd_id = bps1.id " +
+					 "    JOIN " +
+					 "        bbchem_parent_structure bps2 ON bps1.reg = bps2.reg " +
+					 "    JOIN " +
+					 "        parent p2 ON bps2.id = p2.cd_id " +
+					 "    WHERE " +
+					 "        p1.corp_name != p2.corp_name " +
+					 "        AND p1.stereo_category = p2.stereo_category " +
+					 "        AND ( " +
+					 "            (p1.stereo_comment IS NULL AND p2.stereo_comment IS NULL) OR " +
+					 "            (p1.stereo_comment IS NOT NULL AND p2.stereo_comment IS NOT NULL AND " +
+					 "             LOWER(p1.stereo_comment) = LOWER(p2.stereo_comment)) " +
+					 "        ) " +
+					 "    GROUP BY " +
+					 "        p1.id " +
+					 ") " +
+					 "UPDATE standardization_dry_run_compound sdr " +
+					 "SET " +
+					 "    existing_duplicate_count = old_duplicates.duplicate_count, " +
+					 "    existing_duplicates = old_duplicates.duplicate_corp_names " +
+					 "FROM " +
+					 "    old_duplicates " +
+					 "WHERE " +
+					 "    sdr.parent_id = old_duplicates.parent_id " +
+					 "    AND sdr.existing_duplicate_count IS NULL;";
+		em.createNativeQuery(sql).executeUpdate();
+	}
+	
+	@Transactional
+	public static void updateNewDuplicates() {
+		// New Duplicates: List of parent corp names that are now the same structure as the standardized structure taking into account tautomers, stereo comments and stereo categories.
+		EntityManager em = StandardizationDryRunCompound.entityManager();
+	
+		String newDuplicatesSql = "WITH new_duplicates AS ( " +
+								  "    SELECT " +
+								  "        p1.id AS parent_id, " +
+								  "        COUNT(DISTINCT p2.corp_name) AS duplicate_count, " +
+								  "        STRING_AGG(DISTINCT p2.corp_name, ';') AS duplicate_corp_names " +
+								  "    FROM " +
+								  "        parent p1 " +
+								  "    JOIN " +
+								  "        standardization_dry_run_compound sdr1 ON p1.id = sdr1.parent_id " +
+								  "    JOIN " +
+								  "        bbchem_standardization_dry_run_structure bss1 ON sdr1.cd_id = bss1.id " +
+								  "    JOIN " +
+								  "        bbchem_standardization_dry_run_structure bss2 ON bss1.reg = bss2.reg " +
+								  "    JOIN " +
+								  "        standardization_dry_run_compound sdr2 ON bss2.id = sdr2.cd_id " +
+								  "    JOIN " +
+								  "        parent p2 ON sdr2.parent_id = p2.id " +
+								  "    WHERE " +
+								  "        p1.corp_name != p2.corp_name " +
+								  "        AND p1.stereo_category = p2.stereo_category " +
+								  "        AND ( " +
+								  "            (p1.stereo_comment IS NULL AND p2.stereo_comment IS NULL) OR " +
+								  "            (p1.stereo_comment IS NOT NULL AND p2.stereo_comment IS NOT NULL AND " +
+								  "             LOWER(p1.stereo_comment) = LOWER(p2.stereo_comment)) " +
+								  "        ) " +
+								  "    GROUP BY " +
+								  "        p1.id " +
+								  ") " +
+								  "UPDATE standardization_dry_run_compound sdr " +
+								  "SET " +
+								  "    new_duplicate_count = new_duplicates.duplicate_count, " +
+								  "    new_duplicates = new_duplicates.duplicate_corp_names " +
+								  "FROM " +
+								  "    new_duplicates " +
+								  "WHERE " +
+								  "    sdr.parent_id = new_duplicates.parent_id " +
+								  "    AND sdr.new_duplicate_count IS NULL;";
+		em.createNativeQuery(newDuplicatesSql).executeUpdate();
+	}
+	
+	@Transactional
+	public static void updateChangedStructure() {
+		// # Structures Changed: Standardized structure is no longer the same as it's parent structure taking into account tautomers.
+		// i.e. reg hashes no longer match
+		EntityManager em = StandardizationDryRunCompound.entityManager();
+		String changedStructureSql = "WITH structure_comparison AS ( " +
+									 "    SELECT " +
+									 "        sdr.id AS dry_run_id, " +
+									 "        CASE " +
+									 "            WHEN bss1.reg = bps1.reg THEN false " +
+									 "            ELSE true " +
+									 "        END AS changed_structure " +
+									 "    FROM " +
+									 "        standardization_dry_run_compound sdr " +
+									 "    JOIN " +
+									 "        parent p1 ON sdr.parent_id = p1.id " +
+									 "    JOIN " +
+									 "        bbchem_parent_structure bps1 ON p1.cd_id = bps1.id " + // Existing parent structure
+									 "    JOIN " +
+									 "        bbchem_standardization_dry_run_structure bss1 ON sdr.cd_id = bss1.id " + // New dry run structure
+									 ") " +
+									 "UPDATE standardization_dry_run_compound sdr " +
+									 "SET " +
+									 "    changed_structure = structure_comparison.changed_structure, " +
+									 "    sync_status = '" + SyncStatus.READY + "' " +
+									 "FROM " +
+									 "    structure_comparison " +
+									 "WHERE " +
+									 "    sdr.id = structure_comparison.dry_run_id " +
+									 "    AND sdr.changed_structure IS NULL;"; // Skip rows already processed
+		em.createNativeQuery(changedStructureSql).executeUpdate();
 	}
 
 }
