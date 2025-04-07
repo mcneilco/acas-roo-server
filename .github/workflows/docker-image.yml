@@ -42,7 +42,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -50,3 +50,5 @@ jobs:
           file: Dockerfile-multistage
           platforms: linux/amd64,linux/arm64/v8
           build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
+          cache-from: type=registry,ref=${{ github.repository }}-oss:cache-${{ matrix.chemistry_package }}
+          cache-to: type=registry,ref=${{ github.repository }}-oss:cache-${{ matrix.chemistry_package }},mode=max
