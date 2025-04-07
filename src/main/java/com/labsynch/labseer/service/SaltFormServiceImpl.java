@@ -27,7 +27,13 @@ import org.springframework.stereotype.Service;
 public class SaltFormServiceImpl implements SaltFormService {
 
 	@Autowired
+	private AssayService assayService;
+
+	@Autowired
 	private ChemStructureService chemService;
+
+	@Autowired
+	private ContainerService containerService;
 
 	@Autowired
 	private CorpNameService corpNameService;
@@ -244,6 +250,8 @@ public class SaltFormServiceImpl implements SaltFormService {
 					// numbering
 					lot.setCorpName(lotService.generateCorpName(lot));
 					newLotCorpName = lot.getCorpName();
+					assayService.renameBatchCode(oldLotCorpName, newLotCorpName, "SaltFormService");
+					containerService.renameBatchCode(oldLotCorpName, newLotCorpName, "SaltFormService", null);
 				}
 				lot.merge();
 				if (!oldLotCorpName.equals(newLotCorpName))
