@@ -250,8 +250,10 @@ public class SaltFormServiceImpl implements SaltFormService {
 					// numbering
 					lot.setCorpName(lotService.generateCorpName(lot));
 					newLotCorpName = lot.getCorpName();
-					assayService.renameBatchCode(oldLotCorpName, newLotCorpName, "SaltFormService");
-					containerService.renameBatchCode(oldLotCorpName, newLotCorpName, "SaltFormService", null);
+					if (!oldLotCorpName.equals(newLotCorpName)) {
+						assayService.renameBatchCode(oldLotCorpName, newLotCorpName, "SaltFormService");
+						containerService.renameBatchCode(oldLotCorpName, newLotCorpName, "SaltFormService", null);
+					}
 				}
 				lot.merge();
 				if (!oldLotCorpName.equals(newLotCorpName))
