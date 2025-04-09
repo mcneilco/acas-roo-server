@@ -1244,6 +1244,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	
 	@Transactional
 	public static void updateExistingDuplicates() {
+		// Existing Duplicates: List of parent corp names that were already the same structure as the standardized structure taking into account tautomers, stereo comments and stereo categories.
 		EntityManager em = StandardizationDryRunCompound.entityManager();
 	
 		String sql = "WITH old_duplicates AS ( " +
