@@ -949,28 +949,4 @@ public class StandardizationDryRunCompound {
 				.getSingleResult().intValue();
 	}
 
-	@Transactional
-	public static List<Long> fetchUnprocessedDryRunStandardizationIds(int limit) {
-		// Return a list of dryRunStandardization ids which have not yet been processed by deduplication
-		// where getRegistrationStatus is not ERROR and changedStructure is not null. It will return them locked for update
-		String sql = "SELECT s.id " +
-					 "FROM standardization_dry_run_compound s " +
-					 "WHERE s.registration_status != 'ERROR' " +
-					 "AND s.existing_duplicate_count IS NULL " +
-					 "ORDER BY s.id ASC " +
-					 "FOR UPDATE SKIP LOCKED " +
-					 "LIMIT :limit";
-	
-		@SuppressWarnings("unchecked")
-		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
-				.createNativeQuery(sql)
-				.setParameter("limit", limit)
-				.getResultList();
-	
-		// Convert BigInteger to Long
-		return result.stream()
-					 .map(BigInteger::longValue)
-					 .collect(Collectors.toList());
-	}
-
 }
