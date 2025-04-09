@@ -166,20 +166,4 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-	<!-- TaskScheduler configuration -->
-	<servlet>
-		<servlet-name>taskScheduler</servlet-name>
-		<servlet-class>org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</servlet-class>
-		<init-param>
-			<param-name>poolSize</param-name>
-			<param-value>10</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>taskScheduler</servlet-name>
-		<url-pattern>/tasks/*</url-pattern>
-	</servlet-mapping>
-
 </web-app>
