@@ -3,9 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +13,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.stream.Collectors;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
-import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound.SyncStatus;
@@ -31,11 +27,8 @@ import com.labsynch.labseer.dto.StandardizationSettingsConfigCheckResponseDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
-import com.labsynch.labseer.exceptions.StructureSaveException;
-import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -224,6 +217,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			} else if (remainingToBeProcessed == 0) {
 				logger.info("No more parents to process for dry run standardization, exiting");
 				break;
+			} else {
+				logger.info("No more parents to process for dry run standardization but not all compounds fully processed. Checking again in 5 seconds.");
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					logger.error("Error sleeping", e);
+				}
 			}
 		}
 	}
@@ -235,8 +235,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Date qcDate = new Date();
 		Integer cdId = 0;
 		Integer runNumber = 0;
-
-		List<Long> parentIds = StandardizationDryRunCompound.fetchUnlockedParentIds(propertiesUtilService.getStandardizationBatchSize());
+		int batchSize = propertiesUtilService.getStandardizationBatchSize();
+		List<Long> parentIds = StandardizationDryRunCompound.fetchUnlockedParentIds(batchSize);
 		if(parentIds.isEmpty()) {
 			logger.info("No more parent ids to process");
 			return 0; // No more parents to process
@@ -312,11 +312,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				stndznCompound.setNewMolWeight(null);
 			}
 
-			if (newMolWeight == null || stndznCompound.getParent().getMolWeight() == null) {
+			if (newMolWeight == null || parent.getMolWeight() == null) {
 				stndznCompound.setDeltaMolWeight(null);
 			} else {
 				DecimalFormat deltaMolFormat = new DecimalFormat("#.###");
-				Double deltaMolWeight = stndznCompound.getParent().getMolWeight() - stndznCompound.getNewMolWeight();
+				Double deltaMolWeight = parent.getMolWeight() - stndznCompound.getNewMolWeight();
 				stndznCompound.setDeltaMolWeight(Double.valueOf(deltaMolFormat.format(deltaMolWeight)));
 				if(Math.abs(stndznCompound.getDeltaMolWeight()) >= 0.01) {
 					stndznCompound.setSyncStatus(SyncStatus.READY);
@@ -343,8 +343,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			cdId = parentIdToStructureId.get(parentId.toString());
 
 			if (cdId == -1) {
-				logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getParent().getCorpName()
-						+ ", Parent ID " + stndznCompound.getParent().getId() + ": " + stndznCompound.getMolStructure());
+				logger.error("Bad molformat. Please fix the molfile for Corp Name " + parent.getCorpName()
+						+ ", Parent ID " + parent.getId() + ": " + stndznCompound.getMolStructure());
 			} else {
 				stndznCompound.setCdId(cdId);
 				stndznCompound.persist();
@@ -737,18 +737,20 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 	}
 
-	@Transactional
 	public void finalizeDryRun(String status) throws StandardizerException {
 		//Check for any parent ids not in dry run table - This varifies that population completed.
 		//Check if all dry run compounds have...
 		//  -- getRegistrationStatus is ERROR
 		//  -- or dryRunCompound changedStructure is filled in
-        if (!getMostRecentStandardizationHistory().getDryRunStatus().equals("running")) {
+		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+		logger.info("Most recent standardization history id: " + stndznHistory.getId() + " status: " + stndznHistory.getDryRunStatus());
+		//Refresh the stndznHistory to get the latest status
+        if (!stndznHistory.getDryRunStatus().equals("running")) {
             return;
         }
-		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 		stndznHistory.setDryRunComplete(new Date());
 		stndznHistory.setDryRunStatus(status);
+		logger.info("Setting standardization history id " + stndznHistory.getId() + " to " + status);
 		stndznHistory
 				.setDryRunStandardizationChangesCount(StandardizationDryRunCompound.getReadyStandardizationChangesCount());
 		stndznHistory.merge();
@@ -756,7 +758,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	};
 		
 
-    @Scheduled(fixedDelay = 60000) // Runs every 60 seconds
+
+	@Scheduled(fixedDelayString = "${client.cmpdreg.serverSettings.checkForDryRunStandardizationDelay:60000}")
     public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
         //Avoid running the process if we are already in the middle of a dry run on this worker.
 		//i.e. if its manually called or if takes longer than a minute to run.
