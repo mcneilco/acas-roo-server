@@ -704,6 +704,43 @@ public class StandardizationDryRunCompound {
 				.setParameter("parentId", parentId).getSingleResult();
 	}
 
+	@Transactional
+	public static List<Long> fetchUnprocessedParentIds(int limit) {
+		// Fetch a list of parent IDs that are associated with unprocessed dry run standardization rows
+		// and lock the parent rows for update
+		String sql = "SELECT p.id " +
+					 "FROM parent p " +
+					 "JOIN standardization_dry_run_compound s ON p.id = s.parent_id " +
+					 "WHERE s.registration_status != '" + RegistrationStatus.ERROR + "' " +
+					 "AND s.existing_duplicate_count IS NULL " +
+					 "ORDER BY p.id ASC " +
+					 "FOR UPDATE SKIP LOCKED " +
+					 "LIMIT :limit";
+	
+		@SuppressWarnings("unchecked")
+		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
+				.createNativeQuery(sql)
+				.setParameter("limit", limit)
+				.getResultList();
+	
+		// Convert BigInteger to Long
+		return result.stream()
+					 .map(BigInteger::longValue)
+					 .collect(Collectors.toList());
+	}
+
+	@Transactional
+	public static int countUnprocessedDryRunStandardizationIds() {
+		// Verifies that there are no more unprocessed dry run standardization rows
+		String query = "SELECT COUNT(s.id) " +
+					   "FROM StandardizationDryRunCompound s " +
+					   "WHERE s.registrationStatus != '" + RegistrationStatus.ERROR + "' " +
+					   "AND s.existingDuplicateCount IS NULL";
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery(query, Long.class)
+				.getSingleResult().intValue();
+	}
+
 	public static List<StandardizationDryRunCompound> findAllStandardizationDryRunCompounds() {
 		return entityManager()
 				.createQuery("SELECT o FROM StandardizationDryRunCompound o", StandardizationDryRunCompound.class)
@@ -936,40 +973,4 @@ public class StandardizationDryRunCompound {
 					 .collect(Collectors.toList());
 	}
 
-	@Transactional
-	public static List<Long> fetchUnprocessedParentIds(int limit) {
-		// Fetch a list of parent IDs that are associated with unprocessed dry run standardization rows
-		// and lock the parent rows for update
-		String sql = "SELECT p.id " +
-					 "FROM parent p " +
-					 "JOIN standardization_dry_run_compound s ON p.id = s.parent_id " +
-					 "WHERE s.registration_status != 'ERROR' " +
-					 "AND s.existing_duplicate_count IS NULL " +
-					 "ORDER BY p.id ASC " +
-					 "FOR UPDATE SKIP LOCKED " +
-					 "LIMIT :limit";
-	
-		@SuppressWarnings("unchecked")
-		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
-				.createNativeQuery(sql)
-				.setParameter("limit", limit)
-				.getResultList();
-	
-		// Convert BigInteger to Long
-		return result.stream()
-					 .map(BigInteger::longValue)
-					 .collect(Collectors.toList());
-	}
-
-	@Transactional
-	public static int countUnprocessedDryRunStandardizationIds() {
-		// Verifies that there are no more unprocessed dry run standardization rows
-		String query = "SELECT COUNT(s.id) " +
-					   "FROM StandardizationDryRunCompound s " +
-					   "WHERE s.registrationStatus != 'ERROR' " +
-					   "AND s.existingDuplicateCount IS NULL";
-		return StandardizationDryRunCompound.entityManager()
-				.createQuery(query, Long.class)
-				.getSingleResult().intValue();
-	}
 }

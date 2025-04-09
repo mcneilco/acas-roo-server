@@ -170,6 +170,8 @@ public interface ChemStructureService {
 	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO);
 	
 	default void populateDuplicateChangedStructures(int batchSize) {
+		// Warn that the default implementation has not been tested thoroughly
+		logger.warn("Default implementation of populateDuplicateChangedStructures has not been tested.");
 		while(true) {
 			logger.info("Starting duplicate check for standardization dry run structures");
 			int processedCount = dupeCheckStandardizationStructuresBatch(batchSize);
