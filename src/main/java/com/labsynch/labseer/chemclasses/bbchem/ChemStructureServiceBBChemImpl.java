@@ -1234,6 +1234,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 
 	@Transactional
+	@Override
 	public void populateDuplicateChangedStructures(int batchSize) {
 		// Update existing, new and changed structures
 		updateExistingDuplicates();
@@ -1356,6 +1357,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 									 "    structure_comparison " +
 									 "WHERE " +
 									 "    sdr.id = structure_comparison.dry_run_id " +
+									 "    AND structure_comparison.changed_structure = true " + // Only update if structure has changed
 									 "    AND sdr.changed_structure IS NULL;"; // Skip rows already processed
 		em.createNativeQuery(changedStructureSql).executeUpdate();
 	}
