@@ -909,5 +909,44 @@ public class StandardizationDryRunCompound {
 				.use("values", StandardizationDryRunCompound.class).deserialize(json);
 	}
 
+	@Transactional
+	public static List<Long> fetchUnlockedParentIds(int limit) {
+		String sql = "SELECT p.id " +
+					"FROM parent p " +
+					"WHERE NOT EXISTS (" +
+					"    SELECT 1 " +
+					"    FROM standardization_dry_run_compound s " +
+					"    WHERE s.parent_id = p.id" +
+					") " +
+					"ORDER BY p.id ASC " +
+					"FOR UPDATE SKIP LOCKED " +
+					"LIMIT :limit";
+
+		@SuppressWarnings("unchecked")
+		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
+				.createNativeQuery(sql)
+				.setParameter("limit", limit)
+				.getResultList();
+
+		// Convert BigInteger to Long
+		return result.stream()
+					.map(BigInteger::longValue)
+					.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public static int countRemainingParentsNotInStandardizationDryRunCompound() {
+		// Count how many parents have not been added to the standardization dry run compound table
+		String query = "SELECT COUNT(p.id) " +
+					   "FROM Parent p " +
+					   "WHERE NOT EXISTS (" +
+					   "    SELECT 1 " +
+					   "    FROM StandardizationDryRunCompound s " +
+					   "    WHERE s.parent.id = p.id" +
+					   ")";
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery(query, Long.class)
+				.getSingleResult().intValue();
+	}
 
 }

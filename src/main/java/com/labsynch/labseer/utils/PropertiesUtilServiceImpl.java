@@ -968,4 +968,24 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.maxAutoLotNumber;
 	}
 
+	public long checkForDryRunStandardizationDelay;
+
+	@Value("${client.cmpdreg.serverSettings.checkForDryRunStandardizationDelay}")
+	public void setCheckForDryRunStandardizationDelay(String checkForDryRunStandardizationDelay) {
+		if (checkForDryRunStandardizationDelay.startsWith("${")) {
+			this.checkForDryRunStandardizationDelay = 60000L;
+		} else {
+			try {
+				this.checkForDryRunStandardizationDelay = Long.parseLong(checkForDryRunStandardizationDelay);
+			} catch (NumberFormatException e) {
+				this.checkForDryRunStandardizationDelay = 60000L;
+			}
+		}
+	}
+
+	@Override
+	public long getCheckForDryRunStandardizationDelay() {
+		return this.checkForDryRunStandardizationDelay;
+	}
+
 }
