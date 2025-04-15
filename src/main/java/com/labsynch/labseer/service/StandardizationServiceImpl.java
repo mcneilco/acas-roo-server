@@ -731,7 +731,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		List<StandardizationHistory> standardizationSettingses = StandardizationHistory
 				.findStandardizationHistoryEntries(0, 1, "id", "DESC");
 		if (standardizationSettingses.size() > 0) {
-			return standardizationSettingses.get(0);
+			StandardizationHistory mostRecentHistory = standardizationSettingses.get(0);
+			// Refresh the entity to ensure it is up-to-date
+			EntityManager em = StandardizationHistory.entityManager();
+			em.refresh(mostRecentHistory);
+			return mostRecentHistory;
 		} else {
 			return null;
 		}
