@@ -65,4 +65,24 @@ public class ApiHealthController {
 		return new ResponseEntity<String>("{\"averageMsTime\": " + averageTime + ", \"totalTime\": " + totalTime + ", \"testsToRun\": " + testsToRun + ", \"logData\": " + finalLogData + "}", headers, HttpStatus.OK);
 	}
 
+    @RequestMapping(value = "/live", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<String> liveness() {
+        return ResponseEntity.ok("{\"status\":\"UP\"}");
+    }
+
+    @RequestMapping(value = "/ready", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<String> readiness() {
+        try {
+            // Quick DB check: try to fetch one ValueType
+            List<ValueType> valueTypes = ValueType.findAllValueTypes();
+            boolean dbOk = valueTypes != null;
+            return dbOk
+                ? ResponseEntity.ok("{\"status\":\"UP\"}")
+                : ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("{\"status\":\"DOWN\"}");
+        } catch (Exception e) {
+            logger.error("Readiness check failed", e);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("{\"status\":\"DOWN\"}");
+        }
+    }
+
 }
