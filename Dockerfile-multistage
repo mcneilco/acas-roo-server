@@ -23,7 +23,16 @@ RUN apt-get update && \
       curl \ 
       libfreetype6 \
       libfontconfig \
-      openssl 
+      openssl && \
+    # Remove default Tomcat webapps for security
+    rm -rf /usr/local/tomcat/webapps/docs \
+           /usr/local/tomcat/webapps/examples \
+           /usr/local/tomcat/webapps/host-manager \
+           /usr/local/tomcat/webapps/manager \
+           /usr/local/tomcat/webapps/ROOT/* && \
+    # Clean up apt cache
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* 
     
 # Add nodejs for prepare config files
 ENV NPM_CONFIG_LOGLEVEL warn
@@ -59,9 +68,20 @@ RUN chgrp runner /usr/local/openjdk-11/lib/security/cacerts && \
 COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/acas.war
 COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/webapps/acas/
 
+# Copy hardened Tomcat configuration
+COPY 	--chown=runner:runner --from=compile /src/src/main/resources/tomcat-config/server.xml /usr/local/tomcat/conf/server.xml
+
+# Create simple index.html for ROOT webapp
+RUN echo '<!DOCTYPE html><html><head><title>Application Server</title></head><body><h1>Application Server</h1><p>This server is running properly.</p></body></html>' > /usr/local/tomcat/webapps/ROOT/index.html && \
+    chown runner:runner /usr/local/tomcat/webapps/ROOT/index.html
+
 # Wait for it startup script
 COPY 	--chown=runner:runner wait-for-it.sh ./wait-for-it.sh
 RUN 	chmod 755 wait-for-it.sh
+
+# Copy runtime hardening script
+COPY 	--chown=runner:runner harden_tomcat_runtime.sh ./harden_tomcat_runtime.sh
+RUN 	chmod 755 harden_tomcat_runtime.sh
 WORKDIR $CATALINA_HOME
 ENV    ACAS_HOME=/home/runner/build
 ENV    CATALINA_OPTS="-Xms512M -Xmx1536M -XX:MaxPermSize=512m"
