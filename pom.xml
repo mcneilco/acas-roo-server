@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<querydsl.version>3.4.3</querydsl.version>
 		<spring-security.version>5.6.3</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
-		<jchem.version>23.4.0</jchem.version>
+		<jchem.version>23.9.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
