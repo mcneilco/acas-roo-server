@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ACAS Health Check</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>ACAS Application Health Check</h1>
+    <p>Application is running successfully.</p>
+    <p>Context Path: /acas</p>
+    <p>Timestamp: <script>document.write(new Date().toISOString());</script></p>
+    
+    <h2>Expected Security Endpoints:</h2>
+    <ul>
+        <li>Login Processing: /acas/resources/j_spring_security_check</li>
+        <li>Logout: /acas/resources/j_spring_security_logout</li>
+        <li>Login Page: /acas/login</li>
+    </ul>
+</body>
+</html>

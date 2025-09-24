@@ -22,8 +22,18 @@
 	<!-- Converts JSON to POJO and vice versa -->
         <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 
-    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources -->
-    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**"/>
+    <!-- Handles HTTP GET requests for static resources, excluding security endpoints -->
+    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/static/**"/>
+    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/css/**"/>
+    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/js/**"/>
+    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/images/**"/>
+    <mvc:resources location="/", mapping="/resources/*.html"/>
+    <mvc:resources location="/", mapping="/resources/*.css"/>
+    <mvc:resources location="/", mapping="/resources/*.js"/>
+    <mvc:resources location="/", mapping="/resources/*.png"/>
+    <mvc:resources location="/", mapping="/resources/*.jpg"/>
+    <mvc:resources location="/", mapping="/resources/*.gif"/>
+    <mvc:resources location="/", mapping="/resources/*.ico"/>
     
     <!-- Selects a static view for rendering without the need for an explicit controller -->
     <mvc:view-controller path="/login"/>

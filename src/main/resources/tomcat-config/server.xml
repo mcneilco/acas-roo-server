@@ -56,10 +56,16 @@
             appBase="webapps"
             unpackWARs="true" 
             autoDeploy="false"
-            deployOnStartup="true">
+            deployOnStartup="true"
+            errorReportValveClass="org.apache.catalina.valves.ErrorReportValve">
 
         <!-- Security valve to disable HTTP TRACE method -->
         <Valve className="org.apache.catalina.valves.RemoteIpValve" />
+        
+        <!-- Custom Error Report Valve to hide server info -->
+        <Valve className="org.apache.catalina.valves.ErrorReportValve"
+               showReport="false"
+               showServerInfo="false" />
         
         <!-- Access log valve for security monitoring -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" 
