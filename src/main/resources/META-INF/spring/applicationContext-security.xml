@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.6.xsd">
 
 	<!-- HTTP security configurations -->
-	<http auto-config="true" use-expressions="true">
+	<http auto-config="true" use-expressions="true" pattern="/**">
 		<form-login login-processing-url="/resources/j_spring_security_check"
 			login-page="/login" 
 			username-parameter="j_username"
@@ -17,6 +17,8 @@
 		<csrf disabled="true"/>
 		<!-- Configure these elements to secure URIs in your application -->
 		<intercept-url pattern="/api/admin/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/resources/j_spring_security_check" access="permitAll" method="POST" />
+		<intercept-url pattern="/resources/j_spring_security_logout" access="permitAll" />
 		<intercept-url pattern="/resources/**" access="permitAll" />
 		<intercept-url pattern="/login/**" access="permitAll" />
 		<intercept-url pattern="/**" access="permitAll" />
