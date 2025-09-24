@@ -12,9 +12,26 @@
     
     <h2>Expected Security Endpoints:</h2>
     <ul>
-        <li>Login Processing: /acas/resources/j_spring_security_check</li>
-        <li>Logout: /acas/resources/j_spring_security_logout</li>
-        <li>Login Page: /acas/login</li>
+        <li>Login Processing: POST to /acas/resources/j_spring_security_check</li>
+        <li>Logout: POST/GET to /acas/resources/j_spring_security_logout</li>
+        <li>Login Page: GET /acas/login</li>
+    </ul>
+    
+    <h2>Debugging Information:</h2>
+    <ul>
+        <li>Spring Security Filter Chain: Enabled</li>
+        <li>CSRF Protection: Disabled</li>
+        <li>CORS: Enabled (allows all origins)</li>
+        <li>Security Headers: Enabled</li>
+        <li>HTTP Methods Allowed: GET, POST, PUT, DELETE, OPTIONS</li>
+        <li>HTTP Methods Blocked: TRACE</li>
+    </ul>
+    
+    <h2>Test Links:</h2>
+    <ul>
+        <li><a href="/acas/login">Login Page</a></li>
+        <li><a href="/acas/health.html">This Health Check</a></li>
+        <li><a href="/acas/">Application Root</a></li>
     </ul>
 </body>
 </html>

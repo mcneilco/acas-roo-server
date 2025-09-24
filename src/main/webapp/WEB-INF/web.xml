@@ -113,13 +113,12 @@
 	</filter>
 
 	<filter-mapping>
-		<!-- CORS Filter mapping -->
-		<filter-name>CORS</filter-name>
+		<filter-name>CharacterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
-		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-name>HttpPutFormContentFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
@@ -128,14 +127,24 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-	
-    
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
 		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<!-- CORS Filter mapping - after security -->
+		<filter-name>CORS</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>httpHeaderSecurity</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
@@ -190,11 +199,6 @@
 		</init-param>
 	</filter>
 
-	<filter-mapping>
-		<filter-name>httpHeaderSecurity</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-
 	<!-- HTTP Method Restrictions - Only block TRACE, allow OPTIONS for CORS -->
 	<security-constraint>
 		<web-resource-collection>
@@ -208,23 +212,23 @@
 	<!-- Custom Error Pages -->
 	<error-page>
 		<error-code>400</error-code>
-		<location>/acas/error.html</location>
+		<location>/error.html</location>
 	</error-page>
 	<error-page>
 		<error-code>401</error-code>
-		<location>/acas/error.html</location>
+		<location>/error.html</location>
 	</error-page>
 	<error-page>
 		<error-code>403</error-code>
-		<location>/acas/error.html</location>
+		<location>/error.html</location>
 	</error-page>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/acas/error.html</location>
+		<location>/error.html</location>
 	</error-page>
 	<error-page>
 		<error-code>500</error-code>
-		<location>/acas/error.html</location>
+		<location>/error.html</location>
 	</error-page>
 
 </web-app>
