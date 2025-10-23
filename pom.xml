@@ -39,16 +39,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<date>${maven.build.timestamp}</date>
 		<slf4j.version>1.7.5</slf4j.version>
 		<log4j.version>2.17.2</log4j.version>
-		<spring.version>5.3.20</spring.version>
+		<spring.version>6.2.11</spring.version>
 		<querydsl.version>3.4.3</querydsl.version>
-		<spring-security.version>5.6.9</spring-security.version>
+		<spring-security.version>6.3.8</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>23.4.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
-		<tomcat.version>9.0.62</tomcat.version>
+		<tomcat.version>9.0.90</tomcat.version>
 		<hibernate.version>5.6.7.Final</hibernate.version>
 		<maven-plugins.version>3.3.0</maven-plugins.version>
 	</properties>
@@ -182,7 +182,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Dependencies to get logging to work using log4j -->
@@ -238,22 +238,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.13.2</version>
+			<version>2.15.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.13.4.1</version>
+			<version>2.13.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
+			<version>3.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.11.0</version>
+			<version>2.14.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -317,7 +317,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>6.0.23.Final</version>
+			<version>6.2.0.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.xml.bind</groupId>
@@ -378,7 +378,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.4</version>
+			<version>1.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -450,7 +450,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.8</version>
+			<version>42.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.javadev</groupId>
