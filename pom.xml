@@ -616,45 +616,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${maven-plugins.version}</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>${maven-plugins.version}</version>
-				<configuration>
-					<usedDependencies>
-						<!-- Required at runtime in web.xml com.thetransactioncompany.cors.CORSFilter-->
-						<dependency>com.thetransactioncompany:cors-filter</dependency>
-						<!-- Required at runtime by spring mail org.springframework.mail.javamail.JavaMailSender-->
-						<depdenency>javax.mail:mail</depdenency>
-						<!-- We use javax.validation which comes with org.hibernate.validator:hibernate-validator-->
-						<dependency>org.hibernate.validator:hibernate-validator</dependency>
-						<!-- Required at runtime by org.apache.commons.dbcp.BasicDataSource -->
-						<dependency>commons-dbcp:commons-dbcp</dependency>
-						<!-- Required at runtime in applicationContext-security.xml -->
-						<depdenency>org.springframework.security:spring-security-config</depdenency>
-						<!-- Required at runtime by org.springframework.web.multipart.commons.CommonsMultipartResolver -->
-						<dependency>commons-fileupload:commons-fileupload</dependency>
-						<!-- Required at runtime to inject entity manager -->
-						<depdendency>org.aspectj:aspectjrt</depdendency>
-						<!-- Required at runtime logging dependencies -->
-						<depdendency>org.apache.logging.log4j:log4j-core</depdendency>
-						<!-- logging depedencies which force spring to use log4j -->
-						<depdendency>org.slf4j:jcl-over-slf4j</depdendency>
-						<depdendency>org.apache.logging.log4j:log4j-api</depdendency>
-						<depdendency>org.apache.logging.log4j:log4j-slf4j-impl</depdendency>
-					</usedDependencies>
-				</configuration>
-			</plugin>
 		</plugins>
 		<resources>
 			<resource>
