@@ -15,7 +15,7 @@ ADD 	. /src
 RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE} 
 
-FROM tomcat:9.0.102-jdk11-temurin-jammy
+FROM tomcat:9.0-jdk11-temurin
 
 # Third and Last Step That Requires Significant (Relative) Amount of Time 
 RUN apt-get update && \
@@ -46,7 +46,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
 ENV NODE_PATH=/usr/lib/node_modules
 
 # Add runner user so we don't run as root
-RUN	useradd -u 1000 -ms /bin/bash runner && \
+RUN	userdel -r ubuntu && \
+  useradd -u 1000 -ms /bin/bash runner && \
   chown -R runner:runner /usr/local/tomcat/
 
 # Allow certificates to be added by runner
