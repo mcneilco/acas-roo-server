@@ -106,7 +106,7 @@ public class ContainerType {
     }
 
     @Id
-    @SequenceGenerator(name = "containerTypeGen", sequenceName = "CONTAINER_TYPE_PKSEQ")
+    @SequenceGenerator(name = "containerTypeGen", sequenceName = "CONTAINER_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "containerTypeGen")
     @Column(name = "id")
     private Long id;

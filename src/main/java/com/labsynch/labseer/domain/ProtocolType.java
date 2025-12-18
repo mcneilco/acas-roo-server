@@ -35,7 +35,7 @@ public class ProtocolType {
     private String typeName;
 
     @Id
-    @SequenceGenerator(name = "protocolTypeGen", sequenceName = "PROTOCOL_TYPE_PKSEQ")
+    @SequenceGenerator(name = "protocolTypeGen", sequenceName = "PROTOCOL_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "protocolTypeGen")
     @Column(name = "id")
     private Long id;

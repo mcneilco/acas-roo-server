@@ -86,7 +86,7 @@ public class LsTransaction {
     }
 
     @Id
-    @SequenceGenerator(name = "lsTransactionGen", sequenceName = "LS_TRANSACTION_PKSEQ")
+    @SequenceGenerator(name = "lsTransactionGen", sequenceName = "LS_TRANSACTION_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsTransactionGen")
     @Column(name = "id")
     private Long id;

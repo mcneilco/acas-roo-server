@@ -72,7 +72,7 @@ public class DDictValue {
     private String codeName;
 
     @Id
-    @SequenceGenerator(name = "dDictValueGen", sequenceName = "DDICT_VALUE_PKSEQ")
+    @SequenceGenerator(name = "dDictValueGen", sequenceName = "DDICT_VALUE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "dDictValueGen")
     @Column(name = "id")
     private Long id;

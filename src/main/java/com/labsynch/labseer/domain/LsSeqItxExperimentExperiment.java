@@ -127,7 +127,7 @@ public class LsSeqItxExperimentExperiment {
     }
 
     @Id
-    @SequenceGenerator(name = "lsSeqItxExperimentExperimentGen", sequenceName = "LSSEQ_ITXEXPTEXPT_PKSEQ")
+    @SequenceGenerator(name = "lsSeqItxExperimentExperimentGen", sequenceName = "LSSEQ_ITXEXPTEXPT_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqItxExperimentExperimentGen")
     @Column(name = "id")
     private Long id;

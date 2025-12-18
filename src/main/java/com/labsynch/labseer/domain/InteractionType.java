@@ -62,7 +62,7 @@ public class InteractionType {
     }
 
     @Id
-    @SequenceGenerator(name = "interactionTypeGen", sequenceName = "INTERACTION_TYPE_PKSEQ")
+    @SequenceGenerator(name = "interactionTypeGen", sequenceName = "INTERACTION_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "interactionTypeGen")
     @Column(name = "id")
     private Long id;

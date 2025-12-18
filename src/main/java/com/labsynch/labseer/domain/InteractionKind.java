@@ -49,7 +49,7 @@ public class InteractionKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "interactionKindGen", sequenceName = "INTERACTION_KIND_PKSEQ")
+    @SequenceGenerator(name = "interactionKindGen", sequenceName = "INTERACTION_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "interactionKindGen")
     @Column(name = "id")
     private Long id;

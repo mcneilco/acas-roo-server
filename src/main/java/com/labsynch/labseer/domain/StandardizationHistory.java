@@ -29,7 +29,7 @@ import flexjson.JSONSerializer;
 public class StandardizationHistory {
 
     @Id
-    @SequenceGenerator(name = "stndznHistGen", sequenceName = "STNDZN_HIST_PKSEQ")
+    @SequenceGenerator(name = "stndznHistGen", sequenceName = "STNDZN_HIST_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "stndznHistGen")
     @Column(name = "id")
     private Long id;

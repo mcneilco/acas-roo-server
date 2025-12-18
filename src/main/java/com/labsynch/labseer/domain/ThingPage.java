@@ -199,7 +199,7 @@ public class ThingPage {
     }
 
     @Id
-    @SequenceGenerator(name = "thingPageGen", sequenceName = "THING_PAGE_PKSEQ")
+    @SequenceGenerator(name = "thingPageGen", sequenceName = "THING_PAGE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "thingPageGen")
     @Column(name = "id")
     private Long id;

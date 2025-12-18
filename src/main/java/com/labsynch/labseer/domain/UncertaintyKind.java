@@ -36,7 +36,7 @@ public class UncertaintyKind {
     private String kindName;
 
     @Id
-    @SequenceGenerator(name = "uncertaintyKindGen", sequenceName = "UNCERTAINTY_KIND_PKSEQ")
+    @SequenceGenerator(name = "uncertaintyKindGen", sequenceName = "UNCERTAINTY_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "uncertaintyKindGen")
     @Column(name = "id")
     private Long id;

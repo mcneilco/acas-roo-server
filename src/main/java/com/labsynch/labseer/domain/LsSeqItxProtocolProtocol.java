@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LsSeqItxProtocolProtocol {
 
     @Id
-    @SequenceGenerator(name = "lsSeqItxProtocolProtocolGen", sequenceName = "LSSEQ_ITXPROTPROT_PKSEQ")
+    @SequenceGenerator(name = "lsSeqItxProtocolProtocolGen", sequenceName = "LSSEQ_ITXPROTPROT_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqItxProtocolProtocolGen")
     @Column(name = "id")
     private Long id;

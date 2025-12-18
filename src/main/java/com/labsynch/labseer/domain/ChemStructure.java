@@ -35,7 +35,7 @@ public class ChemStructure {
     private static final Logger logger = LoggerFactory.getLogger(ChemStructure.class);
 
     @Id
-    @SequenceGenerator(name = "structureGen", sequenceName = "CHEM_STRUCTURE_PKSEQ")
+    @SequenceGenerator(name = "structureGen", sequenceName = "CHEM_STRUCTURE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "structureGen")
     @Column(name = "id")
     private Long id;

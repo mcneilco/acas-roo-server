@@ -119,7 +119,7 @@ public class LsSeqItxCntrCntr {
     }
 
     @Id
-    @SequenceGenerator(name = "lsSeqItxCntrCntrGen", sequenceName = "LSSEQ_ITXCNTRCNTR_PKSEQ")
+    @SequenceGenerator(name = "lsSeqItxCntrCntrGen", sequenceName = "LSSEQ_ITXCNTRCNTR_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqItxCntrCntrGen")
     @Column(name = "id")
     private Long id;

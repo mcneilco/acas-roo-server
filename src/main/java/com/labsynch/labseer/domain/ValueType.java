@@ -54,7 +54,7 @@ public class ValueType {
     }
 
     @Id
-    @SequenceGenerator(name = "valueTypeGen", sequenceName = "VALUE_TYPE_PKSEQ")
+    @SequenceGenerator(name = "valueTypeGen", sequenceName = "VALUE_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "valueTypeGen")
     @Column(name = "id")
     private Long id;

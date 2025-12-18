@@ -116,7 +116,7 @@ public class LabelSequence {
             try {
                 org.hibernate.engine.spi.SessionImplementor sessionImp = (org.hibernate.engine.spi.SessionImplementor) em
                         .getDelegate();
-                DatabaseMetaData metadata = sessionImp.connection().getMetaData();
+                DatabaseMetaData metadata = sessionImp.getJdbcConnectionAccess().obtainConnection().getMetaData();
                 databaseType = metadata.getDatabaseProductName();
                 databaseVersion = Float
                         .parseFloat(metadata.getDatabaseMajorVersion() + "." + metadata.getDatabaseMinorVersion());
@@ -172,7 +172,7 @@ public class LabelSequence {
                 PreparedStatement preparedStatement = null;
                 ResultSet resultSet = null;
                 try {
-                    preparedStatement = connection.prepareStatement(dialect.getSequenceNextValString(sequenceName));
+                    preparedStatement = connection.prepareStatement(dialect.getSequenceSupport().getSelectSequenceNextValString(sequenceName));
                     resultSet = preparedStatement.executeQuery();
                     resultSet.next();
                     return resultSet.getLong(1);
@@ -459,7 +459,7 @@ public class LabelSequence {
     }
 
     @Id
-    @SequenceGenerator(name = "labelSequenceGen", sequenceName = "LABEL_SEQUENCE_PKSEQ")
+    @SequenceGenerator(name = "labelSequenceGen", sequenceName = "LABEL_SEQUENCE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "labelSequenceGen")
     @Column(name = "id")
     private Long id;

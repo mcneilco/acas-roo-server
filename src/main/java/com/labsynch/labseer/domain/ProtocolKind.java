@@ -32,7 +32,7 @@ import flexjson.JSONSerializer;
 public class ProtocolKind {
 
     @Id
-    @SequenceGenerator(name = "protocolKindGen", sequenceName = "PROTOCOL_KIND_PKSEQ")
+    @SequenceGenerator(name = "protocolKindGen", sequenceName = "PROTOCOL_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "protocolKindGen")
     @Column(name = "id")
     private Long id;

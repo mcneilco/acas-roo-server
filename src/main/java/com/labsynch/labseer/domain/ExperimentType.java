@@ -202,7 +202,7 @@ public class ExperimentType {
     }
 
     @Id
-    @SequenceGenerator(name = "experimentTypeGen", sequenceName = "EXPERIMENT_TYPE_PKSEQ")
+    @SequenceGenerator(name = "experimentTypeGen", sequenceName = "EXPERIMENT_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "experimentTypeGen")
     @Column(name = "id")
     private Long id;

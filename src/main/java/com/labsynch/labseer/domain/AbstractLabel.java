@@ -78,7 +78,7 @@ public abstract class AbstractLabel {
 	private Long lsTransaction;
 
 	@Id
-	@SequenceGenerator(name = "abstractLabelGen", sequenceName = "LABEL_PKSEQ", allocationSize = 20)
+	@SequenceGenerator(name = "abstractLabelGen", sequenceName = "LABEL_PKSEQ", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "abstractLabelGen")
 	@Column(name = "id")
 	private Long id;

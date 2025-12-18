@@ -25,6 +25,7 @@ import jakarta.validation.constraints.NotNull;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
+import com.labsynch.labseer.utils.BitSetUserType;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -43,7 +44,7 @@ import flexjson.JSONSerializer;
 public abstract class AbstractBBChemStructure {
 
     @Id
-    @SequenceGenerator(name = "bbChemStructureGen", sequenceName = "BBCHEM_STRUCTURE_PKSEQ")
+    @SequenceGenerator(name = "bbChemStructureGen", sequenceName = "BBCHEM_STRUCTURE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "bbChemStructureGen")
     private Long id;
 
@@ -66,11 +67,11 @@ public abstract class AbstractBBChemStructure {
     private String mol;
 
     @Column
-    @Type(type = "com.labsynch.labseer.utils.BitSetUserType")
+    @Type(BitSetUserType.class)
     private BitSet substructure;
 
     @Column
-    @Type(type = "com.labsynch.labseer.utils.BitSetUserType")
+    @Type(BitSetUserType.class)
     private BitSet similarity;
 
     @NotNull

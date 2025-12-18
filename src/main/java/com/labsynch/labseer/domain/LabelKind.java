@@ -48,7 +48,7 @@ public class LabelKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "labelKindGen", sequenceName = "LABEL_KIND_PKSEQ")
+    @SequenceGenerator(name = "labelKindGen", sequenceName = "LABEL_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "labelKindGen")
     @Column(name = "id")
     private Long id;

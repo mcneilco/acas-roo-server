@@ -678,7 +678,7 @@ public class SubjectServiceImpl implements SubjectService {
 		Query q = SimpleUtil.addHqlInClause(em, queryString, "subject.codeName", codeNames);
 
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		@SuppressWarnings("unchecked")
 		Collection<SubjectCodeNameDTO> results = q.getResultList();
 		// diff request with results to find codeNames that could not be found
@@ -914,7 +914,7 @@ public class SubjectServiceImpl implements SubjectService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(cb.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		idList = q.getResultList();
 		logger.debug("Found " + idList.size() + " results.");
 		return idList;
@@ -967,7 +967,7 @@ public class SubjectServiceImpl implements SubjectService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(cb.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<Long> subjectValueIds = q.getResultList();
 		logger.debug("Found " + subjectValueIds.size() + " subject values.");
 		int valuesUpdated = 0;
@@ -1190,7 +1190,7 @@ public class SubjectServiceImpl implements SubjectService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(cb.and(predicates));
 		TypedQuery<Tuple> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<Tuple> rawResults = q.getResultList();
 		Map<String, List<Long>> results = new HashMap<String, List<Long>>();
 		for (Tuple result : rawResults) {

@@ -49,7 +49,7 @@ public class StateKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "stateKindGen", sequenceName = "STATE_KIND_PKSEQ")
+    @SequenceGenerator(name = "stateKindGen", sequenceName = "STATE_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "stateKindGen")
     @Column(name = "id")
     private Long id;

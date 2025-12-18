@@ -150,7 +150,7 @@ public class UpdateLog {
     }
 
     @Id
-    @SequenceGenerator(name = "updateLogGen", sequenceName = "UPDATE_LOG_PKSEQ")
+    @SequenceGenerator(name = "updateLogGen", sequenceName = "UPDATE_LOG_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "updateLogGen")
     @Column(name = "id")
     private Long id;

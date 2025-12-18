@@ -275,7 +275,7 @@ public class ApplicationSetting {
     }
 
     @Id
-    @SequenceGenerator(name = "applicationSettingGen", sequenceName = "APPSETTING_PKSEQ")
+    @SequenceGenerator(name = "applicationSettingGen", sequenceName = "APPSETTING_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "applicationSettingGen")
     @Column(name = "id")
     private Long id;

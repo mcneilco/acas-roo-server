@@ -48,7 +48,7 @@ public class StructureKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "StructureKindGen", sequenceName = "Structure_KIND_PKSEQ")
+    @SequenceGenerator(name = "StructureKindGen", sequenceName = "Structure_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "StructureKindGen")
     @Column(name = "id")
     private Long id;

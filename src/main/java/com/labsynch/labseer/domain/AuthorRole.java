@@ -42,7 +42,7 @@ public class AuthorRole {
     private LsRole roleEntry;
 
     @Id
-    @SequenceGenerator(name = "authorRoleGen", sequenceName = "AUTH_ROLE_PKSEQ")
+    @SequenceGenerator(name = "authorRoleGen", sequenceName = "AUTH_ROLE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "authorRoleGen")
     @Column(name = "id")
     private Long id;

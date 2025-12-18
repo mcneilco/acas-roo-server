@@ -579,7 +579,7 @@ public class ContainerServiceImpl implements ContainerService {
 				barcode.<String>get("labelText"));
 		TypedQuery<ContainerLocationDTO> q = em.createQuery(cq);
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<ContainerLocationDTO> results = q.getResultList();
 		return results;
 	}
@@ -871,7 +871,7 @@ public class ContainerServiceImpl implements ContainerService {
 				well.<String>get("codeName"), wellLabel.<String>get("labelText"));
 		TypedQuery<PlateWellDTO> q = em.createQuery(cq);
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<PlateWellDTO> results = q.getResultList();
 		return results;
 	}
@@ -936,7 +936,7 @@ public class ContainerServiceImpl implements ContainerService {
 				label.<String>get("labelText").alias("requestLabel"));
 		Query q = em.createQuery(cq);
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		List<Tuple> resultTuples = q.getResultList();
 		Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
 		for (Tuple tuple : resultTuples) {
@@ -1007,7 +1007,7 @@ public class ContainerServiceImpl implements ContainerService {
 		logger.debug("Querying for " + wellCodes.size() + " well codeNames");
 		for (Query q : queries) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+				logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 			}
 			results.addAll(q.getResultList());
 		}
@@ -2967,7 +2967,7 @@ public class ContainerServiceImpl implements ContainerService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		containerIdList = q.getResultList();
 		logger.debug("Found " + containerIdList.size() + " results.");
 		return containerIdList;
@@ -3408,7 +3408,7 @@ public class ContainerServiceImpl implements ContainerService {
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		containerIdList = q.getResultList();
 		logger.debug("Found " + containerIdList.size() + " results.");
 		return containerIdList;

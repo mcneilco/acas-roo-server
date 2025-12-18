@@ -56,7 +56,7 @@ public class CodeType {
     }
 
     @Id
-    @SequenceGenerator(name = "codeTypeGen", sequenceName = "CODE_TYPE_PKSEQ")
+    @SequenceGenerator(name = "codeTypeGen", sequenceName = "CODE_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "codeTypeGen")
     @Column(name = "id")
     private Long id;

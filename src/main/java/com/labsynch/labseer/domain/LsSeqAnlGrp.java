@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LsSeqAnlGrp {
 
     @Id
-    @SequenceGenerator(name = "lsSeqAnlGrpGen", sequenceName = "LSSEQ_ANLGRP_PKSEQ")
+    @SequenceGenerator(name = "lsSeqAnlGrpGen", sequenceName = "LSSEQ_ANLGRP_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqAnlGrpGen")
     @Column(name = "id")
     private Long id;

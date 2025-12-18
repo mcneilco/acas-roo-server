@@ -454,7 +454,7 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 			predicates = predicateList.toArray(predicates);
 			criteria.where(criteriaBuilder.and(predicates));
 			TypedQuery<ContainerState> q = em.createQuery(criteria);
-			logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+			logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 			return q.getResultList();
 		}
 	}

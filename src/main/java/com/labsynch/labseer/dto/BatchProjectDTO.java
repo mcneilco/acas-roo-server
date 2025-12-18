@@ -49,7 +49,7 @@ public class BatchProjectDTO {
         logger.debug("Querying for " + batchCodes.size() + " lot corpnames");
         for (Query q : queries) {
             if (logger.isDebugEnabled())
-                logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+                logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
             results.addAll(q.getResultList());
         }
         for (BatchProjectDTO result : results) {

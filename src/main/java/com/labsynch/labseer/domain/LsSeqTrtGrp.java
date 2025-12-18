@@ -118,7 +118,7 @@ public class LsSeqTrtGrp {
     }
 
     @Id
-    @SequenceGenerator(name = "lsSeqTrtGrpGen", sequenceName = "LSSEQ_TRTGRP_PKSEQ")
+    @SequenceGenerator(name = "lsSeqTrtGrpGen", sequenceName = "LSSEQ_TRTGRP_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqTrtGrpGen")
     @Column(name = "id")
     private Long id;

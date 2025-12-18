@@ -118,7 +118,7 @@ public class LsSeqSubject {
     }
 
     @Id
-    @SequenceGenerator(name = "lsSeqSubjectGen", sequenceName = "LSSEQ_SUBJ_PKSEQ")
+    @SequenceGenerator(name = "lsSeqSubjectGen", sequenceName = "LSSEQ_SUBJ_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqSubjectGen")
     @Column(name = "id")
     private Long id;

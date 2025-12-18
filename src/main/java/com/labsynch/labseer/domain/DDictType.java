@@ -228,7 +228,7 @@ public class DDictType {
     }
 
     @Id
-    @SequenceGenerator(name = "dDictTypeGen", sequenceName = "DDICT_TYPE_PKSEQ")
+    @SequenceGenerator(name = "dDictTypeGen", sequenceName = "DDICT_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "dDictTypeGen")
     @Column(name = "id")
     private Long id;

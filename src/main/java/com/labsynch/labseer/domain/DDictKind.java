@@ -58,7 +58,7 @@ public class DDictKind {
     private Integer displayOrder;
 
     @Id
-    @SequenceGenerator(name = "dDictKindGen", sequenceName = "DDICT_KIND_PKSEQ")
+    @SequenceGenerator(name = "dDictKindGen", sequenceName = "DDICT_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "dDictKindGen")
     @Column(name = "id")
     private Long id;

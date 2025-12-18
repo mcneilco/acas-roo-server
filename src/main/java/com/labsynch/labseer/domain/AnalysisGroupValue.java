@@ -1244,7 +1244,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		criteria.where(criteriaBuilder.or(globalPredicates));
 		TypedQuery<String> q = em.createQuery(criteria);
 		logger.debug("unwrapped query string: ");
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		return q;
 	}
 
@@ -1362,7 +1362,7 @@ public class AnalysisGroupValue extends AbstractValue {
 
 		criteria.where(criteriaBuilder.and(globalPredicateList.toArray(globalPredicates)));
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 
 		return q;
 	}

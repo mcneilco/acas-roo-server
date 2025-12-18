@@ -175,7 +175,7 @@ public class RoleType {
     }
 
     @Id
-    @SequenceGenerator(name = "roleTypeGen", sequenceName = "ROLE_TYPE_PKSEQ")
+    @SequenceGenerator(name = "roleTypeGen", sequenceName = "ROLE_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "roleTypeGen")
     @Column(name = "id")
     private Long id;

@@ -45,7 +45,7 @@ public class OperatorKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "operatorKindGen", sequenceName = "OPERATOR_KIND_PKSEQ")
+    @SequenceGenerator(name = "operatorKindGen", sequenceName = "OPERATOR_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "operatorKindGen")
     @Column(name = "id")
     private Long id;

@@ -54,7 +54,7 @@ public class StateType {
     }
 
     @Id
-    @SequenceGenerator(name = "stateTypeGen", sequenceName = "STATE_TYPE_PKSEQ")
+    @SequenceGenerator(name = "stateTypeGen", sequenceName = "STATE_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "stateTypeGen")
     @Column(name = "id")
     private Long id;

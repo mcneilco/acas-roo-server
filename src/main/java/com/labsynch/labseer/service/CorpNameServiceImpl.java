@@ -262,7 +262,7 @@ public class CorpNameServiceImpl implements CorpNameService {
 		try {
 			org.hibernate.engine.spi.SessionImplementor sessionImp = (org.hibernate.engine.spi.SessionImplementor) em
 					.getDelegate();
-			DatabaseMetaData metadata = sessionImp.connection().getMetaData();
+			DatabaseMetaData metadata = sessionImp.getJdbcConnectionAccess().obtainConnection().getMetaData();
 			databaseType = metadata.getDatabaseProductName();
 			databaseVersion = Float
 					.parseFloat(metadata.getDatabaseMajorVersion() + "." + metadata.getDatabaseMinorVersion());

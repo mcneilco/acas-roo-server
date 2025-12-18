@@ -54,7 +54,7 @@ public class LsRole {
     private Set<AuthorRole> authorRoles = new HashSet<AuthorRole>();
 
     @Id
-    @SequenceGenerator(name = "lsRoleGen", sequenceName = "LSROLE_PKSEQ")
+    @SequenceGenerator(name = "lsRoleGen", sequenceName = "LSROLE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsRoleGen")
     @Column(name = "id")
     private Long id;

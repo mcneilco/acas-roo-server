@@ -45,7 +45,7 @@ public class UnitKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "unitKindGen", sequenceName = "UNITS_KIND_PKSEQ")
+    @SequenceGenerator(name = "unitKindGen", sequenceName = "UNITS_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "unitKindGen")
     @Column(name = "id")
     private Long id;

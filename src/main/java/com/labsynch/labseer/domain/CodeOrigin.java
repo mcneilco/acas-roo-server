@@ -90,7 +90,7 @@ public class CodeOrigin {
     }
 
     @Id
-    @SequenceGenerator(name = "codeOriginGen", sequenceName = "CODE_ORIGIN_PKSEQ")
+    @SequenceGenerator(name = "codeOriginGen", sequenceName = "CODE_ORIGIN_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "codeOriginGen")
     @Column(name = "id")
     private Long id;

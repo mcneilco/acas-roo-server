@@ -109,7 +109,7 @@ public class ThingPageArchive {
     }
 
     @Id
-    @SequenceGenerator(name = "thingPageArchiveGen", sequenceName = "THING_PAGE_ARCHIVE_PKSEQ")
+    @SequenceGenerator(name = "thingPageArchiveGen", sequenceName = "THING_PAGE_ARCHIVE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "thingPageArchiveGen")
     @Column(name = "id")
     private Long id;

@@ -90,7 +90,7 @@ public class CronJob {
     }
 
     @Id
-    @SequenceGenerator(name = "cronJobGen", sequenceName = "CRON_JOB_PKSEQ")
+    @SequenceGenerator(name = "cronJobGen", sequenceName = "CRON_JOB_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cronJobGen")
     @Column(name = "id")
     private Long id;

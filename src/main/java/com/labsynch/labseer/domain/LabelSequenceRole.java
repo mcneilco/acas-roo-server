@@ -43,7 +43,7 @@ public class LabelSequenceRole {
     private LsRole roleEntry;
 
     @Id
-    @SequenceGenerator(name = "labelSequenceRoleGen", sequenceName = "LABELSEQ_ROLE_PKSEQ")
+    @SequenceGenerator(name = "labelSequenceRoleGen", sequenceName = "LABELSEQ_ROLE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "labelSequenceRoleGen")
     @Column(name = "id")
     private Long id;

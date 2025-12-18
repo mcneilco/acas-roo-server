@@ -56,7 +56,7 @@ public class ThingType {
     }
 
     @Id
-    @SequenceGenerator(name = "thingTypeGen", sequenceName = "THING_TYPE_PKSEQ")
+    @SequenceGenerator(name = "thingTypeGen", sequenceName = "THING_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "thingTypeGen")
     @Column(name = "id")
     private Long id;

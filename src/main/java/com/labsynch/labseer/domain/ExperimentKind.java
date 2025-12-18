@@ -45,7 +45,7 @@ public class ExperimentKind {
     private String lsTypeAndKind;
 
     @Id
-    @SequenceGenerator(name = "experimentKindGen", sequenceName = "EXPERIMENT_KIND_PKSEQ")
+    @SequenceGenerator(name = "experimentKindGen", sequenceName = "EXPERIMENT_KIND_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "experimentKindGen")
     @Column(name = "id")
     private Long id;

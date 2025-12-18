@@ -54,7 +54,7 @@ public class StructureType {
     }
 
     @Id
-    @SequenceGenerator(name = "structureTypeGen", sequenceName = "STRUCTURE_TYPE_PKSEQ")
+    @SequenceGenerator(name = "structureTypeGen", sequenceName = "STRUCTURE_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "structureTypeGen")
     @Column(name = "id")
     private Long id;

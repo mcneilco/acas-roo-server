@@ -56,7 +56,7 @@ public class LabelType {
     }
 
     @Id
-    @SequenceGenerator(name = "labelTypeGen", sequenceName = "LABEL_TYPE_PKSEQ")
+    @SequenceGenerator(name = "labelTypeGen", sequenceName = "LABEL_TYPE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "labelTypeGen")
     @Column(name = "id")
     private Long id;

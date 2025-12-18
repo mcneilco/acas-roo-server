@@ -219,7 +219,7 @@ public class LsTag {
     }
 
     @Id
-    @SequenceGenerator(name = "lsTagGen", sequenceName = "LS_TAG_PKSEQ")
+    @SequenceGenerator(name = "lsTagGen", sequenceName = "LS_TAG_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsTagGen")
     @Column(name = "id")
     private Long id;

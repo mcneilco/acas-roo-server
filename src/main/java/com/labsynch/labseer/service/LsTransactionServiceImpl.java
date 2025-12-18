@@ -91,7 +91,7 @@ public class LsTransactionServiceImpl implements LsTransactionService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		idList = q.getResultList();
 		logger.debug("Found " + idList.size() + " results.");
 		query.setNumberOfResults(idList.size());

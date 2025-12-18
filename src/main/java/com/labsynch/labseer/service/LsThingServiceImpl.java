@@ -200,7 +200,7 @@ public class LsThingServiceImpl implements LsThingService {
 		// AND all the terms together
 		criteria.where(cb.and(predicates));
 		TypedQuery<LsThing> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		List<LsThing> foundLsThings = q.getResultList();
 		// Construct a PreferredNameDTO for each possible requestName for each found
 		// LsThing, both by label and by codeName
@@ -1309,7 +1309,7 @@ public class LsThingServiceImpl implements LsThingService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
 		logger.debug("Found " + lsThingIdList.size() + " results.");
 		Collection<LsThing> result = new HashSet<LsThing>();
@@ -1865,7 +1865,7 @@ public class LsThingServiceImpl implements LsThingService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
 		logger.debug("Found " + lsThingIdList.size() + " results.");
 		Collection<LsThing> result = new HashSet<LsThing>();
@@ -2451,7 +2451,7 @@ public class LsThingServiceImpl implements LsThingService {
 		q.setParameter("structureCodes", structureCodes);
 		if (logger.isDebugEnabled()) {
 			logger.info("number of structure codes: " + structureCodes.size());
-			String fullQuery = q.unwrap(org.hibernate.Query.class).getQueryString();
+			String fullQuery = q.unwrap(org.hibernate.query.Query.class).getQueryString();
 			logger.info(fullQuery);
 		}
 		return q.getResultList();
@@ -2478,7 +2478,7 @@ public class LsThingServiceImpl implements LsThingService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
 		logger.debug("Found " + lsThingIdList.size() + " results.");
 		return lsThingIdList;
@@ -3566,7 +3566,7 @@ public class LsThingServiceImpl implements LsThingService {
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
 		logger.debug("Found " + lsThingIdList.size() + " results.");
 		return lsThingIdList;

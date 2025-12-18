@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LsSeqContainer {
 
     @Id
-    @SequenceGenerator(name = "lsSeqContainerGen", sequenceName = "LSSEQ_CONTAINER_PKSEQ")
+    @SequenceGenerator(name = "lsSeqContainerGen", sequenceName = "LSSEQ_CONTAINER_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsSeqContainerGen")
     @Column(name = "id")
     private Long id;

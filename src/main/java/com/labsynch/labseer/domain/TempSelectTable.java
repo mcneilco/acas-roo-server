@@ -130,7 +130,7 @@ public class TempSelectTable {
     }
 
     @Id
-    @SequenceGenerator(name = "tempSelectTableGen", sequenceName = "TEMP_SELECT_PKSEQ")
+    @SequenceGenerator(name = "tempSelectTableGen", sequenceName = "TEMP_SELECT_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "tempSelectTableGen")
     @Column(name = "id")
     private Long id;

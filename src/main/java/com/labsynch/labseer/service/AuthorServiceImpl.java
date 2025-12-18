@@ -545,7 +545,7 @@ public class AuthorServiceImpl implements AuthorService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		authorIdList = q.getResultList();
 		logger.debug("Found " + authorIdList.size() + " results.");
 		return authorIdList;
@@ -765,7 +765,7 @@ public class AuthorServiceImpl implements AuthorService {
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		authorIdList = q.getResultList();
 		logger.debug("Found " + authorIdList.size() + " results.");
 		return authorIdList;
