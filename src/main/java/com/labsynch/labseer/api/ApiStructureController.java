@@ -3,7 +3,7 @@ package com.labsynch.labseer.api;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.MolPropertiesDTO;

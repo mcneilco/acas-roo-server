@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PersistenceContext;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ import flexjson.JSONSerializer;
 @Entity
 @Configurable
 @Table(name = "author_role", uniqueConstraints = {
-        @javax.persistence.UniqueConstraint(columnNames = { "author_id", "lsrole_id" }) })
+        @jakarta.persistence.UniqueConstraint(columnNames = { "author_id", "lsrole_id" }) })
 public class AuthorRole {
 
     @NotNull

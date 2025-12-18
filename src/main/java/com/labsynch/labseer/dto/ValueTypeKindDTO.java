@@ -1,6 +1,6 @@
 package com.labsynch.labseer.dto;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.transaction.annotation.Transactional;

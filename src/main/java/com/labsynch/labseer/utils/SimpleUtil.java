@@ -27,11 +27,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.underscore.$;

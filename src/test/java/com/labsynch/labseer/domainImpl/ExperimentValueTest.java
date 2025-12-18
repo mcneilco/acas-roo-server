@@ -3,7 +3,7 @@ package com.labsynch.labseer.domainImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentValue;

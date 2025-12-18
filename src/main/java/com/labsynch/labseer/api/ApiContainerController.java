@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;

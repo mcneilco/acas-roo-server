@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;

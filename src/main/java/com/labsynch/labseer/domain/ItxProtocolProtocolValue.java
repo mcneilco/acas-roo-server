@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 

@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstructorResult;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.dto.ContainerLocationTreeDTO;
 import com.labsynch.labseer.utils.ExcludeNulls;

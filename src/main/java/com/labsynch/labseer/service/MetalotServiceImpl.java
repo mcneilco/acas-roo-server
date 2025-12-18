@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

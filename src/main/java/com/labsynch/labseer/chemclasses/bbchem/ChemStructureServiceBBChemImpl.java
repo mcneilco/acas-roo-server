@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

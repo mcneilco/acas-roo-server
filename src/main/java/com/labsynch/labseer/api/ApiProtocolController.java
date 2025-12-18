@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.NoResultException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentValue;

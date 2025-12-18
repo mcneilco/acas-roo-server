@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.Size;
 
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -51,16 +51,16 @@ public class Protocol extends AbstractThing {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "PROTOCOL_TAG", joinColumns = {
-            @javax.persistence.JoinColumn(name = "protocol_id") }, inverseJoinColumns = {
-                    @javax.persistence.JoinColumn(name = "tag_id") })
+            @jakarta.persistence.JoinColumn(name = "protocol_id") }, inverseJoinColumns = {
+                    @jakarta.persistence.JoinColumn(name = "tag_id") })
     private Set<LsTag> lsTags = new HashSet<LsTag>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-            javax.persistence.CascadeType.MERGE }, mappedBy = "secondProtocol", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+            jakarta.persistence.CascadeType.MERGE }, mappedBy = "secondProtocol", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxProtocolProtocol> firstProtocols = new HashSet<ItxProtocolProtocol>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-            javax.persistence.CascadeType.MERGE }, mappedBy = "firstProtocol", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+            jakarta.persistence.CascadeType.MERGE }, mappedBy = "firstProtocol", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxProtocolProtocol> secondProtocols = new HashSet<ItxProtocolProtocol>();
 
     public Protocol(com.labsynch.labseer.domain.Protocol protocol) {

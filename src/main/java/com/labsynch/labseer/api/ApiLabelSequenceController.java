@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.NonUniqueResultException;
+import jakarta.persistence.NonUniqueResultException;
 
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;

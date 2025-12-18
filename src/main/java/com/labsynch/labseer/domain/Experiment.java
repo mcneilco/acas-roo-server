@@ -8,19 +8,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -51,12 +51,12 @@ public class Experiment extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
     private Set<ExperimentState> lsStates = new HashSet<ExperimentState>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-            javax.persistence.CascadeType.MERGE }, mappedBy = "secondExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+            jakarta.persistence.CascadeType.MERGE }, mappedBy = "secondExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxExperimentExperiment> firstExperiments = new HashSet<ItxExperimentExperiment>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-            javax.persistence.CascadeType.MERGE }, mappedBy = "firstExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+            jakarta.persistence.CascadeType.MERGE }, mappedBy = "firstExperiment", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxExperimentExperiment> secondExperiments = new HashSet<ItxExperimentExperiment>();
 
     // Subject is grandparent
@@ -64,11 +64,11 @@ public class Experiment extends AbstractThing {
     private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     // Experiment is grandparent
-    // @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-    // javax.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
+    // @ManyToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+    // jakarta.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
     // @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = {
-    // @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns =
-    // { @javax.persistence.JoinColumn(name = "analysis_group_id") })
+    // @jakarta.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns =
+    // { @jakarta.persistence.JoinColumn(name = "analysis_group_id") })
     // private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
@@ -76,8 +76,8 @@ public class Experiment extends AbstractThing {
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENT_TAG", joinColumns = {
-            @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = {
-                    @javax.persistence.JoinColumn(name = "tag_id") })
+            @jakarta.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = {
+                    @jakarta.persistence.JoinColumn(name = "tag_id") })
     private Set<LsTag> lsTags = new HashSet<LsTag>();
 
     public Experiment() {

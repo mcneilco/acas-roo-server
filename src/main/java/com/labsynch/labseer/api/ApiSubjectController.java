@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;

@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Autowired;

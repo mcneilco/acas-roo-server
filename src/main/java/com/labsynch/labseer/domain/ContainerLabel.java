@@ -7,12 +7,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

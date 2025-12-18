@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.dto.PreferredNameDTO;
 

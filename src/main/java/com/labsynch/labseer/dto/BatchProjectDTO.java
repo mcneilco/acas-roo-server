@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.utils.SimpleUtil;

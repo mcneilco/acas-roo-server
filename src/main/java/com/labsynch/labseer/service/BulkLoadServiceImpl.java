@@ -24,10 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;

@@ -3,7 +3,7 @@ package com.labsynch.labseer.domain;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Lob;
+import jakarta.persistence.Lob;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

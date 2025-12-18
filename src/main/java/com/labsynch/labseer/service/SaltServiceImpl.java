@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import java.net.MalformedURLException;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;

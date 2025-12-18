@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;

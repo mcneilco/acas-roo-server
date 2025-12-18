@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;

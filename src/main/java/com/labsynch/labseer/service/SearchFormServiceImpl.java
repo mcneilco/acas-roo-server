@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Lot;
