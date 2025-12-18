@@ -7,12 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.labsynch.labseer.domain.SolutionUnit;
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.path.PathBuilder;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanWrapper;
@@ -208,24 +206,29 @@ public class ApiSolutionUnitController {
 
         // if there is a filter
         if (!propertyMap.isEmpty()) {
-            // Prepare a predicate
-            BooleanBuilder baseFilterPredicate = new BooleanBuilder();
-
-            // Base filter. Using BooleanBuilder, a cascading builder for
-            // Predicate expressions
-            PathBuilder<SolutionUnit> entity = new PathBuilder<SolutionUnit>(SolutionUnit.class, "entity");
-
-            // Build base filter
+            // Build JPQL query dynamically
+            StringBuilder jpql = new StringBuilder("SELECT s FROM SolutionUnit s WHERE ");
+            List<Object> params = new ArrayList<>();
+            int paramIndex = 1;
+            
             for (String key : propertyMap.keySet()) {
-                baseFilterPredicate.and(entity.get(key).eq(propertyMap.get(key)));
+                if (paramIndex > 1) {
+                    jpql.append(" AND ");
+                }
+                jpql.append("s.").append(key).append(" = ?").append(paramIndex);
+                params.add(propertyMap.get(key));
+                paramIndex++;
             }
-
-            // Create a query with filter
-            JPAQuery query = new JPAQuery(SolutionUnit.entityManager());
-            query = query.from(entity);
-
-            // execute query
-            return query.where(baseFilterPredicate).list(entity);
+            
+            // Create and execute query
+            TypedQuery<SolutionUnit> query = SolutionUnit.entityManager()
+                .createQuery(jpql.toString(), SolutionUnit.class);
+            
+            for (int i = 0; i < params.size(); i++) {
+                query.setParameter(i + 1, params.get(i));
+            }
+            
+            return query.getResultList();
         }
 
         // no filter: return all elements

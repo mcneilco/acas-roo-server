@@ -65,7 +65,7 @@ COPY 	--chown=runner:runner wait-for-it.sh ./wait-for-it.sh
 RUN 	chmod 755 wait-for-it.sh
 WORKDIR $CATALINA_HOME
 ENV    ACAS_HOME=/home/runner/build
-ENV    CATALINA_OPTS="-Xms512M -Xmx1536M -XX:MaxPermSize=512m"
+ENV    CATALINA_OPTS="-Xms512M -Xmx1536M"
 
 # Prepare config files
 COPY --chown=runner:runner ./PrepareConfigFiles.coffee /home/runner/build/src/javascripts/BuildUtilities/PrepareConfigFiles.coffee
