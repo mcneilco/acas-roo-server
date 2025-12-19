@@ -10,6 +10,9 @@
          Also registers default Formatters and Validators for use across all @Controllers -->
     <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
+    <!-- Required for Spring Security 6 integration with Spring MVC -->
+    <bean id="mvcHandlerMappingIntrospector" class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" />
+    
     <bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
 	<!-- Configures view for returning JSON to the client -->
@@ -34,7 +37,7 @@
 	<mvc:view-controller path="/index"/>
 
     <!-- Enable this for integration of file upload functionality -->
-    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
+    <bean class="org.springframework.web.multipart.support.StandardServletMultipartResolver" id="multipartResolver"/>
 
     <bean class="com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
 

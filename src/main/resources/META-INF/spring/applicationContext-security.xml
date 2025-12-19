@@ -56,12 +56,5 @@
 
 
 <bean id="cryptoPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" /> -->
-	
-	<beans:bean
-		class="org.springframework.security.crypto.password.MessageDigestPasswordEncoder"
-		id="messageDigestPasswordEncoder">
-		<beans:constructor-arg value="sha-1" />
-	</beans:bean>
-
 
 </beans:beans>

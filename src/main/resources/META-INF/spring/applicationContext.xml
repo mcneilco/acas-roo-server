@@ -103,5 +103,15 @@
         <property name="from" value="${email.from}"/>
         <property name="subject" value="${email.subject}"/>
     </bean>
-        
+    
+    <!-- Password encoder for authentication providers -->
+	<bean
+		class="org.springframework.security.crypto.password.MessageDigestPasswordEncoder"
+		id="messageDigestPasswordEncoder">
+		<constructor-arg value="sha-1" />
+	</bean>
+	
+	<!-- Required for Spring Security 6 integration with Spring MVC -->
+	<bean id="mvcHandlerMappingIntrospector" class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" />
+
 </beans>
