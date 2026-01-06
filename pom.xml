@@ -509,6 +509,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<target>${java.version}</target>
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 					<encoding>${project.build.sourceEncoding}</encoding>
+					<parameters>true</parameters>
 					<excludes>
 						<exclude>${exclude.chemistry.packageA}</exclude>
 						<exclude>${exclude.chemistry.migrationsA}</exclude>
