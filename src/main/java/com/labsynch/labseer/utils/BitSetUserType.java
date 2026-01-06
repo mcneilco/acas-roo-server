@@ -8,6 +8,7 @@ import java.sql.Types;
 import java.util.BitSet;
 
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.type.SqlTypes;
 import org.hibernate.usertype.UserType;
 import org.postgresql.util.PGobject;
 
@@ -17,7 +18,7 @@ public class BitSetUserType implements UserType<BitSet> {
 
     @Override
     public int getSqlType() {
-        return Types.OTHER;
+        return SqlTypes.VARCHAR;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class BitSetUserType implements UserType<BitSet> {
     public void nullSafeSet(PreparedStatement st, BitSet value, int index, SharedSessionContractImplementor session)
             throws SQLException {
         if (value == null) {
-            st.setNull(index, Types.OTHER);
+            st.setNull(index, SqlTypes.VARCHAR);
         } else {
             PGobject holder = new PGobject();
             holder.setType("BIT");

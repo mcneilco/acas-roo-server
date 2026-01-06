@@ -172,7 +172,8 @@ public class LabelSequence {
                 PreparedStatement preparedStatement = null;
                 ResultSet resultSet = null;
                 try {
-                    preparedStatement = connection.prepareStatement(dialect.getSequenceSupport().getSelectSequenceNextValString(sequenceName));
+                    String sql = dialect.getSequenceSupport().getSequenceNextValString(sequenceName);
+                    preparedStatement = connection.prepareStatement(sql);
                     resultSet = preparedStatement.executeQuery();
                     resultSet.next();
                     return resultSet.getLong(1);
