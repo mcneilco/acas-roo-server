@@ -246,10 +246,10 @@ public class TreatmentGroupValue extends AbstractValue {
 				"JOIN tvs.treatmentGroup tg " +
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments exp " +
-				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
-				"AND tgv.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored != :ignored " +
+				"AND tgv.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("experimentId", experimentId);
@@ -271,10 +271,10 @@ public class TreatmentGroupValue extends AbstractValue {
 				"JOIN tgv.lsState tvs " +
 				"JOIN tvs.treatmentGroup tg " +
 				"JOIN tg.analysisGroups ag " +
-				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
-				"AND tgv.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored != :ignored " +
+				"AND tgv.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND ag.id = :analysisGroupId ";
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("analysisGroupId", analysisGroupId);
@@ -302,10 +302,10 @@ public class TreatmentGroupValue extends AbstractValue {
 				"JOIN tvs.treatmentGroup tg " +
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments exp " +
-				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
-				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored != :ignored " +
+				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("experimentId", experimentId);
@@ -440,9 +440,9 @@ public class TreatmentGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
 				"JOIN tgv.lsState tgs " +
 				"JOIN tgs.treatmentGroup tg " +
-				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored IS NOT :ignored " +
-				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
+				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored != :ignored " +
+				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
 				"AND tg.id = :treatmentGroupId ";
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("treatmentGroupId", treatmentGroupId);
@@ -470,9 +470,9 @@ public class TreatmentGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
 				"JOIN tgv.lsState tgs " +
 				"JOIN tgs.treatmentGroup tg " +
-				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored IS NOT :ignored " +
-				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
+				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored != :ignored " +
+				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
 				"AND tg.codeName = :codeName ";
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("codeName", codeName);
@@ -503,7 +503,7 @@ public class TreatmentGroupValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = TreatmentGroupValue.entityManager();
 		TypedQuery q = em.createQuery(
-				"SELECT COUNT(o) FROM TreatmentGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				"SELECT COUNT(o) FROM TreatmentGroupValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
 				Long.class);
 		q.setParameter("ignored", ignored);
 		q.setParameter("codeValue", codeValue);
@@ -564,7 +564,7 @@ public class TreatmentGroupValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = TreatmentGroupValue.entityManager();
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(
-				"SELECT o FROM TreatmentGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				"SELECT o FROM TreatmentGroupValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
 				TreatmentGroupValue.class);
 		q.setParameter("ignored", ignored);
 		q.setParameter("codeValue", codeValue);
@@ -577,7 +577,7 @@ public class TreatmentGroupValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = TreatmentGroupValue.entityManager();
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT o FROM TreatmentGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+				"SELECT o FROM TreatmentGroupValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue");
 		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
 			queryBuilder.append(" ORDER BY ").append(sortFieldName);
 			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -697,12 +697,12 @@ public class TreatmentGroupValue extends AbstractValue {
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments e " +
 				"JOIN e.protocol p " +
-				"WHERE tgv.codeValue = :codeValue AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
-				"AND tgs.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
-				"AND e.ignored IS NOT :ignored " +
-				"AND p.ignored IS NOT :ignored ";
+				"WHERE tgv.codeValue = :codeValue AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored != :ignored " +
+				"AND tgs.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
+				"AND e.ignored != :ignored " +
+				"AND p.ignored != :ignored ";
 
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("valueType", "codeValue");

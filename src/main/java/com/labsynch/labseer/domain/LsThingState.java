@@ -108,7 +108,7 @@ public class LsThingState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
                 "AND lst.id = :lsThingId ";
         TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
         q.setParameter("lsThingId", lsThingId);
@@ -128,7 +128,7 @@ public class LsThingState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
                 "AND lst.codeName = :lsThingCodeName ";
         TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
         q.setParameter("lsThingCodeName", lsThingCodeName);

@@ -348,7 +348,7 @@ public class DDictValue {
 
     public static Long countFindDDictValuesByIgnoredNot(boolean ignored) {
         EntityManager em = DDictValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.ignored != :ignored",
                 Long.class);
         q.setParameter("ignored", ignored);
         return ((Long) q.getSingleResult());
@@ -449,7 +449,7 @@ public class DDictValue {
 
     public static TypedQuery<DDictValue> findDDictValuesByIgnoredNot(boolean ignored) {
         EntityManager em = DDictValue.entityManager();
-        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.ignored != :ignored",
                 DDictValue.class);
         q.setParameter("ignored", ignored);
         return q;
@@ -458,7 +458,7 @@ public class DDictValue {
     public static TypedQuery<DDictValue> findDDictValuesByIgnoredNot(boolean ignored, String sortFieldName,
             String sortOrder) {
         EntityManager em = DDictValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored");
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

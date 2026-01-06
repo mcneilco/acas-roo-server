@@ -334,7 +334,7 @@ public class Protocol extends AbstractThing {
             throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Protocol.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("codeName", codeName);
         q.setParameter("ignored", ignored);
@@ -360,7 +360,7 @@ public class Protocol extends AbstractThing {
 
     public static Long countFindProtocolsByIgnoredNot(boolean ignored) {
         EntityManager em = Protocol.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.ignored IS NOT :ignored", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.ignored != :ignored", Long.class);
         q.setParameter("ignored", ignored);
         return ((Long) q.getSingleResult());
     }
@@ -499,7 +499,7 @@ public class Protocol extends AbstractThing {
             throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Protocol.entityManager();
         TypedQuery<Protocol> q = em.createQuery(
-                "SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored != :ignored",
                 Protocol.class);
         q.setParameter("codeName", codeName);
         q.setParameter("ignored", ignored);
@@ -512,7 +512,7 @@ public class Protocol extends AbstractThing {
             throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Protocol.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -569,7 +569,7 @@ public class Protocol extends AbstractThing {
 
     public static TypedQuery<Protocol> findProtocolsByIgnoredNot(boolean ignored) {
         EntityManager em = Protocol.entityManager();
-        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.ignored != :ignored",
                 Protocol.class);
         q.setParameter("ignored", ignored);
         return q;
@@ -578,7 +578,7 @@ public class Protocol extends AbstractThing {
     public static TypedQuery<Protocol> findProtocolsByIgnoredNot(boolean ignored, String sortFieldName,
             String sortOrder) {
         EntityManager em = Protocol.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.ignored IS NOT :ignored");
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

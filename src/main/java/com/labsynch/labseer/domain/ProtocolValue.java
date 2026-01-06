@@ -111,9 +111,9 @@ public class ProtocolValue extends AbstractValue {
         String hsqlQuery = "SELECT pv FROM ProtocolValue AS pv " +
                 "JOIN pv.lsState ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
-                "AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
-                // "AND p.ignored IS NOT :ignored " +
+                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored != :ignored " +
+                "AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored != :ignored " +
+                // "AND p.ignored != :ignored " +
                 "AND p.id = :protocolId ORDER BY pv.id";
         TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
         q.setParameter("protocolId", protocolId);
@@ -142,9 +142,9 @@ public class ProtocolValue extends AbstractValue {
         String hsqlQuery = "SELECT pv FROM ProtocolValue AS pv " +
                 "JOIN pv.lsState ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
-                "AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
-                // "AND p.ignored IS NOT :ignored " +
+                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored != :ignored " +
+                "AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored != :ignored " +
+                // "AND p.ignored != :ignored " +
                 "AND p.codeName = :protocolCodeName ";
         TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
         q.setParameter("protocolCodeName", protocolCodeName);
@@ -498,9 +498,9 @@ public class ProtocolValue extends AbstractValue {
         String hsqlQuery = "SELECT pv FROM ProtocolValue AS pv " +
                 "JOIN pv.lsState ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.ignored IS NOT :ignored " +
-                "AND pv.codeValue = :codeValue AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
-                "AND p.ignored IS NOT :ignored ";
+                "WHERE ps.ignored != :ignored " +
+                "AND pv.codeValue = :codeValue AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored != :ignored " +
+                "AND p.ignored != :ignored ";
         TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
         q.setParameter("valueType", "codeValue");
         q.setParameter("valueKind", valueKind);

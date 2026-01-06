@@ -129,7 +129,7 @@ public class ContainerState extends AbstractState {
     public long countValidContainerValues() {
         boolean ignored = true;
         EntityManager em = ContainerValue.entityManager();
-        TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.ignored != :ignored",
                 Long.class);
         q.setParameter("ignored", ignored);
         return q.getSingleResult();
@@ -139,7 +139,7 @@ public class ContainerState extends AbstractState {
         boolean ignored = true;
         EntityManager em = ContainerState.entityManager();
         TypedQuery<ContainerState> q = em.createQuery(
-                "SELECT o FROM ContainerState AS o WHERE o.container.id in (:containerIds) AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ContainerState AS o WHERE o.container.id in (:containerIds) AND o.ignored != :ignored",
                 ContainerState.class);
         q.setParameter("ignored", ignored);
         q.setParameter("containerIds", containerIds);
@@ -169,7 +169,7 @@ public class ContainerState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT cs FROM ContainerState AS cs " +
                 "JOIN cs.container c " +
-                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
+                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored != :ignored " +
                 "AND c.id = :containerId ";
         TypedQuery<ContainerState> q = em.createQuery(hsqlQuery, ContainerState.class);
         q.setParameter("containerId", containerId);
@@ -189,7 +189,7 @@ public class ContainerState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT cs FROM ContainerState AS cs " +
                 "JOIN cs.container c " +
-                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
+                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored != :ignored " +
                 "AND c.codeName = :containerCodeName ";
         TypedQuery<ContainerState> q = em.createQuery(hsqlQuery, ContainerState.class);
         q.setParameter("containerCodeName", containerCodeName);
@@ -295,7 +295,7 @@ public class ContainerState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = ContainerState.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("container", container);
         q.setParameter("lsKind", lsKind);
@@ -305,7 +305,7 @@ public class ContainerState extends AbstractState {
 
     public static Long countFindContainerStatesByIgnoredNot(boolean ignored) {
         EntityManager em = ContainerState.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.ignored != :ignored",
                 Long.class);
         q.setParameter("ignored", ignored);
         return ((Long) q.getSingleResult());
@@ -347,7 +347,7 @@ public class ContainerState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = ContainerState.entityManager();
         TypedQuery<ContainerState> q = em.createQuery(
-                "SELECT o FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored != :ignored",
                 ContainerState.class);
         q.setParameter("container", container);
         q.setParameter("lsKind", lsKind);
@@ -363,7 +363,7 @@ public class ContainerState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = ContainerState.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -380,7 +380,7 @@ public class ContainerState extends AbstractState {
     public static TypedQuery<ContainerState> findContainerStatesByIgnoredNot(boolean ignored) {
         EntityManager em = ContainerState.entityManager();
         TypedQuery<ContainerState> q = em
-                .createQuery("SELECT o FROM ContainerState AS o WHERE o.ignored IS NOT :ignored", ContainerState.class);
+                .createQuery("SELECT o FROM ContainerState AS o WHERE o.ignored != :ignored", ContainerState.class);
         q.setParameter("ignored", ignored);
         return q;
     }
@@ -389,7 +389,7 @@ public class ContainerState extends AbstractState {
             String sortOrder) {
         EntityManager em = ContainerState.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ContainerState AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT o FROM ContainerState AS o WHERE o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

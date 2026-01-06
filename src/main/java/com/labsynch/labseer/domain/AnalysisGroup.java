@@ -423,7 +423,7 @@ public class AnalysisGroup extends AbstractThing {
             throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT COUNT(o) FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT COUNT(o) FROM AnalysisGroup AS o WHERE o.ignored != :ignored");
         queryBuilder.append(" AND");
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0)
@@ -498,7 +498,7 @@ public class AnalysisGroup extends AbstractThing {
             throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored != :ignored");
         queryBuilder.append(" AND");
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0)
@@ -520,7 +520,7 @@ public class AnalysisGroup extends AbstractThing {
             throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored != :ignored");
         queryBuilder.append(" AND");
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0)

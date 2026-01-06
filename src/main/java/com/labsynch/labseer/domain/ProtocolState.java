@@ -106,7 +106,7 @@ public class ProtocolState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ps FROM ProtocolState AS ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
+                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored != :ignored " +
                 "AND p.id = :protocolId ";
         TypedQuery<ProtocolState> q = em.createQuery(hsqlQuery, ProtocolState.class);
         q.setParameter("protocolId", protocolId);
@@ -131,7 +131,7 @@ public class ProtocolState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ps FROM ProtocolState AS ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
+                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored != :ignored " +
                 "AND p.codeName = :protocolCodeName ";
         TypedQuery<ProtocolState> q = em.createQuery(hsqlQuery, ProtocolState.class);
         q.setParameter("protocolCodeName", protocolCodeName);

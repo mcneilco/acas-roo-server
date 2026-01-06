@@ -684,8 +684,8 @@ public class Experiment extends AbstractThing {
         boolean ignored = true;
         EntityManager em = Experiment.entityManager();
         String query = "SELECT DISTINCT o FROM Experiment o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText = :labelText " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :experimentType " +
                 "AND o.lsKind = :experimentKind ";
 
@@ -716,10 +716,10 @@ public class Experiment extends AbstractThing {
         EntityManager em = Experiment.entityManager();
         String query = "SELECT DISTINCT o FROM Experiment o " +
                 "JOIN o.lsLabels ll " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :experimentType " +
                 "AND o.lsKind = :experimentKind " +
-                "AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+                "AND ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
 
         TypedQuery<Experiment> q = em.createQuery(query, Experiment.class);
         q.setParameter("experimentType", experimentType);

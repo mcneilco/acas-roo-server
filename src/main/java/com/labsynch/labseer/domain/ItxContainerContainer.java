@@ -148,7 +148,7 @@ public class ItxContainerContainer extends AbstractThing {
 
         EntityManager em = ItxContainerContainer.entityManager();
         String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.firstContainer = :firstContainer ";
@@ -175,7 +175,7 @@ public class ItxContainerContainer extends AbstractThing {
 
         EntityManager em = ItxContainerContainer.entityManager();
         String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.secondContainer = :secondContainer ";
@@ -203,7 +203,7 @@ public class ItxContainerContainer extends AbstractThing {
         EntityManager em = ItxContainerContainer.entityManager();
         String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
                 "JOIN o.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND itxvalue.numericValue = :order " +
@@ -234,7 +234,7 @@ public class ItxContainerContainer extends AbstractThing {
 
         EntityManager em = ItxContainerContainer.entityManager();
         String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.firstContainer = :firstContainer " +

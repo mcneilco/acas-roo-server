@@ -146,7 +146,7 @@ public class ContainerValue extends AbstractValue {
     public static long countValidContainerValues() {
         boolean ignored = true;
         EntityManager em = ContainerValue.entityManager();
-        TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored != :ignored",
                 Long.class);
         q.setParameter("ignored", ignored);
         return q.getSingleResult();
@@ -156,7 +156,7 @@ public class ContainerValue extends AbstractValue {
         boolean ignored = true;
         EntityManager em = ContainerValue.entityManager();
         TypedQuery<ContainerValue> q = em
-                .createQuery("SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored", ContainerValue.class)
+                .createQuery("SELECT o FROM ContainerValue AS o WHERE o.ignored != :ignored", ContainerValue.class)
                 .setMaxResults(maxResults);
         q.setParameter("ignored", ignored);
         return q.getResultList();
@@ -166,7 +166,7 @@ public class ContainerValue extends AbstractValue {
         boolean ignored = true;
         EntityManager em = ContainerValue.entityManager();
         TypedQuery<Long> q = em.createQuery(
-                "SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored AND o.lsState = :lsState",
+                "SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored != :ignored AND o.lsState = :lsState",
                 Long.class);
         q.setParameter("ignored", ignored);
         q.setParameter("lsState", lsState);
@@ -186,7 +186,7 @@ public class ContainerValue extends AbstractValue {
             throw new IllegalArgumentException("The lsState argument is required");
         EntityManager em = ContainerValue.entityManager();
         TypedQuery<ContainerValue> q = em.createQuery(
-                "SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored AND o.lsState = :lsState",
+                "SELECT o FROM ContainerValue AS o WHERE o.ignored != :ignored AND o.lsState = :lsState",
                 ContainerValue.class).setFirstResult(0).setMaxResults(maxResults);
         boolean ignored = true;
         q.setParameter("ignored", ignored);
@@ -319,9 +319,9 @@ public class ContainerValue extends AbstractValue {
         String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
                 "JOIN cv.lsState cs " +
                 "JOIN cs.container c " +
-                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
-                "AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
-                "AND c.ignored IS NOT :ignored " +
+                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored != :ignored " +
+                "AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored != :ignored " +
+                "AND c.ignored != :ignored " +
                 "AND c.id = :containerId ";
         TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
         q.setParameter("containerId", containerId);
@@ -351,9 +351,9 @@ public class ContainerValue extends AbstractValue {
         String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
                 "JOIN cv.lsState cs " +
                 "JOIN cs.container c " +
-                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
-                "AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
-                "AND c.ignored IS NOT :ignored " +
+                "WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored != :ignored " +
+                "AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored != :ignored " +
+                "AND c.ignored != :ignored " +
                 "AND c.codeName = :codeName ";
         TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
         q.setParameter("codeName", codeName);
@@ -380,7 +380,7 @@ public class ContainerValue extends AbstractValue {
 
     public static Long countFindContainerValuesByIgnoredNot(boolean ignored) {
         EntityManager em = ContainerValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored != :ignored",
                 Long.class);
         q.setParameter("ignored", ignored);
         return ((Long) q.getSingleResult());
@@ -399,7 +399,7 @@ public class ContainerValue extends AbstractValue {
     public static TypedQuery<ContainerValue> findContainerValuesByIgnoredNot(boolean ignored) {
         EntityManager em = ContainerValue.entityManager();
         TypedQuery<ContainerValue> q = em
-                .createQuery("SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored", ContainerValue.class);
+                .createQuery("SELECT o FROM ContainerValue AS o WHERE o.ignored != :ignored", ContainerValue.class);
         q.setParameter("ignored", ignored);
         return q;
     }
@@ -408,7 +408,7 @@ public class ContainerValue extends AbstractValue {
             String sortOrder) {
         EntityManager em = ContainerValue.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT o FROM ContainerValue AS o WHERE o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -485,9 +485,9 @@ public class ContainerValue extends AbstractValue {
         String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
             "JOIN cv.lsState cs " +
             "JOIN cs.container c " +
-            "WHERE cs.ignored IS NOT :ignored " +
-            "AND cv.codeValue = :codeValue AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
-            "AND c.ignored IS NOT :ignored ";
+            "WHERE cs.ignored != :ignored " +
+            "AND cv.codeValue = :codeValue AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored != :ignored " +
+            "AND c.ignored != :ignored ";
 
         TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
         q.setParameter("valueType", "codeValue");

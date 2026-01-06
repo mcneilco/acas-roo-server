@@ -1380,9 +1380,9 @@ public class AnalysisGroupValue extends AbstractValue {
 				"JOIN agv.lsState evs " +
 				"JOIN evs.analysisGroup ag " +
 				"JOIN ag.experiments exp " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
-				"AND agv.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored " +
+				"AND agv.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("experimentId", experimentId);
@@ -1404,10 +1404,10 @@ public class AnalysisGroupValue extends AbstractValue {
 				"JOIN agv.lsState ags " +
 				"JOIN ags.analysisGroup ag " +
 				"WHERE ags.lsType = :stateType " +
-				"AND ags.ignored IS NOT :ignored " +
-				"AND agv.ignored IS NOT :ignored " +
+				"AND ags.ignored != :ignored " +
+				"AND agv.ignored != :ignored " +
 				"AND ags.lsKind = :stateKind " +
-				"AND ag.id = :analysisGroupId AND ag.ignored IS NOT :ignored";
+				"AND ag.id = :analysisGroupId AND ag.ignored != :ignored";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("analysisGroupId", analysisGroupId);
 		q.setParameter("stateType", stateType);
@@ -1433,9 +1433,9 @@ public class AnalysisGroupValue extends AbstractValue {
 				"JOIN agv.lsState evs " +
 				"JOIN evs.analysisGroup ag " +
 				"JOIN ag.experiments exp " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
-				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored " +
+				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("experimentId", experimentId);
@@ -1457,10 +1457,10 @@ public class AnalysisGroupValue extends AbstractValue {
 		EntityManager em = entityManager();
 
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
-				"WHERE agv.id in (:idList) AND agv.ignored IS NOT :ignored ";
+				"WHERE agv.id in (:idList) AND agv.ignored != :ignored ";
 
 		String hsqlQueryPublic = "SELECT agv FROM AnalysisGroupValue AS agv " +
-				"WHERE agv.id in (:idList) AND agv.ignored IS NOT :ignored " +
+				"WHERE agv.id in (:idList) AND agv.ignored != :ignored " +
 				"AND agv.publicData IS :publicData ";
 
 		if (onlyPublicData) {
@@ -1497,9 +1497,9 @@ public class AnalysisGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
 				"JOIN agv.lsState ags " +
 				"JOIN ags.analysisGroup ag " +
-				"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
-				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
+				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND ag.id = :analysisGroupId ";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("analysisGroupId", analysisGroupId);
@@ -1528,9 +1528,9 @@ public class AnalysisGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
 				"JOIN agv.lsState ags " +
 				"JOIN ags.analysisGroup ag " +
-				"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
-				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
+				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND ag.codeName = :analysisGroupCodeName ";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("analysisGroupCodeName", analysisGroupCodeName);
@@ -1650,7 +1650,7 @@ public class AnalysisGroupValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = AnalysisGroupValue.entityManager();
 		TypedQuery q = em.createQuery(
-				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
 				Long.class);
 		q.setParameter("ignored", ignored);
 		q.setParameter("codeValue", codeValue);
@@ -1708,7 +1708,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		}
 		EntityManager em = AnalysisGroupValue.entityManager();
 		TypedQuery q = em.createQuery(
-				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored",
+				"SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored",
 				Long.class);
 		q.setParameter("lsType", lsType);
 		q.setParameter("lsKind", lsKind);
@@ -1751,7 +1751,7 @@ public class AnalysisGroupValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = AnalysisGroupValue.entityManager();
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(
-				"SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
 				AnalysisGroupValue.class);
 		q.setParameter("ignored", ignored);
 		q.setParameter("codeValue", codeValue);
@@ -1764,7 +1764,7 @@ public class AnalysisGroupValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = AnalysisGroupValue.entityManager();
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue");
 		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
 			queryBuilder.append(" ORDER BY ").append(sortFieldName);
 			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -1887,7 +1887,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		}
 		EntityManager em = AnalysisGroupValue.entityManager();
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(
-				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored",
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored",
 				AnalysisGroupValue.class);
 		q.setParameter("lsType", lsType);
 		q.setParameter("lsKind", lsKind);
@@ -1913,7 +1913,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		}
 		EntityManager em = AnalysisGroupValue.entityManager();
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored");
+				"SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored");
 		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
 			queryBuilder.append(" ORDER BY ").append(sortFieldName);
 			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -1986,11 +1986,11 @@ public class AnalysisGroupValue extends AbstractValue {
 				"JOIN ags.analysisGroup ag " +
 				"JOIN ag.experiments e " +
                 "JOIN e.protocol p " +
-                "WHERE agv.codeValue = :codeValue AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
-                "AND ags.ignored IS NOT :ignored " +
-                "AND ag.ignored IS NOT :ignored " +
-                "AND e.ignored IS NOT :ignored " +
-				"AND p.ignored IS NOT :ignored ";
+                "WHERE agv.codeValue = :codeValue AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored != :ignored " +
+                "AND ags.ignored != :ignored " +
+                "AND ag.ignored != :ignored " +
+                "AND e.ignored != :ignored " +
+				"AND p.ignored != :ignored ";
 
         TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
         q.setParameter("valueType", "codeValue");

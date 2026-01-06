@@ -108,7 +108,7 @@ public class AuthorState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM AuthorState AS ags " +
                 "JOIN ags.author ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.id = :authorId ";
         TypedQuery<AuthorState> q = em.createQuery(hsqlQuery, AuthorState.class);
         q.setParameter("authorId", authorId);
@@ -211,7 +211,7 @@ public class AuthorState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = AuthorState.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM AuthorState AS o WHERE o.author = :author AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM AuthorState AS o WHERE o.author = :author AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("author", author);
         q.setParameter("lsType", lsType);
@@ -290,7 +290,7 @@ public class AuthorState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = AuthorState.entityManager();
         TypedQuery<AuthorState> q = em.createQuery(
-                "SELECT o FROM AuthorState AS o WHERE o.author = :author AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM AuthorState AS o WHERE o.author = :author AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored != :ignored",
                 AuthorState.class);
         q.setParameter("author", author);
         q.setParameter("lsType", lsType);
@@ -309,7 +309,7 @@ public class AuthorState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = AuthorState.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AuthorState AS o WHERE o.author = :author AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM AuthorState AS o WHERE o.author = :author AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

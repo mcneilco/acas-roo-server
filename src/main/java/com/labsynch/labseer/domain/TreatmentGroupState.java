@@ -210,7 +210,7 @@ public class TreatmentGroupState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM TreatmentGroupState AS ags " +
                 "JOIN ags.treatmentGroup ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.id = :treatmentGroupId ";
         TypedQuery<TreatmentGroupState> q = em.createQuery(hsqlQuery, TreatmentGroupState.class);
         q.setParameter("treatmentGroupId", treatmentGroupId);
@@ -230,7 +230,7 @@ public class TreatmentGroupState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM TreatmentGroupState AS ags " +
                 "JOIN ags.treatmentGroup ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.codeName = :treatmentGroupCodeName ";
         TypedQuery<TreatmentGroupState> q = em.createQuery(hsqlQuery, TreatmentGroupState.class);
         q.setParameter("treatmentGroupCodeName", treatmentGroupCodeName);

@@ -230,7 +230,7 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 		String hsqlQuery = "SELECT new com.labsynch.labseer.dto.SubjectCodeStateDTO( s.codeName, ss ) FROM SubjectState AS ss "
 				+
 				"JOIN ss.subject AS s " +
-				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored AND ";
+				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored != :ignored AND ";
 		Query q = SimpleUtil.addHqlInClause(em, hsqlQuery, "s.codeName", codeNameList);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);

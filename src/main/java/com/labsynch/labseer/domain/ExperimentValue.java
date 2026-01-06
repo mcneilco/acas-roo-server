@@ -161,8 +161,8 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The valueKind argument is required");
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " + "JOIN ev.lsState evs " + "JOIN evs.experiment exp "
-                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored "
-                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored "
+                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored "
+                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored != :ignored "
                 + "AND exp.id = :experimentId ";
         TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
         q.setParameter("experimentId", experimentId);
@@ -186,8 +186,8 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The valueKind argument is required");
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " + "JOIN ev.lsState evs " + "JOIN evs.experiment exp "
-                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored "
-                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored ";
+                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored "
+                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored != :ignored ";
         TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
         q.setParameter("stateType", stateType);
         q.setParameter("stateKind", stateKind);
@@ -209,8 +209,8 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The valueKind argument is required");
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " + "JOIN ev.lsState evs " + "JOIN evs.experiment exp "
-                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored "
-                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored "
+                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored "
+                + "AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored != :ignored "
                 + "AND exp.codeName = :experimentCodeName ";
         TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
         q.setParameter("experimentCodeName", experimentCodeName);
@@ -230,8 +230,8 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The stateKind argument is required");
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " + "JOIN ev.lsState evs " + "JOIN evs.experiment exp "
-                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored "
-                + "AND ev.ignored IS NOT :ignored " + "AND exp.id = :experimentId ";
+                + "WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored "
+                + "AND ev.ignored != :ignored " + "AND exp.id = :experimentId ";
         TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
         q.setParameter("experimentId", experimentId);
         q.setParameter("stateType", stateType);
@@ -455,7 +455,7 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The stringValue argument is required");
         EntityManager em = ExperimentValue.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ExperimentValue AS o WHERE o.lsState = :lsState AND o.ignored IS NOT :ignored  AND o.lsKind = :lsKind  AND o.lsType = :lsType  AND o.stringValue = :stringValue",
+                "SELECT COUNT(o) FROM ExperimentValue AS o WHERE o.lsState = :lsState AND o.ignored != :ignored  AND o.lsKind = :lsKind  AND o.lsType = :lsType  AND o.stringValue = :stringValue",
                 Long.class);
         q.setParameter("lsState", lsState);
         q.setParameter("ignored", ignored);
@@ -604,7 +604,7 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The stringValue argument is required");
         EntityManager em = ExperimentValue.entityManager();
         TypedQuery<ExperimentValue> q = em.createQuery(
-                "SELECT o FROM ExperimentValue AS o WHERE o.lsState = :lsState AND o.ignored IS NOT :ignored  AND o.lsKind = :lsKind  AND o.lsType = :lsType  AND o.stringValue = :stringValue",
+                "SELECT o FROM ExperimentValue AS o WHERE o.lsState = :lsState AND o.ignored != :ignored  AND o.lsKind = :lsKind  AND o.lsType = :lsType  AND o.stringValue = :stringValue",
                 ExperimentValue.class);
         q.setParameter("lsState", lsState);
         q.setParameter("ignored", ignored);
@@ -627,7 +627,7 @@ public class ExperimentValue extends AbstractValue {
             throw new IllegalArgumentException("The stringValue argument is required");
         EntityManager em = ExperimentValue.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ExperimentValue AS o WHERE o.lsState = :lsState AND o.ignored IS NOT :ignored  AND o.lsKind = :lsKind  AND o.lsType = :lsType  AND o.stringValue = :stringValue");
+                "SELECT o FROM ExperimentValue AS o WHERE o.lsState = :lsState AND o.ignored != :ignored  AND o.lsKind = :lsKind  AND o.lsType = :lsType  AND o.stringValue = :stringValue");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -680,10 +680,10 @@ public class ExperimentValue extends AbstractValue {
                 "JOIN ev.lsState es " +
                 "JOIN es.experiment e " +
                 "JOIN e.protocol p " +
-                "WHERE ev.codeValue = :codeValue AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored " +
-                "AND es.ignored IS NOT :ignored " +
-                "AND p.ignored IS NOT :ignored " +
-                "AND e.ignored IS NOT :ignored ";
+                "WHERE ev.codeValue = :codeValue AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored != :ignored " +
+                "AND es.ignored != :ignored " +
+                "AND p.ignored != :ignored " +
+                "AND e.ignored != :ignored ";
         TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
         q.setParameter("valueType", "codeValue");
         q.setParameter("valueKind", valueKind);

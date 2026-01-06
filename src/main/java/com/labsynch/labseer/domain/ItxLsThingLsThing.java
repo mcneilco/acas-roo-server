@@ -169,7 +169,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind ";
         TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
@@ -193,7 +193,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.firstLsThing = :firstLsThing " +
@@ -219,7 +219,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType <> :lsType " +
                 "AND o.lsKind <> :lsKind " +
                 "AND o.firstLsThing = :firstLsThing ";
@@ -243,7 +243,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType <> :lsType " +
                 "AND o.lsKind <> :lsKind " +
                 "AND o.secondLsThing = :secondLsThing ";
@@ -267,7 +267,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.firstLsThing = :firstLsThing ";
@@ -291,7 +291,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.secondLsThing = :secondLsThing ";
@@ -318,7 +318,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
                 "JOIN o.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND itxvalue.numericValue = :order " +
@@ -349,7 +349,7 @@ public class ItxLsThingLsThing extends AbstractThing {
 
         EntityManager em = ItxLsThingLsThing.entityManager();
         String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :lsType " +
                 "AND o.lsKind = :lsKind " +
                 "AND o.firstLsThing = :firstLsThing " +

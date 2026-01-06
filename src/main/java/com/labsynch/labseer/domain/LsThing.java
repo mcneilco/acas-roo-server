@@ -236,7 +236,7 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -261,9 +261,9 @@ public class LsThing extends AbstractThing {
     //
     // EntityManager em = LsThing.entityManager();
     // String query = "SELECT o FROM LsThing o " +
-    // "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText =
+    // "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText =
     // :labelText " +
-    // "WHERE o.ignored IS NOT :ignored " +
+    // "WHERE o.ignored != :ignored " +
     // "AND o.lsType = :thingType " +
     // "AND o.lsKind = :thingKind ";
     //
@@ -284,8 +284,8 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
-                "WHERE o.ignored IS NOT :ignored ";
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText = :labelText " +
+                "WHERE o.ignored != :ignored ";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
         q.setParameter("labelText", labelText);
@@ -302,8 +302,8 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText = :labelText " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsKind = :lsKind ";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
@@ -322,8 +322,8 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText in (:labelTextList) " +
-                "WHERE o.ignored IS NOT :ignored ";
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText in (:labelTextList) " +
+                "WHERE o.ignored != :ignored ";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
         q.setParameter("labelTextList", labelTextList);
@@ -343,8 +343,8 @@ public class LsThing extends AbstractThing {
         boolean ignored = true;
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText = :labelText " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -375,10 +375,10 @@ public class LsThing extends AbstractThing {
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
                 "JOIN o.lsLabels ll " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind " +
-                "AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+                "AND ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
         q.setParameter("thingType", thingType);
@@ -411,7 +411,7 @@ public class LsThing extends AbstractThing {
                 "JOIN o.lsLabels ll " +
                 "WHERE o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind " +
-                "AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+                "AND ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
         q.setParameter("thingType", thingType);
@@ -447,9 +447,9 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.labelText = :labelText "
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsType = :labelType AND ll.labelText = :labelText "
                 +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -479,9 +479,9 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsKind = :labelKind AND ll.labelText = :labelText "
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsKind = :labelKind AND ll.labelText = :labelText "
                 +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -511,9 +511,9 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind "
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind "
                 +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -545,9 +545,9 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind "
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind "
                 +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind " +
                 "AND ll.labelText = :labelText ";
@@ -581,7 +581,7 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind "
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind "
                 +
                 "WHERE o.deleted IS NOT :deleted " +
                 "AND o.lsType = :thingType " +
@@ -619,7 +619,7 @@ public class LsThing extends AbstractThing {
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
                 "JOIN o.lsLabels ll with ll.lsType = :labelType AND ll.lsKind = :labelKind " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind " +
                 "AND ll.labelText = :labelText ";
@@ -648,8 +648,8 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsKind = :labelKind " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsKind = :labelKind " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -675,8 +675,8 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
-                "JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsType = :labelType " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.lsType = :labelType " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind ";
 
@@ -702,9 +702,9 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT itx.firstLsThing FROM LsThing secondLsThing " +
-                "JOIN secondLsThing.firstLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
+                "JOIN secondLsThing.firstLsThings itx with itx.ignored != :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
                 +
-                "WHERE secondLsThing.ignored IS NOT :ignored " +
+                "WHERE secondLsThing.ignored != :ignored " +
                 "AND secondLsThing = :secondLsThing ";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
@@ -729,9 +729,9 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT itx.secondLsThing FROM LsThing firstLsThing " +
-                "JOIN firstLsThing.secondLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
+                "JOIN firstLsThing.secondLsThings itx with itx.ignored != :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
                 +
-                "WHERE firstLsThing.ignored IS NOT :ignored " +
+                "WHERE firstLsThing.ignored != :ignored " +
                 "AND firstLsThing = :firstLsThing ";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
@@ -757,10 +757,10 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT itx.firstLsThing FROM LsThing secondLsThing " +
-                "JOIN secondLsThing.firstLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
+                "JOIN secondLsThing.firstLsThings itx with itx.ignored != :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
                 +
                 "JOIN itx.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
-                "WHERE secondLsThing.ignored IS NOT :ignored " +
+                "WHERE secondLsThing.ignored != :ignored " +
                 "AND itxvalue.numericValue = :order " +
                 "AND secondLsThing = :secondLsThing ";
 
@@ -788,10 +788,10 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT itx.secondLsThing FROM LsThing firstLsThing " +
-                "JOIN firstLsThing.secondLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
+                "JOIN firstLsThing.secondLsThings itx with itx.ignored != :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind "
                 +
                 "JOIN itx.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
-                "WHERE firstLsThing.ignored IS NOT :ignored " +
+                "WHERE firstLsThing.ignored != :ignored " +
                 "AND itxvalue.numericValue = :order " +
                 "AND firstLsThing = :firstLsThing ";
 
@@ -888,8 +888,8 @@ public class LsThing extends AbstractThing {
 
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT itx.firstLsThing FROM LsThing secondLsThing " +
-                "JOIN secondLsThing.firstLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType " +
-                "WHERE secondLsThing.ignored IS NOT :ignored " +
+                "JOIN secondLsThing.firstLsThings itx with itx.ignored != :ignored AND itx.lsType = :lsType " +
+                "WHERE secondLsThing.ignored != :ignored " +
                 "AND secondLsThing = :secondLsThing ";
 
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
@@ -969,7 +969,7 @@ public class LsThing extends AbstractThing {
     public static Collection<LsThing> findLsThingsByCodeNamesIn(List<String> codeNames) {
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT lsThing FROM LsThing lsThing " +
-                "WHERE lsThing.ignored IS NOT :ignored AND ";
+                "WHERE lsThing.ignored != :ignored AND ";
         TypedQuery<LsThing> q = (TypedQuery<LsThing>) SimpleUtil.addHqlInClause(em, query, "lsThing.codeName",
                 codeNames);
         q.setParameter("ignored", true);
@@ -979,7 +979,7 @@ public class LsThing extends AbstractThing {
     public static Collection<LsThing> findLsThingsByIdsIn(Collection<Long> thingIds) {
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT lsThing FROM LsThing lsThing " +
-                "WHERE lsThing.ignored IS NOT :ignored AND lsThing.id in (:ids)";
+                "WHERE lsThing.ignored != :ignored AND lsThing.id in (:ids)";
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
         q.setParameter("ids", thingIds);
         q.setParameter("ignored", true);
@@ -1006,10 +1006,10 @@ public class LsThing extends AbstractThing {
         EntityManager em = LsThing.entityManager();
         String query = "SELECT DISTINCT o FROM LsThing o " +
                 "JOIN o.lsLabels ll " +
-                "WHERE o.ignored IS NOT :ignored " +
+                "WHERE o.ignored != :ignored " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind " +
-                "AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType " +
+                "AND ll.ignored != :ignored AND ll.lsType = :labelType " +
                 "AND ll.lsKind = :labelKind AND ll.labelText = :labelText " +
                 "AND ll.preferred = :preferred";
 
@@ -1050,7 +1050,7 @@ public class LsThing extends AbstractThing {
                 "WHERE o.deleted IS NOT :deleted " +
                 "AND o.lsType = :thingType " +
                 "AND o.lsKind = :thingKind " +
-                "AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType " +
+                "AND ll.ignored != :ignored AND ll.lsType = :labelType " +
                 "AND ll.lsKind = :labelKind AND ll.labelText = :labelText " +
                 "AND ll.preferred = :preferred";
 

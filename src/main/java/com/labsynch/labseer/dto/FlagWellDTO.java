@@ -324,8 +324,8 @@ public class FlagWellDTO {
 				+ "JOIN subject.lsStates AS resultsState "
 				+ "JOIN resultsState.lsValues AS batchCodeValue "
 				+ "WHERE treatmentGroup = :treatmentGroup "
-				+ "AND subject.ignored IS NOT :ignored "
-				+ "AND resultsState.ignored IS NOT :ignored "
+				+ "AND subject.ignored != :ignored "
+				+ "AND resultsState.ignored != :ignored "
 				+ "AND resultsState.lsType = :resultsStateType "
 				+ "AND resultsState.lsKind = :resultsStateKind "
 				+ "AND batchCodeValue.lsType = :batchCodeValueType "
@@ -352,7 +352,7 @@ public class FlagWellDTO {
 				+ "WHERE state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
 				+ "AND state.subject = :subject "
-				+ "AND state.ignored IS NOT :ignored", SubjectState.class);
+				+ "AND state.ignored != :ignored", SubjectState.class);
 		q.setParameter("subject", subject);
 		q.setParameter("stateType", "data");
 		q.setParameter("stateKind", "auto flag");
@@ -368,7 +368,7 @@ public class FlagWellDTO {
 				+ "WHERE state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
 				+ "AND state.subject = :subject "
-				+ "AND state.ignored IS NOT :ignored", SubjectState.class);
+				+ "AND state.ignored != :ignored", SubjectState.class);
 		q.setParameter("subject", subject);
 		q.setParameter("stateType", "data");
 		q.setParameter("stateKind", "preprocess flag");
@@ -384,7 +384,7 @@ public class FlagWellDTO {
 				+ "WHERE state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
 				+ "AND state.subject = :subject "
-				+ "AND state.ignored IS NOT :ignored", SubjectState.class);
+				+ "AND state.ignored != :ignored", SubjectState.class);
 		q.setParameter("subject", subject);
 		q.setParameter("stateType", "data");
 		q.setParameter("stateKind", "user flag");
@@ -400,8 +400,8 @@ public class FlagWellDTO {
 				+ "JOIN sv.lsState AS ss "
 				+ "JOIN ss.subject AS s "
 				+ "WHERE sv.id = :subjectValueId "
-				+ "AND sv.ignored IS NOT :ignored "
-				+ "AND ss.ignored IS NOT :ignored", Subject.class);
+				+ "AND sv.ignored != :ignored "
+				+ "AND ss.ignored != :ignored", Subject.class);
 		q.setParameter("subjectValueId", responseSubjectValueId);
 		q.setParameter("ignored", true);
 		Subject result = q.getSingleResult();

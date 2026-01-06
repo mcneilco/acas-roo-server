@@ -112,7 +112,7 @@ public class ExperimentState extends AbstractState {
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT evs FROM ExperimentState AS evs " +
 				"JOIN evs.experiment exp " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<ExperimentState> q = em.createQuery(hsqlQuery, ExperimentState.class);
 		q.setParameter("experimentId", experimentId);
@@ -132,7 +132,7 @@ public class ExperimentState extends AbstractState {
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT evs FROM ExperimentState AS evs " +
 				"JOIN evs.experiment exp " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored " +
 				"AND exp.codeName = :experimentCodeName ";
 		TypedQuery<ExperimentState> q = em.createQuery(hsqlQuery, ExperimentState.class);
 		q.setParameter("experimentCodeName", experimentCodeName);

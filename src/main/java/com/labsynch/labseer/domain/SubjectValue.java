@@ -295,11 +295,11 @@ public class SubjectValue extends AbstractValue {
 				"JOIN s.treatmentGroups tg " +
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments exp " +
-				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
-				"AND sv.ignored IS NOT :ignored " +
-				"AND s.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored != :ignored " +
+				"AND sv.ignored != :ignored " +
+				"AND s.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 		q.setParameter("experimentId", experimentId);
@@ -328,11 +328,11 @@ public class SubjectValue extends AbstractValue {
 				"JOIN s.treatmentGroups tg " +
 				"JOIN tg.analysisGroups ag " +
 				"JOIN ag.experiments exp " +
-				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
-				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
-				"AND s.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored != :ignored " +
+				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored != :ignored " +
+				"AND s.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 		q.setParameter("experimentId", experimentId);
@@ -357,11 +357,11 @@ public class SubjectValue extends AbstractValue {
 				"JOIN svs.subject s " +
 				"JOIN s.treatmentGroups tg " +
 				"JOIN tg.analysisGroups ag " +
-				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
-				"AND sv.ignored IS NOT :ignored " +
-				"AND s.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
+				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored != :ignored " +
+				"AND sv.ignored != :ignored " +
+				"AND s.ignored != :ignored " +
+				"AND tg.ignored != :ignored " +
+				"AND ag.ignored != :ignored " +
 				"AND ag.id = :analysisGroupId ";
 		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 		q.setParameter("analysisGroupId", analysisGroupId);
@@ -494,9 +494,9 @@ public class SubjectValue extends AbstractValue {
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState ss " +
 				"JOIN ss.subject s " +
-				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
-				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
-				"AND s.ignored IS NOT :ignored " +
+				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored != :ignored " +
+				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored != :ignored " +
+				"AND s.ignored != :ignored " +
 				"AND s.id = :subjectId ";
 		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 		q.setParameter("subjectId", subjectId);
@@ -525,9 +525,9 @@ public class SubjectValue extends AbstractValue {
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState ss " +
 				"JOIN ss.subject s " +
-				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
-				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
-				"AND s.ignored IS NOT :ignored " +
+				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored != :ignored " +
+				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored != :ignored " +
+				"AND s.ignored != :ignored " +
 				"AND s.codeName = :subjectCodeName ";
 		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 		q.setParameter("subjectCodeName", subjectCodeName);
@@ -562,7 +562,7 @@ public class SubjectValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = SubjectValue.entityManager();
 		TypedQuery q = em.createQuery(
-				"SELECT COUNT(o) FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				"SELECT COUNT(o) FROM SubjectValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
 				Long.class);
 		q.setParameter("ignored", ignored);
 		q.setParameter("codeValue", codeValue);
@@ -643,7 +643,7 @@ public class SubjectValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = SubjectValue.entityManager();
 		TypedQuery<SubjectValue> q = em.createQuery(
-				"SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+				"SELECT o FROM SubjectValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
 				SubjectValue.class);
 		q.setParameter("ignored", ignored);
 		q.setParameter("codeValue", codeValue);
@@ -656,7 +656,7 @@ public class SubjectValue extends AbstractValue {
 			throw new IllegalArgumentException("The codeValue argument is required");
 		EntityManager em = SubjectValue.entityManager();
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT o FROM SubjectValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+				"SELECT o FROM SubjectValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue");
 		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
 			queryBuilder.append(" ORDER BY ").append(sortFieldName);
 			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -820,13 +820,13 @@ public class SubjectValue extends AbstractValue {
 			"JOIN tg.analysisGroups ag " +
 			"JOIN ag.experiments e " +
 			"JOIN e.protocol p " +
-			"WHERE sv.codeValue = :codeValue AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
-			"AND ss.ignored IS NOT :ignored " +
-			"AND s.ignored IS NOT :ignored " +
-			"AND tg.ignored IS NOT :ignored " +
-			"AND ag.ignored IS NOT :ignored " +
-			"AND e.ignored IS NOT :ignored " +
-			"AND p.ignored IS NOT :ignored ";
+			"WHERE sv.codeValue = :codeValue AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored != :ignored " +
+			"AND ss.ignored != :ignored " +
+			"AND s.ignored != :ignored " +
+			"AND tg.ignored != :ignored " +
+			"AND ag.ignored != :ignored " +
+			"AND e.ignored != :ignored " +
+			"AND p.ignored != :ignored ";
 
 	TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 	q.setParameter("valueType", "codeValue");

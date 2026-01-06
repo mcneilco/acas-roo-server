@@ -279,8 +279,8 @@ public class Container extends AbstractThing {
 		boolean ignored = true;
 		EntityManager em = Container.entityManager();
 		String query = "SELECT DISTINCT o FROM Container o " +
-				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
-				"WHERE o.ignored IS NOT :ignored " +
+				"JOIN o.lsLabels ll with ll.ignored != :ignored AND ll.labelText = :labelText " +
+				"WHERE o.ignored != :ignored " +
 				"AND o.lsType = :containerType " +
 				"AND o.lsKind = :containerKind ";
 
@@ -311,10 +311,10 @@ public class Container extends AbstractThing {
 		EntityManager em = Container.entityManager();
 		String query = "SELECT DISTINCT o FROM Container o " +
 				"JOIN o.lsLabels ll " +
-				"WHERE o.ignored IS NOT :ignored " +
+				"WHERE o.ignored != :ignored " +
 				"AND o.lsType = :containerType " +
 				"AND o.lsKind = :containerKind " +
-				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+				"AND ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
 
 		TypedQuery<Container> q = em.createQuery(query, Container.class);
 		q.setParameter("containerType", containerType);
@@ -341,8 +341,8 @@ public class Container extends AbstractThing {
 		EntityManager em = Container.entityManager();
 		String query = "SELECT DISTINCT o FROM Container o " +
 				"JOIN o.lsLabels ll " +
-				"WHERE o.ignored IS NOT :ignored " +
-				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+				"WHERE o.ignored != :ignored " +
+				"AND ll.ignored != :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
 
 		TypedQuery<Container> q = em.createQuery(query, Container.class);
 		q.setParameter("labelType", labelType);
