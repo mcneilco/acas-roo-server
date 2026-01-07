@@ -50,7 +50,7 @@ public class ApiParentAnnotationController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
         ParentAnnotation.fromJsonToParentAnnotation(json).persist();
         HttpHeaders headers = new HttpHeaders();

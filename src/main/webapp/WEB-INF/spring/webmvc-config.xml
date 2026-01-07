@@ -14,7 +14,9 @@
     <bean id="mvcHandlerMappingIntrospector" class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" />
     
     <bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" >
+        <property name="useTrailingSlashMatch" value="true" />
+    </bean>
 	<!-- Configures view for returning JSON to the client -->
 	<bean
 		class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">

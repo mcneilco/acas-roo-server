@@ -55,7 +55,7 @@ public class ApiIsotopeController {
         return new ResponseEntity<String>(Isotope.toJsonArray(Isotope.findAllIsotopes()), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/text");

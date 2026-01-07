@@ -232,7 +232,7 @@ public class ApiSaltController {
 		return new ResponseEntity<String>(SaltSDFStr, headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json, @RequestParam(value = "dryrun", required = false, defaultValue = "false") boolean dryrun) throws CmpdRegMolFormatException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text");

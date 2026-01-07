@@ -154,7 +154,7 @@ public class ApiVendorController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json) {
 		Vendor newVendor = Vendor.fromJsonToVendor(json);
 		if (newVendor.getCode() == null || newVendor.getCode().equalsIgnoreCase("")) {

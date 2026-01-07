@@ -78,7 +78,7 @@ public class ApiItxSubjectContainerController {
         return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody ItxSubjectContainer itxSubjectContainer) {
         logger.debug("Incoming itxSubjectContainer JSON: " + itxSubjectContainer.toJson());
         HttpHeaders headers = new HttpHeaders();

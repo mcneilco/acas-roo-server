@@ -170,7 +170,7 @@ public class ApiSubjectController {
 		return new ResponseEntity<String>(Subject.toJsonArray(result), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json) {
 		Subject subject = Subject.fromJsonToSubject(json);
 		subject = subjectService.saveSubject(subject);
