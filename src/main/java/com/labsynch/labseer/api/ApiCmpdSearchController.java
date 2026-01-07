@@ -49,7 +49,7 @@ public class ApiCmpdSearchController {
 		headers.add("Pragma", "no-cache"); // HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		List<Integer> searchResults;
+		List<Long> searchResults;
 		try {
 			CmpdRegStructureSearchDTO structureSearchDTO = CmpdRegStructureSearchDTO
 					.fromJsonToCmpdRegStructureSearchDTO(json);

@@ -182,11 +182,11 @@ public class Parent {
         return q;
     }
 
-    public static TypedQuery<Integer> findParentIdsByCdIdInAndProjectIn(List<Integer> cdIds,
+    public static TypedQuery<Long> findParentIdsByCdIdInAndProjectIn(List<Integer> cdIds,
             List<String> projectNames) {
         EntityManager em = Parent.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Integer> criteria = criteriaBuilder.createQuery(Integer.class);
+        CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
         Root<Parent> parentRoot = criteria.from(Parent.class);
 
         // Join to lots so we can filter out parents that are not in the project list
@@ -220,7 +220,7 @@ public class Parent {
             predicateList.add(criteriaBuilder.equal(parentRoot.get("id"), -1));
         }
 
-        criteria.select(parentRoot.<Integer>get("id"));
+        criteria.select(parentRoot.<Long>get("id"));
 
         // Select distinct because we joined one to many lots
         criteria.distinct(true);
@@ -228,7 +228,7 @@ public class Parent {
         // Add the predicates and create the query
         predicates = predicateList.toArray(predicates);
         criteria.where(criteriaBuilder.and(predicates));
-        TypedQuery<Integer> q = em.createQuery(criteria);
+        TypedQuery<Long> q = em.createQuery(criteria);
         return q;
     }
 
