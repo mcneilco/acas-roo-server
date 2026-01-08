@@ -1,5 +1,5 @@
 ARG 	CHEMISTRY_PACKAGE=bbchem
-FROM maven:3-openjdk-17 AS builder
+FROM maven:3-eclipse-temurin-21 AS builder
 
 FROM 	builder AS compile
 ARG     CHEMISTRY_PACKAGE
@@ -15,7 +15,7 @@ ADD 	. /src
 RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE} 
 
-FROM tomcat:10.1-jdk17-temurin
+FROM tomcat:10.1-jdk21-temurin
 
 # Third and Last Step That Requires Significant (Relative) Amount of Time 
 RUN apt-get update && \
