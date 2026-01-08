@@ -10,9 +10,6 @@
          Also registers default Formatters and Validators for use across all @Controllers -->
     <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
-    <!-- Required for Spring Security 6 integration with Spring MVC -->
-    <bean id="mvcHandlerMappingIntrospector" class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" />
-    
     <bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" >
         <property name="useTrailingSlashMatch" value="true" />
