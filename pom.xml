@@ -372,12 +372,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<!-- commons-fileupload is required by org.springframework.web.multipart.commons.CommonsMultipartResolver -->
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.5</version>
-		</dependency>
+		<!-- Removed commons-fileupload dependency as StandardServletMultipartResolver doesn't need it -->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
