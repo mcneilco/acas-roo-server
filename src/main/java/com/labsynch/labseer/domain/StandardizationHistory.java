@@ -36,6 +36,7 @@ public class StandardizationHistory {
 
     private Date recordedDate;
 
+    @Column(columnDefinition = "text")
     private String settings;
 
     private int settingsHash;
