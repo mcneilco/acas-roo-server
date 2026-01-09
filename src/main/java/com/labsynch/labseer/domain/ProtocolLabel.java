@@ -6,12 +6,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -101,7 +101,7 @@ public class ProtocolLabel extends AbstractLabel {
         String query = "SELECT o FROM ProtocolLabel AS o WHERE o.lsType = :labelType  "
                 + "AND o.lsKind = :labelKind "
                 + "AND o.protocol.id = :protocolId "
-                + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored";
+                + "AND o.preferred = :preferred AND o.ignored != :ignored";
         logger.debug("sql query " + query);
         TypedQuery<ProtocolLabel> q = em.createQuery(query, ProtocolLabel.class);
         q.setParameter("protocolId", protocolId);
@@ -161,7 +161,7 @@ public class ProtocolLabel extends AbstractLabel {
         EntityManager em = ProtocolLabel.entityManager();
         TypedQuery<ProtocolLabel> q = em.createQuery(
                 "SELECT o FROM ProtocolLabel AS o WHERE o.protocol = :protocol " + "AND o.lsType = :labelType "
-                        + "AND o.lsKind = :labelKind " + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored",
+                        + "AND o.lsKind = :labelKind " + "AND o.preferred = :preferred AND o.ignored != :ignored",
                 ProtocolLabel.class);
         q.setParameter("protocol", protocol);
         q.setParameter("labelType", labelType);
@@ -177,7 +177,7 @@ public class ProtocolLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         TypedQuery<ProtocolLabel> q = em.createQuery(
-                "SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText " + "AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText " + "AND o.ignored != :ignored",
                 ProtocolLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
@@ -195,7 +195,7 @@ public class ProtocolLabel extends AbstractLabel {
         EntityManager em = ProtocolLabel.entityManager();
         TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE o.lsType = :labelType  "
                 + "AND o.lsKind = :labelKind " + "AND o.labelText = :labelText "
-                + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored", ProtocolLabel.class);
+                + "AND o.preferred = :preferred AND o.ignored != :ignored", ProtocolLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("labelType", labelType);
         q.setParameter("labelKind", labelKind);
@@ -234,7 +234,7 @@ public class ProtocolLabel extends AbstractLabel {
         TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE o.lsType = :labelType  "
                 + "AND o.lsKind = :labelKind "
                 + "AND LOWER(o.labelText) LIKE LOWER(:labelText) "
-                + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored", ProtocolLabel.class);
+                + "AND o.preferred = :preferred AND o.ignored != :ignored", ProtocolLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("labelType", labelType);
         q.setParameter("labelKind", labelKind);
@@ -312,7 +312,7 @@ public class ProtocolLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
@@ -362,7 +362,7 @@ public class ProtocolLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         TypedQuery<ProtocolLabel> q = em.createQuery(
-                "SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored",
                 ProtocolLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
@@ -375,7 +375,7 @@ public class ProtocolLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
@@ -857,7 +857,7 @@ public class CurveFitDTO {
 			throw new IllegalArgumentException("The curveId argument is required");
 		EntityManager em = AnalysisGroupValue.entityManager();
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(
-				"SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.stringValue = :stringValue  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND ag.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind",
+				"SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.stringValue = :stringValue  AND o.ignored != :ignored AND state.ignored != :ignored AND ag.ignored != :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind",
 				AnalysisGroupValue.class);
 		q.setParameter("lsType", "stringValue");
 		q.setParameter("lsKind", "curve id");
@@ -893,9 +893,9 @@ public class CurveFitDTO {
 				+ "WHERE exp = :experiment "
 				+ "AND agv.lsType = :lsType  "
 				+ "AND agv.lsKind = :lsKind  "
-				+ "AND agv.ignored IS NOT :ignored "
-				+ "AND state.ignored IS NOT :ignored "
-				+ "AND ag.ignored IS NOT :ignored "
+				+ "AND agv.ignored != :ignored "
+				+ "AND state.ignored != :ignored "
+				+ "AND ag.ignored != :ignored "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind", String.class);
 		q.setParameter("lsType", "stringValue");
@@ -923,8 +923,8 @@ public class CurveFitDTO {
 				+ "JOIN analysisGroup.lsStates AS state "
 				+ "JOIN state.lsValues AS value "
 				+ "WHERE treatmentGroup = :treatmentGroup "
-				+ "AND analysisGroup.ignored IS NOT :ignored "
-				+ "AND state.ignored IS NOT :ignored "
+				+ "AND analysisGroup.ignored != :ignored "
+				+ "AND state.ignored != :ignored "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
 				+ "AND value.lsType = :valueType "
@@ -946,8 +946,8 @@ public class CurveFitDTO {
 				+ "JOIN analysisGroup.lsStates AS state "
 				+ "JOIN state.lsValues AS value "
 				+ "WHERE analysisGroup = :analysisGroup "
-				+ "AND analysisGroup.ignored IS NOT :ignored "
-				+ "AND state.ignored IS NOT :ignored "
+				+ "AND analysisGroup.ignored != :ignored "
+				+ "AND state.ignored != :ignored "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
 				+ "AND value.lsType = :valueType "
@@ -971,8 +971,8 @@ public class CurveFitDTO {
 				+ "JOIN analysisGroup.lsStates AS state "
 				+ "JOIN state.lsValues AS value "
 				+ "WHERE subject = :subject "
-				+ "AND analysisGroup.ignored IS NOT :ignored "
-				+ "AND state.ignored IS NOT :ignored "
+				+ "AND analysisGroup.ignored != :ignored "
+				+ "AND state.ignored != :ignored "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
 				+ "AND value.lsType = :valueType "

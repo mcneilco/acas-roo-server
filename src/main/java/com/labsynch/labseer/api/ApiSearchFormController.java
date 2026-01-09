@@ -32,7 +32,7 @@ public class ApiSearchFormController {
 	private SearchFormService searchFormService;
 
 	@RequestMapping(value = "/cmpds", method = RequestMethod.GET, headers = "Accept=application/json")
-	public ResponseEntity<String> searchCmpdsByParams(@RequestParam String searchParams) {
+	public ResponseEntity<String> searchCmpdsByParams(@RequestParam("searchParams") String searchParams) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.TEXT_HTML);
 		headers.add("Access-Control-Allow-Headers", "Content-Type");

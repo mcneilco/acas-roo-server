@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://java.sun.com/xml/ns/javaee"
+		 xmlns="https://jakarta.ee/xml/ns/jakartaee"
 		 xmlns:task="http://www.springframework.org/schema/task"
-		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-							 http://java.sun.com/xml/ns/javaee/web-app_4_0.xsd
+		 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+							 https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd
 							 http://www.springframework.org/schema/task
 							 http://www.springframework.org/schema/task/spring-task.xsd"
-		 version="4.0">
+		 version="5.0">
 
 	<display-name>acas</display-name>
 
@@ -29,6 +29,11 @@
 	</context-param>
 
 	<filter>
+		<filter-name>DoubleSlashFilter</filter-name>
+		<filter-class>com.labsynch.labseer.web.DoubleSlashFilter</filter-class>
+	</filter>
+
+	<filter>
 		<filter-name>CharacterEncodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
 		<init-param>
@@ -43,12 +48,12 @@
 
 
 	<filter>
-		<filter-name>HttpPutFormContentFilter</filter-name>
-		<filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+		<filter-name>FormContentFilter</filter-name>
+		<filter-class>org.springframework.web.filter.FormContentFilter</filter-class>
 	</filter>
 
 	<filter-mapping>
-		<filter-name>HttpPutFormContentFilter</filter-name>
+		<filter-name>FormContentFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
@@ -69,58 +74,8 @@
 		<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
 	</filter>
 
-	<filter>
-		<!-- The CORS filter with parameters -->
-		<filter-name>CORS</filter-name>
-		<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
-
-		<!-- Note: All parameters are options, if ommitted CORS Filter will fall 
-			back to the respective default values. -->
-		<init-param>
-			<param-name>cors.allowGenericHttpRequests</param-name>
-			<param-value>true</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.allowOrigin</param-name>
-			<param-value>*</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.allowSubdomains</param-name>
-			<param-value>false</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.supportedMethods</param-name>
-			<param-value>GET, HEAD, POST, PUT, DELETE, OPTIONS</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.supportedHeaders</param-name>
-			<param-value>Content-Type, X-Requested-With, Origin, Accept</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.exposedHeaders</param-name>
-			<param-value>X-Test-1, X-Test-2</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.supportsCredentials</param-name>
-			<param-value>true</param-value>
-		</init-param>
-
-		<init-param>
-			<param-name>cors.maxAge</param-name>
-			<param-value>3600</param-value>
-		</init-param>
-
-	</filter>
-
 	<filter-mapping>
-		<!-- CORS Filter mapping -->
-		<filter-name>CORS</filter-name>
+		<filter-name>DoubleSlashFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
@@ -160,6 +115,16 @@
 			<param-value>WEB-INF/spring/webmvc-config.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<!-- Multipart configuration for file uploads -->
+		<multipart-config>
+			<location>/tmp</location>
+			<!-- Max file size: 50MB -->
+			<max-file-size>52428800</max-file-size>
+			<!-- Max request size: 100MB -->
+			<max-request-size>104857600</max-request-size>
+			<!-- File size threshold for writing to disk: 1MB -->
+			<file-size-threshold>1048576</file-size-threshold>
+		</multipart-config>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>acas</servlet-name>

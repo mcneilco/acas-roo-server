@@ -8,16 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
@@ -144,7 +144,7 @@ public class AnalysisGroupState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM AnalysisGroupState AS ags " +
                 "JOIN ags.analysisGroup ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.id = :analysisGroupId ";
         TypedQuery<AnalysisGroupState> q = em.createQuery(hsqlQuery, AnalysisGroupState.class);
         q.setParameter("analysisGroupId", analysisGroupId);
@@ -166,7 +166,7 @@ public class AnalysisGroupState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM AnalysisGroupState AS ags " +
                 "JOIN ags.analysisGroup ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.codeName = :analysisGroupCodeName ";
         TypedQuery<AnalysisGroupState> q = em.createQuery(hsqlQuery, AnalysisGroupState.class);
         q.setParameter("analysisGroupCodeName", analysisGroupCodeName);
@@ -186,7 +186,7 @@ public class AnalysisGroupState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = AnalysisGroupState.entityManager();
         TypedQuery<AnalysisGroupState> q = em.createQuery(
-                "SELECT o FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored != :ignored",
                 AnalysisGroupState.class);
         q.setParameter("analysisGroup", analysisGroup);
         q.setParameter("lsType", lsType);
@@ -305,7 +305,7 @@ public class AnalysisGroupState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = AnalysisGroupState.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("analysisGroup", analysisGroup);
         q.setParameter("lsType", lsType);
@@ -388,7 +388,7 @@ public class AnalysisGroupState extends AbstractState {
             throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = AnalysisGroupState.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

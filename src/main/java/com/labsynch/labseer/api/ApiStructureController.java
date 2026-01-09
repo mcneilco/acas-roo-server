@@ -3,7 +3,7 @@ package com.labsynch.labseer.api;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.MolPropertiesDTO;
@@ -180,7 +180,7 @@ public class ApiStructureController {
 	}
 
 	@Transactional
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

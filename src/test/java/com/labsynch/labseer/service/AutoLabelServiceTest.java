@@ -6,7 +6,7 @@ package com.labsynch.labseer.service;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;

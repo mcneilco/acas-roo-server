@@ -11,13 +11,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -754,7 +754,7 @@ public class KiCurveFitDTO {
 		}
 		EntityManager em = AnalysisGroupValue.entityManager();
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(
-				"SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND ag.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind",
+				"SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored AND state.ignored != :ignored AND ag.ignored != :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind",
 				AnalysisGroupValue.class);
 		q.setParameter("lsType", "stringValue");
 		q.setParameter("lsKind", "curve id");
@@ -792,9 +792,9 @@ public class KiCurveFitDTO {
 				+ "WHERE exp = :experiment "
 				+ "AND agv.lsType = :lsType  "
 				+ "AND agv.lsKind = :lsKind  "
-				+ "AND agv.ignored IS NOT :ignored "
-				+ "AND state.ignored IS NOT :ignored "
-				+ "AND ag.ignored IS NOT :ignored "
+				+ "AND agv.ignored != :ignored "
+				+ "AND state.ignored != :ignored "
+				+ "AND ag.ignored != :ignored "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind", String.class);
 		q.setParameter("lsType", "stringValue");

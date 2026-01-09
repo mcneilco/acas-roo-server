@@ -3,7 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Parent;
 

@@ -3,8 +3,8 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
@@ -38,8 +38,8 @@ public class FlagWellDTOTest {
 				+ "JOIN subject.lsStates AS resultsState "
 				+ "JOIN resultsState.lsValues AS resultsValue "
 				+ "WHERE treatmentGroup = :treatmentGroup "
-				+ "AND subject.ignored IS NOT :ignored "
-				+ "AND resultsState.ignored IS NOT :ignored "
+				+ "AND subject.ignored != :ignored "
+				+ "AND resultsState.ignored != :ignored "
 				+ "AND resultsState.lsType = :resultsStateType "
 				+ "AND resultsState.lsKind = :resultsStateKind "
 				+ "AND resultsValue.lsType = :resultsValueType "

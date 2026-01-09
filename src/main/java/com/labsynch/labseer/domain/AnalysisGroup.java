@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
@@ -42,8 +42,8 @@ public class AnalysisGroup extends AbstractThing {
     // Subject is grandparent
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = {
-            @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = {
-                    @javax.persistence.JoinColumn(name = "experiment_id") })
+            @jakarta.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = {
+                    @jakarta.persistence.JoinColumn(name = "experiment_id") })
     private Set<Experiment> experiments = new HashSet<Experiment>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
@@ -423,7 +423,7 @@ public class AnalysisGroup extends AbstractThing {
             throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT COUNT(o) FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT COUNT(o) FROM AnalysisGroup AS o WHERE o.ignored != :ignored");
         queryBuilder.append(" AND");
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0)
@@ -498,7 +498,7 @@ public class AnalysisGroup extends AbstractThing {
             throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored != :ignored");
         queryBuilder.append(" AND");
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0)
@@ -520,7 +520,7 @@ public class AnalysisGroup extends AbstractThing {
             throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+                "SELECT o FROM AnalysisGroup AS o WHERE o.ignored != :ignored");
         queryBuilder.append(" AND");
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0)

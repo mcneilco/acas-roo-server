@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -854,7 +854,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		return hits;
 	}
 
-	List<BigInteger> getStructureTypeIdsMissingStructures(StructureType structureType) {
+	List<Long> getStructureTypeIdsMissingStructures(StructureType structureType) {
 
 		EntityManager em = BBChemParentStructure.entityManager();
 		Query q = em.createNativeQuery("SELECT p.id FROM " + structureType.name() + " p LEFT JOIN "
@@ -865,7 +865,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	public void fillMissingParentStructures() throws CmpdRegMolFormatException {
 		// Parents
-		List<BigInteger> missingIds = getStructureTypeIdsMissingStructures(StructureType.PARENT);
+		List<Long> missingIds = getStructureTypeIdsMissingStructures(StructureType.PARENT);
 		if (missingIds.size() > 0) {
 			logger.warn("Found " + missingIds.size() + " " + StructureType.PARENT
 					+ " ids missing structure representations");
@@ -876,7 +876,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		int batchSize = propertiesUtilService.getStandardizationBatchSize();
 
-		List<List<Long>> groups = SimpleUtil.splitIntArrayIntoGroups(missingIds, batchSize);
+		List<List<Long>> groups = SimpleUtil.splitArrayIntoGroups(missingIds, batchSize);
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		int totalCount = missingIds.size();
@@ -942,7 +942,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	public void fillMissingSaltFormStructures() throws CmpdRegMolFormatException {
 		// Salt Forms
-		List<BigInteger> missingIds = getStructureTypeIdsMissingStructures(StructureType.SALT_FORM);
+		List<Long> missingIds = getStructureTypeIdsMissingStructures(StructureType.SALT_FORM);
 		if (missingIds.size() > 0) {
 			logger.warn("Found " + missingIds.size() + " " + StructureType.SALT_FORM
 					+ " ids missing structure representations");
@@ -953,7 +953,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		int batchSize = propertiesUtilService.getStandardizationBatchSize();
 
-		List<List<Long>> groups = SimpleUtil.splitIntArrayIntoGroups(missingIds, batchSize);
+		List<List<Long>> groups = SimpleUtil.splitArrayIntoGroups(missingIds, batchSize);
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		int totalCount = missingIds.size();
@@ -1023,7 +1023,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	public void fillMissingSaltStructures() throws CmpdRegMolFormatException {
 		// Salt Forms
-		List<BigInteger> missingIds = getStructureTypeIdsMissingStructures(StructureType.SALT);
+		List<Long> missingIds = getStructureTypeIdsMissingStructures(StructureType.SALT);
 		if (missingIds.size() > 0) {
 			logger.warn("Found " + missingIds.size() + " " + StructureType.SALT
 					+ " ids missing structure representations");
@@ -1034,7 +1034,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		int batchSize = propertiesUtilService.getStandardizationBatchSize();
 
-		List<List<Long>> groups = SimpleUtil.splitIntArrayIntoGroups(missingIds, batchSize);
+		List<List<Long>> groups = SimpleUtil.splitArrayIntoGroups(missingIds, batchSize);
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		int totalCount = missingIds.size();
@@ -1136,26 +1136,26 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			String schrodingerSuite = "unknown";
 			String processorVersion = "unknown";
 
-			if(inputSettings.get("settings") != null) {
+			if(inputSettings.get("settings") != null && !inputSettings.get("settings").isMissingNode()) {
 				inputSettings = (ObjectNode) mapper.readTree(inputSettings.get("settings").textValue());
 			}
 
-			if(inputSettings.get("standardizer_actions") != null) {
+			if(inputSettings.get("standardizer_actions") != null && !inputSettings.get("standardizer_actions").isMissingNode()) {
 				config = (ObjectNode) inputSettings.get("standardizer_actions");
 			}
 			returnNode.replace("config", config);
 
-			if(inputSettings.get("schrodinger_suite_version") != null) {
+			if(inputSettings.get("schrodinger_suite_version") != null && !inputSettings.get("schrodinger_suite_version").isMissingNode()) {
 				schrodingerSuite = inputSettings.get("schrodinger_suite_version").asText();
 			}
 			returnNode.put("schrodinger_suite_version", schrodingerSuite);
 
-			if(inputSettings.get("preprocessor_version") != null) {
+			if(inputSettings.get("preprocessor_version") != null && !inputSettings.get("preprocessor_version").isMissingNode()) {
 				processorVersion = inputSettings.get("preprocessor_version").asText();
 			}
 			returnNode.put("preprocessor_version", processorVersion);
 
-			if(inputSettings.get("hash_scheme") != null) {
+			if(inputSettings.get("hash_scheme") != null && !inputSettings.get("hash_scheme").isMissingNode()) {
 				hashScheme = inputSettings.get("hash_scheme").asText();
 			}
 			returnNode.put("hash_scheme", hashScheme);

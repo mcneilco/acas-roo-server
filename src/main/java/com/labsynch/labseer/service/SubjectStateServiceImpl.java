@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,13 +230,13 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 		String hsqlQuery = "SELECT new com.labsynch.labseer.dto.SubjectCodeStateDTO( s.codeName, ss ) FROM SubjectState AS ss "
 				+
 				"JOIN ss.subject AS s " +
-				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored AND ";
+				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored != :ignored AND ";
 		Query q = SimpleUtil.addHqlInClause(em, hsqlQuery, "s.codeName", codeNameList);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("ignored", true);
 		logger.debug("Querying for state type: " + stateType + " and state kind: " + stateKind);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<SubjectCodeStateDTO> results = q.getResultList();
 		logger.debug("Fetched " + results.size() + " states");
 		return results;

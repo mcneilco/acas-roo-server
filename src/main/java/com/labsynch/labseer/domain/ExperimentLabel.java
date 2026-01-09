@@ -7,12 +7,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -96,7 +96,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         String query = "SELECT o FROM ExperimentLabel AS o WHERE o.lsType = :labelType  " + "AND o.lsKind = :labelKind "
-                + "AND o.experiment.id = :experimentId " + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored";
+                + "AND o.experiment.id = :experimentId " + "AND o.preferred = :preferred AND o.ignored != :ignored";
         logger.debug("sql query " + query);
         TypedQuery<ExperimentLabel> q = em.createQuery(query, ExperimentLabel.class);
         q.setParameter("experimentId", experimentId);
@@ -113,7 +113,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         String query = "SELECT o FROM ExperimentLabel AS o WHERE o.labelText = :labelText "
-                + "AND o.ignored IS NOT :ignored";
+                + "AND o.ignored != :ignored";
         logger.debug("sql query " + query);
         TypedQuery<ExperimentLabel> q = em.createQuery(query, ExperimentLabel.class);
         logger.debug("query label text is " + labelText);
@@ -132,7 +132,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelKind argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         String query = "SELECT o FROM ExperimentLabel AS o WHERE o.lsType = :labelType  " + "AND o.lsKind = :labelKind "
-                + "AND o.labelText = :labelText " + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored";
+                + "AND o.labelText = :labelText " + "AND o.preferred = :preferred AND o.ignored != :ignored";
         logger.debug("sql query " + query);
         TypedQuery<ExperimentLabel> q = em.createQuery(query, ExperimentLabel.class);
         logger.debug("query label text is " + labelText);
@@ -165,7 +165,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The protocolId argument is required");
         EntityManager em = ProtocolLabel.entityManager();
         String query = "SELECT o FROM ExperimentLabel AS o WHERE o.lsType = :labelType  " + "AND o.lsKind = :labelKind "
-                + "AND o.labelText = :labelText " + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored "
+                + "AND o.labelText = :labelText " + "AND o.preferred = :preferred AND o.ignored != :ignored "
                 + "AND o.experiment.protocol.id = :protocolId";
         logger.debug("sql query " + query);
         TypedQuery<ExperimentLabel> q = em.createQuery(query, ExperimentLabel.class);
@@ -350,7 +350,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The experiment argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("experiment", experiment);
         q.setParameter("ignored", ignored);
@@ -390,7 +390,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)  AND o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)  AND o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("labelText", labelText);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
@@ -405,7 +405,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ExperimentLabel AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ExperimentLabel AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
         q.setParameter("preferred", preferred);
@@ -447,7 +447,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The experiment argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         TypedQuery<ExperimentLabel> q = em.createQuery(
-                "SELECT o FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored != :ignored",
                 ExperimentLabel.class);
         q.setParameter("experiment", experiment);
         q.setParameter("ignored", ignored);
@@ -460,7 +460,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The experiment argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -531,7 +531,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         TypedQuery<ExperimentLabel> q = em.createQuery(
-                "SELECT o FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)  AND o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)  AND o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored != :ignored",
                 ExperimentLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
@@ -556,7 +556,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)  AND o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)  AND o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -577,7 +577,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         TypedQuery<ExperimentLabel> q = em.createQuery(
-                "SELECT o FROM ExperimentLabel AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ExperimentLabel AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored != :ignored",
                 ExperimentLabel.class);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
         q.setParameter("preferred", preferred);
@@ -591,7 +591,7 @@ public class ExperimentLabel extends AbstractLabel {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = ExperimentLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ExperimentLabel AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ExperimentLabel AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.preferred IS NOT :preferred  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

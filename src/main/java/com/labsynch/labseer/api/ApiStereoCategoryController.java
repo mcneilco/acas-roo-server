@@ -155,7 +155,7 @@ public class ApiStereoCategoryController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json) {
 		StereoCategory newStereoCategory = StereoCategory.fromJsonToStereoCategory(json);
 		if (newStereoCategory.getCode() == null || newStereoCategory.getCode().equalsIgnoreCase("")) {

@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.IsoSalt;
@@ -262,7 +262,7 @@ public class CorpNameServiceImpl implements CorpNameService {
 		try {
 			org.hibernate.engine.spi.SessionImplementor sessionImp = (org.hibernate.engine.spi.SessionImplementor) em
 					.getDelegate();
-			DatabaseMetaData metadata = sessionImp.connection().getMetaData();
+			DatabaseMetaData metadata = sessionImp.getJdbcConnectionAccess().obtainConnection().getMetaData();
 			databaseType = metadata.getDatabaseProductName();
 			databaseVersion = Float
 					.parseFloat(metadata.getDatabaseMajorVersion() + "." + metadata.getDatabaseMinorVersion());

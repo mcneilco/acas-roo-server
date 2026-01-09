@@ -68,7 +68,7 @@ public class ApiCronJobController {
 		return new ResponseEntity<String>(CronJob.toJsonArray(cronJobs), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody CronJob cronJob) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

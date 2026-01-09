@@ -18,19 +18,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import javax.sql.DataSource;
 
 import com.labsynch.labseer.domain.Container;
@@ -579,7 +579,7 @@ public class ContainerServiceImpl implements ContainerService {
 				barcode.<String>get("labelText"));
 		TypedQuery<ContainerLocationDTO> q = em.createQuery(cq);
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<ContainerLocationDTO> results = q.getResultList();
 		return results;
 	}
@@ -871,7 +871,7 @@ public class ContainerServiceImpl implements ContainerService {
 				well.<String>get("codeName"), wellLabel.<String>get("labelText"));
 		TypedQuery<PlateWellDTO> q = em.createQuery(cq);
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		Collection<PlateWellDTO> results = q.getResultList();
 		return results;
 	}
@@ -936,7 +936,7 @@ public class ContainerServiceImpl implements ContainerService {
 				label.<String>get("labelText").alias("requestLabel"));
 		Query q = em.createQuery(cq);
 		// if (logger.isDebugEnabled())
-		// logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		// logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		List<Tuple> resultTuples = q.getResultList();
 		Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
 		for (Tuple tuple : resultTuples) {
@@ -1007,7 +1007,7 @@ public class ContainerServiceImpl implements ContainerService {
 		logger.debug("Querying for " + wellCodes.size() + " well codeNames");
 		for (Query q : queries) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+				logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 			}
 			results.addAll(q.getResultList());
 		}
@@ -2967,7 +2967,7 @@ public class ContainerServiceImpl implements ContainerService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		containerIdList = q.getResultList();
 		logger.debug("Found " + containerIdList.size() + " results.");
 		return containerIdList;
@@ -3408,7 +3408,7 @@ public class ContainerServiceImpl implements ContainerService {
 		metaPredicates = metaPredicateList.toArray(metaPredicates);
 		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 		containerIdList = q.getResultList();
 		logger.debug("Found " + containerIdList.size() + " results.");
 		return containerIdList;

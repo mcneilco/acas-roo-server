@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import com.labsynch.labseer.dto.CodeTableDTO;
 
@@ -72,7 +72,7 @@ public class DDictValue {
     private String codeName;
 
     @Id
-    @SequenceGenerator(name = "dDictValueGen", sequenceName = "DDICT_VALUE_PKSEQ")
+    @SequenceGenerator(name = "dDictValueGen", sequenceName = "DDICT_VALUE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "dDictValueGen")
     @Column(name = "id")
     private Long id;
@@ -348,7 +348,7 @@ public class DDictValue {
 
     public static Long countFindDDictValuesByIgnoredNot(boolean ignored) {
         EntityManager em = DDictValue.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.ignored != :ignored",
                 Long.class);
         q.setParameter("ignored", ignored);
         return ((Long) q.getSingleResult());
@@ -449,7 +449,7 @@ public class DDictValue {
 
     public static TypedQuery<DDictValue> findDDictValuesByIgnoredNot(boolean ignored) {
         EntityManager em = DDictValue.entityManager();
-        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored",
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.ignored != :ignored",
                 DDictValue.class);
         q.setParameter("ignored", ignored);
         return q;
@@ -458,7 +458,7 @@ public class DDictValue {
     public static TypedQuery<DDictValue> findDDictValuesByIgnoredNot(boolean ignored, String sortFieldName,
             String sortOrder) {
         EntityManager em = DDictValue.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored");
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

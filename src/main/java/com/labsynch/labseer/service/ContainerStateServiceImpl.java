@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerState;
@@ -454,7 +454,7 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 			predicates = predicateList.toArray(predicates);
 			criteria.where(criteriaBuilder.and(predicates));
 			TypedQuery<ContainerState> q = em.createQuery(criteria);
-			logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+			logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
 			return q.getResultList();
 		}
 	}

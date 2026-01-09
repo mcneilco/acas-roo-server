@@ -58,7 +58,7 @@ public class ApiItxContainerContainerController {
     }
 
     @Transactional
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody ItxContainerContainer itxContainerContainer) {
         itxContainerContainer = itxContainerContainerService.saveLsItxContainer(itxContainerContainer);
         HttpHeaders headers = new HttpHeaders();

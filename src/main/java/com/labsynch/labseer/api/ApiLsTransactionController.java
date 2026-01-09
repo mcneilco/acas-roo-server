@@ -53,7 +53,7 @@ public class ApiLsTransactionController {
         return new ResponseEntity<String>(LsTransaction.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String lsTransaction) {
         LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
         logger.info(inputLsTransaction.toJson());

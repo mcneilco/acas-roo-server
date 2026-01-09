@@ -59,7 +59,7 @@ public class ApiBulkLoadController {
 
     @RequestMapping(value = "/getLotsByBulkLoadFileID", method = RequestMethod.GET, headers = "Accept=application/json")
     @Transactional
-	public ResponseEntity<String> getLotsByBulkLoadFileID(@RequestParam Long bulkLoadFileID) {
+	public ResponseEntity<String> getLotsByBulkLoadFileID(@RequestParam("bulkLoadFileID") Long bulkLoadFileID) {
 		logger.debug("incoming json from getLotsByBulkLoadFileID: " + bulkLoadFileID);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

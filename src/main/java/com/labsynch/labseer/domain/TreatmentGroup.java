@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 
@@ -39,15 +39,15 @@ public class TreatmentGroup extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch = FetchType.LAZY)
     private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
 
-    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-            javax.persistence.CascadeType.MERGE }, mappedBy = "treatmentGroups")
+    @ManyToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+            jakarta.persistence.CascadeType.MERGE }, mappedBy = "treatmentGroups")
     private Set<Subject> subjects = new HashSet<Subject>();
 
-    @ManyToMany(cascade = { javax.persistence.CascadeType.PERSIST,
-            javax.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { jakarta.persistence.CascadeType.PERSIST,
+            jakarta.persistence.CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "ANALYSISGROUP_TREATMENTGROUP", joinColumns = {
-            @javax.persistence.JoinColumn(name = "treatment_group_id") }, inverseJoinColumns = {
-                    @javax.persistence.JoinColumn(name = "analysis_group_id") })
+            @jakarta.persistence.JoinColumn(name = "treatment_group_id") }, inverseJoinColumns = {
+                    @jakarta.persistence.JoinColumn(name = "analysis_group_id") })
     private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     public TreatmentGroup() {

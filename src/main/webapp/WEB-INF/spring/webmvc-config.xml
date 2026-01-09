@@ -11,7 +11,9 @@
     <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
     <bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" >
+        <property name="useTrailingSlashMatch" value="true" />
+    </bean>
 	<!-- Configures view for returning JSON to the client -->
 	<bean
 		class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
@@ -34,7 +36,7 @@
 	<mvc:view-controller path="/index"/>
 
     <!-- Enable this for integration of file upload functionality -->
-    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
+    <bean class="org.springframework.web.multipart.support.StandardServletMultipartResolver" id="multipartResolver"/>
 
     <bean class="com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
 

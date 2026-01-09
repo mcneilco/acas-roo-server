@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
@@ -133,8 +133,8 @@ public class TgDataDTO {
 				+ "AND agv.lsType = 'stringValue' "
 				+ "AND agv.lsKind = 'curve id' "
 				+ "AND agv.ignored = false "
-				+ "AND ag.ignored IS NOT :ignored "
-				+ "AND treat.ignored IS NOT :ignored "
+				+ "AND ag.ignored != :ignored "
+				+ "AND treat.ignored != :ignored "
 				+ "AND agv.stringValue = :curveId", TreatmentGroupValue.class);
 		q.setParameter("curveId", curveId);
 		List<TreatmentGroupValue> queryResults = q.getResultList();

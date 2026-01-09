@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -106,7 +106,7 @@ public class ProtocolState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ps FROM ProtocolState AS ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
+                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored != :ignored " +
                 "AND p.id = :protocolId ";
         TypedQuery<ProtocolState> q = em.createQuery(hsqlQuery, ProtocolState.class);
         q.setParameter("protocolId", protocolId);
@@ -131,7 +131,7 @@ public class ProtocolState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ps FROM ProtocolState AS ps " +
                 "JOIN ps.protocol p " +
-                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
+                "WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored != :ignored " +
                 "AND p.codeName = :protocolCodeName ";
         TypedQuery<ProtocolState> q = em.createQuery(hsqlQuery, ProtocolState.class);
         q.setParameter("protocolCodeName", protocolCodeName);

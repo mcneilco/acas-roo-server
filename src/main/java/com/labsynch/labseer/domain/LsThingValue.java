@@ -7,12 +7,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.utils.ByteArrayTransformer;
 
@@ -164,9 +164,9 @@ public class LsThingValue extends AbstractValue {
         String hsqlQuery = "SELECT lstv FROM LsThingValue AS lstv " +
                 "JOIN lstv.lsState lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
-                "AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored IS NOT :ignored " +
-                "AND lst.ignored IS NOT :ignored " +
+                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
+                "AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored != :ignored " +
+                "AND lst.ignored != :ignored " +
                 "AND lst.id = :lsThingId ";
         TypedQuery<LsThingValue> q = em.createQuery(hsqlQuery, LsThingValue.class);
         q.setParameter("lsThingId", lsThingId);
@@ -195,9 +195,9 @@ public class LsThingValue extends AbstractValue {
         String hsqlQuery = "SELECT lstv FROM LsThingValue AS lstv " +
                 "JOIN lstv.lsState lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
-                "AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored IS NOT :ignored " +
-                "AND lst.ignored IS NOT :ignored " +
+                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
+                "AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored != :ignored " +
+                "AND lst.ignored != :ignored " +
                 "AND lst.codeName = :lsThingCodeName ";
         TypedQuery<LsThingValue> q = em.createQuery(hsqlQuery, LsThingValue.class);
         q.setParameter("lsThingCodeName", lsThingCodeName);
@@ -413,9 +413,9 @@ public class LsThingValue extends AbstractValue {
         String hsqlQuery = "SELECT lstv FROM LsThingValue AS lstv " +
                 "JOIN lstv.lsState lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lst.lsType = :thingType AND lst.lsKind = :thingKind AND lst.ignored IS NOT :ignored " +
-                "AND lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
-                "AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored IS NOT :ignored ";
+                "WHERE lst.lsType = :thingType AND lst.lsKind = :thingKind AND lst.ignored != :ignored " +
+                "AND lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
+                "AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored != :ignored ";
         TypedQuery<LsThingValue> q = em.createQuery(hsqlQuery, LsThingValue.class);
         q.setParameter("thingType", thingType);
         q.setParameter("thingKind", thingKind);
@@ -526,7 +526,7 @@ public class LsThingValue extends AbstractValue {
             throw new IllegalArgumentException("The codeValue argument is required");
         EntityManager em = LsThingValue.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM LsThingValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+                "SELECT COUNT(o) FROM LsThingValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
                 Long.class);
         q.setParameter("ignored", ignored);
         q.setParameter("codeValue", codeValue);
@@ -730,7 +730,7 @@ public class LsThingValue extends AbstractValue {
             throw new IllegalArgumentException("The codeValue argument is required");
         EntityManager em = LsThingValue.entityManager();
         TypedQuery<LsThingValue> q = em.createQuery(
-                "SELECT o FROM LsThingValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+                "SELECT o FROM LsThingValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
                 LsThingValue.class);
         q.setParameter("ignored", ignored);
         q.setParameter("codeValue", codeValue);
@@ -743,7 +743,7 @@ public class LsThingValue extends AbstractValue {
             throw new IllegalArgumentException("The codeValue argument is required");
         EntityManager em = LsThingValue.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM LsThingValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+                "SELECT o FROM LsThingValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

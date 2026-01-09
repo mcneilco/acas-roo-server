@@ -12,8 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.AutoLabelDTO;

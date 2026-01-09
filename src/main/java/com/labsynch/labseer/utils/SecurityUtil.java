@@ -2,7 +2,7 @@ package com.labsynch.labseer.utils;
 
 import java.util.Collection;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Author;
 

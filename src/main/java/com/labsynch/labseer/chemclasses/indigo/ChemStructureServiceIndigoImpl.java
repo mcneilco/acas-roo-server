@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -259,7 +259,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 				query.setParameter("parameters", parameters);
 			}
 			if (logger.isDebugEnabled())
-				logger.debug(query.unwrap(org.hibernate.Query.class).getQueryString());
+				logger.debug(query.unwrap(org.hibernate.query.Query.class).getQueryString());
 			// TODO: should do an audit of the search types being used by CReg.
 
 			List<Integer> hitListList = query.getResultList();
@@ -489,7 +489,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 				query.setParameter("parameters", parameters);
 			}
 			if (logger.isDebugEnabled())
-				logger.debug(query.unwrap(org.hibernate.Query.class).getQueryString());
+				logger.debug(query.unwrap(org.hibernate.query.Query.class).getQueryString());
 			// TODO: should do an audit of the search types being used by CReg.
 
 			// list of maps of {"cdId": ###, "molStructure": "molfile string"}
