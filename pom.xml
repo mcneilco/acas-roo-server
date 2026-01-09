@@ -290,11 +290,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
-		<!-- com.vladmihalcea hibernate-types is used for bit type addition to hibernate which is used in bbchem structure searches -->
+		<!-- hypersistence-utils (formerly known as com.vladmihalcea hibernate-types) is used for bit type addition to hibernate which is used in bbchem structure searches -->
 		<dependency>
-			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-60</artifactId>
-			<version>2.21.1</version>
+			<groupId>io.hypersistence</groupId>
+			<artifactId>hypersistence-utils-hibernate-63</artifactId>
+			<version>3.14.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>

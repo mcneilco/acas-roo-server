@@ -66,11 +66,11 @@ public abstract class AbstractBBChemStructure {
     @Column(columnDefinition = "text")
     private String mol;
 
-    @Column
+    @Column(columnDefinition = "bit(2048)")
     @Type(value = BitSetUserType.class)
     private BitSet substructure;
 
-    @Column
+    @Column(columnDefinition = "bit(1024)")
     @Type(value = BitSetUserType.class)
     private BitSet similarity;
 
