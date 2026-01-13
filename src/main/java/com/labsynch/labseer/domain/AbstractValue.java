@@ -150,7 +150,7 @@ public abstract class AbstractValue {
 	private boolean publicData;
 
 	@Id
-	@SequenceGenerator(name = "abstractValueGen", sequenceName = "VALUE_PKSEQ", allocationSize = 50)
+	@SequenceGenerator(name = "abstractValueGen", sequenceName = "VALUE_PKSEQ", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "abstractValueGen")
 	@Column(name = "id")
 	private Long id;
