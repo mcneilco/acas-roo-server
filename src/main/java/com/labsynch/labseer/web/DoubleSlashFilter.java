@@ -17,11 +17,6 @@ public class DoubleSlashFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(DoubleSlashFilter.class);
     
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        logger.info("DoubleSlashFilter initialized");
-    }
-    
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         
@@ -62,10 +57,5 @@ public class DoubleSlashFilter implements Filter {
         
         // No double slashes found, continue with original request
         chain.doFilter(request, response);
-    }
-    
-    @Override
-    public void destroy() {
-        logger.info("DoubleSlashFilter destroyed");
     }
 }
