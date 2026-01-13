@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractThing {
 
     @Id
-    @SequenceGenerator(name = "abstractThingGen", sequenceName = "THING_PKSEQ", allocationSize = 1)
+    @SequenceGenerator(name = "abstractThingGen", sequenceName = "THING_PKSEQ", allocationSize = 10)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "abstractThingGen")
     @Column(name = "id")
     private Long id;

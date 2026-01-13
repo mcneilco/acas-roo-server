@@ -71,7 +71,7 @@ public abstract class AbstractState {
 	private Long lsTransaction;
 
 	@Id
-	@SequenceGenerator(name = "abstractStateGen", sequenceName = "STATE_PKSEQ", allocationSize = 1)
+	@SequenceGenerator(name = "abstractStateGen", sequenceName = "STATE_PKSEQ", allocationSize = 20)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "abstractStateGen")
 	@Column(name = "id")
 	private Long id;
