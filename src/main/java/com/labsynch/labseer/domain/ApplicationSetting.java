@@ -73,7 +73,7 @@ public class ApplicationSetting {
             throw new IllegalArgumentException("The propName argument is required");
         EntityManager em = ApplicationSetting.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored",
+                "SELECT COUNT(o) FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored OR o.ignored IS NULL",
                 Long.class);
         q.setParameter("propName", propName);
         q.setParameter("ignored", ignored);
@@ -114,7 +114,7 @@ public class ApplicationSetting {
             throw new IllegalArgumentException("The propName argument is required");
         EntityManager em = ApplicationSetting.entityManager();
         TypedQuery<ApplicationSetting> q = em.createQuery(
-                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored",
+                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored OR o.ignored IS NULL",
                 ApplicationSetting.class);
         q.setParameter("propName", propName);
         q.setParameter("ignored", ignored);
@@ -127,7 +127,7 @@ public class ApplicationSetting {
             throw new IllegalArgumentException("The propName argument is required");
         EntityManager em = ApplicationSetting.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored");
+                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored OR o.ignored IS NULL");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
