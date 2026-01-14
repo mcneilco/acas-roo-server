@@ -82,12 +82,14 @@ public class Lot {
     @DateTimeFormat(style = "S-")
     private Date registrationDate;
 
+    @Column(columnDefinition = "character varying")
     private String registeredBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
     private Date modifiedDate;
 
+    @Column(columnDefinition = "character varying")
     private String modifiedBy;
 
     @Size(max = 255)
@@ -127,6 +129,7 @@ public class Lot {
     @JoinColumn(name = "purity_measured_by")
     private PurityMeasuredBy purityMeasuredBy;
 
+    @Column(columnDefinition = "character varying")
     private String chemist;
 
     private Double percentEE;
@@ -172,6 +175,7 @@ public class Lot {
     @Size(max = 255)
     private String supplierLot;
 
+    @Column(columnDefinition = "character varying")
     private String project;
 
     @Transient

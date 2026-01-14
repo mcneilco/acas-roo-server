@@ -81,11 +81,13 @@ public abstract class AbstractBBChemStructure {
     @Enumerated(EnumType.STRING)
     private CmpdRegMolecule.StandardizationStatus standardizationStatus;
 
+    @Column(columnDefinition = "text")
     private String standardizationComment;
 
     @Enumerated(EnumType.STRING)
     private CmpdRegMolecule.RegistrationStatus registrationStatus;
 
+    @Column(columnDefinition = "text")
     private String registrationComment;
 
     private Double exactMolWeight;
@@ -100,6 +102,7 @@ public abstract class AbstractBBChemStructure {
     @Transient
     private String inchi;
 
+    @Column(length=4000)
     private String molecularFormula;
 
     @Transient

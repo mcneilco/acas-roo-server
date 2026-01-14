@@ -69,6 +69,7 @@ public class FileList {
 
     private String filePath;
 
+    @Column(columnDefinition = "TEXT")
     private String writeup;
 
     public MultipartFile getFile() {

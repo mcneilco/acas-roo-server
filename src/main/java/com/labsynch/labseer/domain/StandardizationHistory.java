@@ -41,16 +41,20 @@ public class StandardizationHistory {
 
     private int settingsHash;
 
+    @Column(length = 20)
     private String dryRunStatus;
 
     private Date dryRunStart;
 
     private Date dryRunComplete;
 
+    @Column(length = 20)
     private String standardizationStatus;
 
+    @Column(columnDefinition = "text")
     private String standardizationUser;
 
+    @Column(columnDefinition = "text")
     private String standardizationReason;
 
     private Date standardizationStart;

@@ -71,6 +71,7 @@ public class Parent {
     @org.hibernate.annotations.Index(name = "Parent_parentNumber_IDX")
     private long parentNumber;
 
+    @Column(columnDefinition = "character varying")
     private String chemist;
 
     @Size(max = 1000)
@@ -104,12 +105,14 @@ public class Parent {
     @org.hibernate.annotations.Index(name = "Parent_RegDate_IDX")
     private Date registrationDate;
 
+    @Column(columnDefinition = "character varying")
     private String registeredBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
     private Date modifiedDate;
 
+    @Column(columnDefinition = "character varying")
     private String modifiedBy;
 
     private Boolean ignore;

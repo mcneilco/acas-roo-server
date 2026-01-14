@@ -66,6 +66,7 @@ public class SaltForm implements Comparable {
 	@org.hibernate.annotations.Index(name = "SaltForm_casNumber_IDX")
 	private String casNumber;
 
+	@Column(columnDefinition = "character varying")
 	private String chemist;
 
 	@Temporal(TemporalType.TIMESTAMP)

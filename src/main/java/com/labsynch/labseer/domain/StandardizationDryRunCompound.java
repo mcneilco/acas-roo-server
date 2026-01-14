@@ -52,8 +52,10 @@ public class StandardizationDryRunCompound {
 
 	private Date qcDate;
 
+	@Column(columnDefinition = "text")
 	private String newDuplicates;
 
+	@Column(columnDefinition = "text")
 	private String existingDuplicates;
 
 	private Boolean changedStructure;
@@ -70,6 +72,7 @@ public class StandardizationDryRunCompound {
 
 	private Integer existingDuplicateCount;
 
+	@Column(length=1024)
 	private String alias;
 
 	private int CdId;
@@ -77,6 +80,7 @@ public class StandardizationDryRunCompound {
 	@Column(columnDefinition = "text")
 	private String molStructure;
 
+	@Column(length=2000)
 	private String comment;
 
 	private boolean ignore;
@@ -84,11 +88,13 @@ public class StandardizationDryRunCompound {
 	@Enumerated(EnumType.STRING)
 	private CmpdRegMolecule.StandardizationStatus standardizationStatus;
 
+	@Column(columnDefinition = "text")
 	private String standardizationComment;
 
 	@Enumerated(EnumType.STRING)
 	private CmpdRegMolecule.RegistrationStatus registrationStatus;
 
+	@Column(columnDefinition = "text")
 	private String registrationComment;
 
 	@Enumerated(EnumType.STRING)

@@ -34,7 +34,7 @@ import flexjson.JSONSerializer;
 @Entity
 public class LsRole {
 
-    @Size(max = 255)
+    @Size(max = 64)
     private String lsType;
 
     @Size(max = 255)

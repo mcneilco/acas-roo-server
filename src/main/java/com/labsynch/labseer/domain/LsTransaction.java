@@ -46,9 +46,11 @@ public class LsTransaction {
     private String recordedBy;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 64)
     private LsTransactionStatus status;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 64)
     private LsTransactionType type;
 
     public String toString() {
