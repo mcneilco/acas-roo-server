@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.TreatmentGroupValue;

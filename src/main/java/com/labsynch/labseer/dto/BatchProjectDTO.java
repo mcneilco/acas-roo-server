@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -49,7 +49,7 @@ public class BatchProjectDTO {
         logger.debug("Querying for " + batchCodes.size() + " lot corpnames");
         for (Query q : queries) {
             if (logger.isDebugEnabled())
-                logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+                logger.debug(q.unwrap(org.hibernate.query.Query.class).getQueryString());
             results.addAll(q.getResultList());
         }
         for (BatchProjectDTO result : results) {

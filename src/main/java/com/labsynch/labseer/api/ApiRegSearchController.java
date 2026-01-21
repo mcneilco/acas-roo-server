@@ -52,7 +52,7 @@ public class ApiRegSearchController {
 	}
 
 	@RequestMapping(value = "/parent", method = RequestMethod.GET, headers = "Accept=application/json")
-	public ResponseEntity<String> getParentsbyParams(@RequestParam String searchParams) {
+	public ResponseEntity<String> getParentsbyParams(@RequestParam("searchParams") String searchParams) {
 		logger.debug("using the /regsearches/parent controller");
 
 		HttpHeaders headers = new HttpHeaders();

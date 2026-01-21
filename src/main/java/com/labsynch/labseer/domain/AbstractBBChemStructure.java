@@ -6,25 +6,26 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
+import com.labsynch.labseer.utils.BitSetUserType;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -43,7 +44,7 @@ import flexjson.JSONSerializer;
 public abstract class AbstractBBChemStructure {
 
     @Id
-    @SequenceGenerator(name = "bbChemStructureGen", sequenceName = "BBCHEM_STRUCTURE_PKSEQ")
+    @SequenceGenerator(name = "bbChemStructureGen", sequenceName = "BBCHEM_STRUCTURE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "bbChemStructureGen")
     private Long id;
 
@@ -65,12 +66,12 @@ public abstract class AbstractBBChemStructure {
     @Column(columnDefinition = "text")
     private String mol;
 
-    @Column
-    @Type(type = "com.labsynch.labseer.utils.BitSetUserType")
+    @Column(columnDefinition = "bit(2048)")
+    @Type(value = BitSetUserType.class)
     private BitSet substructure;
 
-    @Column
-    @Type(type = "com.labsynch.labseer.utils.BitSetUserType")
+    @Column(columnDefinition = "bit(1024)")
+    @Type(value = BitSetUserType.class)
     private BitSet similarity;
 
     @NotNull
@@ -80,11 +81,13 @@ public abstract class AbstractBBChemStructure {
     @Enumerated(EnumType.STRING)
     private CmpdRegMolecule.StandardizationStatus standardizationStatus;
 
+    @Column(columnDefinition = "text")
     private String standardizationComment;
 
     @Enumerated(EnumType.STRING)
     private CmpdRegMolecule.RegistrationStatus registrationStatus;
 
+    @Column(columnDefinition = "text")
     private String registrationComment;
 
     private Double exactMolWeight;
@@ -99,6 +102,7 @@ public abstract class AbstractBBChemStructure {
     @Transient
     private String inchi;
 
+    @Column(length=4000)
     private String molecularFormula;
 
     @Transient

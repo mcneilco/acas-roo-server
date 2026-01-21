@@ -3,8 +3,8 @@ package com.labsynch.labseer.domain;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.dto.PreferredNameDTO;
 
@@ -91,7 +91,7 @@ public class LsThingLabel extends AbstractLabel {
 				+ "WHERE o.lsThing = :lsThing "
 				+ "AND o.lsType = :labelType  "
 				+ "AND o.lsKind = :labelKind "
-				+ "AND o.ignored IS NOT :ignored "
+				+ "AND o.ignored != :ignored "
 				+ "AND o.labelText = :labelText ";
 		logger.debug("sql query " + query);
 		TypedQuery<Long> q = em.createQuery(query, Long.class);
@@ -121,9 +121,9 @@ public class LsThingLabel extends AbstractLabel {
 
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT count(DISTINCT o) FROM LsThing AS o " +
-				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind "
+				"JOIN o.lsLabels AS ll1 with ll1.ignored != :ignored AND ll1.labelText = :labelText AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind "
 				+
-				"WHERE o.ignored IS NOT :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
+				"WHERE o.ignored != :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
 		logger.debug("sql query " + query);
 		TypedQuery<Long> q = em.createQuery(query, Long.class);
 
@@ -154,9 +154,9 @@ public class LsThingLabel extends AbstractLabel {
 
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT count(o) FROM LsThing AS o " +
-				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText "
+				"JOIN o.lsLabels AS ll1 with ll1.ignored != :ignored AND ll1.labelText = :labelText "
 				+ "AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind AND ll1.preferred is :preferred " +
-				"WHERE o.ignored IS NOT :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
+				"WHERE o.ignored != :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
 		logger.debug("sql query " + query);
 		TypedQuery<Long> q = em.createQuery(query, Long.class);
 
@@ -192,7 +192,7 @@ public class LsThingLabel extends AbstractLabel {
 				"JOIN o.lsLabels AS ll1 " +
 				"WHERE o.lsType = :thingType AND o.lsKind = :thingKind " +
 				"AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind AND ll1.preferred is :preferred " +
-				"AND ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText ";
+				"AND ll1.ignored != :ignored AND ll1.labelText = :labelText ";
 		logger.debug("sql query " + query);
 		TypedQuery<Long> q = em.createQuery(query, Long.class);
 
@@ -224,10 +224,10 @@ public class LsThingLabel extends AbstractLabel {
 
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT DISTINCT ll2 FROM LsThing AS o " +
-				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind "
+				"JOIN o.lsLabels AS ll1 with ll1.ignored != :ignored AND ll1.labelText = :labelText AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind "
 				+
-				"JOIN o.lsLabels AS ll2 with ll2.ignored IS NOT :ignored " +
-				"WHERE o.ignored IS NOT :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
+				"JOIN o.lsLabels AS ll2 with ll2.ignored != :ignored " +
+				"WHERE o.ignored != :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
 
@@ -258,10 +258,10 @@ public class LsThingLabel extends AbstractLabel {
 
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT DISTINCT ll2 FROM LsThing AS o " +
-				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind "
+				"JOIN o.lsLabels AS ll1 with ll1.ignored != :ignored AND ll1.labelText = :labelText AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind "
 				+
-				"JOIN o.lsLabels AS ll2 with ll2.ignored IS NOT :ignored AND ll2.preferred IS :preferred " +
-				"WHERE o.ignored IS NOT :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
+				"JOIN o.lsLabels AS ll2 with ll2.ignored != :ignored AND ll2.preferred IS :preferred " +
+				"WHERE o.ignored != :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
 
@@ -289,9 +289,9 @@ public class LsThingLabel extends AbstractLabel {
 
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT DISTINCT ll2 FROM LsThing AS o " +
-				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText " +
-				"JOIN o.lsLabels AS ll2 with ll2.ignored IS NOT :ignored AND ll2.preferred IS :preferred " +
-				"WHERE o.ignored IS NOT :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
+				"JOIN o.lsLabels AS ll1 with ll1.ignored != :ignored AND ll1.labelText = :labelText " +
+				"JOIN o.lsLabels AS ll2 with ll2.ignored != :ignored AND ll2.preferred IS :preferred " +
+				"WHERE o.ignored != :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
 
@@ -312,9 +312,9 @@ public class LsThingLabel extends AbstractLabel {
 
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT DISTINCT ll2 FROM LsThing AS o " +
-				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText " +
-				"JOIN o.lsLabels AS ll2 with ll2.ignored IS NOT :ignored AND ll2.preferred IS :preferred " +
-				"WHERE o.ignored IS NOT :ignored ";
+				"JOIN o.lsLabels AS ll1 with ll1.ignored != :ignored AND ll1.labelText = :labelText " +
+				"JOIN o.lsLabels AS ll2 with ll2.ignored != :ignored AND ll2.preferred IS :preferred " +
+				"WHERE o.ignored != :ignored ";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
 
@@ -380,7 +380,7 @@ public class LsThingLabel extends AbstractLabel {
 		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
 				+ "AND o.lsKind = :labelKind "
 				+ "AND o.lsThing.id = :lsThingId "
-				+ "AND o.preferred = :preferred AND o.ignored IS NOT :ignored";
+				+ "AND o.preferred = :preferred AND o.ignored != :ignored";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
 		q.setParameter("lsThingId", lsThingId);
@@ -456,13 +456,13 @@ public class LsThingLabel extends AbstractLabel {
 				+ "JOIN lst.lsLabels tl2 "
 				+ "WHERE tl1.lsType = :labelType "
 				+ "AND tl1.lsKind = :labelKind "
-				+ "AND tl1.ignored IS NOT :ignored "
+				+ "AND tl1.ignored != :ignored "
 				+ "AND tl2.lsType = :labelType "
 				+ "AND tl2.lsKind = :labelKind "
-				+ "AND tl2.preferred = :preferred AND tl2.ignored IS NOT :ignored "
+				+ "AND tl2.preferred = :preferred AND tl2.ignored != :ignored "
 				+ "AND lst.lsType = :thingType "
 				+ "AND lst.lsKind = :thingKind "
-				+ "AND lst.ignored IS NOT :ignored  "
+				+ "AND lst.ignored != :ignored  "
 				+ "AND tl1.labelText in (:requestNameList) ";
 
 		// + "FROM LsThingLabel AS o "
@@ -472,8 +472,8 @@ public class LsThingLabel extends AbstractLabel {
 		// + "AND o.lsKind = :labelKind "
 		// + "AND lst.lsType = :thingType "
 		// + "AND lst.lsKind = :thingKind "
-		// + "AND lst.ignored IS NOT :ignored "
-		// + "AND o.preferred = :preferred AND o.ignored IS NOT :ignored "
+		// + "AND lst.ignored != :ignored "
+		// + "AND o.preferred = :preferred AND o.ignored != :ignored "
 		// + "AND o.labelText in (:requestNameList) "
 		// + "AND o.lsThing = o2.lsThing "
 		// + "AND o2.preferred != :preferred "
@@ -508,8 +508,8 @@ public class LsThingLabel extends AbstractLabel {
 				+ "JOIN o.lsThing lst "
 				+ "JOIN o2.lsThing lst2 "
 				// + "JOIN o o2"
-				+ "WHERE o.ignored IS NOT :ignored AND o.labelText in (:requestNameList) AND lst.codeName = lst2.codeName "
-				+ "AND o2.preferred = :preferred AND o2.ignored IS NOT :ignored";
+				+ "WHERE o.ignored != :ignored AND o.labelText in (:requestNameList) AND lst.codeName = lst2.codeName "
+				+ "AND o2.preferred = :preferred AND o2.ignored != :ignored";
 
 		logger.debug("sql query " + query);
 		TypedQuery<PreferredNameDTO> q = em.createQuery(query, PreferredNameDTO.class);
@@ -584,7 +584,7 @@ public class LsThingLabel extends AbstractLabel {
 				+ "AND o.lsKind = :labelKind "
 				+ "AND o.lsThing = :lsThing "
 				+ "AND o.labelText = :labelText "
-				+ "AND o.ignored IS NOT :ignored "
+				+ "AND o.ignored != :ignored "
 				+ "ORDER by o.id ";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
@@ -661,7 +661,7 @@ public class LsThingLabel extends AbstractLabel {
 		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
 				+ "AND o.lsKind = :labelKind "
 				+ "AND o.lsThing = :lsThing "
-				+ "AND o.ignored IS NOT :ignored "
+				+ "AND o.ignored != :ignored "
 				+ "ORDER by o.id ";
 		logger.debug("sql query " + query);
 		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
@@ -759,7 +759,7 @@ public class LsThingLabel extends AbstractLabel {
 			throw new IllegalArgumentException("The labelText argument is required");
 		EntityManager em = LsThingLabel.entityManager();
 		TypedQuery q = em.createQuery(
-				"SELECT COUNT(o) FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+				"SELECT COUNT(o) FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored",
 				Long.class);
 		q.setParameter("labelText", labelText);
 		q.setParameter("ignored", ignored);
@@ -836,7 +836,7 @@ public class LsThingLabel extends AbstractLabel {
 			throw new IllegalArgumentException("The labelText argument is required");
 		EntityManager em = LsThingLabel.entityManager();
 		TypedQuery<LsThingLabel> q = em.createQuery(
-				"SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+				"SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored",
 				LsThingLabel.class);
 		q.setParameter("labelText", labelText);
 		q.setParameter("ignored", ignored);
@@ -849,7 +849,7 @@ public class LsThingLabel extends AbstractLabel {
 			throw new IllegalArgumentException("The labelText argument is required");
 		EntityManager em = LsThingLabel.entityManager();
 		StringBuilder queryBuilder = new StringBuilder(
-				"SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+				"SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored");
 		if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
 			queryBuilder.append(" ORDER BY ").append(sortFieldName);
 			if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

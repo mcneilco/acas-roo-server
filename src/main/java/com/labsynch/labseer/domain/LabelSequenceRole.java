@@ -3,22 +3,22 @@ package com.labsynch.labseer.domain;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PersistenceContext;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ import flexjson.JSONSerializer;
 @Configurable
 @Entity
 @Table(name = "label_sequence_ls_role", uniqueConstraints = {
-        @javax.persistence.UniqueConstraint(columnNames = { "label_sequence_id", "ls_role_id" }) })
+        @jakarta.persistence.UniqueConstraint(columnNames = { "label_sequence_id", "ls_role_id" }) })
 public class LabelSequenceRole {
 
     @NotNull
@@ -43,7 +43,7 @@ public class LabelSequenceRole {
     private LsRole roleEntry;
 
     @Id
-    @SequenceGenerator(name = "labelSequenceRoleGen", sequenceName = "LABELSEQ_ROLE_PKSEQ")
+    @SequenceGenerator(name = "labelSequenceRoleGen", sequenceName = "LABELSEQ_ROLE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "labelSequenceRoleGen")
     @Column(name = "id")
     private Long id;

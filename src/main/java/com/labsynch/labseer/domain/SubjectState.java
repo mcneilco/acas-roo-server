@@ -8,16 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -90,7 +90,7 @@ public class SubjectState extends AbstractState {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = SubjectState.entityManager();
         TypedQuery<SubjectState> q = em.createQuery(
-                "SELECT o FROM SubjectState AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM SubjectState AS o WHERE o.lsTypeAndKind = :lsTypeAndKind  AND o.ignored != :ignored",
                 SubjectState.class);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
         boolean ignored = true;
@@ -116,7 +116,7 @@ public class SubjectState extends AbstractState {
             throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = SubjectState.entityManager();
         TypedQuery<SubjectState> q = em.createQuery(
-                "SELECT o FROM SubjectState AS o WHERE o.subject = :subject AND o.lsTypeAndKind = :lsTypeAndKind  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM SubjectState AS o WHERE o.subject = :subject AND o.lsTypeAndKind = :lsTypeAndKind  AND o.ignored != :ignored",
                 SubjectState.class);
         q.setParameter("subject", subject);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
@@ -253,7 +253,7 @@ public class SubjectState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ss FROM SubjectState AS ss " +
                 "JOIN ss.subject s " +
-                "WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
+                "WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored != :ignored " +
                 "AND s.id = :subjectId ";
         TypedQuery<SubjectState> q = em.createQuery(hsqlQuery, SubjectState.class);
         q.setParameter("subjectId", subjectId);
@@ -273,7 +273,7 @@ public class SubjectState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ss FROM SubjectState AS ss " +
                 "JOIN ss.subject s " +
-                "WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
+                "WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored != :ignored " +
                 "AND s.codeName = :subjectCodeName ";
         TypedQuery<SubjectState> q = em.createQuery(hsqlQuery, SubjectState.class);
         q.setParameter("subjectCodeName", subjectCodeName);

@@ -7,12 +7,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -67,7 +67,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The container argument is required");
         EntityManager em = ContainerLabel.entityManager();
         TypedQuery<ContainerLabel> q = em.createQuery(
-                "SELECT o FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored != :ignored",
                 ContainerLabel.class);
         q.setParameter("container", container);
         q.setParameter("ignored", ignored);
@@ -80,7 +80,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ContainerLabel.entityManager();
         TypedQuery<ContainerLabel> q = em.createQuery(
-                "SELECT o FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored",
                 ContainerLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
@@ -170,7 +170,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The container argument is required");
         EntityManager em = ContainerLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("container", container);
         q.setParameter("ignored", ignored);
@@ -182,7 +182,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ContainerLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
@@ -207,7 +207,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ContainerLabel.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("lsType", lsType);
         q.setParameter("labelText", labelText);
@@ -221,7 +221,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The container argument is required");
         EntityManager em = ContainerLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -240,7 +240,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ContainerLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -289,7 +289,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ContainerLabel.entityManager();
         TypedQuery<ContainerLabel> q = em.createQuery(
-                "SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored != :ignored",
                 ContainerLabel.class);
         q.setParameter("lsType", lsType);
         q.setParameter("labelText", labelText);
@@ -305,7 +305,7 @@ public class ContainerLabel extends AbstractLabel {
             throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = ContainerLabel.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

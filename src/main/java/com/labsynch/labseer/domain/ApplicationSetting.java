@@ -4,19 +4,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PersistenceContext;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -73,7 +73,7 @@ public class ApplicationSetting {
             throw new IllegalArgumentException("The propName argument is required");
         EntityManager em = ApplicationSetting.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored OR o.ignored IS NULL",
                 Long.class);
         q.setParameter("propName", propName);
         q.setParameter("ignored", ignored);
@@ -114,7 +114,7 @@ public class ApplicationSetting {
             throw new IllegalArgumentException("The propName argument is required");
         EntityManager em = ApplicationSetting.entityManager();
         TypedQuery<ApplicationSetting> q = em.createQuery(
-                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored OR o.ignored IS NULL",
                 ApplicationSetting.class);
         q.setParameter("propName", propName);
         q.setParameter("ignored", ignored);
@@ -127,7 +127,7 @@ public class ApplicationSetting {
             throw new IllegalArgumentException("The propName argument is required");
         EntityManager em = ApplicationSetting.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM ApplicationSetting AS o WHERE o.propName = :propName  AND o.ignored != :ignored OR o.ignored IS NULL");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -275,7 +275,7 @@ public class ApplicationSetting {
     }
 
     @Id
-    @SequenceGenerator(name = "applicationSettingGen", sequenceName = "APPSETTING_PKSEQ")
+    @SequenceGenerator(name = "applicationSettingGen", sequenceName = "APPSETTING_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "applicationSettingGen")
     @Column(name = "id")
     private Long id;

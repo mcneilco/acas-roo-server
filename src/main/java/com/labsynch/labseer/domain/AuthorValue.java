@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -102,7 +102,7 @@ public class AuthorValue extends AbstractValue {
             throw new IllegalArgumentException("The codeValue argument is required");
         EntityManager em = AuthorValue.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM AuthorValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+                "SELECT COUNT(o) FROM AuthorValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
                 Long.class);
         q.setParameter("ignored", ignored);
         q.setParameter("codeValue", codeValue);
@@ -158,7 +158,7 @@ public class AuthorValue extends AbstractValue {
         }
         EntityManager em = AuthorValue.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM AuthorValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored",
+                "SELECT COUNT(o) FROM AuthorValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored",
                 Long.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
@@ -200,7 +200,7 @@ public class AuthorValue extends AbstractValue {
             throw new IllegalArgumentException("The codeValue argument is required");
         EntityManager em = AuthorValue.entityManager();
         TypedQuery<AuthorValue> q = em.createQuery(
-                "SELECT o FROM AuthorValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue",
+                "SELECT o FROM AuthorValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue",
                 AuthorValue.class);
         q.setParameter("ignored", ignored);
         q.setParameter("codeValue", codeValue);
@@ -213,7 +213,7 @@ public class AuthorValue extends AbstractValue {
             throw new IllegalArgumentException("The codeValue argument is required");
         EntityManager em = AuthorValue.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AuthorValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+                "SELECT o FROM AuthorValue AS o WHERE o.ignored != :ignored  AND o.codeValue = :codeValue");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
@@ -332,7 +332,7 @@ public class AuthorValue extends AbstractValue {
         }
         EntityManager em = AuthorValue.entityManager();
         TypedQuery<AuthorValue> q = em.createQuery(
-                "SELECT o FROM AuthorValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored",
+                "SELECT o FROM AuthorValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored",
                 AuthorValue.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
@@ -358,7 +358,7 @@ public class AuthorValue extends AbstractValue {
         }
         EntityManager em = AuthorValue.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM AuthorValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored");
+                "SELECT o FROM AuthorValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored != :ignored");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

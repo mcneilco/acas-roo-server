@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.NoResultException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
@@ -858,7 +858,7 @@ public class ApiExperimentController {
 	}
 
 	// @Transactional
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		Experiment experiment = Experiment.fromJsonToExperiment(json);
 		logger.debug("----from the Experiment POST controller----");

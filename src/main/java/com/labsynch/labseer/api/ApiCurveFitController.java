@@ -280,7 +280,7 @@ public class ApiCurveFitController {
 
 	// no longer needed - preparing to deprecate
 	@Transactional
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFitDataFromJson(@RequestBody List<CurveFitDTO> curveFitDTOs) {
 		try {
 			CurveFitDTO.updateFitData(curveFitDTOs);

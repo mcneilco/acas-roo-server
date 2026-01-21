@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -108,7 +108,7 @@ public class LsThingState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
                 "AND lst.id = :lsThingId ";
         TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
         q.setParameter("lsThingId", lsThingId);
@@ -128,7 +128,7 @@ public class LsThingState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
                 "JOIN lsts.lsThing lst " +
-                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+                "WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored != :ignored " +
                 "AND lst.codeName = :lsThingCodeName ";
         TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
         q.setParameter("lsThingCodeName", lsThingCodeName);

@@ -6,21 +6,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.PersistenceContext;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import com.labsynch.labseer.dto.CodeTableDTO;
 
@@ -34,7 +34,7 @@ import flexjson.JSONSerializer;
 @Entity
 public class LsRole {
 
-    @Size(max = 255)
+    @Size(max = 64)
     private String lsType;
 
     @Size(max = 255)
@@ -54,7 +54,7 @@ public class LsRole {
     private Set<AuthorRole> authorRoles = new HashSet<AuthorRole>();
 
     @Id
-    @SequenceGenerator(name = "lsRoleGen", sequenceName = "LSROLE_PKSEQ")
+    @SequenceGenerator(name = "lsRoleGen", sequenceName = "LSROLE_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsRoleGen")
     @Column(name = "id")
     private Long id;

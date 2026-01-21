@@ -9,9 +9,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.FileList;

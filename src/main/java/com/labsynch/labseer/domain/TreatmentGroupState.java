@@ -9,16 +9,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -210,7 +210,7 @@ public class TreatmentGroupState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM TreatmentGroupState AS ags " +
                 "JOIN ags.treatmentGroup ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.id = :treatmentGroupId ";
         TypedQuery<TreatmentGroupState> q = em.createQuery(hsqlQuery, TreatmentGroupState.class);
         q.setParameter("treatmentGroupId", treatmentGroupId);
@@ -230,7 +230,7 @@ public class TreatmentGroupState extends AbstractState {
         EntityManager em = entityManager();
         String hsqlQuery = "SELECT ags FROM TreatmentGroupState AS ags " +
                 "JOIN ags.treatmentGroup ag " +
-                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+                "WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored != :ignored " +
                 "AND ag.codeName = :treatmentGroupCodeName ";
         TypedQuery<TreatmentGroupState> q = em.createQuery(hsqlQuery, TreatmentGroupState.class);
         q.setParameter("treatmentGroupCodeName", treatmentGroupCodeName);

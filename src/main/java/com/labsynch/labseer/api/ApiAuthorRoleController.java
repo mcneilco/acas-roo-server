@@ -61,7 +61,7 @@ public class ApiAuthorRoleController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody AuthorRole authorRole) {
         authorRole.persist();
         HttpHeaders headers = new HttpHeaders();

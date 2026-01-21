@@ -6,9 +6,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.BitSet;
 
-import com.vladmihalcea.hibernate.type.ImmutableType;
+import io.hypersistence.utils.hibernate.type.ImmutableType;
 
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.type.SqlTypes;
 import org.postgresql.util.PGobject;
 
 public class BitSetUserType extends ImmutableType<BitSet> {
@@ -20,14 +21,14 @@ public class BitSetUserType extends ImmutableType<BitSet> {
     }
 
     @Override
-    public int[] sqlTypes() {
-        return new int[] { Types.OTHER };
+    public int getSqlType() {
+        return SqlTypes.OTHER;
     }
 
     @Override
-    public BitSet get(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+    public BitSet get(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
             throws SQLException {
-        String stringBits = rs.getString(names[0]);
+        String stringBits = rs.getString(position);
         return (stringBits != null) ? SimpleUtil.stringToBitSet(stringBits) : null;
     }
 
@@ -38,9 +39,14 @@ public class BitSetUserType extends ImmutableType<BitSet> {
             st.setNull(index, Types.OTHER);
         } else {
             PGobject holder = new PGobject();
-            holder.setType("BIT");
+            holder.setType("bit");
             holder.setValue(SimpleUtil.bitSetToString(value));
             st.setObject(index, holder);
         }
+    }
+
+    @Override
+    public BitSet fromStringValue(CharSequence sequence) {
+        return sequence != null ? SimpleUtil.stringToBitSet(sequence.toString()) : null;
     }
 }

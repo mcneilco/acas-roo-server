@@ -56,7 +56,7 @@ public class ApiPreferredIdController {
 	@Transactional
 	@RequestMapping(value = "/getPreferredName", method = RequestMethod.GET, headers = "Accept=application/json, application/text, text/html")
 	@ResponseBody
-	public ResponseEntity<String> checkCorpNameExists(@RequestParam String requestName) {
+	public ResponseEntity<String> checkCorpNameExists(@RequestParam("requestName") String requestName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/text");
 		headers.add("Access-Control-Allow-Origin", "*");

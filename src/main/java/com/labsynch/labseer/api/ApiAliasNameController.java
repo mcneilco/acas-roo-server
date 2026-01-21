@@ -32,9 +32,9 @@ public class ApiAliasNameController {
 	@Transactional
 	@RequestMapping(value = "/getParentByAliasName", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getParentByAliasName(@RequestParam String aliasName,
-			@RequestParam String lsType,
-			@RequestParam String lsKind) {
+	public ResponseEntity<String> getParentByAliasName(@RequestParam("aliasName") String aliasName,
+			@RequestParam("lsType") String lsType,
+			@RequestParam("lsKind") String lsKind) {
 		logger.debug("incoming json from getParentByAliasName: " + aliasName);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
@@ -97,9 +97,9 @@ public class ApiAliasNameController {
 	@Transactional
 	@RequestMapping(value = "/getLotByAliasName", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getLotByAliasName(@RequestParam String aliasName,
-			@RequestParam String lsType,
-			@RequestParam String lsKind) {
+	public ResponseEntity<String> getLotByAliasName(@RequestParam("aliasName") String aliasName,
+			@RequestParam("lsType") String lsType,
+			@RequestParam("lsKind") String lsKind) {
 		logger.debug("incoming json from getLotByAliasName: " + aliasName);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

@@ -3,8 +3,8 @@ package com.labsynch.labseer.api;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.LsThing;

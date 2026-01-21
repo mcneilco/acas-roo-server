@@ -10,25 +10,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
@@ -52,8 +52,10 @@ public class StandardizationDryRunCompound {
 
 	private Date qcDate;
 
+	@Column(columnDefinition = "text")
 	private String newDuplicates;
 
+	@Column(columnDefinition = "text")
 	private String existingDuplicates;
 
 	private Boolean changedStructure;
@@ -70,6 +72,7 @@ public class StandardizationDryRunCompound {
 
 	private Integer existingDuplicateCount;
 
+	@Column(length=1024)
 	private String alias;
 
 	private int CdId;
@@ -77,6 +80,7 @@ public class StandardizationDryRunCompound {
 	@Column(columnDefinition = "text")
 	private String molStructure;
 
+	@Column(length=2000)
 	private String comment;
 
 	private boolean ignore;
@@ -84,11 +88,13 @@ public class StandardizationDryRunCompound {
 	@Enumerated(EnumType.STRING)
 	private CmpdRegMolecule.StandardizationStatus standardizationStatus;
 
+	@Column(columnDefinition = "text")
 	private String standardizationComment;
 
 	@Enumerated(EnumType.STRING)
 	private CmpdRegMolecule.RegistrationStatus registrationStatus;
 
+	@Column(columnDefinition = "text")
 	private String registrationComment;
 
 	@Enumerated(EnumType.STRING)

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.dto.FileSaveReturnDTO;

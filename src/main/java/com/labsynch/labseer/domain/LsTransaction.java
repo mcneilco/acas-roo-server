@@ -4,21 +4,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PersistenceContext;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -46,9 +46,11 @@ public class LsTransaction {
     private String recordedBy;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 64)
     private LsTransactionStatus status;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 64)
     private LsTransactionType type;
 
     public String toString() {
@@ -86,7 +88,7 @@ public class LsTransaction {
     }
 
     @Id
-    @SequenceGenerator(name = "lsTransactionGen", sequenceName = "LS_TRANSACTION_PKSEQ")
+    @SequenceGenerator(name = "lsTransactionGen", sequenceName = "LS_TRANSACTION_PKSEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "lsTransactionGen")
     @Column(name = "id")
     private Long id;

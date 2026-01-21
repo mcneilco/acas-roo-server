@@ -43,7 +43,7 @@ public class ApiParentLotController {
 	@Transactional
 	@RequestMapping(value = "/getLotsByParent", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getParentByAliasName(@RequestParam String parentCorpName,
+	public ResponseEntity<String> getParentByAliasName(@RequestParam("parentCorpName") String parentCorpName,
 			@RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

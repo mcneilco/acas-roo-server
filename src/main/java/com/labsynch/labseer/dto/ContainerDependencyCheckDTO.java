@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.Experiment;

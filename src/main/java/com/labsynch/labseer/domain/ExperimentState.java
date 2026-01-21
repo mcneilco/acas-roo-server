@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.TypedQuery;
+import jakarta.validation.constraints.NotNull;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -112,7 +112,7 @@ public class ExperimentState extends AbstractState {
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT evs FROM ExperimentState AS evs " +
 				"JOIN evs.experiment exp " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored " +
 				"AND exp.id = :experimentId ";
 		TypedQuery<ExperimentState> q = em.createQuery(hsqlQuery, ExperimentState.class);
 		q.setParameter("experimentId", experimentId);
@@ -132,7 +132,7 @@ public class ExperimentState extends AbstractState {
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT evs FROM ExperimentState AS evs " +
 				"JOIN evs.experiment exp " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored != :ignored " +
 				"AND exp.codeName = :experimentCodeName ";
 		TypedQuery<ExperimentState> q = em.createQuery(hsqlQuery, ExperimentState.class);
 		q.setParameter("experimentCodeName", experimentCodeName);

@@ -48,7 +48,7 @@ public class ApiOperatorController {
         return new ResponseEntity<String>(Operator.toJsonArray(Operator.findAllOperators()), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
         Operator.fromJsonToOperator(json).persist();
         HttpHeaders headers = new HttpHeaders();

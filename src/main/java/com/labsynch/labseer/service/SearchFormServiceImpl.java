@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Lot;
@@ -674,7 +674,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 	}
 
 	@Override
-	public List<Integer> findParentIds(String molStructure, Integer maxResults, Float similarity, SearchType searchType,
+	public List<Long> findParentIds(String molStructure, Integer maxResults, Float similarity, SearchType searchType,
 			List<String> projects) throws IOException, CmpdRegMolFormatException {
 
 		// We don't want to limit the max results when searching for structures so set
@@ -685,7 +685,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 		int[] parentStructureHits = structureService.searchMolStructures(molStructure, StructureType.PARENT, searchType,
 				similarity, 999999999);
 		List<Integer> cdIdslist = Arrays.stream(parentStructureHits).boxed().collect(Collectors.toList());
-		TypedQuery<Integer> parentQuery = Parent.findParentIdsByCdIdInAndProjectIn(cdIdslist, projects);
+		TypedQuery<Long> parentQuery = Parent.findParentIdsByCdIdInAndProjectIn(cdIdslist, projects);
 
 		// We limit max results when searching for parents
 		if (maxResults != null && maxResults > -1) {

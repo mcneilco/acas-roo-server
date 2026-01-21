@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.NonUniqueResultException;
+import jakarta.persistence.NonUniqueResultException;
 
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;
@@ -50,7 +50,7 @@ public class ApiLabelSequenceController {
 		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");

@@ -9,33 +9,33 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.TypedQuery;
-import javax.persistence.Version;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Version;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
@@ -82,12 +82,14 @@ public class Lot {
     @DateTimeFormat(style = "S-")
     private Date registrationDate;
 
+    @Column(columnDefinition = "character varying")
     private String registeredBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
     private Date modifiedDate;
 
+    @Column(columnDefinition = "character varying")
     private String modifiedBy;
 
     @Size(max = 255)
@@ -127,6 +129,7 @@ public class Lot {
     @JoinColumn(name = "purity_measured_by")
     private PurityMeasuredBy purityMeasuredBy;
 
+    @Column(columnDefinition = "character varying")
     private String chemist;
 
     private Double percentEE;
@@ -172,6 +175,7 @@ public class Lot {
     @Size(max = 255)
     private String supplierLot;
 
+    @Column(columnDefinition = "character varying")
     private String project;
 
     @Transient
