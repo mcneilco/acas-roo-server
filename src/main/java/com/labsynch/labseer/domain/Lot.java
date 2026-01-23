@@ -1,6 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1714,8 +1713,7 @@ public class Lot {
         HashMap<Long, String> parentIdsToMolStructures = new HashMap<Long, String>();
         List<Object[]> results = q.getResultList();
         for (Object[] result : results) {
-            // Cast BigInteger value to Long
-            Long parentId = ((BigInteger) result[0]).longValue();
+            Long parentId = (Long) result[0];
             parentIdsToMolStructures.put(parentId, (String) result[1]);
         }
 

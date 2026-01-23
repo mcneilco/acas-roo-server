@@ -2,7 +2,6 @@ package com.labsynch.labseer.domain;
 
 import static java.lang.Math.toIntExact;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -724,15 +723,12 @@ public class StandardizationDryRunCompound {
 					 "LIMIT :limit";
 	
 		@SuppressWarnings("unchecked")
-		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
+		List<Long> result = StandardizationDryRunCompound.entityManager()
 				.createNativeQuery(sql)
 				.setParameter("limit", limit)
 				.getResultList();
 	
-		// Convert BigInteger to Long
-		return result.stream()
-					 .map(BigInteger::longValue)
-					 .collect(Collectors.toList());
+		return result;
 	}
 
 	@Transactional
@@ -929,15 +925,12 @@ public class StandardizationDryRunCompound {
 					"LIMIT :limit";
 
 		@SuppressWarnings("unchecked")
-		List<BigInteger> result = StandardizationDryRunCompound.entityManager()
+		List<Long> result = StandardizationDryRunCompound.entityManager()
 				.createNativeQuery(sql)
 				.setParameter("limit", limit)
 				.getResultList();
 
-		// Convert BigInteger to Long
-		return result.stream()
-					.map(BigInteger::longValue)
-					.collect(Collectors.toList());
+		return result;
 	}
 
 	@Transactional
