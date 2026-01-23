@@ -376,7 +376,7 @@ public class Parent {
 
     public static List<Long> getParentIds() {
         EntityManager em = Parent.entityManager();
-        String sqlQuery = "SELECT o.id FROM Parent o WHERE o.ignore IS NOT :ignore OR o.ignore is null";
+        String sqlQuery = "SELECT o.id FROM Parent o WHERE (o.ignore IS NULL OR o.ignore != :ignore) OR o.ignore is null";
         boolean ignore = true;
         TypedQuery<Long> query = em.createQuery(sqlQuery, Long.class);
         query.setParameter("ignore", ignore);

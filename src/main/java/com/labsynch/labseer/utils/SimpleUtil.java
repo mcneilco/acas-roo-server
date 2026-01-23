@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -585,14 +584,6 @@ public class SimpleUtil {
 			loopCount++;
 		}
 		return groups;
-	}
-
-	public static List<List<Long>> splitIntArrayIntoGroups(List<BigInteger> missingIds, int groupSize) {
-		List<Long> longs = missingIds.stream()
-				.mapToLong(BigInteger::longValue)
-				.boxed().collect(Collectors.toList());
-
-		return splitArrayIntoGroups(longs, groupSize);
 	}
 
 	public static List<String> diffJsonObjects(JsonNode object1, JsonNode object2) {

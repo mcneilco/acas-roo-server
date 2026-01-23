@@ -3,7 +3,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import static java.lang.Math.toIntExact;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
