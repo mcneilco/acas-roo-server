@@ -421,7 +421,7 @@ public class StandardizationDryRunCompound {
 	}
 
 	public boolean isChangedStructure() {
-		return this.changedStructure;
+		return this.changedStructure != null ? this.changedStructure : false;
 	}
 
 	public void setChangedStructure(boolean changedStructure) {
