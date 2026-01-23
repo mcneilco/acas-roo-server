@@ -505,7 +505,7 @@ public class Lot {
             throw new IllegalArgumentException("The parent argument is required");
         EntityManager em = Lot.entityManager();
         TypedQuery<Lot> q = em.createQuery(
-                "SELECT o FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))",
+                "SELECT o FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore = :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore = :ignore ))",
                 Lot.class);
         q.setParameter("parent", parent);
         q.setParameter("ignore", false);
@@ -1247,7 +1247,7 @@ public class Lot {
             throw new IllegalArgumentException("The ignore argument is required");
         EntityManager em = Lot.entityManager();
         TypedQuery q = em.createQuery(
-                "SELECT COUNT(o) FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND o.ignore IS NOT :ignore",
+                "SELECT COUNT(o) FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND (o.ignore IS NULL OR o.ignore != :ignore)",
                 Long.class);
         q.setParameter("notebookPage", notebookPage);
         q.setParameter("ignore", ignore);
@@ -1532,7 +1532,7 @@ public class Lot {
             throw new IllegalArgumentException("The ignore argument is required");
         EntityManager em = Lot.entityManager();
         TypedQuery<Lot> q = em.createQuery(
-                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND o.ignore IS NOT :ignore", Lot.class);
+                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND (o.ignore IS NULL OR o.ignore != :ignore)", Lot.class);
         q.setParameter("notebookPage", notebookPage);
         q.setParameter("ignore", ignore);
         return q;
@@ -1546,7 +1546,7 @@ public class Lot {
             throw new IllegalArgumentException("The ignore argument is required");
         EntityManager em = Lot.entityManager();
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND o.ignore IS NOT :ignore");
+                "SELECT o FROM Lot AS o WHERE o.notebookPage = :notebookPage  AND (o.ignore IS NULL OR o.ignore != :ignore)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
