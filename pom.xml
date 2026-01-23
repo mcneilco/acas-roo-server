@@ -38,10 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
 		<slf4j.version>1.7.5</slf4j.version>
-		<log4j.version>2.17.2</log4j.version>
+		<log4j.version>2.25.3</log4j.version>
 		<jackson.version>2.18.2</jackson.version>
-		<spring.version>6.2.1</spring.version>
-		<spring-security.version>6.4.2</spring-security.version>
+		<spring.version>6.2.11</spring.version>
+		<spring-security.version>6.4.4</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>23.4.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
