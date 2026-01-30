@@ -1215,7 +1215,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "CODENAME"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "NAME"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "SCIENTIST"));
-			// experimentIdList.addAll(findExperimentIdsByMetadata(term, "RECORDEDBY"));
+			experimentIdList.addAll(findExperimentIdsByMetadata(term, "RECORDEDBY"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "KIND"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "STATUS"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ANALYSIS STATUS"));
