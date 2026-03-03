@@ -105,7 +105,7 @@ public class MetalotServiceImpl implements MetalotService {
 		} catch (UniqueNotebookException e) {
 			ErrorMessage lotError = new ErrorMessage();
 			lotError.setLevel("error");
-			lotError.setMessage("lot notebook is not unique");
+			lotError.setMessage(e.getMessage());
 			errors.add(lotError);
 		} catch (DupeParentException e) {
 			ErrorMessage parentError = new ErrorMessage();
@@ -202,12 +202,12 @@ public class MetalotServiceImpl implements MetalotService {
 				try {
 					duplicateNotebook = checkUniqueNotebook(lot);
 				} catch (IllegalArgumentException e) {
-					throw new UniqueNotebookException("notebook page is required");
+					throw new UniqueNotebookException("Notebook page is required.");
 				}
 				logger.info("unique Notebook. " + lot.getNotebookPage() + "  " + duplicateNotebook);
 				if (!duplicateNotebook) {
 					metalotError = true;
-					throw new UniqueNotebookException("lot notebook is not unique");
+					throw new UniqueNotebookException("Lot notebook page \"" + lot.getNotebookPage() + "\" is already in use. Please use a unique notebook page.");
 				}
 			}
 		}
