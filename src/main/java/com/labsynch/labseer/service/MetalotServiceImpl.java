@@ -43,6 +43,7 @@ import com.labsynch.labseer.dto.SetTubeLocationDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.DupeSaltFormCorpNameException;
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
@@ -158,6 +159,17 @@ public class MetalotServiceImpl implements MetalotService {
 			standardizerError.setMessage("Parent Aliases must be globally unique.");
 			logger.error(standardizerError.getMessage());
 			errors.add(standardizerError);
+		} catch (DupeLotException e) {
+			ErrorMessage dupeLotError = new ErrorMessage();
+			dupeLotError.setLevel("error");
+			String lotCorpName = e.getLotCorpName();
+			if (lotCorpName != null && !lotCorpName.isEmpty()) {
+				dupeLotError.setMessage("Duplicate lot found: " + lotCorpName + ". " + e.getMessage());
+			} else {
+				dupeLotError.setMessage("Duplicate lot found. " + e.getMessage());
+			}
+			logger.error(dupeLotError.getMessage(), e);
+			errors.add(dupeLotError);
 		} catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
