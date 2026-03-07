@@ -7,7 +7,7 @@ This is the backend Java/Spring Roo server for ACAS. It handles compound registr
 ## Technology Stack
 
 - **Language**: Java 21
-- **Framework**: Spring Roo, Spring Boot
+- **Framework**: Spring Roo
 - **Build Tool**: Maven 3
 - **Container**: Tomcat 10.1
 - **Deployment**: Docker
@@ -54,13 +54,13 @@ The Dockerfile follows these stages:
 After a successful build, you need to:
 
 1. **Update docker-compose** in the `acas` repo to use your local image
-   - See [../acas/CLAUDE.md](../acas/CLAUDE.md) for details
+   - See [CLAUDE.md in acas repo](https://github.com/mcneilco/acas/blob/master/CLAUDE.md) for details
 
 2. **Start services** via docker-compose
    - The roo service depends on PostgreSQL database
 
 3. **Run tests** via acasclient
-   - See [../acasclient/CLAUDE.md](../acasclient/CLAUDE.md) for testing workflow
+   - See [CLAUDE.md in acasclient repo](https://github.com/mcneilco/acasclient/blob/main/CLAUDE.md) for testing workflow
 
 ## Development Notes
 
@@ -98,5 +98,5 @@ This convention makes it easy to:
 
 ## Related Documentation
 
-- **Docker Compose Setup**: [../acas/CLAUDE.md](../acas/CLAUDE.md)
-- **Testing**: [../acasclient/CLAUDE.md](../acasclient/CLAUDE.md)
+- **Docker Compose Setup**: [CLAUDE.md in acas repo](https://github.com/mcneilco/acas/blob/master/CLAUDE.md)
+- **Testing**: [CLAUDE.md in acasclient repo](https://github.com/mcneilco/acasclient/blob/main/CLAUDE.md)
