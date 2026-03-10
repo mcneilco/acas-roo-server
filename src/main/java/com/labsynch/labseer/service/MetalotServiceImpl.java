@@ -163,10 +163,17 @@ public class MetalotServiceImpl implements MetalotService {
 			ErrorMessage dupeLotError = new ErrorMessage();
 			dupeLotError.setLevel("error");
 			String lotCorpName = e.getLotCorpName();
+			String baseMessage;
 			if (lotCorpName != null && !lotCorpName.isEmpty()) {
-				dupeLotError.setMessage("Duplicate lot found: " + lotCorpName + ". " + e.getMessage());
+				baseMessage = "Duplicate lot found: " + lotCorpName + ".";
 			} else {
-				dupeLotError.setMessage("Duplicate lot found. " + e.getMessage());
+				baseMessage = "Duplicate lot found.";
+			}
+			String exceptionMessage = e.getMessage();
+			if (exceptionMessage != null && !exceptionMessage.trim().isEmpty()) {
+				dupeLotError.setMessage(baseMessage + " " + exceptionMessage);
+			} else {
+				dupeLotError.setMessage(baseMessage);
 			}
 			logger.error(dupeLotError.getMessage(), e);
 			errors.add(dupeLotError);
