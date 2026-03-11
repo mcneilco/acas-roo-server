@@ -42,6 +42,7 @@ import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.dto.PaginatedResultsDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -1991,6 +1992,127 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}
 
 		return values.size();
+	}
+
+	@Override
+	public PaginatedResultsDTO<Experiment> searchExperimentsPaginated(
+			int page,
+			int pageSize,
+			String sortBy,
+			String sortOrder,
+			List<String> allowedProjects,
+			String recordedBy,
+			String protocolCode,
+			Date dateFrom,
+			Date dateTo) {
+
+		EntityManager em = Experiment.entityManager();
+
+		// Build the WHERE clause
+		StringBuilder whereClause = new StringBuilder("WHERE e.ignored = false AND e.deleted = false ");
+
+		// Add filters for recordedBy
+		if (recordedBy != null && !recordedBy.isEmpty()) {
+			whereClause.append("AND e.recordedBy = :recordedBy ");
+		}
+
+		// Add filter for protocol
+		if (protocolCode != null && !protocolCode.isEmpty()) {
+			whereClause.append("AND e.protocol.codeName = :protocolCode ");
+		}
+
+		// Add date range filters (check modifiedDate with fallback to recordedDate)
+		if (dateFrom != null) {
+			whereClause.append("AND COALESCE(e.modifiedDate, e.recordedDate) >= :dateFrom ");
+		}
+		if (dateTo != null) {
+			whereClause.append("AND COALESCE(e.modifiedDate, e.recordedDate) <= :dateTo ");
+		}
+
+		// Add project filtering if enabled and projects provided
+		if (propertiesUtilService.getRestrictExperiments() && allowedProjects != null && !allowedProjects.isEmpty()) {
+			List<String> projects = new ArrayList<>(allowedProjects);
+			if (!projects.contains("unassigned")) {
+				projects.add("unassigned");
+			}
+			whereClause.append("AND EXISTS (SELECT 1 FROM ExperimentState es JOIN es.lsValues ev ");
+			whereClause.append("WHERE es.experiment = e AND es.ignored = false AND es.deleted = false ");
+			whereClause.append("AND ev.lsKind = 'project' AND ev.ignored = false AND ev.deleted = false ");
+			whereClause.append("AND ev.codeValue IN :allowedProjects) ");
+		}
+
+		// Default sort field
+		if (sortBy == null || sortBy.isEmpty()) {
+			sortBy = "modifiedDate";
+		}
+
+		// Default sort order
+		if (sortOrder == null || sortOrder.isEmpty()) {
+			sortOrder = "DESC";
+		}
+
+		// Validate sort field
+		List<String> validSortFields = java.util.Arrays.asList("id", "codeName", "recordedDate", "modifiedDate", "recordedBy", "lsType", "lsKind");
+		if (!validSortFields.contains(sortBy)) {
+			sortBy = "modifiedDate";
+		}
+
+		// Validate sort order
+		if (!"ASC".equalsIgnoreCase(sortOrder) && !"DESC".equalsIgnoreCase(sortOrder)) {
+			sortOrder = "DESC";
+		}
+
+		// Use COALESCE to fallback to recordedDate if modifiedDate is null
+		String orderByClause;
+		if ("modifiedDate".equals(sortBy)) {
+			orderByClause = "ORDER BY COALESCE(e.modifiedDate, e.recordedDate) " + sortOrder;
+		} else {
+			orderByClause = "ORDER BY e." + sortBy + " " + sortOrder;
+		}
+
+		// Count query
+		String countQueryStr = "SELECT COUNT(e) FROM Experiment e " + whereClause.toString();
+		TypedQuery<Long> countQuery = em.createQuery(countQueryStr, Long.class);
+
+		// Data query
+		String dataQueryStr = "SELECT e FROM Experiment e " + whereClause.toString() + " " + orderByClause;
+		TypedQuery<Experiment> dataQuery = em.createQuery(dataQueryStr, Experiment.class);
+
+		// Set parameters for both queries
+		if (recordedBy != null && !recordedBy.isEmpty()) {
+			countQuery.setParameter("recordedBy", recordedBy);
+			dataQuery.setParameter("recordedBy", recordedBy);
+		}
+		if (protocolCode != null && !protocolCode.isEmpty()) {
+			countQuery.setParameter("protocolCode", protocolCode);
+			dataQuery.setParameter("protocolCode", protocolCode);
+		}
+		if (dateFrom != null) {
+			countQuery.setParameter("dateFrom", dateFrom);
+			dataQuery.setParameter("dateFrom", dateFrom);
+		}
+		if (dateTo != null) {
+			countQuery.setParameter("dateTo", dateTo);
+			dataQuery.setParameter("dateTo", dateTo);
+		}
+		if (propertiesUtilService.getRestrictExperiments() && allowedProjects != null && !allowedProjects.isEmpty()) {
+			List<String> projects = new ArrayList<>(allowedProjects);
+			if (!projects.contains("unassigned")) {
+				projects.add("unassigned");
+			}
+			countQuery.setParameter("allowedProjects", projects);
+			dataQuery.setParameter("allowedProjects", projects);
+		}
+
+		// Execute count query
+		long totalRecords = countQuery.getSingleResult();
+
+		// Execute data query with pagination
+		dataQuery.setFirstResult(page * pageSize);
+		dataQuery.setMaxResults(pageSize);
+		List<Experiment> experiments = dataQuery.getResultList();
+
+		return new com.labsynch.labseer.dto.PaginatedResultsDTO<>(experiments, totalRecords, page, pageSize);
 	}
 
 }
