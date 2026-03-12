@@ -2108,11 +2108,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 		long totalRecords = countQuery.getSingleResult();
 
 		// Execute data query with pagination
-		dataQuery.setFirstResult(page * pageSize);
-		dataQuery.setMaxResults(pageSize);
+		int safePage = (page < 0) ? 0 : page;
+		int safePageSize = (pageSize <= 0) ? 1 : pageSize;
+		dataQuery.setFirstResult(safePage * safePageSize);
+		dataQuery.setMaxResults(safePageSize);
 		List<Experiment> experiments = dataQuery.getResultList();
 
-		return new com.labsynch.labseer.dto.PaginatedResultsDTO<>(experiments, totalRecords, page, pageSize);
+		return new com.labsynch.labseer.dto.PaginatedResultsDTO<>(experiments, totalRecords, safePage, safePageSize);
 	}
 
 }
