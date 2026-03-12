@@ -68,6 +68,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -1733,6 +1734,67 @@ public class ApiExperimentController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Caught error in getExperimentCodesByDateValueComparison", e);
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/paginated", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> getPaginatedExperiments(
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "pageSize", defaultValue = "25") int pageSize,
+			@RequestParam(value = "sortBy", required = false) String sortBy,
+			@RequestParam(value = "sortOrder", required = false) String sortOrder,
+			@RequestParam(value = "recordedBy", required = false) String recordedBy,
+			@RequestParam(value = "protocolCode", required = false) String protocolCode,
+			@RequestParam(value = "dateFrom", required = false) Long dateFromMillis,
+			@RequestParam(value = "dateTo", required = false) Long dateToMillis,
+			@RequestHeader(value = "X-Allowed-Projects", required = false) String allowedProjectsHeader) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		try {
+			// Parse allowed projects from header
+			List<String> allowedProjects = null;
+			if (allowedProjectsHeader != null && !allowedProjectsHeader.trim().isEmpty()) {
+				String[] projectArray = allowedProjectsHeader.split(",");
+				allowedProjects = new ArrayList<>();
+				for (String project : projectArray) {
+					String trimmed = project.trim();
+					if (!trimmed.isEmpty()) {
+						allowedProjects.add(trimmed);
+					}
+				}
+			}
+
+			// Convert timestamp parameters to Date objects
+			Date dateFrom = dateFromMillis != null ? new Date(dateFromMillis) : null;
+			Date dateTo = dateToMillis != null ? new Date(dateToMillis) : null;
+
+			com.labsynch.labseer.dto.PaginatedResultsDTO<Experiment> results =
+				experimentService.searchExperimentsPaginated(
+					page,
+					pageSize,
+					sortBy,
+					sortOrder,
+					allowedProjects,
+					recordedBy,
+					protocolCode,
+					dateFrom,
+					dateTo
+				);
+
+			// Serialize using Experiment.toJsonArrayStub pattern for the results
+			String jsonResponse = new JSONSerializer()
+				.exclude("*.class")
+				.include("results.lsLabels", "results.lsStates.lsValues", "results.protocol")
+				.serialize(results);
+
+			return new ResponseEntity<String>(jsonResponse, headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Caught error in getPaginatedExperiments", e);
 			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -14,6 +14,7 @@ import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.dto.PaginatedResultsDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
@@ -96,5 +97,16 @@ public interface ExperimentService {
 			DateValueComparisonRequest requestDTO) throws Exception;
 
 	public int renameBatchCode(String oldCode, String newCode, String modifiedByUser, Long transactionId);
+
+	public PaginatedResultsDTO<Experiment> searchExperimentsPaginated(
+			int page,
+			int pageSize,
+			String sortBy,
+			String sortOrder,
+			List<String> allowedProjects,
+			String recordedBy,
+			String protocolCode,
+			java.util.Date dateFrom,
+			java.util.Date dateTo);
 
 }
