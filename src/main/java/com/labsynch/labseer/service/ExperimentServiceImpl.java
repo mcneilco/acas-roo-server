@@ -2031,10 +2031,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 		// Add project filtering if enabled and projects provided
 		if (propertiesUtilService.getRestrictExperiments() && allowedProjects != null && !allowedProjects.isEmpty()) {
-			List<String> projects = new ArrayList<>(allowedProjects);
-			if (!projects.contains("unassigned")) {
-				projects.add("unassigned");
-			}
 			whereClause.append("AND EXISTS (SELECT 1 FROM ExperimentState es JOIN es.lsValues ev ");
 			whereClause.append("WHERE es.experiment = e AND es.ignored = false AND es.deleted = false ");
 			whereClause.append("AND ev.lsKind = 'project' AND ev.ignored = false AND ev.deleted = false ");
