@@ -2110,7 +2110,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		summaries.add("Number of warnings: " + numWarningRecords);
 		summaries.add("New compounds: " + numNewParentsLoaded);
 		summaries.add("New lots of existing compounds: " + numNewLotsOldParentsLoaded);
-		summaries.add("New lots of new compounds in the file: " + numNewLotsOldParentsLoaded);
 		// bundle the messages together to return a single object
 		Map<String, Collection<String>> summaryMap = new HashMap<String, Collection<String>>();
 		summaryMap.put("errors", errors);

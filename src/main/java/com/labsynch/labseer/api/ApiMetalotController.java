@@ -99,7 +99,7 @@ public class ApiMetalotController {
 	@RequestMapping(value = {"", "/"}, method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_HTML);
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Access-Control-Allow-Origin", "*");
 		headers.add("Access-Control-Allow-Headers", "Content-Type");
 		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1
@@ -115,6 +115,7 @@ public class ApiMetalotController {
 				hasError = true;
 		}
 		if (hasError) {
+			headers.add("X-Lot-Save-Error", "true");
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(mr.getErrors()), headers,
 					HttpStatus.BAD_REQUEST);
 		} else {
