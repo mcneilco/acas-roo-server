@@ -115,7 +115,6 @@ public class ApiMetalotController {
 				hasError = true;
 		}
 		if (hasError) {
-			headers.add("lot save error", "true");
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(mr.getErrors()), headers,
 					HttpStatus.BAD_REQUEST);
 		} else {
