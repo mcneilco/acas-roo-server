@@ -1333,7 +1333,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			Collection<Lot> previousLots = Lot.findLotsByParent(lot.getParent()).getResultList();
 			if (previousLots.size() > 0) {
 				for (Lot previousLot : previousLots) {
-					if (previousLot.getLotNumber() == lot.getLotNumber()) {
+					if (previousLot.getLotNumber().equals(lot.getLotNumber())) {
 						logger.error("Cannot register duplicate of lot: " + previousLot.getCorpName());
 						// check if this duplicate lot came from the same/current BulkLoadFile, or
 						// whether it was pre-existing

@@ -43,6 +43,7 @@ import com.labsynch.labseer.dto.SetTubeLocationDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.DupeSaltFormCorpNameException;
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
@@ -158,6 +159,24 @@ public class MetalotServiceImpl implements MetalotService {
 			standardizerError.setMessage("Parent Aliases must be globally unique.");
 			logger.error(standardizerError.getMessage());
 			errors.add(standardizerError);
+		} catch (DupeLotException e) {
+			ErrorMessage dupeLotError = new ErrorMessage();
+			dupeLotError.setLevel("error");
+			String lotCorpName = e.getLotCorpName();
+			String baseMessage;
+			if (lotCorpName != null && !lotCorpName.isEmpty()) {
+				baseMessage = "Duplicate lot found: " + lotCorpName + ".";
+			} else {
+				baseMessage = "Duplicate lot found.";
+			}
+			String exceptionMessage = e.getMessage();
+			if (exceptionMessage != null && !exceptionMessage.trim().isEmpty()) {
+				dupeLotError.setMessage(baseMessage + " " + exceptionMessage);
+			} else {
+				dupeLotError.setMessage(baseMessage);
+			}
+			logger.error(dupeLotError.getMessage(), e);
+			errors.add(dupeLotError);
 		} catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
@@ -173,7 +192,7 @@ public class MetalotServiceImpl implements MetalotService {
 
 	@Transactional
 	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors)
-			throws UniqueNotebookException, DupeParentException, JsonParseException,
+			throws UniqueNotebookException, DupeParentException, DupeLotException, JsonParseException,
 			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException,
 			SaltedCompoundException, IOException, CmpdRegMolFormatException, StandardizerException,
 			NonUniqueAliasException {
@@ -524,6 +543,34 @@ public class MetalotServiceImpl implements MetalotService {
 					if (lot.getBuid() == null) {
 						lot.setBuid(0L);
 					}
+
+					// Validate lot for duplicates before attempting to persist
+					// Check for duplicate lot number on same parent
+					if (parent.getId() != null) {
+						Collection<Lot> previousLots = Lot.findLotsByParent(parent).getResultList();
+						for (Lot previousLot : previousLots) {
+							if (previousLot.getLotNumber().equals(lot.getLotNumber())) {
+								logger.error("Cannot register duplicate of lot: " + previousLot.getCorpName());
+								throw new DupeLotException(
+										"Duplicate lot cannot be registered due to previously existing lot in database.",
+										previousLot.getCorpName());
+							}
+						}
+					}
+
+					// Check for duplicate lot corp name
+					if (lot.getCorpName() != null) {
+						try {
+							Lot previousLot = Lot.findLotsByCorpNameEquals(lot.getCorpName()).getSingleResult();
+							logger.error("Cannot register duplicate of lot: " + previousLot.getCorpName());
+							throw new DupeLotException(
+									"Duplicate lot cannot be registered due to previously existing lot in database.",
+									previousLot.getCorpName());
+						} catch (NoResultException e) {
+							logger.debug("Not a duplicate lot corp name");
+						}
+					}
+
 					try {
 						lot.persist();
 						logger.debug("lot buid = " + lot.getBuid());
