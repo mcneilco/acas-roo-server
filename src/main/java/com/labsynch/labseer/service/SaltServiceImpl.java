@@ -334,7 +334,8 @@ public class SaltServiceImpl implements SaltService {
 				// Adds Associated Batch Codes to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage(batchDTO.getBatchCodes().size() + " Associated Batch Code(s): " + batchDTO.getBatchCodes().toString());
+				List<String> sortedBatchCodes = batchDTO.getBatchCodes().stream().sorted().collect(Collectors.toList());
+				error.setMessage(sortedBatchCodes.size() + " Associated Batch Code(s): " + sortedBatchCodes.toString());
 				warnings.add(error);
 			}
 
