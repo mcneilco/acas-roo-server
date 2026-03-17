@@ -863,7 +863,8 @@ public class MetalotServiceImpl implements MetalotService {
 		}
 	}
 
-	private boolean checkUniqueNotebook(Lot lot) {
+	@Override
+	public boolean checkUniqueNotebook(Lot lot) {
 		List<Lot> lots = Lot.findLotsByNotebookPageEquals(lot.getNotebookPage()).getResultList();
 		logger.debug("number of lots found by notebook entry" + lots.size());
 		if (lots.size() > 0) {
