@@ -58,11 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	</scm>
 	<repositories>
 		<repository>
-			<id>spring-release</id>
-			<name>Spring Release</name>
-			<url>https://repo.spring.io/release</url>
-		</repository>
-		<repository>
 			<id>MavenCentral</id>
 			<name>Maven repository</name>
 			<url>https://repo1.maven.org/maven2</url>
@@ -76,9 +71,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>spring-release</id>
-			<name>Spring Release</name>
-			<url>https://repo.spring.io/release</url>
+			<id>MavenCentral</id>
+			<name>Maven repository</name>
+			<url>https://repo1.maven.org/maven2</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<!-- Maven Build profile controls whether to use JChem or Indigo -->
@@ -488,6 +483,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		</dependency>
 	</dependencies>
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.6.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
