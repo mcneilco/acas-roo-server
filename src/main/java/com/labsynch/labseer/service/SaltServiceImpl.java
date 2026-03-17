@@ -212,10 +212,10 @@ public class SaltServiceImpl implements SaltService {
 	private boolean lotCorpNamesUseSaltAbbrev() {
 		// See LotServiceImpl.generateLotCorpNameFromBaseCorpName
 		final String corpBatchFormat = propertiesUtilService.getCorpBatchFormat();
-		final boolean appendSaltCodeToLotName = propertiesUtilService.getAppendSaltCodeToLotName();
-		if(corpBatchFormat.equalsIgnoreCase("corp_saltcode_batch")){
+		final Boolean appendSaltCodeToLotName = propertiesUtilService.getAppendSaltCodeToLotName();
+		if("corp_saltcode_batch".equalsIgnoreCase(corpBatchFormat)){
 			return true;
-		} else if(corpBatchFormat.equalsIgnoreCase("corp_batch_saltcode") && appendSaltCodeToLotName){
+		} else if("corp_batch_saltcode".equalsIgnoreCase(corpBatchFormat) && Boolean.TRUE.equals(appendSaltCodeToLotName)){
 			return true;
 		} else {
 			return false;
@@ -373,6 +373,7 @@ public class SaltServiceImpl implements SaltService {
 		return warnings;
 	}
 
+	@Transactional
 	public void updateDependencies(Salt salt)
 	{
 		// Form deduplicated sets of affected IsoSalts, SaltForms, and Lots
