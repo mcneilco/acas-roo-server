@@ -1331,15 +1331,15 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			}
 		}
 		// Check for unique notebook page if enabled
-		if (propertiesUtilService.getUniqueNotebook() && lot.getNotebookPage() != null) {
+		if (propertiesUtilService.getUniqueNotebook() && lot.getNotebookPage() != null && !lot.getNotebookPage().isBlank()) {
+			// Check if notebook page is duplicated within the same bulk load file (check first to avoid unnecessary DB query)
+			if (notebookPagesInFile != null && notebookPagesInFile.contains(lot.getNotebookPage())) {
+				throw new UniqueNotebookException("Lot notebook page \"" + lot.getNotebookPage() + "\" is duplicated within the same bulk load file. Please use a unique notebook page.");
+			}
 			// Check if notebook page already exists in the database
 			boolean isUniqueNotebook = metalotService.checkUniqueNotebook(lot);
 			if (!isUniqueNotebook) {
 				throw new UniqueNotebookException("Lot notebook page \"" + lot.getNotebookPage() + "\" is already in use. Please use a unique notebook page.");
-			}
-			// Check if notebook page is duplicated within the same bulk load file
-			if (notebookPagesInFile != null && notebookPagesInFile.contains(lot.getNotebookPage())) {
-				throw new UniqueNotebookException("Lot notebook page \"" + lot.getNotebookPage() + "\" is duplicated within the same bulk load file. Please use a unique notebook page.");
 			}
 			// If unique, add to the set for tracking within this file
 			if (notebookPagesInFile != null) {
