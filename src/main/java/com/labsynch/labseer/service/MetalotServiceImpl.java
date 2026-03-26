@@ -863,14 +863,11 @@ public class MetalotServiceImpl implements MetalotService {
 		}
 	}
 
-	private boolean checkUniqueNotebook(Lot lot) {
-		List<Lot> lots = Lot.findLotsByNotebookPageEquals(lot.getNotebookPage()).getResultList();
+	@Override
+	public boolean checkUniqueNotebook(Lot lot) {
+		List<Lot> lots = Lot.findLotsByNotebookPageEquals(lot.getNotebookPage()).setMaxResults(1).getResultList();
 		logger.debug("number of lots found by notebook entry" + lots.size());
-		if (lots.size() > 0) {
-			return false;
-		} else {
-			return true;
-		}
+		return lots.isEmpty();
 	}
 
 	public static String nullBlankRegDate(String metaLotJson) {
