@@ -80,6 +80,7 @@ import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.MissingPropertyException;
 import com.labsynch.labseer.exceptions.NonUniqueAliasException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
+import com.labsynch.labseer.exceptions.UniqueNotebookException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -404,6 +405,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFWriter errorMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(errorSDFName);
 			CmpdRegSDFWriter registeredMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(registeredSDFName);
 			HashMap<String, Integer> allAliasMaps = new HashMap<String, Integer>();
+			HashSet<String> notebookPagesInFile = new HashSet<String>();
 
 			int numRecordsRead = 0;
 			int numNewParentsLoaded = 0;
@@ -444,7 +446,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					CmpdRegMolecule standardizedMol = standardizedMols.get(key);
 					Boolean multipleFragments = multipleFragmentsList.get(Integer.parseInt(key));
 					try{
-						Boolean isNewParent = registerMol(origMol, standardizedMol, multipleFragments, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
+						Boolean isNewParent = registerMol(origMol, standardizedMol, multipleFragments, bulkLoadFile, mappings, errorCSVOutStream, registeredCSVOutStream, errorMolExporter, registeredMolExporter, allAliasMaps, notebookPagesInFile, numRecordsRead, results, validate, chemist, registerRequestDTO, dryRunCompound, startTime);
 						if(isNewParent != null) {
 							if (isNewParent)
 								numNewParentsLoaded++;
@@ -517,7 +519,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public Boolean registerMol(CmpdRegMolecule mol, CmpdRegMolecule standardizedMol, Boolean multipleFragments, BulkLoadFile bulkLoadFile,Collection<BulkLoadPropertyMappingDTO> mappings,
 			FileOutputStream errorCSVOutStream, FileOutputStream registeredCSVOutStream,
 			CmpdRegSDFWriter errorMolExporter, CmpdRegSDFWriter registeredMolExporter,
-			HashMap<String, Integer> allAliasMaps, int numRecordsRead, Collection<ValidationResponseDTO> results, boolean validate, String chemist, 
+			HashMap<String, Integer> allAliasMaps, HashSet<String> notebookPagesInFile, int numRecordsRead, Collection<ValidationResponseDTO> results, boolean validate, String chemist,
 			BulkLoadRegisterSDFRequestDTO registerRequestDTO, DryRunCompound dryRunCompound, Long startTime) throws IOException, CmpdRegMolFormatException{
 		boolean isNewParent = true;
 		// We are building up a Metalot, which will have a nested Lot, SaltForm, and
@@ -595,7 +597,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			parent.setBulkLoadFile(bulkLoadFile);
 
 		try {
-			lot = validateLot(lot, mappings, results);
+			lot = validateLot(lot, mappings, results, notebookPagesInFile);
 		} catch (Exception e) {
 			logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 			return null;
@@ -1272,7 +1274,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	public Lot validateLot(Lot lot, Collection<BulkLoadPropertyMappingDTO> mappings,
-			Collection<ValidationResponseDTO> results) throws MissingPropertyException, DupeLotException {
+			Collection<ValidationResponseDTO> results, HashSet<String> notebookPagesInFile) throws MissingPropertyException, DupeLotException, UniqueNotebookException {
 		// check for required fields
 		HashSet<String> requiredDbProperties = new HashSet<String>();
 		for (BulkLoadPropertyMappingDTO mapping : mappings) {
@@ -1326,6 +1328,22 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			// check project is assigned and is in allowed list
 			if (lot.getProject() == null) {
 				throw new MissingPropertyException("Project not specified. Please specify a valid project.");
+			}
+		}
+		// Check for unique notebook page if enabled
+		if (propertiesUtilService.getUniqueNotebook() && lot.getNotebookPage() != null && !lot.getNotebookPage().isBlank()) {
+			// Check if notebook page is duplicated within the same bulk load file (check first to avoid unnecessary DB query)
+			if (notebookPagesInFile != null && notebookPagesInFile.contains(lot.getNotebookPage())) {
+				throw new UniqueNotebookException("Lot notebook page \"" + lot.getNotebookPage() + "\" is duplicated within the same bulk load file. Please use a unique notebook page.");
+			}
+			// Check if notebook page already exists in the database
+			boolean isUniqueNotebook = metalotService.checkUniqueNotebook(lot);
+			if (!isUniqueNotebook) {
+				throw new UniqueNotebookException("Lot notebook page \"" + lot.getNotebookPage() + "\" is already in use. Please use a unique notebook page.");
+			}
+			// If unique, add to the set for tracking within this file
+			if (notebookPagesInFile != null) {
+				notebookPagesInFile.add(lot.getNotebookPage());
 			}
 		}
 		if (lot.getParent().getId() != null) {
