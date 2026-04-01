@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManager;
@@ -86,7 +87,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	private static final int ADVISORY_LOCK_NAMESPACE_ACAS = "acas".hashCode();
 	private static final int ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP = "auto-restandardize-startup".hashCode();
 
-	Boolean standardizationDryRunRunningInThisWorker = false;
+	private final AtomicBoolean standardizationDryRunRunningInThisWorker = new AtomicBoolean(false);
+	private final AtomicBoolean autoRestandardizationStartupTriggeredInThisWorker = new AtomicBoolean(false);
 
 	private boolean tryAcquireClusterLock(Connection connection, int lockNamespace, int lockId) throws SQLException {
 		String sql = "SELECT pg_try_advisory_lock(?, ?)";
@@ -212,6 +214,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		if (standardizationState != null
 				&& standardizationState.getNeedsRestandardization()
 				&& propertiesUtilService.getAutoRestandardize()) {
+			if (!autoRestandardizationStartupTriggeredInThisWorker.compareAndSet(false, true)) {
+				logger.info("Auto-restandardization startup flow already triggered in this worker. Skipping duplicate trigger.");
+				return;
+			}
 			if (!chemStructureService.supportsAutoRestandardization()) {
 				logger.warn("Auto-restandardization is enabled but the active chemistry engine does not support it (BBChem required). Skipping automatic restandardization.");
 			} else {
@@ -855,9 +861,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		//  -- getRegistrationStatus is ERROR
 		//  -- or dryRunCompound changedStructure is filled in
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+		if (stndznHistory == null) {
+			logger.warn("No standardization history found while attempting to finalize dry run with status {}", status);
+			return;
+		}
 		logger.info("Most recent standardization history id: " + stndznHistory.getId() + " status: " + stndznHistory.getDryRunStatus());
 		//Refresh the stndznHistory to get the latest status
-        if (!stndznHistory.getDryRunStatus().equals("running")) {
+		if (stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
             return;
         }
 		stndznHistory.setDryRunComplete(new Date());
@@ -875,14 +885,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
     public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
         //Avoid running the process if we are already in the middle of a dry run on this worker.
 		//i.e. if its manually called or if takes longer than a minute to run.
-		if(standardizationDryRunRunningInThisWorker) {
+		if(!standardizationDryRunRunningInThisWorker.compareAndSet(false, true)) {
 			return; // Avoid running multiple dry runs in parallel
 		}
-		standardizationDryRunRunningInThisWorker = true;
 		try {
 			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
-				standardizationDryRunRunningInThisWorker = false;
 				return;
 			}
 			logger.info("Dry run is running, executing dry run process");
@@ -890,10 +898,24 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			logger.info("Dry run process completed");
 		} catch (Exception e) {
 			logger.error("Error during dry run process", e);
-			standardizationDryRunRunningInThisWorker = false;
+			try {
+				finalizeDryRun("failed");
+			} catch (Exception finalizeException) {
+				logger.error("Failed to finalize dry run as failed after error", finalizeException);
+			}
+			if (e instanceof CmpdRegMolFormatException) {
+				throw (CmpdRegMolFormatException) e;
+			}
+			if (e instanceof IOException) {
+				throw (IOException) e;
+			}
+			if (e instanceof StandardizerException) {
+				throw (StandardizerException) e;
+			}
+			throw new StandardizerException(e);
+		} finally {
+			standardizationDryRunRunningInThisWorker.set(false);
 		}
-		// Set the status to complete if we reach here.
-		standardizationDryRunRunningInThisWorker = false;
     }
 }
 
