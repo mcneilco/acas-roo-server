@@ -104,8 +104,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return;
 		}
 
+		StandardizationSettingsConfigCheckResponseDTO standardizationState = null;
 		try{
-			checkStandardizationState();
+			standardizationState = checkStandardizationState();
 		} catch (Exception e) {
 			logger.warn("Error checking standardization state", e);
 		}
@@ -115,6 +116,26 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			chemStructureService.fillMissingStructures();
 		} catch (Exception e) {
 			logger.error("Error in trying to fill missing structures", e);
+		}
+
+		if (standardizationState != null
+				&& standardizationState.getNeedsRestandardization()
+				&& propertiesUtilService.getAutoRestandardize()) {
+			logger.info("Auto-restandardization is enabled and restandardization is needed. Starting automatic restandardization in background thread.");
+			Thread autoRestandardizationThread = new Thread(() -> {
+				try {
+					logger.info("Auto-restandardization: starting dry run");
+					executeDryRun();
+					logger.info("Auto-restandardization: dry run complete, starting standardization execution");
+					executeStandardization("acas", "Automatic restandardization triggered on startup");
+					logger.info("Auto-restandardization completed successfully");
+				} catch (Exception e) {
+					logger.error("Auto-restandardization failed", e);
+				}
+			});
+			autoRestandardizationThread.setName("auto-restandardization");
+			autoRestandardizationThread.setDaemon(true);
+			autoRestandardizationThread.start();
 		}
 	}
 

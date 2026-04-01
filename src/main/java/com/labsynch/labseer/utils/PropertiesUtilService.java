@@ -145,4 +145,6 @@ public interface PropertiesUtilService {
 
 	long getCheckForDryRunStandardizationDelay();
 
+	Boolean getAutoRestandardize();
+
 }
