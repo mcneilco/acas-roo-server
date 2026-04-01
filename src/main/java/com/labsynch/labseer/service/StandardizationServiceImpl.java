@@ -3,11 +3,16 @@ package com.labsynch.labseer.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -74,7 +79,81 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
+	@Autowired
+	private DataSource dataSource;
+
+	private static final long AUTO_RESTANDARDIZATION_CLUSTER_LOCK_KEY = 951001L;
+
 	Boolean standardizationDryRunRunningInThisWorker = false;
+
+	private boolean tryAcquireClusterLock(Connection connection, long lockKey) throws SQLException {
+		String sql = "SELECT pg_try_advisory_lock(?)";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setLong(1, lockKey);
+			try (ResultSet rs = statement.executeQuery()) {
+				if (rs.next()) {
+					return rs.getBoolean(1);
+				}
+			}
+		}
+		return false;
+	}
+
+	private void releaseClusterLock(Connection connection, long lockKey) {
+		String sql = "SELECT pg_advisory_unlock(?)";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setLong(1, lockKey);
+			statement.executeQuery();
+		} catch (SQLException e) {
+			logger.warn("Failed to release auto-restandardization cluster lock", e);
+		}
+	}
+
+	private void runAutomaticRestandardizationWithClusterLock() {
+		Connection lockConnection = null;
+		boolean lockAcquired = false;
+		try {
+			lockConnection = dataSource.getConnection();
+			lockAcquired = tryAcquireClusterLock(lockConnection, AUTO_RESTANDARDIZATION_CLUSTER_LOCK_KEY);
+			if (!lockAcquired) {
+				logger.info("Another pod already holds the auto-restandardization startup lock. Skipping startup initiation in this pod.");
+				return;
+			}
+
+			logger.info("Acquired auto-restandardization startup cluster lock.");
+			logger.info("Auto-restandardization: marking stale running standardization records as failed before startup run.");
+			failRunnningStandardization();
+
+			logger.info("Auto-restandardization: starting dry run");
+			executeDryRun();
+
+			StandardizationHistory latestHistory = getMostRecentStandardizationHistory();
+			if (latestHistory == null || !"complete".equals(latestHistory.getDryRunStatus())) {
+				String dryRunStatus = latestHistory == null ? "<missing-history>" : String.valueOf(latestHistory.getDryRunStatus());
+				logger.error("Auto-restandardization: dry run did not complete successfully (status: {}). Skipping execute phase.", dryRunStatus);
+				return;
+			}
+
+			logger.info("Auto-restandardization: dry run complete, starting standardization execution");
+			executeStandardization("acas", "Automatic restandardization triggered on startup");
+			logger.info("Auto-restandardization completed successfully");
+		} catch (SQLException e) {
+			logger.error("Auto-restandardization skipped because cluster lock could not be acquired via database advisory lock", e);
+		} catch (Exception e) {
+			logger.error("Auto-restandardization failed", e);
+		} finally {
+			if (lockAcquired && lockConnection != null) {
+				releaseClusterLock(lockConnection, AUTO_RESTANDARDIZATION_CLUSTER_LOCK_KEY);
+			}
+			if (lockConnection != null) {
+				try {
+					lockConnection.close();
+				} catch (SQLException e) {
+					logger.warn("Failed to close auto-restandardization lock connection", e);
+				}
+			}
+		}
+	}
 
 	public void failRunnningStandardization() {
 		// Cancel all running standardization histories as failed
@@ -126,15 +205,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			} else {
 				logger.info("Auto-restandardization is enabled and restandardization is needed. Starting automatic restandardization in background thread.");
 				Thread autoRestandardizationThread = new Thread(() -> {
-					try {
-						logger.info("Auto-restandardization: starting dry run");
-						executeDryRun();
-						logger.info("Auto-restandardization: dry run complete, starting standardization execution");
-						executeStandardization("acas", "Automatic restandardization triggered on startup");
-						logger.info("Auto-restandardization completed successfully");
-					} catch (Exception e) {
-						logger.error("Auto-restandardization failed", e);
-					}
+					runAutomaticRestandardizationWithClusterLock();
 				});
 				autoRestandardizationThread.setName("auto-restandardization");
 				autoRestandardizationThread.setDaemon(true);
