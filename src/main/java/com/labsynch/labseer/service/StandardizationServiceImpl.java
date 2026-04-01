@@ -82,14 +82,17 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	private DataSource dataSource;
 
-	private static final long AUTO_RESTANDARDIZATION_CLUSTER_LOCK_KEY = 951001L;
+	// Use stable Java String hashes from human-readable lock names so lock IDs remain readable and deterministic
+	private static final int ADVISORY_LOCK_NAMESPACE_ACAS = "acas".hashCode();
+	private static final int ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP = "auto-restandardize-startup".hashCode();
 
 	Boolean standardizationDryRunRunningInThisWorker = false;
 
-	private boolean tryAcquireClusterLock(Connection connection, long lockKey) throws SQLException {
-		String sql = "SELECT pg_try_advisory_lock(?)";
+	private boolean tryAcquireClusterLock(Connection connection, int lockNamespace, int lockId) throws SQLException {
+		String sql = "SELECT pg_try_advisory_lock(?, ?)";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setLong(1, lockKey);
+			statement.setInt(1, lockNamespace);
+			statement.setInt(2, lockId);
 			try (ResultSet rs = statement.executeQuery()) {
 				if (rs.next()) {
 					return rs.getBoolean(1);
@@ -99,10 +102,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return false;
 	}
 
-	private void releaseClusterLock(Connection connection, long lockKey) {
-		String sql = "SELECT pg_advisory_unlock(?)";
+	private void releaseClusterLock(Connection connection, int lockNamespace, int lockId) {
+		String sql = "SELECT pg_advisory_unlock(?, ?)";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setLong(1, lockKey);
+			statement.setInt(1, lockNamespace);
+			statement.setInt(2, lockId);
 			statement.executeQuery();
 		} catch (SQLException e) {
 			logger.warn("Failed to release auto-restandardization cluster lock", e);
@@ -114,7 +118,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		boolean lockAcquired = false;
 		try {
 			lockConnection = dataSource.getConnection();
-			lockAcquired = tryAcquireClusterLock(lockConnection, AUTO_RESTANDARDIZATION_CLUSTER_LOCK_KEY);
+			lockAcquired = tryAcquireClusterLock(
+					lockConnection,
+					ADVISORY_LOCK_NAMESPACE_ACAS,
+					ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP
+			);
 			if (!lockAcquired) {
 				logger.info("Another pod already holds the auto-restandardization startup lock. Skipping startup initiation in this pod.");
 				return;
@@ -143,7 +151,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			logger.error("Auto-restandardization failed", e);
 		} finally {
 			if (lockAcquired && lockConnection != null) {
-				releaseClusterLock(lockConnection, AUTO_RESTANDARDIZATION_CLUSTER_LOCK_KEY);
+				releaseClusterLock(
+						lockConnection,
+						ADVISORY_LOCK_NAMESPACE_ACAS,
+						ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP
+				);
 			}
 			if (lockConnection != null) {
 				try {
