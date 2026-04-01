@@ -121,21 +121,25 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		if (standardizationState != null
 				&& standardizationState.getNeedsRestandardization()
 				&& propertiesUtilService.getAutoRestandardize()) {
-			logger.info("Auto-restandardization is enabled and restandardization is needed. Starting automatic restandardization in background thread.");
-			Thread autoRestandardizationThread = new Thread(() -> {
-				try {
-					logger.info("Auto-restandardization: starting dry run");
-					executeDryRun();
-					logger.info("Auto-restandardization: dry run complete, starting standardization execution");
-					executeStandardization("acas", "Automatic restandardization triggered on startup");
-					logger.info("Auto-restandardization completed successfully");
-				} catch (Exception e) {
-					logger.error("Auto-restandardization failed", e);
-				}
-			});
-			autoRestandardizationThread.setName("auto-restandardization");
-			autoRestandardizationThread.setDaemon(true);
-			autoRestandardizationThread.start();
+			if (!chemStructureService.supportsAutoRestandardization()) {
+				logger.warn("Auto-restandardization is enabled but the active chemistry engine does not support it (BBChem required). Skipping automatic restandardization.");
+			} else {
+				logger.info("Auto-restandardization is enabled and restandardization is needed. Starting automatic restandardization in background thread.");
+				Thread autoRestandardizationThread = new Thread(() -> {
+					try {
+						logger.info("Auto-restandardization: starting dry run");
+						executeDryRun();
+						logger.info("Auto-restandardization: dry run complete, starting standardization execution");
+						executeStandardization("acas", "Automatic restandardization triggered on startup");
+						logger.info("Auto-restandardization completed successfully");
+					} catch (Exception e) {
+						logger.error("Auto-restandardization failed", e);
+					}
+				});
+				autoRestandardizationThread.setName("auto-restandardization");
+				autoRestandardizationThread.setDaemon(true);
+				autoRestandardizationThread.start();
+			}
 		}
 	}
 
