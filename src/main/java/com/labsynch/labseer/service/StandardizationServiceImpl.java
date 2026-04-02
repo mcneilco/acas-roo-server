@@ -115,7 +115,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 	}
 
-	private void runAutomaticRestandardizationWithClusterLock() {
+	private void runAutomaticRestandardizationWithClusterLock(String reason) {
 		Connection lockConnection = null;
 		boolean lockAcquired = false;
 		try {
@@ -145,7 +145,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			logger.info("Auto-restandardization: dry run complete, starting standardization execution");
-			executeStandardization("acas", "Automatic restandardization triggered on startup");
+			executeStandardization("acas", reason);
 			logger.info("Auto-restandardization completed successfully");
 		} catch (SQLException e) {
 			logger.error("Auto-restandardization skipped because cluster lock could not be acquired via database advisory lock", e);
@@ -222,8 +222,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				logger.warn("Auto-restandardization is enabled but the active chemistry engine does not support it (BBChem required). Skipping automatic restandardization.");
 			} else {
 				logger.info("Auto-restandardization is enabled and restandardization is needed. Starting automatic restandardization in background thread.");
+				String restandardizationReason = standardizationState.getNeedsRestandardizationReasons().stream()
+						.collect(Collectors.joining("; ")) + ". Automatic restandardization triggered on startup.";
 				Thread autoRestandardizationThread = new Thread(() -> {
-					runAutomaticRestandardizationWithClusterLock();
+					runAutomaticRestandardizationWithClusterLock(restandardizationReason);
 				});
 				autoRestandardizationThread.setName("auto-restandardization");
 				autoRestandardizationThread.setDaemon(true);
