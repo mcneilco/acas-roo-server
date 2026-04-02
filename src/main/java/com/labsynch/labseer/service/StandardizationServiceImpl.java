@@ -893,6 +893,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
 				return;
 			}
+			int currentConfigHash = chemStructureService.getStandardizerSettings(true).hashCode();
+			if (stndznHistory.getSettingsHash() != currentConfigHash) {
+				logger.warn("Skipping dry-run processing - config mismatch detected (history hash: {}, current hash: {}). "
+						+ "This pod may have a different configuration than the pod that initiated the dry run. "
+						+ "Waiting for pod to restart with consistent config.", stndznHistory.getSettingsHash(), currentConfigHash);
+				return;
+			}
 			logger.info("Dry run is running, executing dry run process");
 			runDryRun();
 			logger.info("Dry run process completed");
