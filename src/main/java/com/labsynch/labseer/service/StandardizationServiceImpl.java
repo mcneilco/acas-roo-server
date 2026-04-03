@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -420,6 +422,38 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		} catch (Exception e) {
 			logger.error("Auto-restandardization: failed to generate dry-run SDF report at {}", reportFile.getAbsolutePath(), e);
 		}
+	}
+
+	@Override
+	public String getAutoRestandardizationDryRunReportFilePath(Long historyId) {
+		if (historyId == null) {
+			return null;
+		}
+
+		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
+		if (StringUtils.isBlank(reportDirectoryPath)) {
+			reportDirectoryPath = "/tmp";
+		}
+
+		File reportDirectory = new File(reportDirectoryPath);
+		if (!reportDirectory.exists() || !reportDirectory.isDirectory()) {
+			return null;
+		}
+
+		final String prefix = AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX + "-history-" + historyId + "-";
+		File[] reportCandidates = reportDirectory.listFiles((dir, name) ->
+				name != null && name.startsWith(prefix) && name.endsWith(".sdf"));
+
+		if (reportCandidates == null || reportCandidates.length == 0) {
+			return null;
+		}
+
+		File newestReport = Arrays.stream(reportCandidates)
+				.filter(File::isFile)
+				.max(Comparator.comparingLong(File::lastModified))
+				.orElse(null);
+
+		return newestReport == null ? null : newestReport.getAbsolutePath();
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -875,6 +909,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public List<StandardizationHistory> getStandardizationHistory() {
 		List<StandardizationHistory> standardizationSettingses = StandardizationHistory
 				.findStandardizationHistoryEntries(0, 500, "dateOfStandardization", "DESC");
+		for (StandardizationHistory historyEntry : standardizationSettingses) {
+			Long historyId = historyEntry.getId();
+			boolean reportAvailable = historyId != null
+					&& getAutoRestandardizationDryRunReportFilePath(historyId) != null;
+			historyEntry.setAutoDryRunReportAvailable(reportAvailable);
+		}
 		return standardizationSettingses;
 	}
 
