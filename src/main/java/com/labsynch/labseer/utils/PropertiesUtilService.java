@@ -151,6 +151,4 @@ public interface PropertiesUtilService {
 
 	String getAutoRestandardizationReportDirectory();
 
-	String getAutoRestandardizationReportFilenamePrefix();
-
 }

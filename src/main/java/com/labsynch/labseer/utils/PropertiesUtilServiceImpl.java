@@ -1024,16 +1024,4 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.autoRestandardizationReportDirectory;
 	}
 
-	String autoRestandardizationReportFilenamePrefix;
-
-	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportFilenamePrefix:standardization-dry-run-report}")
-	public void setAutoRestandardizationReportFilenamePrefix(String autoRestandardizationReportFilenamePrefix) {
-		this.autoRestandardizationReportFilenamePrefix = autoRestandardizationReportFilenamePrefix;
-	}
-
-	@Override
-	public String getAutoRestandardizationReportFilenamePrefix() {
-		return this.autoRestandardizationReportFilenamePrefix;
-	}
-
 }

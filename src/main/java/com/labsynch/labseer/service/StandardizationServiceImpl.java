@@ -89,6 +89,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	// Use stable Java String hashes from human-readable lock names so lock IDs remain readable and deterministic
 	private static final int ADVISORY_LOCK_NAMESPACE_ACAS = "acas".hashCode();
 	private static final int ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP = "auto-restandardize-startup".hashCode();
+	private static final String AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX = "standardization-dry-run-report";
 
 	private final AtomicBoolean standardizationDryRunRunningInThisWorker = new AtomicBoolean(false);
 	private final AtomicBoolean autoRestandardizationStartupTriggeredInThisWorker = new AtomicBoolean(false);
@@ -398,10 +399,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 
 		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
-		String filenamePrefix = propertiesUtilService.getAutoRestandardizationReportFilenamePrefix();
-		if (StringUtils.isBlank(filenamePrefix)) {
-			filenamePrefix = "standardization-dry-run-report";
-		}
 		if (StringUtils.isBlank(reportDirectoryPath)) {
 			reportDirectoryPath = "/tmp";
 		}
@@ -414,7 +411,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 		String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
 		String historyId = latestHistory == null || latestHistory.getId() == null ? "unknown" : String.valueOf(latestHistory.getId());
-		String fileName = filenamePrefix + "-history-" + historyId + "-" + timestamp + ".sdf";
+		String fileName = AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX + "-history-" + historyId + "-" + timestamp + ".sdf";
 		File reportFile = new File(reportDirectory, fileName);
 
 		try {
