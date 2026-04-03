@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.stream.Collectors;
@@ -89,6 +91,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	private final AtomicBoolean standardizationDryRunRunningInThisWorker = new AtomicBoolean(false);
 	private final AtomicBoolean autoRestandardizationStartupTriggeredInThisWorker = new AtomicBoolean(false);
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private boolean tryAcquireClusterLock(Connection connection, int lockNamespace, int lockId) throws SQLException {
 		String sql = "SELECT pg_try_advisory_lock(?, ?)";
@@ -102,6 +105,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 		}
 		return false;
+	}
+
+	private String getPodName() {
+		String podName = System.getenv("HOSTNAME");
+		return StringUtils.isBlank(podName) ? "<unknown-pod>" : podName;
 	}
 
 	private void releaseClusterLock(Connection connection, int lockNamespace, int lockId) {
@@ -365,6 +373,20 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			current = current.getCause();
 		}
 		return false;
+	}
+
+	private boolean hasReadyStandardizerActions(StandardizerSettingsConfigDTO standardizerSettings) {
+		if (standardizerSettings == null || StringUtils.isBlank(standardizerSettings.getSettings())) {
+			return false;
+		}
+		try {
+			JsonNode parsedSettings = OBJECT_MAPPER.readTree(standardizerSettings.getSettings());
+			JsonNode standardizerActions = parsedSettings.get("standardizer_actions");
+			return standardizerActions != null && !standardizerActions.isNull() && !standardizerActions.isMissingNode();
+		} catch (IOException e) {
+			logger.warn("Unable to parse standardizer settings while checking readiness. Continuing with normal processing.", e);
+			return true;
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -838,6 +860,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		stndznHistory.setDryRunStart(new Date());
 		stndznHistory.setDryRunComplete(null);
 		stndznHistory.persist();
+		logger.info(
+				"Initialized dry-run history settings snapshot: pod={}, historyId={}, status={}, settingsHash={}, settings={}",
+				getPodName(),
+				stndznHistory.getId(),
+				status,
+				stndznHistory.getSettingsHash(),
+				stndznHistory.getSettings()
+		);
 		return stndznHistory;
 	}
 
@@ -918,13 +948,37 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
 				return;
 			}
-			int currentConfigHash = chemStructureService.getStandardizerSettings(true).hashCode();
-			if (stndznHistory.getSettingsHash() != currentConfigHash) {
-				logger.warn("Skipping dry-run processing - config mismatch detected (history hash: {}, current hash: {}). "
-						+ "This pod may have a different configuration than the pod that initiated the dry run. "
-						+ "Waiting for pod to restart with consistent config.", stndznHistory.getSettingsHash(), currentConfigHash);
+			StandardizerSettingsConfigDTO currentSettings = chemStructureService.getStandardizerSettings(true);
+			if (!hasReadyStandardizerActions(currentSettings)) {
+				logger.info("Skipping dry-run processing - standardizer actions are not initialized yet: pod={}, historyId={}, dryRunStatus={}. Waiting for settings initialization before worker participation.",
+						getPodName(),
+						stndznHistory.getId(),
+						stndznHistory.getDryRunStatus());
 				return;
 			}
+			int currentConfigHash = currentSettings.hashCode();
+			if (stndznHistory.getSettingsHash() != currentConfigHash) {
+				logger.warn("Skipping dry-run processing - config mismatch detected: pod={}, historyId={}, dryRunStatus={}, history hash={}, current hash={}, history settings={}, current settings={}. "
+						+ "This pod may have a different configuration than the pod that initiated the dry run. "
+						+ "Waiting for pod to restart with consistent config.",
+						getPodName(),
+						stndznHistory.getId(),
+						stndznHistory.getDryRunStatus(),
+						stndznHistory.getSettingsHash(),
+						currentConfigHash,
+						stndznHistory.getSettings(),
+						currentSettings.toJson());
+				return;
+			}
+			logger.info(
+					"Dry-run worker settings match: pod={}, historyId={}, dryRunStatus={}, historyHash={}, currentHash={}, currentSettings={}",
+					getPodName(),
+					stndznHistory.getId(),
+					stndznHistory.getDryRunStatus(),
+					stndznHistory.getSettingsHash(),
+					currentConfigHash,
+					currentSettings.toJson()
+			);
 			logger.info("Dry run is running, executing dry run process");
 			runDryRun();
 			logger.info("Dry run process completed");
