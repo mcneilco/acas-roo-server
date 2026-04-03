@@ -147,4 +147,10 @@ public interface PropertiesUtilService {
 
 	Boolean getAutoRestandardize();
 
+	Boolean getAutoRestandardizationReportEnabled();
+
+	String getAutoRestandardizationReportDirectory();
+
+	String getAutoRestandardizationReportFilenamePrefix();
+
 }

@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -151,6 +152,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				logger.error("Auto-restandardization: dry run did not complete successfully (status: {}). Skipping execute phase.", dryRunStatus);
 				return;
 			}
+
+			maybeGenerateAutoRestandardizationDryRunReport(latestHistory);
 
 			logger.info("Auto-restandardization: dry run complete, starting standardization execution");
 			executeStandardization("acas", reason);
@@ -386,6 +389,39 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		} catch (IOException e) {
 			logger.warn("Unable to parse standardizer settings while checking readiness. Continuing with normal processing.", e);
 			return true;
+		}
+	}
+
+	private void maybeGenerateAutoRestandardizationDryRunReport(StandardizationHistory latestHistory) {
+		if (!Boolean.TRUE.equals(propertiesUtilService.getAutoRestandardizationReportEnabled())) {
+			return;
+		}
+
+		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
+		String filenamePrefix = propertiesUtilService.getAutoRestandardizationReportFilenamePrefix();
+		if (StringUtils.isBlank(filenamePrefix)) {
+			filenamePrefix = "standardization-dry-run-report";
+		}
+		if (StringUtils.isBlank(reportDirectoryPath)) {
+			reportDirectoryPath = "/tmp";
+		}
+
+		File reportDirectory = new File(reportDirectoryPath);
+		if (!reportDirectory.exists() && !reportDirectory.mkdirs()) {
+			logger.error("Auto-restandardization: failed to create report directory {}. Skipping dry-run report export.", reportDirectory.getAbsolutePath());
+			return;
+		}
+
+		String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+		String historyId = latestHistory == null || latestHistory.getId() == null ? "unknown" : String.valueOf(latestHistory.getId());
+		String fileName = filenamePrefix + "-history-" + historyId + "-" + timestamp + ".sdf";
+		File reportFile = new File(reportDirectory, fileName);
+
+		try {
+			String outputPath = getStandardizationDryRunReportFiles(reportFile.getAbsolutePath());
+			logger.info("Auto-restandardization: dry-run SDF report generated at {}", outputPath);
+		} catch (Exception e) {
+			logger.error("Auto-restandardization: failed to generate dry-run SDF report at {}", reportFile.getAbsolutePath(), e);
 		}
 	}
 
