@@ -322,7 +322,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public void populateStandardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		while (true) {
-			int processedCount = dryrunStandardizeBatch();
+			int processedCount;
+			try {
+				processedCount = dryrunStandardizeBatch();
+			} catch (RuntimeException e) {
+				if (isDuplicateDryRunParentReservation(e)) {
+					logger.warn("Detected duplicate parent reservation while populating standardization dry run table. Another worker likely won the race for one or more parent IDs. Retrying.", e);
+					continue;
+				}
+				throw e;
+			}
 			int remainingToBeProcessed = StandardizationDryRunCompound.countRemainingParentsNotInStandardizationDryRunCompound();
 			if(processedCount > 0) {
 				int totalProcessed = StandardizationDryRunCompound.rowCount();
@@ -342,6 +351,20 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				}
 			}
 		}
+	}
+
+	private boolean isDuplicateDryRunParentReservation(Throwable throwable) {
+		Throwable current = throwable;
+		while (current != null) {
+			String message = current.getMessage();
+			if (message != null
+					&& message.contains("stndzn_dry_run_parent_id_unique_idx")
+					&& message.contains("duplicate key value violates unique constraint")) {
+				return true;
+			}
+			current = current.getCause();
+		}
+		return false;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
