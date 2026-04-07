@@ -1102,6 +1102,11 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 
 	@Override
+	public boolean supportsAutoRestandardization() {
+		return true;
+	}
+
+	@Override
 	public void fillMissingStructures() throws CmpdRegMolFormatException {
 
 		// Parents

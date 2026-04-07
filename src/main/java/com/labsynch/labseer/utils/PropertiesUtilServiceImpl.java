@@ -988,4 +988,40 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.checkForDryRunStandardizationDelay;
 	}
 
+	boolean autoRestandardize;
+
+	@Value("${client.cmpdreg.serverSettings.autoRestandardize:false}")
+	public void setAutoRestandardize(boolean autoRestandardize) {
+		this.autoRestandardize = autoRestandardize;
+	}
+
+	@Override
+	public Boolean getAutoRestandardize() {
+		return this.autoRestandardize;
+	}
+
+	boolean autoRestandardizationReportEnabled;
+
+	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportEnabled:false}")
+	public void setAutoRestandardizationReportEnabled(boolean autoRestandardizationReportEnabled) {
+		this.autoRestandardizationReportEnabled = autoRestandardizationReportEnabled;
+	}
+
+	@Override
+	public Boolean getAutoRestandardizationReportEnabled() {
+		return this.autoRestandardizationReportEnabled;
+	}
+
+	String autoRestandardizationReportDirectory;
+
+	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportDirectory:/tmp}")
+	public void setAutoRestandardizationReportDirectory(String autoRestandardizationReportDirectory) {
+		this.autoRestandardizationReportDirectory = autoRestandardizationReportDirectory;
+	}
+
+	@Override
+	public String getAutoRestandardizationReportDirectory() {
+		return this.autoRestandardizationReportDirectory;
+	}
+
 }

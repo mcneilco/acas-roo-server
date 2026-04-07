@@ -3,12 +3,23 @@ package com.labsynch.labseer.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.stream.Collectors;
@@ -74,7 +85,103 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
-	Boolean standardizationDryRunRunningInThisWorker = false;
+	@Autowired
+	private DataSource dataSource;
+
+	// Use stable Java String hashes from human-readable lock names so lock IDs remain readable and deterministic
+	private static final int ADVISORY_LOCK_NAMESPACE_ACAS = "acas".hashCode();
+	private static final int ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP = "auto-restandardize-startup".hashCode();
+	private static final String AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX = "standardization-dry-run-report";
+
+	private final AtomicBoolean standardizationDryRunRunningInThisWorker = new AtomicBoolean(false);
+	private final AtomicBoolean autoRestandardizationStartupTriggeredInThisWorker = new AtomicBoolean(false);
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	private boolean tryAcquireClusterLock(Connection connection, int lockNamespace, int lockId) throws SQLException {
+		String sql = "SELECT pg_try_advisory_lock(?, ?)";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, lockNamespace);
+			statement.setInt(2, lockId);
+			try (ResultSet rs = statement.executeQuery()) {
+				if (rs.next()) {
+					return rs.getBoolean(1);
+				}
+			}
+		}
+		return false;
+	}
+
+	private String getPodName() {
+		String podName = System.getenv("HOSTNAME");
+		return StringUtils.isBlank(podName) ? "<unknown-pod>" : podName;
+	}
+
+	private void releaseClusterLock(Connection connection, int lockNamespace, int lockId) {
+		String sql = "SELECT pg_advisory_unlock(?, ?)";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, lockNamespace);
+			statement.setInt(2, lockId);
+			statement.executeQuery();
+		} catch (SQLException e) {
+			logger.warn("Failed to release auto-restandardization cluster lock", e);
+		}
+	}
+
+	private void runAutomaticRestandardizationWithClusterLock(String reason) {
+		Connection lockConnection = null;
+		boolean lockAcquired = false;
+		try {
+			lockConnection = dataSource.getConnection();
+			lockAcquired = tryAcquireClusterLock(
+					lockConnection,
+					ADVISORY_LOCK_NAMESPACE_ACAS,
+					ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP
+			);
+			if (!lockAcquired) {
+				logger.info("Another pod already holds the auto-restandardization startup lock. Skipping startup initiation in this pod.");
+				return;
+			}
+
+			logger.info("Acquired auto-restandardization startup cluster lock.");
+			logger.info("Auto-restandardization: marking stale running standardization records as failed before startup run.");
+			failRunnningStandardization();
+
+			logger.info("Auto-restandardization: starting dry run");
+			executeDryRun();
+
+			StandardizationHistory latestHistory = getMostRecentStandardizationHistory();
+			if (latestHistory == null || !"complete".equals(latestHistory.getDryRunStatus())) {
+				String dryRunStatus = latestHistory == null ? "<missing-history>" : String.valueOf(latestHistory.getDryRunStatus());
+				logger.error("Auto-restandardization: dry run did not complete successfully (status: {}). Skipping execute phase.", dryRunStatus);
+				return;
+			}
+
+			maybeGenerateAutoRestandardizationDryRunReport(latestHistory);
+
+			logger.info("Auto-restandardization: dry run complete, starting standardization execution");
+			executeStandardization("acas", reason);
+			logger.info("Auto-restandardization completed successfully");
+		} catch (SQLException e) {
+			logger.error("Auto-restandardization skipped because cluster lock could not be acquired via database advisory lock", e);
+		} catch (Exception e) {
+			logger.error("Auto-restandardization failed", e);
+		} finally {
+			if (lockAcquired && lockConnection != null) {
+				releaseClusterLock(
+						lockConnection,
+						ADVISORY_LOCK_NAMESPACE_ACAS,
+						ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP
+				);
+			}
+			if (lockConnection != null) {
+				try {
+					lockConnection.close();
+				} catch (SQLException e) {
+					logger.warn("Failed to close auto-restandardization lock connection", e);
+				}
+			}
+		}
+	}
 
 	public void failRunnningStandardization() {
 		// Cancel all running standardization histories as failed
@@ -104,8 +211,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return;
 		}
 
+		StandardizationSettingsConfigCheckResponseDTO standardizationState = null;
 		try{
-			checkStandardizationState();
+			standardizationState = checkStandardizationState();
 		} catch (Exception e) {
 			logger.warn("Error checking standardization state", e);
 		}
@@ -115,6 +223,28 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			chemStructureService.fillMissingStructures();
 		} catch (Exception e) {
 			logger.error("Error in trying to fill missing structures", e);
+		}
+
+		if (standardizationState != null
+				&& standardizationState.getNeedsRestandardization()
+				&& propertiesUtilService.getAutoRestandardize()) {
+			if (!autoRestandardizationStartupTriggeredInThisWorker.compareAndSet(false, true)) {
+				logger.info("Auto-restandardization startup flow already triggered in this worker. Skipping duplicate trigger.");
+				return;
+			}
+			if (!chemStructureService.supportsAutoRestandardization()) {
+				logger.warn("Auto-restandardization is enabled but the active chemistry engine does not support it (BBChem required). Skipping automatic restandardization.");
+			} else {
+				logger.info("Auto-restandardization is enabled and restandardization is needed. Starting automatic restandardization in background thread.");
+				String restandardizationReason = standardizationState.getNeedsRestandardizationReasons().stream()
+						.collect(Collectors.joining("; ")) + ". Automatic restandardization triggered on startup.";
+				Thread autoRestandardizationThread = new Thread(() -> {
+					runAutomaticRestandardizationWithClusterLock(restandardizationReason);
+				});
+				autoRestandardizationThread.setName("auto-restandardization");
+				autoRestandardizationThread.setDaemon(true);
+				autoRestandardizationThread.start();
+			}
 		}
 	}
 
@@ -206,7 +336,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public void populateStandardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		while (true) {
-			int processedCount = dryrunStandardizeBatch();
+			int processedCount;
+			try {
+				processedCount = dryrunStandardizeBatch();
+			} catch (RuntimeException e) {
+				if (isDuplicateDryRunParentReservation(e)) {
+					logger.warn("Detected duplicate parent reservation while populating standardization dry run table. Another worker likely won the race for one or more parent IDs. Retrying.", e);
+					continue;
+				}
+				throw e;
+			}
 			int remainingToBeProcessed = StandardizationDryRunCompound.countRemainingParentsNotInStandardizationDryRunCompound();
 			if(processedCount > 0) {
 				int totalProcessed = StandardizationDryRunCompound.rowCount();
@@ -226,6 +365,95 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				}
 			}
 		}
+	}
+
+	private boolean isDuplicateDryRunParentReservation(Throwable throwable) {
+		Throwable current = throwable;
+		while (current != null) {
+			String message = current.getMessage();
+			if (message != null
+					&& message.contains("stndzn_dry_run_parent_id_unique_idx")
+					&& message.contains("duplicate key value violates unique constraint")) {
+				return true;
+			}
+			current = current.getCause();
+		}
+		return false;
+	}
+
+	private boolean hasReadyStandardizerActions(StandardizerSettingsConfigDTO standardizerSettings) {
+		if (standardizerSettings == null || StringUtils.isBlank(standardizerSettings.getSettings())) {
+			return false;
+		}
+		try {
+			JsonNode parsedSettings = OBJECT_MAPPER.readTree(standardizerSettings.getSettings());
+			JsonNode standardizerActions = parsedSettings.get("standardizer_actions");
+			return standardizerActions != null && !standardizerActions.isNull() && !standardizerActions.isMissingNode();
+		} catch (IOException e) {
+			logger.warn("Unable to parse standardizer settings while checking readiness. Continuing with normal processing.", e);
+			return true;
+		}
+	}
+
+	private void maybeGenerateAutoRestandardizationDryRunReport(StandardizationHistory latestHistory) {
+		if (!Boolean.TRUE.equals(propertiesUtilService.getAutoRestandardizationReportEnabled())) {
+			return;
+		}
+
+		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
+		if (StringUtils.isBlank(reportDirectoryPath)) {
+			reportDirectoryPath = "/tmp";
+		}
+
+		File reportDirectory = new File(reportDirectoryPath);
+		if (!reportDirectory.exists() && !reportDirectory.mkdirs()) {
+			logger.error("Auto-restandardization: failed to create report directory {}. Skipping dry-run report export.", reportDirectory.getAbsolutePath());
+			return;
+		}
+
+		String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+		String historyId = latestHistory == null || latestHistory.getId() == null ? "unknown" : String.valueOf(latestHistory.getId());
+		String fileName = AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX + "-history-" + historyId + "-" + timestamp + ".sdf";
+		File reportFile = new File(reportDirectory, fileName);
+
+		try {
+			String outputPath = getStandardizationDryRunReportFiles(reportFile.getAbsolutePath());
+			logger.info("Auto-restandardization: dry-run SDF report generated at {}", outputPath);
+		} catch (Exception e) {
+			logger.error("Auto-restandardization: failed to generate dry-run SDF report at {}", reportFile.getAbsolutePath(), e);
+		}
+	}
+
+	@Override
+	public String getAutoRestandardizationDryRunReportFilePath(Long historyId) {
+		if (historyId == null) {
+			return null;
+		}
+
+		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
+		if (StringUtils.isBlank(reportDirectoryPath)) {
+			reportDirectoryPath = "/tmp";
+		}
+
+		File reportDirectory = new File(reportDirectoryPath);
+		if (!reportDirectory.exists() || !reportDirectory.isDirectory()) {
+			return null;
+		}
+
+		final String prefix = AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX + "-history-" + historyId + "-";
+		File[] reportCandidates = reportDirectory.listFiles((dir, name) ->
+				name != null && name.startsWith(prefix) && name.endsWith(".sdf"));
+
+		if (reportCandidates == null || reportCandidates.length == 0) {
+			return null;
+		}
+
+		File newestReport = Arrays.stream(reportCandidates)
+				.filter(File::isFile)
+				.max(Comparator.comparingLong(File::lastModified))
+				.orElse(null);
+
+		return newestReport == null ? null : newestReport.getAbsolutePath();
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -681,6 +909,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	public List<StandardizationHistory> getStandardizationHistory() {
 		List<StandardizationHistory> standardizationSettingses = StandardizationHistory
 				.findStandardizationHistoryEntries(0, 500, "dateOfStandardization", "DESC");
+		for (StandardizationHistory historyEntry : standardizationSettingses) {
+			Long historyId = historyEntry.getId();
+			boolean reportAvailable = historyId != null
+					&& getAutoRestandardizationDryRunReportFilePath(historyId) != null;
+			historyEntry.setAutoDryRunReportAvailable(reportAvailable);
+		}
 		return standardizationSettingses;
 	}
 
@@ -699,6 +933,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		stndznHistory.setDryRunStart(new Date());
 		stndznHistory.setDryRunComplete(null);
 		stndznHistory.persist();
+		logger.info(
+				"Initialized dry-run history settings snapshot: pod={}, historyId={}, status={}, settingsHash={}, settings={}",
+				getPodName(),
+				stndznHistory.getId(),
+				status,
+				stndznHistory.getSettingsHash(),
+				stndznHistory.getSettings()
+		);
 		return stndznHistory;
 	}
 
@@ -747,9 +989,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		//  -- getRegistrationStatus is ERROR
 		//  -- or dryRunCompound changedStructure is filled in
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+		if (stndznHistory == null) {
+			logger.warn("No standardization history found while attempting to finalize dry run with status {}", status);
+			return;
+		}
 		logger.info("Most recent standardization history id: " + stndznHistory.getId() + " status: " + stndznHistory.getDryRunStatus());
 		//Refresh the stndznHistory to get the latest status
-        if (!stndznHistory.getDryRunStatus().equals("running")) {
+		if (stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
             return;
         }
 		stndznHistory.setDryRunComplete(new Date());
@@ -767,25 +1013,68 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
     public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
         //Avoid running the process if we are already in the middle of a dry run on this worker.
 		//i.e. if its manually called or if takes longer than a minute to run.
-		if(standardizationDryRunRunningInThisWorker) {
+		if(!standardizationDryRunRunningInThisWorker.compareAndSet(false, true)) {
 			return; // Avoid running multiple dry runs in parallel
 		}
-		standardizationDryRunRunningInThisWorker = true;
 		try {
 			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
-				standardizationDryRunRunningInThisWorker = false;
 				return;
 			}
+			StandardizerSettingsConfigDTO currentSettings = chemStructureService.getStandardizerSettings(true);
+			if (!hasReadyStandardizerActions(currentSettings)) {
+				logger.info("Skipping dry-run processing - standardizer actions are not initialized yet: pod={}, historyId={}, dryRunStatus={}. Waiting for settings initialization before worker participation.",
+						getPodName(),
+						stndznHistory.getId(),
+						stndznHistory.getDryRunStatus());
+				return;
+			}
+			int currentConfigHash = currentSettings.hashCode();
+			if (stndznHistory.getSettingsHash() != currentConfigHash) {
+				logger.warn("Skipping dry-run processing - config mismatch detected: pod={}, historyId={}, dryRunStatus={}, history hash={}, current hash={}, history settings={}, current settings={}. "
+						+ "This pod may have a different configuration than the pod that initiated the dry run. "
+						+ "Waiting for pod to restart with consistent config.",
+						getPodName(),
+						stndznHistory.getId(),
+						stndznHistory.getDryRunStatus(),
+						stndznHistory.getSettingsHash(),
+						currentConfigHash,
+						stndznHistory.getSettings(),
+						currentSettings.toJson());
+				return;
+			}
+			logger.info(
+					"Dry-run worker settings match: pod={}, historyId={}, dryRunStatus={}, historyHash={}, currentHash={}, currentSettings={}",
+					getPodName(),
+					stndznHistory.getId(),
+					stndznHistory.getDryRunStatus(),
+					stndznHistory.getSettingsHash(),
+					currentConfigHash,
+					currentSettings.toJson()
+			);
 			logger.info("Dry run is running, executing dry run process");
 			runDryRun();
 			logger.info("Dry run process completed");
 		} catch (Exception e) {
 			logger.error("Error during dry run process", e);
-			standardizationDryRunRunningInThisWorker = false;
+			try {
+				finalizeDryRun("failed");
+			} catch (Exception finalizeException) {
+				logger.error("Failed to finalize dry run as failed after error", finalizeException);
+			}
+			if (e instanceof CmpdRegMolFormatException) {
+				throw (CmpdRegMolFormatException) e;
+			}
+			if (e instanceof IOException) {
+				throw (IOException) e;
+			}
+			if (e instanceof StandardizerException) {
+				throw (StandardizerException) e;
+			}
+			throw new StandardizerException(e);
+		} finally {
+			standardizationDryRunRunningInThisWorker.set(false);
 		}
-		// Set the status to complete if we reach here.
-		standardizationDryRunRunningInThisWorker = false;
     }
 }
 

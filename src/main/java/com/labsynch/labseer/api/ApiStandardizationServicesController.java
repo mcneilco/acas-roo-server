@@ -1,6 +1,9 @@
 package com.labsynch.labseer.api;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import jakarta.persistence.TypedQuery;
@@ -15,6 +18,7 @@ import com.labsynch.labseer.service.StandardizationService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -123,6 +127,32 @@ public class ApiStandardizationServicesController {
 		// Get most recent standardization history
 		String outputFilePath = standardizationService.getStandardizationDryRunReportFiles(filePath);
 		return new ResponseEntity<String>(outputFilePath, headers, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/dryRunAutoReportFile", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<InputStreamResource> dryRunAutoReportFile(
+			@RequestParam(value = "historyId", required = true) Long historyId) {
+		HttpHeaders headers = new HttpHeaders();
+		try {
+			String reportFilePath = standardizationService.getAutoRestandardizationDryRunReportFilePath(historyId);
+			if (reportFilePath == null) {
+				return new ResponseEntity<InputStreamResource>(headers, HttpStatus.NOT_FOUND);
+			}
+
+			File reportFile = new File(reportFilePath);
+			if (!reportFile.exists() || !reportFile.isFile()) {
+				return new ResponseEntity<InputStreamResource>(headers, HttpStatus.NOT_FOUND);
+			}
+
+			InputStream inputStream = new FileInputStream(reportFile);
+			headers.add("Content-Type", "chemical/x-mdl-sdfile");
+			headers.add("Content-Disposition", "attachment; filename=" + reportFile.getName());
+			return new ResponseEntity<InputStreamResource>(new InputStreamResource(inputStream), headers, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error generating auto dry-run report file response for history id {}", historyId, e);
+			return new ResponseEntity<InputStreamResource>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Transactional
