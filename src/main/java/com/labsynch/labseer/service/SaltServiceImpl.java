@@ -93,7 +93,7 @@ public class SaltServiceImpl implements SaltService {
 	private LotService lotService;
 
 	@Autowired
-	private SaltService saltService;
+	private SaltFormService saltFormService;
 
 	@Autowired
 	private SaltStructureService saltStructureService;
@@ -209,6 +209,19 @@ public class SaltServiceImpl implements SaltService {
 		return sdfWriter.getBufferString();
 	}
 
+	private boolean lotCorpNamesUseSaltAbbrev() {
+		// See LotServiceImpl.generateLotCorpNameFromBaseCorpName
+		final String corpBatchFormat = propertiesUtilService.getCorpBatchFormat();
+		final Boolean appendSaltCodeToLotName = propertiesUtilService.getAppendSaltCodeToLotName();
+		if("corp_saltcode_batch".equalsIgnoreCase(corpBatchFormat)){
+			return true;
+		} else if("corp_batch_saltcode".equalsIgnoreCase(corpBatchFormat) && Boolean.TRUE.equals(appendSaltCodeToLotName)){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public ArrayList<ErrorMessage> validateSaltEdit(Salt oldSalt, Salt newSalt)
 	{
 		ArrayList<ErrorMessage> warnings = new ArrayList<ErrorMessage>();
@@ -321,7 +334,8 @@ public class SaltServiceImpl implements SaltService {
 				// Adds Associated Batch Codes to Warning Report 
 				error = new ErrorMessage();
 				error.setLevel("warning");
-				error.setMessage(batchDTO.getBatchCodes().size() + " Associated Batch Code(s): " + batchDTO.getBatchCodes().toString());
+				List<String> sortedBatchCodes = batchDTO.getBatchCodes().stream().sorted().collect(Collectors.toList());
+				error.setMessage(sortedBatchCodes.size() + " Associated Batch Code(s): " + sortedBatchCodes.toString());
 				warnings.add(error);
 			}
 
@@ -344,7 +358,7 @@ public class SaltServiceImpl implements SaltService {
 
 			// Check CReg Config to See If Salt Abbrev in Lab Corp Name
 			if(!newSalt.getAbbrev().equals(oldSalt.getAbbrev())){
-				if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format"))
+				if (lotCorpNamesUseSaltAbbrev())
 				{
 					error = new ErrorMessage();
 					error.setLevel("warning");
@@ -359,35 +373,33 @@ public class SaltServiceImpl implements SaltService {
 		return warnings;
 	}
 
+	@Transactional
 	public void updateDependencies(Salt salt)
 	{
-		
-
-		// Get IsoSalts From Salt 
+		// Form deduplicated sets of affected IsoSalts, SaltForms, and Lots
 		Collection<IsoSalt> isoSalts =  IsoSalt.findIsoSaltsBySalt(salt).getResultList();
 		Set<IsoSalt> isoSaltsSet = new HashSet<IsoSalt>(isoSalts);
-
 		Set<SaltForm> saltFormSet = new HashSet<SaltForm>();
-
-		// Getter of IsoSalt to SaltForm 
 		for (IsoSalt isoSalt : isoSaltsSet)
 		{
 			SaltForm tempSaltForm = isoSalt.getSaltForm();
 			saltFormSet.add(tempSaltForm);
 		}
-
-		// Getter of Lots from IsoSalt 
-
 		Set<Lot> lotSet = new HashSet<Lot>(); 
 		for (SaltForm saltForm : saltFormSet)
 		{
 			Set<Lot> tempLotSet = saltForm.getLots();
 			lotSet.addAll(tempLotSet);
 		}
+		// Recalculate SaltForm salt weights
+		for (SaltForm saltForm : saltFormSet)
+		{
+			saltForm.setSaltWeight(saltFormService.calculateSaltWeight(saltForm));
+		}
 
 		for (Lot lot : lotSet){
 			// Update Lot Corp Name If Format Uses Salt Abbrev
-			if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")) {
+			if (lotCorpNamesUseSaltAbbrev()) {
 				String newCorpName = lotService.generateCorpName(lot);
 				if (! newCorpName.equals(lot.getCorpName())) // Check to See If There is Indeed a Change in the Name
 				{
@@ -396,12 +408,11 @@ public class SaltServiceImpl implements SaltService {
 					// If Lot Corp Name Change, Cascade the Update to “Batch Code” Values Within Analysis Groups and Lot Inventory Containers	
 					assayService.renameBatchCode(oldCorpName, newCorpName, "SaltService");
 					containerService.renameBatchCode(oldCorpName, newCorpName, "SaltService", null);
-
 					logger.info("new lot corp name: " + newCorpName);
-					// Recalculate Lot Molecular Weights
-					lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));	
-				} 
-			}	
+				}
+			}
+			// Recalculate Lot Molecular Weights
+			lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));
 		}
 	}
 
