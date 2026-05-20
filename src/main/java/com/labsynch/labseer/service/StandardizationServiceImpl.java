@@ -156,7 +156,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				return;
 			}
 
-			generateAutoRestandardizationDryRunReport(latestHistory);
+			generateDryRunReport(latestHistory);
 
 			logger.info("Auto-restandardization: dry run complete, starting standardization execution");
 			executeStandardization("acas", reason);
@@ -395,12 +395,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 	}
 
-	private void generateAutoRestandardizationDryRunReport(StandardizationHistory latestHistory) {
-		if (!Boolean.TRUE.equals(propertiesUtilService.getAutoRestandardizationReportEnabled())) {
+	public void generateDryRunReport(StandardizationHistory latestHistory) {
+		if (!Boolean.TRUE.equals(propertiesUtilService.getStandardizationDryRunReportEnabled())) {
 			return;
 		}
 
-		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
+		String reportDirectoryPath = propertiesUtilService.getStandardizationDryRunReportDirectory();
 		if (StringUtils.isBlank(reportDirectoryPath)) {
 			reportDirectoryPath = "/tmp";
 		}
@@ -430,7 +430,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			return null;
 		}
 
-		String reportDirectoryPath = propertiesUtilService.getAutoRestandardizationReportDirectory();
+		String reportDirectoryPath = propertiesUtilService.getStandardizationDryRunReportDirectory();
 		if (StringUtils.isBlank(reportDirectoryPath)) {
 			reportDirectoryPath = "/tmp";
 		}

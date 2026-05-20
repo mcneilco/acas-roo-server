@@ -147,8 +147,8 @@ public interface PropertiesUtilService {
 
 	Boolean getAutoRestandardize();
 
-	Boolean getAutoRestandardizationReportEnabled();
+	Boolean getStandardizationDryRunReportEnabled();
 
-	String getAutoRestandardizationReportDirectory();
+	String getStandardizationDryRunReportDirectory();
 
 }

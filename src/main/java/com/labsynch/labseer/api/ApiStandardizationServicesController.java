@@ -79,6 +79,11 @@ public class ApiStandardizationServicesController {
 		if (!onlyReport) {
 			logger.info("reseting dry run table, populating dryrun table, dupe checking, and returning results");
 			standardizationService.executeDryRun();
+			// Generate dry-run report if enabled
+			StandardizationHistory latestHistory = standardizationService.getMostRecentStandardizationHistory();
+			if (latestHistory != null && "complete".equals(latestHistory.getDryRunStatus())) {
+				standardizationService.generateDryRunReport(latestHistory);
+			}
 		}
 		// Get most recent standardization history
 		String jsonReport = standardizationService.getStandardizationDryRunReport();

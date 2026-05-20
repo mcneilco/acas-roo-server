@@ -1000,28 +1000,28 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 		return this.autoRestandardize;
 	}
 
-	boolean autoRestandardizationReportEnabled;
+	boolean standardizationDryRunReportEnabled;
 
-	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportEnabled:true}")
-	public void setAutoRestandardizationReportEnabled(boolean autoRestandardizationReportEnabled) {
-		this.autoRestandardizationReportEnabled = autoRestandardizationReportEnabled;
+	@Value("${client.cmpdreg.serverSettings.standardizationDryRunReportEnabled:true}")
+	public void setStandardizationDryRunReportEnabled(boolean standardizationDryRunReportEnabled) {
+		this.standardizationDryRunReportEnabled = standardizationDryRunReportEnabled;
 	}
 
 	@Override
-	public Boolean getAutoRestandardizationReportEnabled() {
-		return this.autoRestandardizationReportEnabled;
+	public Boolean getStandardizationDryRunReportEnabled() {
+		return this.standardizationDryRunReportEnabled;
 	}
 
-	String autoRestandardizationReportDirectory;
+	String standardizationDryRunReportDirectory;
 
-	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportDirectory:/home/runner/build/privateUploads/cmpdreg/standardizationReports/}")
-	public void setAutoRestandardizationReportDirectory(String autoRestandardizationReportDirectory) {
-		this.autoRestandardizationReportDirectory = autoRestandardizationReportDirectory;
+	@Value("${client.cmpdreg.serverSettings.standardizationDryRunReportDirectory:/home/runner/build/privateUploads/cmpdreg/standardizationReports/}")
+	public void setStandardizationDryRunReportDirectory(String standardizationDryRunReportDirectory) {
+		this.standardizationDryRunReportDirectory = standardizationDryRunReportDirectory;
 	}
 
 	@Override
-	public String getAutoRestandardizationReportDirectory() {
-		return this.autoRestandardizationReportDirectory;
+	public String getStandardizationDryRunReportDirectory() {
+		return this.standardizationDryRunReportDirectory;
 	}
 
 }

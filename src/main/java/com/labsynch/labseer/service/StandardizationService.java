@@ -46,4 +46,8 @@ public interface StandardizationService {
 
 	String getAutoRestandardizationDryRunReportFilePath(Long historyId);
 
+	StandardizationHistory getMostRecentStandardizationHistory();
+
+	void generateDryRunReport(StandardizationHistory latestHistory);
+
 }
