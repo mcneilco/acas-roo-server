@@ -156,7 +156,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				return;
 			}
 
-			maybeGenerateAutoRestandardizationDryRunReport(latestHistory);
+			generateAutoRestandardizationDryRunReport(latestHistory);
 
 			logger.info("Auto-restandardization: dry run complete, starting standardization execution");
 			executeStandardization("acas", reason);
@@ -395,7 +395,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		}
 	}
 
-	private void maybeGenerateAutoRestandardizationDryRunReport(StandardizationHistory latestHistory) {
+	private void generateAutoRestandardizationDryRunReport(StandardizationHistory latestHistory) {
 		if (!Boolean.TRUE.equals(propertiesUtilService.getAutoRestandardizationReportEnabled())) {
 			return;
 		}

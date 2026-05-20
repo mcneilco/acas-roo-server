@@ -1002,7 +1002,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 
 	boolean autoRestandardizationReportEnabled;
 
-	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportEnabled:false}")
+	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportEnabled:true}")
 	public void setAutoRestandardizationReportEnabled(boolean autoRestandardizationReportEnabled) {
 		this.autoRestandardizationReportEnabled = autoRestandardizationReportEnabled;
 	}
@@ -1014,7 +1014,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService {
 
 	String autoRestandardizationReportDirectory;
 
-	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportDirectory:/tmp}")
+	@Value("${client.cmpdreg.serverSettings.autoRestandardizationReportDirectory:/home/runner/build/privateUploads/cmpdreg/standardizationReports/}")
 	public void setAutoRestandardizationReportDirectory(String autoRestandardizationReportDirectory) {
 		this.autoRestandardizationReportDirectory = autoRestandardizationReportDirectory;
 	}
