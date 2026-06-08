@@ -167,6 +167,10 @@ public interface ChemStructureService {
 
 	public void fillMissingStructures() throws CmpdRegMolFormatException;
 
+	default boolean supportsAutoRestandardization() {
+		return false;
+	}
+
 	public StandardizationSettingsConfigCheckResponseDTO checkStandardizerSettings(StandardizationHistory mostRecentStandardizationHistory, StandardizerSettingsConfigDTO standardizationSettingsConfigDTO);
 	
 	default void populateDuplicateChangedStructures(int batchSize) {

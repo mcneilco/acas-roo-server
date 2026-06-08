@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.Version;
 
@@ -80,6 +81,9 @@ public class StandardizationHistory {
     private Integer standardizationErrorCount;
 
     private Integer registrationErrorCount;
+
+    @Transient
+    private Boolean autoDryRunReportAvailable;
 
     public StandardizationHistory() {
     }
@@ -431,5 +435,13 @@ public class StandardizationHistory {
 
     public void setRegistrationErrorCount(Integer registrationErrorCount) {
         this.registrationErrorCount = registrationErrorCount;
+    }
+
+    public Boolean getAutoDryRunReportAvailable() {
+        return this.autoDryRunReportAvailable;
+    }
+
+    public void setAutoDryRunReportAvailable(Boolean autoDryRunReportAvailable) {
+        this.autoDryRunReportAvailable = autoDryRunReportAvailable;
     }
 }
