@@ -922,16 +922,17 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	private StandardizationHistory setCurrentStandardizationDryRunStatus(String status) throws StandardizerException {
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings(true);
+		Date now = new Date();
 		if (stndznHistory == null
 				|| StringUtils.equalsIgnoreCase(stndznHistory.getStandardizationStatus(), "complete")) {
 			stndznHistory = new StandardizationHistory();
-			stndznHistory.setSettings(standardizationSettings.toJson());
-			stndznHistory.setSettingsHash(standardizationSettings.hashCode());
-			stndznHistory.setRecordedDate(new Date());
+			stndznHistory.setRecordedDate(now);
 		}
-		stndznHistory.setDryRunStatus(status);
-		stndznHistory.setDryRunStart(new Date());
-		stndznHistory.setDryRunComplete(null);
+		// Always snapshot the initiating pod's current settings for the dry run being (re)started.
+		// Reusing an incomplete prior record must NOT keep its stale snapshot, otherwise worker pods
+		// in runDryRunCriticalSection compare against a config that no longer exists and skip forever
+		// ("config mismatch") -- e.g. after a chemistry suite version bump (Build 058 -> Build 073).
+		applyDryRunInitialization(stndznHistory, standardizationSettings, status, now);
 		stndznHistory.persist();
 		logger.info(
 				"Initialized dry-run history settings snapshot: pod={}, historyId={}, status={}, settingsHash={}, settings={}",
@@ -942,6 +943,21 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				stndznHistory.getSettings()
 		);
 		return stndznHistory;
+	}
+
+	/**
+	 * Applies the dry-run initialization snapshot to a history record. Pure (no DB/chemistry-engine
+	 * dependency) and package-private so it can be unit-tested without a Spring context. The settings
+	 * snapshot is what worker pods compare their live config against, so it must always reflect the
+	 * config of the run being initiated -- never a stale snapshot from a reused, incomplete record.
+	 */
+	static void applyDryRunInitialization(StandardizationHistory history,
+			StandardizerSettingsConfigDTO settings, String status, Date dryRunStart) {
+		history.setSettings(settings.toJson());
+		history.setSettingsHash(settings.hashCode());
+		history.setDryRunStatus(status);
+		history.setDryRunStart(dryRunStart);
+		history.setDryRunComplete(null);
 	}
 
 	@Override
