@@ -963,16 +963,20 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	public void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
-		// Initiator path (manual endpoint / startup auto-restandardization): reset + mark running, then run.
-		runDryRunCriticalSection(true);
+		// Initiator path (manual endpoint / startup auto-restandardization): start a fresh dry run if one
+		// isn't already active (cluster-serialized), then cooperatively participate in populating it.
+		initiateDryRunIfIdle();
+		participateInDryRun();
 	}
 
 	private void runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
+		// Population is cooperative across replicas (SELECT ... FOR UPDATE SKIP LOCKED), so it runs
+		// WITHOUT the cluster lock -- every pod claims disjoint batches of parents in parallel.
 		logger.info("step 2/3: populating dry run table");
 		populateStandardizationDryRunTable();
-		logger.info("step 3/3: checking for standardization duplicates");
-		dupeCheckStandardizationStructures();
-		finalizeDryRun("complete");
+		// Finishing (duplicate check + finalize) mutates shared rows, so it is serialized cluster-wide;
+		// only the first pod to drain the queue performs it.
+		finishDryRunUnderClusterLock();
 	}
 
 	@Transactional
@@ -1018,27 +1022,21 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Scheduled(fixedDelayString = "${client.cmpdreg.serverSettings.checkForDryRunStandardizationDelay:60000}")
 	public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
-		// Scheduled worker path: only participate in an already-running dry run; never initiate.
-		runDryRunCriticalSection(false);
+		// Scheduled worker path on every replica: cooperatively participate in an already-running dry
+		// run; never initiate.
+		participateInDryRun();
 	}
 
 	/**
-	 * Runs the dry-run execution critical section under BOTH a per-pod re-entrancy flag and a
-	 * cluster-wide Postgres advisory lock, so only one worker across all replicas can reset/populate
-	 * the shared dry-run tables at a time. Concurrent execution caused TRUNCATE-vs-INSERT deadlocks
-	 * (standardization_dry_run_compound AccessExclusiveLock vs bbchem_standardization_dry_run_structure
-	 * RowExclusiveLock) that aborted transactions and marked the run failed.
-	 *
-	 * @param initiate true for the manual/startup initiator (reset tables and mark the history
-	 *                 "running" before running); false for the scheduled worker (participate only).
+	 * Starts a new dry run (reset tables + mark history "running") ONLY if no dry run is currently
+	 * active, guarded by a cluster-wide Postgres advisory lock so exactly one replica can initiate at a
+	 * time. This is the only place that resets/truncates the shared dry-run tables, and it never runs
+	 * while a dry run is active -- which prevents the reset() TRUNCATE from deadlocking against the
+	 * cooperative INSERTs of an in-flight run, and prevents two initiators from clashing on the history
+	 * record (optimistic-lock failure). Population is intentionally NOT held under this lock, so all
+	 * replicas populate in parallel via SELECT ... FOR UPDATE SKIP LOCKED.
 	 */
-	private void runDryRunCriticalSection(boolean initiate)
-			throws CmpdRegMolFormatException, IOException, StandardizerException {
-		// Avoid running the process if we are already in the middle of a dry run on this worker
-		// (manual call overlapping the scheduler, or a run that takes longer than the schedule delay).
-		if (!standardizationDryRunRunningInThisWorker.compareAndSet(false, true)) {
-			return;
-		}
+	private void initiateDryRunIfIdle() throws StandardizerException {
 		Connection lockConnection = null;
 		boolean lockAcquired = false;
 		try {
@@ -1049,19 +1047,40 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					ADVISORY_LOCK_DRY_RUN_EXECUTION
 			);
 			if (!lockAcquired) {
-				logger.info("Another pod holds the dry-run execution lock; skipping dry-run work in this pod: pod={}, initiate={}",
-						getPodName(), initiate);
+				logger.info("Another pod is initiating/finalizing a dry run; skipping initiation in this pod: pod={}", getPodName());
 				return;
 			}
-
-			if (initiate) {
-				logger.info("standardization dry run initialized");
-				logger.info("step 1/3: resetting dry run table");
-				reset();
-				logger.info("setting dry run standardization status to running");
-				setCurrentStandardizationDryRunStatus("running");
+			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+			if (stndznHistory != null && "running".equals(stndznHistory.getDryRunStatus())) {
+				logger.info("A dry run is already running (historyId={}); not resetting. This pod will join the active run.",
+						stndznHistory.getId());
+				return;
 			}
+			logger.info("standardization dry run initialized");
+			logger.info("step 1/3: resetting dry run table");
+			reset();
+			logger.info("setting dry run standardization status to running");
+			setCurrentStandardizationDryRunStatus("running");
+		} catch (SQLException e) {
+			throw new StandardizerException(e);
+		} finally {
+			releaseDryRunClusterLock(lockConnection, lockAcquired);
+		}
+	}
 
+	/**
+	 * Cooperatively participates in the currently-running dry run: claims and standardizes batches of
+	 * parents (SELECT ... FOR UPDATE SKIP LOCKED) so multiple replicas process disjoint compounds in
+	 * parallel. Guarded only by a per-pod re-entrancy flag (NO cluster lock) so replicas run together.
+	 * No-op when no dry run is running or this pod's config doesn't match the run's snapshot.
+	 */
+	private void participateInDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
+		// Avoid running multiple participations in parallel within this worker (manual call overlapping
+		// the scheduler, or a run that takes longer than the schedule delay).
+		if (!standardizationDryRunRunningInThisWorker.compareAndSet(false, true)) {
+			return;
+		}
+		try {
 			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null
 					|| !stndznHistory.getDryRunStatus().equals("running")) {
@@ -1120,21 +1139,59 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			throw new StandardizerException(e);
 		} finally {
-			if (lockAcquired && lockConnection != null) {
-				releaseClusterLock(
-						lockConnection,
-						ADVISORY_LOCK_NAMESPACE_ACAS,
-						ADVISORY_LOCK_DRY_RUN_EXECUTION
-				);
-			}
-			if (lockConnection != null) {
-				try {
-					lockConnection.close();
-				} catch (SQLException e) {
-					logger.warn("Failed to close dry-run execution lock connection", e);
-				}
-			}
 			standardizationDryRunRunningInThisWorker.set(false);
+		}
+	}
+
+	/**
+	 * Runs the finishing steps (duplicate check + finalize to "complete") under the cluster-wide
+	 * advisory lock, so that with cooperative multi-replica population exactly one pod performs the
+	 * shared mutating finish work. Other pods that have also drained the queue find the run already
+	 * finalized (or the lock held) and skip. Only meaningful once population is complete.
+	 */
+	private void finishDryRunUnderClusterLock() throws StandardizerException {
+		Connection lockConnection = null;
+		boolean lockAcquired = false;
+		try {
+			lockConnection = dataSource.getConnection();
+			lockAcquired = tryAcquireClusterLock(
+					lockConnection,
+					ADVISORY_LOCK_NAMESPACE_ACAS,
+					ADVISORY_LOCK_DRY_RUN_EXECUTION
+			);
+			if (!lockAcquired) {
+				logger.info("Another pod is finalizing the dry run; skipping finalize in this pod: pod={}", getPodName());
+				return;
+			}
+			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
+			if (stndznHistory == null || !"running".equals(stndznHistory.getDryRunStatus())) {
+				logger.info("Dry run already finalized by another pod; nothing to finalize in this pod: pod={}", getPodName());
+				return;
+			}
+			logger.info("step 3/3: checking for standardization duplicates");
+			dupeCheckStandardizationStructures();
+			finalizeDryRun("complete");
+		} catch (SQLException e) {
+			throw new StandardizerException(e);
+		} finally {
+			releaseDryRunClusterLock(lockConnection, lockAcquired);
+		}
+	}
+
+	private void releaseDryRunClusterLock(Connection lockConnection, boolean lockAcquired) {
+		if (lockAcquired && lockConnection != null) {
+			releaseClusterLock(
+					lockConnection,
+					ADVISORY_LOCK_NAMESPACE_ACAS,
+					ADVISORY_LOCK_DRY_RUN_EXECUTION
+			);
+		}
+		if (lockConnection != null) {
+			try {
+				lockConnection.close();
+			} catch (SQLException e) {
+				logger.warn("Failed to close dry-run cluster lock connection", e);
+			}
 		}
 	}
 }
