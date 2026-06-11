@@ -91,6 +91,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	// Use stable Java String hashes from human-readable lock names so lock IDs remain readable and deterministic
 	private static final int ADVISORY_LOCK_NAMESPACE_ACAS = "acas".hashCode();
 	private static final int ADVISORY_LOCK_AUTO_RESTANDARDIZE_STARTUP = "auto-restandardize-startup".hashCode();
+	private static final int ADVISORY_LOCK_DRY_RUN_EXECUTION = "dry-run-execution".hashCode();
 	private static final String AUTO_RESTANDARDIZATION_REPORT_FILENAME_PREFIX = "standardization-dry-run-report";
 
 	private final AtomicBoolean standardizationDryRunRunningInThisWorker = new AtomicBoolean(false);
@@ -962,18 +963,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	public void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
-		logger.info("standardization dry run initialized");
-		try {
-			logger.info("step 1/3: resetting dry run table");
-			reset();
-			logger.info("setting dry run standardization status to running");
-			setCurrentStandardizationDryRunStatus("running");
-			checkForDryRunStandardization();
-		} catch (Exception e) {
-			logger.error("error running dry run", e);
-			finalizeDryRun("failed");
-			throw e;
-		}
+		// Initiator path (manual endpoint / startup auto-restandardization): reset + mark running, then run.
+		runDryRunCriticalSection(true);
 	}
 
 	private void runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
@@ -1026,15 +1017,54 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 
 	@Scheduled(fixedDelayString = "${client.cmpdreg.serverSettings.checkForDryRunStandardizationDelay:60000}")
-    public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
-        //Avoid running the process if we are already in the middle of a dry run on this worker.
-		//i.e. if its manually called or if takes longer than a minute to run.
-		if(!standardizationDryRunRunningInThisWorker.compareAndSet(false, true)) {
-			return; // Avoid running multiple dry runs in parallel
+	public void checkForDryRunStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
+		// Scheduled worker path: only participate in an already-running dry run; never initiate.
+		runDryRunCriticalSection(false);
+	}
+
+	/**
+	 * Runs the dry-run execution critical section under BOTH a per-pod re-entrancy flag and a
+	 * cluster-wide Postgres advisory lock, so only one worker across all replicas can reset/populate
+	 * the shared dry-run tables at a time. Concurrent execution caused TRUNCATE-vs-INSERT deadlocks
+	 * (standardization_dry_run_compound AccessExclusiveLock vs bbchem_standardization_dry_run_structure
+	 * RowExclusiveLock) that aborted transactions and marked the run failed.
+	 *
+	 * @param initiate true for the manual/startup initiator (reset tables and mark the history
+	 *                 "running" before running); false for the scheduled worker (participate only).
+	 */
+	private void runDryRunCriticalSection(boolean initiate)
+			throws CmpdRegMolFormatException, IOException, StandardizerException {
+		// Avoid running the process if we are already in the middle of a dry run on this worker
+		// (manual call overlapping the scheduler, or a run that takes longer than the schedule delay).
+		if (!standardizationDryRunRunningInThisWorker.compareAndSet(false, true)) {
+			return;
 		}
+		Connection lockConnection = null;
+		boolean lockAcquired = false;
 		try {
+			lockConnection = dataSource.getConnection();
+			lockAcquired = tryAcquireClusterLock(
+					lockConnection,
+					ADVISORY_LOCK_NAMESPACE_ACAS,
+					ADVISORY_LOCK_DRY_RUN_EXECUTION
+			);
+			if (!lockAcquired) {
+				logger.info("Another pod holds the dry-run execution lock; skipping dry-run work in this pod: pod={}, initiate={}",
+						getPodName(), initiate);
+				return;
+			}
+
+			if (initiate) {
+				logger.info("standardization dry run initialized");
+				logger.info("step 1/3: resetting dry run table");
+				reset();
+				logger.info("setting dry run standardization status to running");
+				setCurrentStandardizationDryRunStatus("running");
+			}
+
 			StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
-			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null || !stndznHistory.getDryRunStatus().equals("running")) {
+			if (stndznHistory == null || stndznHistory.getDryRunStatus() == null
+					|| !stndznHistory.getDryRunStatus().equals("running")) {
 				return;
 			}
 			StandardizerSettingsConfigDTO currentSettings = chemStructureService.getStandardizerSettings(true);
@@ -1048,8 +1078,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			int currentConfigHash = currentSettings.hashCode();
 			if (stndznHistory.getSettingsHash() != currentConfigHash) {
 				logger.warn("Skipping dry-run processing - config mismatch detected: pod={}, historyId={}, dryRunStatus={}, history hash={}, current hash={}, history settings={}, current settings={}. "
-						+ "This pod may have a different configuration than the pod that initiated the dry run. "
-						+ "Waiting for pod to restart with consistent config.",
+						+ "This worker's config differs from the snapshot stored by the pod that initiated the dry run "
+						+ "(expected briefly during a rolling deploy). The initiating pod owns the run and re-snapshots "
+						+ "its own config on (re)start, so this resolves once the initiating pod runs with the current config.",
 						getPodName(),
 						stndznHistory.getId(),
 						stndznHistory.getDryRunStatus(),
@@ -1089,8 +1120,22 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			throw new StandardizerException(e);
 		} finally {
+			if (lockAcquired && lockConnection != null) {
+				releaseClusterLock(
+						lockConnection,
+						ADVISORY_LOCK_NAMESPACE_ACAS,
+						ADVISORY_LOCK_DRY_RUN_EXECUTION
+				);
+			}
+			if (lockConnection != null) {
+				try {
+					lockConnection.close();
+				} catch (SQLException e) {
+					logger.warn("Failed to close dry-run execution lock connection", e);
+				}
+			}
 			standardizationDryRunRunningInThisWorker.set(false);
 		}
-    }
+	}
 }
 
