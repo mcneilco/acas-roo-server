@@ -45,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -97,6 +98,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	private final AtomicBoolean standardizationDryRunRunningInThisWorker = new AtomicBoolean(false);
 	private final AtomicBoolean autoRestandardizationStartupTriggeredInThisWorker = new AtomicBoolean(false);
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	// A "running" dry run is only treated as stale (safe to fail) once it has made no progress -- no
+	// new dry-run-compound batch written -- for this long. Must stay well above the populate batch
+	// interval so an actively-populated run (even a slow one) is never falsely failed out from under
+	// its cooperative workers, which would let reset()'s TRUNCATE race their INSERTs.
+	@Value("${client.cmpdreg.serverSettings.dryRunStaleMillis:300000}")
+	private long dryRunStaleMillis;
 
 	private boolean tryAcquireClusterLock(Connection connection, int lockNamespace, int lockId) throws SQLException {
 		String sql = "SELECT pg_try_advisory_lock(?, ?)";
@@ -195,11 +203,39 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				history.merge();
 			}
 			if (history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")) {
-				logger.info("Failing running standardization dry run for run id " + history.getId());
-				history.setDryRunStatus("failed");
-				history.merge();
+				// Only fail a running dry run if it has actually gone stale (a dead pod left it behind).
+				// A run that live workers are still populating must NOT be failed here: doing so lets the
+				// subsequent reset() TRUNCATE the dry-run tables while those workers are still INSERTing,
+				// which deadlocks. A genuinely-active run is instead left running so this pod joins it.
+				if (isDryRunStale(history)) {
+					logger.info("Failing stale running standardization dry run for run id {} (no progress for > {} ms)",
+							history.getId(), dryRunStaleMillis);
+					history.setDryRunStatus("failed");
+					history.merge();
+				} else {
+					logger.info("Standardization dry run for run id {} is still making progress; leaving it running so this pod can join it instead of resetting.",
+							history.getId());
+				}
 			}
 		}
+	}
+
+	/**
+	 * A running dry run is "stale" only if no populate batch has been written for longer than
+	 * {@code dryRunStaleMillis}. Progress is read from the latest {@code qc_date} in
+	 * standardization_dry_run_compound (every batch stamps it), with the run's start time as the
+	 * fallback before the first batch lands. Compared in Java to match how those timestamps are
+	 * written (`new Date()`), avoiding timestamp-without-time-zone pitfalls.
+	 */
+	private boolean isDryRunStale(StandardizationHistory history) {
+		Date lastProgress = StandardizationDryRunCompound.findLatestQcDate();
+		if (lastProgress == null) {
+			lastProgress = history.getDryRunStart();
+		}
+		if (lastProgress == null) {
+			return true;
+		}
+		return (System.currentTimeMillis() - lastProgress.getTime()) > dryRunStaleMillis;
 	}
 
 	@Override
