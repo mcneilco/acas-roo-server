@@ -151,6 +151,16 @@ public class StandardizationDryRunCompound {
 				.intValue();
 	}
 
+	/**
+	 * Latest qc_date across all dry-run compounds, i.e. when the most recent populate batch was
+	 * written. Used as a liveness/progress signal for the active dry run (null if the table is empty).
+	 */
+	public static Date findLatestQcDate() {
+		return StandardizationDryRunCompound.entityManager()
+				.createQuery("SELECT max(o.qcDate) FROM StandardizationDryRunCompound o", Date.class)
+				.getSingleResult();
+	}
+
 	public StandardizationHistory fetchStats() {
 		StandardizationHistory stats = new StandardizationHistory();
 		stats.setStructuresStandardizedCount(toIntExact(StandardizationDryRunCompound.entityManager()
