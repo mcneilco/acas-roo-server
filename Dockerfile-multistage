@@ -1,7 +1,11 @@
 ARG 	CHEMISTRY_PACKAGE=bbchem
-ARG     NODE_VERSION=20
-FROM maven:3-eclipse-temurin-21 AS builder
+ARG     NODE_VERSION=20.20.2
+ARG     TOMCAT_VERSION=10.1.55
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
+# glibc node (Debian) so it matches the debian-slim runtime below
 FROM node:${NODE_VERSION}-slim AS node
+# Pinned source of the Temurin JRE + Tomcat distribution (copied into the runtime)
+FROM tomcat:${TOMCAT_VERSION}-jre21-temurin AS tomcat
 
 FROM 	builder AS compile
 ARG     CHEMISTRY_PACKAGE
@@ -13,29 +17,43 @@ WORKDIR /src
 RUN 	--mount=type=cache,target=/root/.m2 mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}  -s /settings.xml
 ADD 	. /src
 
-# Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster) 
+# Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster)
 RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
-        mvn compile war:war -P ${CHEMISTRY_PACKAGE} 
+        mvn compile war:war -P ${CHEMISTRY_PACKAGE}
 
-FROM tomcat:10.1-jdk21-temurin
+# =============================================================================
+# Runtime: minimal Debian-slim (glibc) + Temurin JRE + Tomcat copied from the
+# pinned official image. glibc (not Alpine/musl) is required so the native
+# chemistry libraries (libindigo.so, bbchem/jchem) load via JNA at runtime.
+# =============================================================================
+FROM debian:12-slim
 
-# Third and Last Step That Requires Significant (Relative) Amount of Time 
-RUN apt-get update && \
-    apt-get install -y \
-      curl \ 
-      libfreetype6 \
-      libfontconfig \
-      openssl 
-    
-# Add nodejs for prepare config files - copy from official image to avoid SSL issues with nodesource
-COPY --from=node /usr/local/include/node /usr/local/include/node
-COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+# Temurin JRE + Tomcat distribution from the pinned official image
+ENV JAVA_HOME=/opt/java/openjdk
+ENV CATALINA_HOME=/usr/local/tomcat
+ENV PATH=$JAVA_HOME/bin:$CATALINA_HOME/bin:$PATH
+COPY --from=tomcat /opt/java/openjdk /opt/java/openjdk
+COPY --from=tomcat /usr/local/tomcat /usr/local/tomcat
+RUN mkdir -p "$CATALINA_HOME/logs" "$CATALINA_HOME/temp" "$CATALINA_HOME/work"
+WORKDIR $CATALINA_HOME
+
+# Runtime deps: bash for entrypoint/catalina + wait-for-it, freetype/fontconfig
+# for chemistry structure depiction, openssl/curl for TLS + readiness checks,
+# libstdc++6/libgomp1 for the native chemistry libraries.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      bash curl openssl ca-certificates \
+      libfreetype6 libfontconfig1 fontconfig fonts-dejavu \
+      libstdc++6 libgomp1 \
+  && rm -rf /var/lib/apt/lists/*
+
+# Add nodejs for prepare config files - copy from the official (glibc) slim image
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
 ENV NPM_CONFIG_LOGLEVEL=warn
 
-# Second Slowest Step 
+# Second Slowest Step
 RUN npm install -g \
     coffeescript@2.5.1 \
     dotenv@10.0.0 \
@@ -50,8 +68,7 @@ RUN npm install -g \
 ENV NODE_PATH=/usr/local/lib/node_modules
 
 # Add runner user so we don't run as root
-RUN	userdel -r ubuntu && \
-  useradd -u 1000 -ms /bin/bash runner && \
+RUN	useradd -u 1000 -ms /bin/bash runner && \
   chown -R runner:runner /usr/local/tomcat/
 
 # Allow certificates to be added by runner
@@ -67,7 +84,6 @@ COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/w
 # Wait for it startup script
 COPY 	--chown=runner:runner wait-for-it.sh ./wait-for-it.sh
 RUN 	chmod 755 wait-for-it.sh
-WORKDIR $CATALINA_HOME
 ENV    ACAS_HOME=/home/runner/build
 ENV    CATALINA_OPTS="-Xms512M -Xmx1536M"
 
@@ -79,5 +95,5 @@ USER runner
 
 # Setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
 CMD 	["catalina.sh", "run"]
