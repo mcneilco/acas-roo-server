@@ -110,6 +110,14 @@ public class ApiExperimentControllerTest {
 		Assert.assertFalse(results.isEmpty());
 	}
 
+	@Test
+	public void getExperimentsByMissingProtocolCodeNameReturnsNotFound() throws Exception {
+		this.mockMvc.perform(get("/api/v1/experiments/protocol/FAKECODE")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
+
 	// @Test
 	public void genericSearchByDate() throws Exception {
 		String searchString = "2015-03-05";
