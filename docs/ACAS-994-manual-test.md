@@ -12,29 +12,24 @@ docker build --build-arg CHEMISTRY_PACKAGE=indigo \
   -t mcneilco/acas-roo-server-oss:latest-indigo -f Dockerfile-multistage .
 ```
 
-## 2. Configure roo for the purge, then bring up the stack
-
-roo needs the data-files root (already mounted via `volumes_from: acas`) and the acas internal
-API URL so it can resolve experiment folder paths. Add a compose override in the `acas` repo:
+## 2. Bring up the stack
 
 ```bash
 cd ../acas                  # on branch ACAS-994-retention-policy (dev mode bind-mounts the source)
-cat > docker-compose.override.yml <<'YML'
-services:
-  roo:
-    environment:
-      - ACAS_HOME=/home/runner/build
-      - TOMCAT_LISTEN_ADDRESS=0.0.0.0
-      - CATALINA_OPTS=-Xms512M -Xmx1024M -Dlisten.address=0.0.0.0 -Dserver.experiment.retention.dataFilesRoot=/home/runner/build/privateUploads -Dserver.experiment.retention.acasBaseUrl=http://acas:3001
-YML
-
 docker compose up -d
 # roo applies Flyway migration V2.4.3.1 (experiment retention value kinds) on startup.
 ```
 
-> Production config keys (default off): `server.experiment.retention.enabled` (enable the internal
-> scheduler), `server.experiment.retention.checkDelay` (ms), `server.experiment.retention.batchSize`
-> (default 100000), `server.experiment.retention.dataFilesRoot`, `server.experiment.retention.acasBaseUrl`.
+Folder deletion reuses config roo already gets from acas: `server.service.persistence.filePath`
+(`/home/runner/build/privateUploads`, mounted into roo via `volumes_from: acas`) and
+`server.nodeapi.path` (`http://acas:3001`, the internal API serving `folders-for-codes`). No extra
+setup is needed.
+
+> Config keys (documented with defaults in acas `conf/config.properties.example`, default off):
+> `server.experiment.retention.enabled`, `server.experiment.retention.cron` (default `0 0 5 * * *`,
+> interpreted in `server.experiment.retention.cronZone`, default **UTC**),
+> `server.experiment.retention.batchSize` (default 100000). The scheduled purge is off by default;
+> this test triggers it on demand via the admin endpoint.
 
 ## 3. Create the test user (bob, admin)
 
@@ -78,9 +73,10 @@ Result observed:
 
 ## 5. Crash-resume path
 
-The first run was made before `dataFilesRoot`/`acasBaseUrl` were set, so the file step deferred and
-left the experiment shell + persistent work tables in place. Re-running after setting the config
-**resumed from the work tables** and completed cleanly:
+If the file step can't complete (acas unreachable, or the pod is killed mid-run), the child data is
+already deleted but the experiment shell + persistent `retention_work_*` tables remain. The next run
+**resumes from those work tables** and completes — observed when the file step deferred on one run and
+the next run finished it cleanly:
 
 ```bash
 curl -s -u bob:secret -X POST http://localhost:8080/acas/api/v1/experiments/retention/run
@@ -159,12 +155,13 @@ curl -s -u bob:secret -X POST http://localhost:8080/acas/api/v1/experiments/rete
 
 - **Flyway version collision** — the retention value-kinds migration was `V2.4.3.0`, which master
   already uses; roo refused to start. Renamed to `V2.4.3.1`. (Only the real stack surfaced this.)
-- **Config required to complete** — without `dataFilesRoot`/`acasBaseUrl`, the file step defers and
-  the experiment shell + work tables are left for the next run (recoverable, but child data is
-  already deleted). Documented the required config.
+- **Partial state if the file step can't run** — if acas is unreachable (or the persistence path /
+  nodeapi URL are unset), the file step defers: child data is deleted but the experiment shell +
+  work tables are left for the next run to resume (recoverable). Folder deletion reuses the existing
+  `server.service.persistence.filePath` + `server.nodeapi.path`.
 
 ## Cleanup
 
 ```bash
-cd acas && docker compose down -v && rm -f docker-compose.override.yml
+cd acas && docker compose down -v
 ```
