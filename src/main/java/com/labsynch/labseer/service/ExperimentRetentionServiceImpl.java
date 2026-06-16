@@ -59,9 +59,9 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
 
     // ---- scheduled entry point ----------------------------------------------
 
-    // Runs at a fixed wall-clock time (default 02:00 daily). cron is the standard 6-field Spring
-    // expression; cronZone defaults to the server's time zone when blank.
-    @Scheduled(cron = "${server.experiment.retention.cron:0 0 2 * * *}", zone = "${server.experiment.retention.cronZone:}")
+    // Runs at a fixed wall-clock time (default 02:00 UTC daily). cron is the standard 6-field Spring
+    // expression; cronZone defaults to UTC (ACAS containers run UTC).
+    @Scheduled(cron = "${server.experiment.retention.cron:0 0 2 * * *}", zone = "${server.experiment.retention.cronZone:UTC}")
     public void scheduledPurge() {
         if (!retentionEnabled) {
             return;

@@ -35,12 +35,12 @@ public class RetentionFileService {
 
     private static final Logger logger = LoggerFactory.getLogger(RetentionFileService.class);
 
-    /** Absolute path of the experiment data-files root mounted into roo. */
-    @Value("${server.experiment.retention.dataFilesRoot:}")
+    /** Experiment data-files root mounted into roo (reuses the standard ACAS persistence path). */
+    @Value("${server.service.persistence.filePath:}")
     private String dataFilesRoot;
 
-    /** Base URL of the acas node service, e.g. http://acas:3000 */
-    @Value("${server.experiment.retention.acasBaseUrl:}")
+    /** Base URL of the acas internal API roo calls to resolve folder paths (standard ACAS key). */
+    @Value("${server.nodeapi.path:}")
     private String acasBaseUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
