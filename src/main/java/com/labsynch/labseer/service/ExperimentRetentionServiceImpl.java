@@ -140,7 +140,11 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
             return codes;
         }
 
-        // 3. Experiment shell.
+        // 3. Experiment-experiment interactions (FK to experiment), then the experiment shell.
+        batchDeleteAll("itx_expt_expt_value", "ls_state", "retention_work_itx_states", "itx_state_id");
+        batchDeleteAll("itx_expt_expt_state", "id", "retention_work_itx_states", "itx_state_id");
+        batchDeleteAll("itx_expt_expt", "id", "retention_work_itx", "itx_id");
+
         batchDeleteAll("experiment_value", "experiment_state_id", "retention_work_expired_states", "experiment_state_id");
         batchDeleteAll("experiment_label", "experiment_id", "retention_work_expired_experiments", "experiment_id");
         batchDeleteAll("experiment_state", "experiment_id", "retention_work_expired_experiments", "experiment_id");
@@ -241,6 +245,22 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
         ).executeUpdate();
         entityManager.createNativeQuery("CREATE INDEX ON retention_work_subject_states (subject_state_id)").executeUpdate();
 
+        // Experiment-experiment interactions referencing an expired experiment (FK to experiment).
+        entityManager.createNativeQuery(
+            "CREATE TABLE retention_work_itx AS "
+            + "SELECT DISTINCT i.id AS itx_id FROM itx_expt_expt i "
+            + "WHERE i.first_experiment_id IN (SELECT experiment_id FROM retention_work_expired_experiments) "
+            + "   OR i.second_experiment_id IN (SELECT experiment_id FROM retention_work_expired_experiments)"
+        ).executeUpdate();
+        entityManager.createNativeQuery("CREATE INDEX ON retention_work_itx (itx_id)").executeUpdate();
+
+        entityManager.createNativeQuery(
+            "CREATE TABLE retention_work_itx_states AS "
+            + "SELECT s.id AS itx_state_id FROM itx_expt_expt_state s "
+            + "JOIN retention_work_itx w ON s.itx_experiment_experiment = w.itx_id"
+        ).executeUpdate();
+        entityManager.createNativeQuery("CREATE INDEX ON retention_work_itx_states (itx_state_id)").executeUpdate();
+
         return expiredCodes();
     }
 
@@ -276,6 +296,7 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void dropWorkTables() {
         for (String t : new String[] {
+            "retention_work_itx_states", "retention_work_itx",
             "retention_work_subject_states", "retention_work_tg_states", "retention_work_ag_states",
             "retention_work_orphan_subjects", "retention_work_orphan_tgs", "retention_work_orphan_ags",
             "retention_work_expired_states", "retention_work_expired_experiments"

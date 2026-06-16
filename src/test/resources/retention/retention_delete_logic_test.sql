@@ -19,6 +19,10 @@ CREATE TABLE treatmentgroup_subject (treatment_group_id bigint, subject_id bigin
 CREATE TABLE subject (id bigint primary key);
 CREATE TABLE subject_state (id bigint primary key, subject_id bigint);
 CREATE TABLE subject_value (id bigint primary key, subject_state_id bigint);
+-- experiment-experiment interaction tables; FK to experiment enforces the delete ordering
+CREATE TABLE itx_expt_expt (id bigint primary key, first_experiment_id bigint REFERENCES experiment(id), second_experiment_id bigint REFERENCES experiment(id), deleted boolean, ignored boolean);
+CREATE TABLE itx_expt_expt_state (id bigint primary key, itx_experiment_experiment bigint);
+CREATE TABLE itx_expt_expt_value (id bigint primary key, ls_state bigint);
 
 -- Fixtures: one protocol with 7-day retention
 INSERT INTO protocol VALUES (1,false,false);
@@ -48,6 +52,11 @@ INSERT INTO analysis_group_state VALUES (2,2);
 INSERT INTO analysis_group_value VALUES (2,2);
 INSERT INTO experiment_analysisgroup VALUES (1,2);
 INSERT INTO experiment_analysisgroup VALUES (2,2);
+
+-- Interaction between E_expired and E_live: must be deleted before the experiment (FK)
+INSERT INTO itx_expt_expt VALUES (1,1,2,false,false);
+INSERT INTO itx_expt_expt_state VALUES (1,1);
+INSERT INTO itx_expt_expt_value VALUES (1,1);
 
 -- ===== staging (verbatim from ExperimentRetentionServiceImpl.stageExpiredExperiments) =====
 CREATE TABLE retention_work_expired_experiments AS
@@ -83,6 +92,13 @@ WHERE NOT EXISTS (SELECT 1 FROM treatmentgroup_subject tgs2 WHERE tgs2.subject_i
 
 CREATE TABLE retention_work_ag_states AS SELECT ags.id AS analysis_group_state_id FROM analysis_group_state ags JOIN retention_work_orphan_ags oa ON ags.analysis_group_id = oa.analysis_group_id;
 
+CREATE TABLE retention_work_itx AS
+SELECT DISTINCT i.id AS itx_id FROM itx_expt_expt i
+WHERE i.first_experiment_id IN (SELECT experiment_id FROM retention_work_expired_experiments)
+   OR i.second_experiment_id IN (SELECT experiment_id FROM retention_work_expired_experiments);
+CREATE TABLE retention_work_itx_states AS
+SELECT s.id AS itx_state_id FROM itx_expt_expt_state s JOIN retention_work_itx w ON s.itx_experiment_experiment = w.itx_id;
+
 -- ===== assertions on staging =====
 DO $$ BEGIN
   IF (SELECT count(*) FROM retention_work_expired_experiments) <> 1 THEN RAISE EXCEPTION 'expected 1 expired experiment, got %', (SELECT count(*) FROM retention_work_expired_experiments); END IF;
@@ -99,6 +115,9 @@ DELETE FROM analysis_group_state t USING retention_work_orphan_ags w WHERE t.ana
 DELETE FROM analysisgroup_treatmentgroup t USING retention_work_orphan_ags w WHERE t.analysis_group_id = w.analysis_group_id;
 DELETE FROM experiment_analysisgroup t USING retention_work_expired_experiments w WHERE t.experiment_id = w.experiment_id;
 DELETE FROM analysis_group t USING retention_work_orphan_ags w WHERE t.id = w.analysis_group_id;
+DELETE FROM itx_expt_expt_value t USING retention_work_itx_states w WHERE t.ls_state = w.itx_state_id;
+DELETE FROM itx_expt_expt_state t USING retention_work_itx_states w WHERE t.id = w.itx_state_id;
+DELETE FROM itx_expt_expt t USING retention_work_itx w WHERE t.id = w.itx_id;
 DELETE FROM experiment_value t USING retention_work_expired_states w WHERE t.experiment_state_id = w.experiment_state_id;
 DELETE FROM experiment_label t USING retention_work_expired_experiments w WHERE t.experiment_id = w.experiment_id;
 DELETE FROM experiment_state t USING retention_work_expired_experiments w WHERE t.experiment_id = w.experiment_id;
@@ -113,5 +132,6 @@ DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM analysis_group WHERE id=2) THEN RAISE EXCEPTION 'SHARED AG2 wrongly deleted (live experiment data lost!)'; END IF;
   IF NOT EXISTS (SELECT 1 FROM analysis_group_value WHERE id=2) THEN RAISE EXCEPTION 'SHARED AG2 value wrongly deleted!'; END IF;
   IF EXISTS (SELECT 1 FROM experiment_label WHERE experiment_id=1) THEN RAISE EXCEPTION 'expired label not deleted'; END IF;
-  RAISE NOTICE 'RESULT ASSERTIONS PASSED — expired purged, live + shared AG preserved';
+  IF EXISTS (SELECT 1 FROM itx_expt_expt WHERE id=1) THEN RAISE EXCEPTION 'interaction not deleted (would FK-block experiment delete)'; END IF;
+  RAISE NOTICE 'RESULT ASSERTIONS PASSED — expired purged, live + shared AG preserved, interaction removed';
 END $$;
