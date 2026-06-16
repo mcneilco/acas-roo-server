@@ -196,3 +196,59 @@ soft-delete semantics; dry-run mode (worth a future iteration given the destruct
 - Confirm the full set of FK tables referencing `experiment` (interaction tables, etc.) for the
   complete phase.
 - Batch size (default 500k) may need tuning per deployment; expose as config.
+
+## 10. Design Revision v2 (FINAL) — all-in-roo scheduled purge
+
+Supersedes the cross-service / Node-orchestrated parts of sections 4–6 after clarifying the
+deployment reality: ACAS roo runs as **multiple pods in Kubernetes**, a pod can die mid-run,
+and the experiment **data-files volume is already mounted into roo**. Decision: the entire
+purge (DB + files) runs **inside roo**, on an internal schedule, with no Node orchestration and
+no external K8s CronJob.
+
+### Trigger & concurrency
+- A Spring `@Scheduled` task in roo, **config-gated** by `acas.experiment.retention.enabled`
+  (default **false**) and a configurable interval (`...checkDelay` / cron). Fires on every pod.
+- **Single-runner across pods via `pg_try_advisory_lock`** on a dedicated held connection,
+  mirroring `StandardizationServiceImpl.runAutomaticRestandardizationWithClusterLock`
+  (acquire → skip if not held → run → release + close in `finally`). Postgres auto-releases the
+  advisory lock if the pod/connection dies, so a crashed pod cannot deadlock the job.
+
+### Purge flow (single pass, under the lock)
+For the staged set of expired experiments:
+1. **Chunk-delete child data** (`analysis_group_value` … down the graph) via the
+   `RetentionBatchDeleter` per-batch-committed engine (sections 4.1–4.2), with the
+   **shared-entity guard** (4.3) intact.
+2. **Delete the experiment folder** on the mounted volume (new roo capability — see below).
+3. **Delete the experiment shell** (`experiment_value` / `experiment_state` / `experiment_label`
+   / `experiment`, plus any FKs to `experiment`).
+
+### Crash-safety / resumability
+Fully **idempotent**: already-deleted rows and already-removed folders are no-ops, and staging
+re-derives remaining work each run, so a pod dying mid-purge simply resumes on the next tick.
+The 3-phase cross-service marker handshake (`database deleted date` / `files deleted date`) is no
+longer required for coordination; an audit `database deleted date` value MAY still be written for
+record-keeping.
+
+### roo-side file deletion
+- New config property for the experiment **data-files root** (the mount path), read via the
+  existing `PropertiesUtilServiceImpl` `@Value` pattern.
+- roo must reproduce acas's folder-path convention (`getPrefixFromEntityCode` +
+  `getRelativeFolderPathForPrefix` + root) to target the correct directory. **Implementation
+  risk / verify-before-delete:** confirm roo derives the identical path acas uses, and validate
+  the path stays within the data root before any recursive delete.
+
+### Manual trigger
+Keep one **lock-guarded admin endpoint** in roo (the existing controller) that runs the same
+service method on demand. This is the only other entry point.
+
+### Removed / superseded
+- **Section 6 (Node orchestration) is dropped.** The acas `deleteExpiredExperiments*` proxy
+  routes are **removed** as dead code (roo owns the purge). Part D of the plan is cancelled.
+- **Part A (frontend retention-days field) is unchanged** — admins still set the policy there.
+- B1/B2 (the chunked delete engine) are reused as the DB-delete core.
+
+### Open items for v2
+- Exact folder-path derivation parity between roo and acas (above).
+- Schedule default (interval/cron) and whether to also expose batch size as config.
+- Whether to retain the `database deleted date` audit value now that it's not needed for
+  coordination.
