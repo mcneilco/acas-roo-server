@@ -51,17 +51,17 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
     @Autowired
     private DataSource dataSource;
 
-    @Value("${acas.experiment.retention.enabled:false}")
+    @Value("${server.experiment.retention.enabled:false}")
     private boolean retentionEnabled;
 
-    @Value("${acas.experiment.retention.batchSize:100000}")
+    @Value("${server.experiment.retention.batchSize:100000}")
     private int batchSize;
 
     // ---- scheduled entry point ----------------------------------------------
 
     // Runs at a fixed wall-clock time (default 02:00 daily). cron is the standard 6-field Spring
     // expression; cronZone defaults to the server's time zone when blank.
-    @Scheduled(cron = "${acas.experiment.retention.cron:0 0 2 * * *}", zone = "${acas.experiment.retention.cronZone:}")
+    @Scheduled(cron = "${server.experiment.retention.cron:0 0 2 * * *}", zone = "${server.experiment.retention.cronZone:}")
     public void scheduledPurge() {
         if (!retentionEnabled) {
             return;

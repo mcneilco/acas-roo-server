@@ -36,11 +36,11 @@ public class RetentionFileService {
     private static final Logger logger = LoggerFactory.getLogger(RetentionFileService.class);
 
     /** Absolute path of the experiment data-files root mounted into roo. */
-    @Value("${acas.experiment.retention.dataFilesRoot:}")
+    @Value("${server.experiment.retention.dataFilesRoot:}")
     private String dataFilesRoot;
 
     /** Base URL of the acas node service, e.g. http://acas:3000 */
-    @Value("${acas.experiment.retention.acasBaseUrl:}")
+    @Value("${server.experiment.retention.acasBaseUrl:}")
     private String acasBaseUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
