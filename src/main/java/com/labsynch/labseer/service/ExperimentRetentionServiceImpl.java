@@ -51,7 +51,7 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
     @Autowired
     private DataSource dataSource;
 
-    @Value("${server.experiment.retention.enabled:false}")
+    @Value("${server.experiment.retention.enabled:true}")
     private boolean retentionEnabled;
 
     @Value("${server.experiment.retention.batchSize:100000}")

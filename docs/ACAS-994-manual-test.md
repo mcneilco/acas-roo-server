@@ -25,7 +25,7 @@ Folder deletion reuses config roo already gets from acas: `server.service.persis
 `server.nodeapi.path` (`http://acas:3001`, the internal API serving `folders-for-codes`). No extra
 setup is needed.
 
-> Config keys (documented with defaults in acas `conf/config.properties.example`, default off):
+> Config keys (documented with defaults in acas `conf/config.properties.example`, enabled by default):
 > `server.experiment.retention.enabled`, `server.experiment.retention.cron` (default `0 0 5 * * *`,
 > interpreted in `server.experiment.retention.cronZone`, default **UTC**),
 > `server.experiment.retention.batchSize` (default 100000). The scheduled purge is off by default;
