@@ -87,7 +87,9 @@ public class RetentionFileService {
                 continue;
             }
             try {
-                File folder = new File(path);
+                // acas returns a path relative to the data-files root; resolve it against roo's
+                // configured root so the mount location is roo's source of truth.
+                File folder = new File(root, path);
                 String canonicalFolder = folder.getCanonicalPath();
                 // Safety: only delete inside the configured data-files root.
                 if (!canonicalFolder.startsWith(canonicalRoot + File.separator)) {
