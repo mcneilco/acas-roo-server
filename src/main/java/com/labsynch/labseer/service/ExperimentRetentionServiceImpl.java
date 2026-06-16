@@ -59,7 +59,9 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
 
     // ---- scheduled entry point ----------------------------------------------
 
-    @Scheduled(fixedDelayString = "${acas.experiment.retention.checkDelay:86400000}")
+    // Runs at a fixed wall-clock time (default 02:00 daily). cron is the standard 6-field Spring
+    // expression; cronZone defaults to the server's time zone when blank.
+    @Scheduled(cron = "${acas.experiment.retention.cron:0 0 2 * * *}", zone = "${acas.experiment.retention.cronZone:}")
     public void scheduledPurge() {
         if (!retentionEnabled) {
             return;
