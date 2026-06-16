@@ -25,16 +25,16 @@ services:
     environment:
       - ACAS_HOME=/home/runner/build
       - TOMCAT_LISTEN_ADDRESS=0.0.0.0
-      - CATALINA_OPTS=-Xms512M -Xmx1024M -Dlisten.address=0.0.0.0 -Dacas.experiment.retention.dataFilesRoot=/home/runner/build/privateUploads -Dacas.experiment.retention.acasBaseUrl=http://acas:3001
+      - CATALINA_OPTS=-Xms512M -Xmx1024M -Dlisten.address=0.0.0.0 -Dserver.experiment.retention.dataFilesRoot=/home/runner/build/privateUploads -Dserver.experiment.retention.acasBaseUrl=http://acas:3001
 YML
 
 docker compose up -d
 # roo applies Flyway migration V2.4.3.1 (experiment retention value kinds) on startup.
 ```
 
-> Production config keys (default off): `acas.experiment.retention.enabled` (enable the internal
-> scheduler), `acas.experiment.retention.checkDelay` (ms), `acas.experiment.retention.batchSize`
-> (default 100000), `acas.experiment.retention.dataFilesRoot`, `acas.experiment.retention.acasBaseUrl`.
+> Production config keys (default off): `server.experiment.retention.enabled` (enable the internal
+> scheduler), `server.experiment.retention.checkDelay` (ms), `server.experiment.retention.batchSize`
+> (default 100000), `server.experiment.retention.dataFilesRoot`, `server.experiment.retention.acasBaseUrl`.
 
 ## 3. Create the test user (bob, admin)
 
