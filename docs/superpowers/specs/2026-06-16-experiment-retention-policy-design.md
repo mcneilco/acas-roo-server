@@ -229,13 +229,24 @@ The 3-phase cross-service marker handshake (`database deleted date` / `files del
 longer required for coordination; an audit `database deleted date` value MAY still be written for
 record-keeping.
 
-### roo-side file deletion
-- New config property for the experiment **data-files root** (the mount path), read via the
-  existing `PropertiesUtilServiceImpl` `@Value` pattern.
-- roo must reproduce acas's folder-path convention (`getPrefixFromEntityCode` +
-  `getRelativeFolderPathForPrefix` + root) to target the correct directory. **Implementation
-  risk / verify-before-delete:** confirm roo derives the identical path acas uses, and validate
-  the path stays within the data root before any recursive delete.
+### File deletion (path resolution in acas, deletion in roo)
+The experiment folder path is derived from **acas-side config** (`ControllerRedirectConf` →
+`getRelativeFolderPathForPrefix`), which is customer-customizable and not present in roo.
+Therefore:
+- **acas exposes one read-only route** (e.g. `POST /api/experiments/folders-for-codes`) that
+  takes experiment codes and returns each code's resolved folder path (using its own config).
+  This is non-destructive — it only resolves paths.
+- **roo performs the deletion** on its mounted data-files volume. During staging, roo calls that
+  acas route for the staged expired codes and stores the returned paths in the work tables. It
+  then deletes those folders itself.
+- **Safety:** roo validates each returned path is non-empty and resolves to a location **within
+  the configured data-files root** before any recursive delete (guard against `..`/empty/escaped
+  paths). New roo config: data-files root (mount path) + acas base URL, via the existing
+  `PropertiesUtilServiceImpl` `@Value` pattern.
+- **Robustness:** if acas is unreachable, roo skips the file step for that run and retries on the
+  next tick (the DB child-delete is idempotent, so no harm). Deletion is driven entirely by the
+  captured work tables, so re-deriving the live graph after links are removed can never leak
+  orphans; a crashed run **resumes from the persistent work tables** rather than re-staging.
 
 ### Manual trigger
 Keep one **lock-guarded admin endpoint** in roo (the existing controller) that runs the same

@@ -67,6 +67,15 @@ git commit -m "ACAS-994: drop seed + auto-running hard-delete migrations; keep o
 
 ---
 
+> **⚠️ SUPERSEDED IN PART — see spec §10 (Design Revision v2 / FINAL).** Tasks B1 and B2 below
+> are done and reused as the DB-delete core. The trigger model changed to an **all-in-roo
+> `@Scheduled` job guarded by `pg_try_advisory_lock`** (mirroring `StandardizationServiceImpl`),
+> with **persistent work tables as a resumable checkpoint**, **roo-side folder deletion** (paths
+> resolved by a new read-only acas route), and config (`enabled` default false, interval,
+> data-files root, acas base URL). New tasks B5 (folder deletion + config), B6 (scheduler +
+> advisory lock), and the acas `folders-for-codes` route replace **Part D**, which is **CANCELLED**
+> (the acas proxy routes are removed). Part C (frontend field) is unchanged.
+
 ## Part B — Backend deletion engine
 
 > Key constraint: TEMP tables are connection-scoped and will NOT be visible across `REQUIRES_NEW` transactions (which acquire a different pooled connection). We therefore stage into **persistent work tables** (regular tables prefixed `retention_work_`), populate them in one transaction, chunk-delete across many transactions, then truncate them.
@@ -83,8 +92,8 @@ git commit -m "ACAS-994: drop seed + auto-running hard-delete migrations; keep o
 ```java
 package com.labsynch.labseer.service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -149,9 +158,9 @@ package com.labsynch.labseer.service;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
