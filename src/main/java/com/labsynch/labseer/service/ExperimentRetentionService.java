@@ -3,23 +3,14 @@ package com.labsynch.labseer.service;
 import java.util.List;
 
 public interface ExperimentRetentionService {
+
     /**
-     * Hard deletes all experiments and related data that have expired per retention policy.
-     * Returns the list of experiment codes deleted.
+     * Runs the full retention purge for expired experiments: deletes child data and the
+     * experiment shell from the database (in per-batch-committed chunks) and deletes the
+     * experiment folders from disk. Coordinated across pods by a Postgres advisory lock and
+     * resumable after a crash via persistent work tables.
+     *
+     * @return the list of experiment codes purged in this run
      */
-    List<String> hardDeleteExpiredExperiments();
-    
-    /**
-     * Returns a list of experiment codes that have a "database deleted date" but are missing
-     * the "files deleted date" experiment value, indicating files still need to be cleaned up.
-     */
-    List<String> getExperimentsAwaitingFilesDeletion();
-    
-    /**
-     * Completes the final deletion of experiments that have both database and files deleted dates.
-     * This removes the experiment values, experiment states, and experiment records.
-     * 
-     * @return List of experiment codes that were fully deleted
-     */
-    List<String> completeExperimentDeletion();
+    List<String> purgeExpiredExperiments();
 }

@@ -1,28 +1,43 @@
 package com.labsynch.labseer.service;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.utils.SecurityUtil;
-
+/**
+ * Retention purge of expired (soft-deleted / overwritten) experiments.
+ *
+ * Runs entirely inside roo on an internal schedule. Multi-pod safe: every pod's scheduled tick
+ * tries a Postgres advisory lock and only the winner runs (the lock auto-releases if the pod
+ * dies). Crash-safe / resumable: staging writes persistent work tables that are reused on the
+ * next run, and every delete is idempotent, so a killed pod simply resumes. The heavy child
+ * deletes run in per-batch-committed chunks via {@link RetentionBatchDeleter}.
+ */
 @Service
 public class ExperimentRetentionServiceImpl implements ExperimentRetentionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentRetentionServiceImpl.class);
 
-    private static final int BATCH_SIZE = 100000;
+    private static final int ADVISORY_LOCK_NAMESPACE_ACAS = "acas".hashCode();
+    private static final int ADVISORY_LOCK_EXPERIMENT_RETENTION = "experiment-retention".hashCode();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -30,17 +45,77 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
     @Autowired
     private RetentionBatchDeleter batchDeleter;
 
-    // ---- public entry points -------------------------------------------------
+    @Autowired
+    private RetentionFileService retentionFileService;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Value("${acas.experiment.retention.enabled:false}")
+    private boolean retentionEnabled;
+
+    @Value("${acas.experiment.retention.batchSize:100000}")
+    private int batchSize;
+
+    // ---- scheduled entry point ----------------------------------------------
+
+    @Scheduled(fixedDelayString = "${acas.experiment.retention.checkDelay:86400000}")
+    public void scheduledPurge() {
+        if (!retentionEnabled) {
+            return;
+        }
+        try {
+            purgeExpiredExperiments();
+        } catch (Exception e) {
+            logger.error("Scheduled experiment retention purge failed", e);
+        }
+    }
+
+    // ---- public entry point (also used by the manual admin endpoint) --------
 
     @Override
-    public List<String> hardDeleteExpiredExperiments() {
-        List<String> expiredCodes = stageExpiredExperiments();
-        if (expiredCodes.isEmpty()) {
-            logger.info("No expired experiments found for hard deletion.");
+    public List<String> purgeExpiredExperiments() {
+        Connection lockConnection = null;
+        boolean lockAcquired = false;
+        try {
+            lockConnection = dataSource.getConnection();
+            lockAcquired = tryAcquireClusterLock(lockConnection,
+                ADVISORY_LOCK_NAMESPACE_ACAS, ADVISORY_LOCK_EXPERIMENT_RETENTION);
+            if (!lockAcquired) {
+                logger.info("Another pod ({}) holds the experiment-retention lock. Skipping this run.", getPodName());
+                return Collections.emptyList();
+            }
+            logger.info("Acquired experiment-retention cluster lock on pod {}.", getPodName());
+            return doPurge();
+        } catch (SQLException e) {
+            logger.error("Experiment retention skipped: could not acquire database advisory lock", e);
+            return Collections.emptyList();
+        } finally {
+            if (lockAcquired && lockConnection != null) {
+                releaseClusterLock(lockConnection, ADVISORY_LOCK_NAMESPACE_ACAS, ADVISORY_LOCK_EXPERIMENT_RETENTION);
+            }
+            if (lockConnection != null) {
+                try {
+                    lockConnection.close();
+                } catch (SQLException e) {
+                    logger.warn("Failed to close experiment-retention lock connection", e);
+                }
+            }
+        }
+    }
+
+    // ---- orchestration -------------------------------------------------------
+
+    private List<String> doPurge() {
+        List<String> codes = stageExpiredExperiments();
+        if (codes.isEmpty()) {
+            dropWorkTables();
+            logger.info("No expired experiments found for retention purge.");
             return Collections.emptyList();
         }
-        logger.info("Staged {} expired experiments for hard deletion.", expiredCodes.size());
+        logger.info("Retention: purging {} expired experiments.", codes.size());
 
+        // 1. Child data (heavy) — chunked, per-batch commit.
         batchDeleteAll("subject_value", "subject_state_id", "retention_work_subject_states", "subject_state_id");
         batchDeleteAll("treatment_group_value", "treatment_state_id", "retention_work_tg_states", "treatment_group_state_id");
         batchDeleteAll("analysis_group_value", "analysis_state_id", "retention_work_ag_states", "analysis_group_state_id");
@@ -57,82 +132,33 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
         batchDeleteAll("treatment_group", "id", "retention_work_orphan_tgs", "treatment_group_id");
         batchDeleteAll("analysis_group", "id", "retention_work_orphan_ags", "analysis_group_id");
 
-        batchDeleteAll("experiment_label", "experiment_id", "retention_work_expired_experiments", "experiment_id");
-
-        stampDatabaseDeletedDate();
-        dropWorkTables();
-
-        logger.info("Hard deleted {} experiments: {}", expiredCodes.size(), expiredCodes);
-        return expiredCodes;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> getExperimentsAwaitingFilesDeletion() {
-        String query = "SELECT DISTINCT e.code_name FROM experiment e "
-            + "JOIN experiment_state es ON e.id = es.experiment_id "
-            + "  AND es.ls_type_and_kind = 'metadata_experiment metadata' AND es.ignored = false AND es.deleted = false "
-            + "WHERE EXISTS (SELECT 1 FROM experiment_value ev1 WHERE ev1.experiment_state_id = es.id "
-            + "  AND ev1.ls_type_and_kind = 'dateValue_database deleted date' AND ev1.ignored = false AND ev1.deleted = false) "
-            + "AND NOT EXISTS (SELECT 1 FROM experiment_value ev2 WHERE ev2.experiment_state_id = es.id "
-            + "  AND ev2.ls_type_and_kind = 'dateValue_files deleted date' AND ev2.ignored = false AND ev2.deleted = false) "
-            + "ORDER BY e.code_name";
-        @SuppressWarnings("unchecked")
-        List<String> codes = entityManager.createNativeQuery(query).getResultList();
-        logger.info("Found {} experiments awaiting files deletion.", codes.size());
-        return codes;
-    }
-
-    @Override
-    @Transactional
-    public List<String> completeExperimentDeletion() {
-        entityManager.createNativeQuery("DROP TABLE IF EXISTS retention_work_complete").executeUpdate();
-        entityManager.createNativeQuery("CREATE TABLE IF NOT EXISTS retention_work_complete (experiment_id bigint primary key)").executeUpdate();
-        entityManager.createNativeQuery(
-            "INSERT INTO retention_work_complete (experiment_id) "
-            + "SELECT DISTINCT e.id FROM experiment e "
-            + "JOIN experiment_state es ON e.id = es.experiment_id "
-            + "  AND es.ls_type_and_kind = 'metadata_experiment metadata' AND es.ignored = false AND es.deleted = false "
-            + "WHERE EXISTS (SELECT 1 FROM experiment_value ev1 WHERE ev1.experiment_state_id = es.id "
-            + "  AND ev1.ls_type_and_kind = 'dateValue_database deleted date' AND ev1.ignored = false AND ev1.deleted = false) "
-            + "AND EXISTS (SELECT 1 FROM experiment_value ev2 WHERE ev2.experiment_state_id = es.id "
-            + "  AND ev2.ls_type_and_kind = 'dateValue_files deleted date' AND ev2.ignored = false AND ev2.deleted = false)"
-        ).executeUpdate();
-
-        @SuppressWarnings("unchecked")
-        List<String> codes = entityManager.createNativeQuery(
-            "SELECT e.code_name FROM experiment e JOIN retention_work_complete w ON e.id = w.experiment_id"
-        ).getResultList();
-        if (codes.isEmpty()) {
-            entityManager.createNativeQuery("DROP TABLE IF EXISTS retention_work_complete").executeUpdate();
-            logger.info("No experiments ready for complete deletion.");
-            return Collections.emptyList();
+        // 2. Folders on disk (paths resolved by acas). If skipped (config missing / acas unreachable),
+        //    leave the experiment shells + work tables in place and resume on the next run.
+        boolean filesDone = retentionFileService.deleteFolders(codes);
+        if (!filesDone) {
+            logger.warn("Retention: folder deletion deferred; leaving {} experiment shells for the next run.", codes.size());
+            return codes;
         }
 
-        entityManager.createNativeQuery(
-            "DELETE FROM experiment_value WHERE experiment_state_id IN ("
-            + " SELECT es.id FROM experiment_state es JOIN retention_work_complete w ON es.experiment_id = w.experiment_id)"
-        ).executeUpdate();
-        entityManager.createNativeQuery(
-            "DELETE FROM experiment_state WHERE experiment_id IN (SELECT experiment_id FROM retention_work_complete)"
-        ).executeUpdate();
-        entityManager.createNativeQuery(
-            "DELETE FROM experiment_label WHERE experiment_id IN (SELECT experiment_id FROM retention_work_complete)"
-        ).executeUpdate();
-        entityManager.createNativeQuery(
-            "DELETE FROM experiment WHERE id IN (SELECT experiment_id FROM retention_work_complete)"
-        ).executeUpdate();
-        entityManager.createNativeQuery("DROP TABLE IF EXISTS retention_work_complete").executeUpdate();
+        // 3. Experiment shell.
+        batchDeleteAll("experiment_value", "experiment_state_id", "retention_work_expired_states", "experiment_state_id");
+        batchDeleteAll("experiment_label", "experiment_id", "retention_work_expired_experiments", "experiment_id");
+        batchDeleteAll("experiment_state", "experiment_id", "retention_work_expired_experiments", "experiment_id");
+        batchDeleteAll("experiment", "id", "retention_work_expired_experiments", "experiment_id");
 
-        logger.info("Completed full deletion of {} experiments: {}", codes.size(), codes);
+        dropWorkTables();
+        logger.info("Retention: purged {} experiments: {}", codes.size(), codes);
         return codes;
     }
 
-    // ---- staging -------------------------------------------------------------
+    // ---- staging (persistent work tables; resume if already present) ---------
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<String> stageExpiredExperiments() {
-        dropWorkTables();
+        if (workTableExists("retention_work_expired_experiments")) {
+            logger.info("Retention: resuming from existing work tables.");
+            return expiredCodes();
+        }
 
         entityManager.createNativeQuery(
             "CREATE TABLE retention_work_expired_experiments AS "
@@ -149,12 +175,18 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
             + "  AND ev.ls_type_and_kind = 'codeValue_experiment status' AND ev.code_value IN ('deleted','overwritten') "
             + "  AND ev.ignored = false AND ev.deleted = false "
             + "WHERE p.ignored = false AND p.deleted = false "
-            + "  AND ev.recorded_date < NOW() - INTERVAL '1 day' * pv.numeric_value "
-            + "  AND NOT EXISTS (SELECT 1 FROM experiment_value ev2 WHERE ev2.experiment_state_id = es.id "
-            + "    AND ev2.ls_type_and_kind = 'dateValue_database deleted date' AND ev2.ignored = false AND ev2.deleted = false)"
+            + "  AND ev.recorded_date < NOW() - INTERVAL '1 day' * pv.numeric_value"
         ).executeUpdate();
         entityManager.createNativeQuery("CREATE INDEX ON retention_work_expired_experiments (experiment_id)").executeUpdate();
 
+        entityManager.createNativeQuery(
+            "CREATE TABLE retention_work_expired_states AS "
+            + "SELECT es.id AS experiment_state_id FROM experiment_state es "
+            + "JOIN retention_work_expired_experiments w ON es.experiment_id = w.experiment_id"
+        ).executeUpdate();
+        entityManager.createNativeQuery("CREATE INDEX ON retention_work_expired_states (experiment_state_id)").executeUpdate();
+
+        // Orphan analysis groups: reachable from an expired experiment AND not from any non-expired one.
         entityManager.createNativeQuery(
             "CREATE TABLE retention_work_orphan_ags AS "
             + "SELECT DISTINCT ag.id AS analysis_group_id FROM analysis_group ag "
@@ -209,36 +241,21 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
         ).executeUpdate();
         entityManager.createNativeQuery("CREATE INDEX ON retention_work_subject_states (subject_state_id)").executeUpdate();
 
-        @SuppressWarnings("unchecked")
-        List<String> codes = entityManager.createNativeQuery(
-            "SELECT experiment_code FROM retention_work_expired_experiments ORDER BY experiment_code"
-        ).getResultList();
-        return codes;
+        return expiredCodes();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void stampDatabaseDeletedDate() {
-        String recordedBy = "acas";
-        Author user = SecurityUtil.getLoginUser();
-        if (user != null && user.getUserName() != null) {
-            recordedBy = user.getUserName();
-        }
+    @SuppressWarnings("unchecked")
+    private List<String> expiredCodes() {
+        return entityManager.createNativeQuery(
+            "SELECT experiment_code FROM retention_work_expired_experiments ORDER BY experiment_code"
+        ).getResultList();
+    }
 
-        Query insertTxn = entityManager.createNativeQuery(
-            "INSERT INTO ls_transaction (id, comments, recorded_date, version) "
-            + "VALUES (nextval('value_pkseq'), 'database hard delete', now(), 0) RETURNING id");
-        Long txnId = ((Number) insertTxn.getSingleResult()).longValue();
-
-        Query insert = entityManager.createNativeQuery(
-            "INSERT INTO experiment_value "
-            + "(id, ls_type, ls_kind, ls_type_and_kind, date_value, ls_transaction, recorded_by, recorded_date, version, experiment_state_id, deleted, ignored, public_data) "
-            + "SELECT nextval('value_pkseq'), 'dateValue', 'database deleted date', 'dateValue_database deleted date', now(), :txnId, :recordedBy, now(), 0, es.id, false, false, false "
-            + "FROM experiment_state es JOIN retention_work_expired_experiments w ON es.experiment_id = w.experiment_id "
-            + "WHERE es.ignored = false AND es.deleted = false AND es.ls_type = 'metadata' AND es.ls_kind = 'experiment metadata'");
-        insert.setParameter("txnId", txnId);
-        insert.setParameter("recordedBy", recordedBy);
-        int rows = insert.executeUpdate();
-        logger.info("Inserted {} database-deleted-date values (recorded_by={}).", rows, recordedBy);
+    private boolean workTableExists(String table) {
+        Object reg = entityManager.createNativeQuery("SELECT to_regclass(:t)")
+            .setParameter("t", table)
+            .getSingleResult();
+        return reg != null;
     }
 
     // ---- helpers -------------------------------------------------------------
@@ -247,7 +264,7 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
         long total = 0;
         int deleted;
         do {
-            deleted = batchDeleter.deleteBatch(targetTable, joinColumn, workTable, workColumn, BATCH_SIZE);
+            deleted = batchDeleter.deleteBatch(targetTable, joinColumn, workTable, workColumn, batchSize);
             total += deleted;
             if (deleted > 0) {
                 logger.info("{}: deleted {} this batch (running total {})", targetTable, deleted, total);
@@ -261,9 +278,41 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
         for (String t : new String[] {
             "retention_work_subject_states", "retention_work_tg_states", "retention_work_ag_states",
             "retention_work_orphan_subjects", "retention_work_orphan_tgs", "retention_work_orphan_ags",
-            "retention_work_expired_experiments"
+            "retention_work_expired_states", "retention_work_expired_experiments"
         }) {
             entityManager.createNativeQuery("DROP TABLE IF EXISTS " + t).executeUpdate();
         }
+    }
+
+    // ---- cluster lock (mirrors StandardizationServiceImpl) -------------------
+
+    private boolean tryAcquireClusterLock(Connection connection, int lockNamespace, int lockId) throws SQLException {
+        String sql = "SELECT pg_try_advisory_lock(?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, lockNamespace);
+            statement.setInt(2, lockId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+            }
+        }
+        return false;
+    }
+
+    private void releaseClusterLock(Connection connection, int lockNamespace, int lockId) {
+        String sql = "SELECT pg_advisory_unlock(?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, lockNamespace);
+            statement.setInt(2, lockId);
+            statement.executeQuery();
+        } catch (SQLException e) {
+            logger.warn("Failed to release experiment-retention cluster lock", e);
+        }
+    }
+
+    private String getPodName() {
+        String podName = System.getenv("HOSTNAME");
+        return StringUtils.isBlank(podName) ? "<unknown-pod>" : podName;
     }
 }
