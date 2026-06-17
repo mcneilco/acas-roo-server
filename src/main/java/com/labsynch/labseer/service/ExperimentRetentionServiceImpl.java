@@ -57,6 +57,11 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
     @Value("${server.experiment.retention.batchSize:100000}")
     private int batchSize;
 
+    // Optional system-wide retention days applied to experiments whose protocol has no
+    // per-protocol value. Blank (default) = no global policy (per-protocol only).
+    @Value("${server.experiment.retention.globalDays:}")
+    private String globalDaysConfig;
+
     // ---- scheduled entry point ----------------------------------------------
 
     // Runs at a fixed wall-clock time (default 05:00 UTC daily). cron is the standard 6-field Spring
@@ -166,12 +171,19 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
             return expiredCodes();
         }
 
+        // Per-protocol retention days; when a global default is configured, fall back to it for
+        // protocols that have no per-protocol value (per-protocol value still overrides).
+        String globalDays = globalRetentionDaysLiteral();
+        String pvJoin = (globalDays != null) ? "LEFT JOIN" : "JOIN";
+        String retentionDays = (globalDays != null)
+            ? "COALESCE(pv.numeric_value, " + globalDays + ")"
+            : "pv.numeric_value";
         entityManager.createNativeQuery(
             "CREATE TABLE retention_work_expired_experiments AS "
             + "SELECT DISTINCT e.id AS experiment_id, e.code_name AS experiment_code "
             + "FROM protocol p "
             + "JOIN protocol_state ps ON p.id = ps.protocol_id AND ps.ignored = false AND ps.deleted = false "
-            + "JOIN protocol_value pv ON ps.id = pv.protocol_state_id "
+            + pvJoin + " protocol_value pv ON ps.id = pv.protocol_state_id "
             + "  AND pv.ls_type_and_kind = 'numericValue_deleted experiment retention days' "
             + "  AND pv.ignored = false AND pv.deleted = false "
             + "JOIN experiment e ON e.protocol_id = p.id "
@@ -181,7 +193,8 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
             + "  AND ev.ls_type_and_kind = 'codeValue_experiment status' AND ev.code_value IN ('deleted','overwritten') "
             + "  AND ev.ignored = false AND ev.deleted = false "
             + "WHERE p.ignored = false AND p.deleted = false "
-            + "  AND ev.recorded_date < NOW() - INTERVAL '1 day' * pv.numeric_value"
+            + "  AND " + retentionDays + " IS NOT NULL "
+            + "  AND ev.recorded_date < NOW() - INTERVAL '1 day' * " + retentionDays
         ).executeUpdate();
         entityManager.createNativeQuery("CREATE INDEX ON retention_work_expired_experiments (experiment_id)").executeUpdate();
 
@@ -271,6 +284,25 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
         return entityManager.createNativeQuery(
             "SELECT experiment_code FROM retention_work_expired_experiments ORDER BY experiment_code"
         ).getResultList();
+    }
+
+    /**
+     * The configured global retention days as a validated numeric SQL literal, or null when unset
+     * or invalid (meaning: no global policy, per-protocol values only).
+     */
+    private String globalRetentionDaysLiteral() {
+        if (globalDaysConfig == null || globalDaysConfig.trim().isEmpty()) {
+            return null;
+        }
+        String value = globalDaysConfig.trim();
+        try {
+            Double.parseDouble(value);
+            return value;
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid server.experiment.retention.globalDays '{}'; ignoring (no global retention policy).",
+                globalDaysConfig);
+            return null;
+        }
     }
 
     private boolean workTableExists(String table) {
