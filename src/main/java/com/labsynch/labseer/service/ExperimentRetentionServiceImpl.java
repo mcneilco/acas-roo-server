@@ -171,21 +171,22 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
             return expiredCodes();
         }
 
-        // Per-protocol retention days; when a global default is configured, fall back to it for
-        // protocols that have no per-protocol value (per-protocol value still overrides).
+        // Effective retention days = the protocol's per-protocol value (as a scalar, so the number
+        // of protocol states doesn't matter), falling back to the global default when configured.
         String globalDays = globalRetentionDaysLiteral();
-        String pvJoin = (globalDays != null) ? "LEFT JOIN" : "JOIN";
+        String perProtocolDays =
+            "(SELECT MAX(pv.numeric_value) FROM protocol_state ps "
+            + "JOIN protocol_value pv ON ps.id = pv.protocol_state_id "
+            + "  AND pv.ls_type_and_kind = 'numericValue_deleted experiment retention days' "
+            + "  AND pv.ignored = false AND pv.deleted = false "
+            + "WHERE ps.protocol_id = p.id AND ps.ignored = false AND ps.deleted = false)";
         String retentionDays = (globalDays != null)
-            ? "COALESCE(pv.numeric_value, " + globalDays + ")"
-            : "pv.numeric_value";
+            ? "COALESCE(" + perProtocolDays + ", " + globalDays + ")"
+            : perProtocolDays;
         entityManager.createNativeQuery(
             "CREATE TABLE retention_work_expired_experiments AS "
             + "SELECT DISTINCT e.id AS experiment_id, e.code_name AS experiment_code "
             + "FROM protocol p "
-            + "JOIN protocol_state ps ON p.id = ps.protocol_id AND ps.ignored = false AND ps.deleted = false "
-            + pvJoin + " protocol_value pv ON ps.id = pv.protocol_state_id "
-            + "  AND pv.ls_type_and_kind = 'numericValue_deleted experiment retention days' "
-            + "  AND pv.ignored = false AND pv.deleted = false "
             + "JOIN experiment e ON e.protocol_id = p.id "
             + "JOIN experiment_state es ON e.id = es.experiment_id "
             + "  AND es.ls_type_and_kind = 'metadata_experiment metadata' AND es.ignored = false AND es.deleted = false "
@@ -193,8 +194,8 @@ public class ExperimentRetentionServiceImpl implements ExperimentRetentionServic
             + "  AND ev.ls_type_and_kind = 'codeValue_experiment status' AND ev.code_value IN ('deleted','overwritten') "
             + "  AND ev.ignored = false AND ev.deleted = false "
             + "WHERE p.ignored = false AND p.deleted = false "
-            + "  AND " + retentionDays + " IS NOT NULL "
-            + "  AND ev.recorded_date < NOW() - INTERVAL '1 day' * " + retentionDays
+            + "  AND (" + retentionDays + ") IS NOT NULL "
+            + "  AND ev.recorded_date < NOW() - INTERVAL '1 day' * (" + retentionDays + ")"
         ).executeUpdate();
         entityManager.createNativeQuery("CREATE INDEX ON retention_work_expired_experiments (experiment_id)").executeUpdate();
 
