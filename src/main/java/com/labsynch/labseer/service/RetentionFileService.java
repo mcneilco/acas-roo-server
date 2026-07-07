@@ -126,14 +126,9 @@ public class RetentionFileService {
 
     private void deleteRecursively(Path path) throws IOException {
         try (var stream = Files.walk(path)) {
-            stream.sorted(Comparator.reverseOrder())
-                  .forEach(p -> {
-                      try {
-                          Files.delete(p);
-                      } catch (IOException e) {
-                          throw new RuntimeException("Failed to delete " + p, e);
-                      }
-                  });
+            for (Path p : stream.sorted(Comparator.reverseOrder()).toList()) {
+                Files.delete(p);
+            }
         }
     }
 }
