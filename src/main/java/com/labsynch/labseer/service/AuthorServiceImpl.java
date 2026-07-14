@@ -852,4 +852,22 @@ public class AuthorServiceImpl implements AuthorService {
 		mailSender.send(mail);
 	}
 
+	@Override
+	public boolean isAdmin(Author author) {
+		if (author == null || author.getAuthorRoles() == null) {
+			return false;
+		}
+		String adminRole = propertiesUtilService.getAcasAdminRole();
+		if (adminRole == null) {
+			return false;
+		}
+		for (AuthorRole role : author.getAuthorRoles()) {
+			LsRole entry = role.getRoleEntry();
+			if (entry != null && adminRole.equals(entry.getRoleName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
