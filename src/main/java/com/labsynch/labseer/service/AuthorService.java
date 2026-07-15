@@ -53,4 +53,10 @@ public interface AuthorService {
 
 	void resetPassword(String emailAddress);
 
+	/**
+	 * Returns true if the author holds the configured ACAS admin role
+	 * ({@code client.roles.acas.adminRole}).
+	 */
+	boolean isAdmin(Author author);
+
 }
