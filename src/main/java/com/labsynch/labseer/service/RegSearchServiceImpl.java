@@ -64,6 +64,11 @@ public class RegSearchServiceImpl implements RegSearchService {
 			System.out.println("search with structure: " + molStructure);
 
 			CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
+			Double exactMass = mol.getExactMass();
+			if (exactMass == null) {
+				throw new CmpdRegMolFormatException(
+						"Structures containing wildcard atoms or bonds, including R-groups, are not supported for compound registration. Please modify the structure and try again.");
+			}
 
 			String format = "png";
 			String wSize = "600";
@@ -72,9 +77,9 @@ public class RegSearchServiceImpl implements RegSearchService {
 			regSearchDTO.setAsDrawnImage(convertToBase64(mol, format, hSize, wSize));
 			regSearchDTO.setAsDrawnStructure(mol.getMolStructure());
 			regSearchDTO.setAsDrawnMolFormula(mol.getFormula(false));
-			regSearchDTO.setAsDrawnExactMass(mol.getExactMass());
+			regSearchDTO.setAsDrawnExactMass(exactMass);
 			if (propertiesUtilService.getUseExactMass()) {
-				regSearchDTO.setAsDrawnMolWeight(mol.getExactMass());
+				regSearchDTO.setAsDrawnMolWeight(exactMass);
 
 			} else {
 				regSearchDTO.setAsDrawnMolWeight(mol.getMass(false));
