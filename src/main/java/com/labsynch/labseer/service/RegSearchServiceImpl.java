@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -64,10 +65,12 @@ public class RegSearchServiceImpl implements RegSearchService {
 			System.out.println("search with structure: " + molStructure);
 
 			CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
+			// Some chemistry services process the structure lazily on first property
+			// access, so read the exact mass before checking the registration status
 			Double exactMass = mol.getExactMass();
-			if (exactMass == null) {
-				throw new CmpdRegMolFormatException(
-						"Structures containing wildcard atoms or bonds, including R-groups, are not supported for compound registration. Please modify the structure and try again.");
+			if (mol.getRegistrationStatus() == RegistrationStatus.ERROR) {
+				throw new CmpdRegMolFormatException("This structure cannot be registered: "
+						+ mol.getRegistrationComment() + ". Please modify the structure and try again.");
 			}
 
 			String format = "png";
