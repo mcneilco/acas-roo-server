@@ -1682,9 +1682,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				standardizedMol = mol;
 			}
 		}
-		// Some chemistry services process the structure lazily on first property
-		// access, so read the exact mass before checking the registration status
-		standardizedMol.getExactMass();
+		// Batch standardization sets registration statuses; fail if the structure has a registration error
 		if (standardizedMol.getRegistrationStatus() == RegistrationStatus.ERROR) {
 			throw new CmpdRegMolFormatException("This structure cannot be registered: "
 					+ standardizedMol.getRegistrationComment() + ". Please modify the structure and try again.");

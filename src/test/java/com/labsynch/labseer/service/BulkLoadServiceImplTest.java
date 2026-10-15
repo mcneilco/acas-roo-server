@@ -2,7 +2,6 @@ package com.labsynch.labseer.service;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
@@ -22,18 +21,13 @@ public class BulkLoadServiceImplTest {
 			}
 			throw new AssertionError("Unexpected input molecule call: " + method.getName());
 		});
-		// Mimics BBChem, which only populates the registration status once a property
-		// read triggers processing (e.g. when external standardization is disabled)
-		AtomicBoolean processed = new AtomicBoolean(false);
+		// Standardization has already processed the structure and populated its status
 		CmpdRegMolecule standardizedMol = proxy((proxy, method, args) -> {
 			switch (method.getName()) {
-				case "getExactMass":
-					processed.set(true);
-					return null;
 				case "getRegistrationStatus":
-					return processed.get() ? RegistrationStatus.ERROR : null;
+					return RegistrationStatus.ERROR;
 				case "getRegistrationComment":
-					return processed.get() ? processorMessage : null;
+					return processorMessage;
 				default:
 					throw new AssertionError("Unexpected standardized molecule call: " + method.getName());
 			}
