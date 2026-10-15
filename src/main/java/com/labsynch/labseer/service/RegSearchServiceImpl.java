@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -71,10 +72,20 @@ public class RegSearchServiceImpl implements RegSearchService {
 
 			regSearchDTO.setAsDrawnImage(convertToBase64(mol, format, hSize, wSize));
 			regSearchDTO.setAsDrawnStructure(mol.getMolStructure());
+
+			// Some chemistry services process the structure lazily on first property
+			// access, replacing the as-drawn structure captured above, so read the
+			// exact mass before checking the registration status
+			Double exactMass = mol.getExactMass();
+			if (mol.getRegistrationStatus() == RegistrationStatus.ERROR) {
+				throw new CmpdRegMolFormatException("This structure cannot be registered: "
+						+ mol.getRegistrationComment() + ". Please modify the structure and try again.");
+			}
+
 			regSearchDTO.setAsDrawnMolFormula(mol.getFormula(false));
-			regSearchDTO.setAsDrawnExactMass(mol.getExactMass());
+			regSearchDTO.setAsDrawnExactMass(exactMass);
 			if (propertiesUtilService.getUseExactMass()) {
-				regSearchDTO.setAsDrawnMolWeight(mol.getExactMass());
+				regSearchDTO.setAsDrawnMolWeight(exactMass);
 
 			} else {
 				regSearchDTO.setAsDrawnMolWeight(mol.getMass(false));
