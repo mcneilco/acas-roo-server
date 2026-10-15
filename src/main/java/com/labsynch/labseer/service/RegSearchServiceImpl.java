@@ -65,13 +65,6 @@ public class RegSearchServiceImpl implements RegSearchService {
 			System.out.println("search with structure: " + molStructure);
 
 			CmpdRegMolecule mol = cmpdRegMoleculeFactory.getCmpdRegMolecule(molStructure);
-			// Some chemistry services process the structure lazily on first property
-			// access, so read the exact mass before checking the registration status
-			Double exactMass = mol.getExactMass();
-			if (mol.getRegistrationStatus() == RegistrationStatus.ERROR) {
-				throw new CmpdRegMolFormatException("This structure cannot be registered: "
-						+ mol.getRegistrationComment() + ". Please modify the structure and try again.");
-			}
 
 			String format = "png";
 			String wSize = "600";
@@ -79,6 +72,16 @@ public class RegSearchServiceImpl implements RegSearchService {
 
 			regSearchDTO.setAsDrawnImage(convertToBase64(mol, format, hSize, wSize));
 			regSearchDTO.setAsDrawnStructure(mol.getMolStructure());
+
+			// Some chemistry services process the structure lazily on first property
+			// access, replacing the as-drawn structure captured above, so read the
+			// exact mass before checking the registration status
+			Double exactMass = mol.getExactMass();
+			if (mol.getRegistrationStatus() == RegistrationStatus.ERROR) {
+				throw new CmpdRegMolFormatException("This structure cannot be registered: "
+						+ mol.getRegistrationComment() + ". Please modify the structure and try again.");
+			}
+
 			regSearchDTO.setAsDrawnMolFormula(mol.getFormula(false));
 			regSearchDTO.setAsDrawnExactMass(exactMass);
 			if (propertiesUtilService.getUseExactMass()) {
