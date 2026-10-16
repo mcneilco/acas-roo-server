@@ -1120,7 +1120,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	}
 
 	public Collection<Experiment> findExperimentsByProtocolCodeName(String codeName, List<String> projects)
-			throws TooManyResultsException, NoResultException {
+			throws TooManyResultsException, NotFoundException {
 		List<Protocol> protocols = Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList();
 			
 		if (protocols.size() > 1) {
@@ -1128,11 +1128,14 @@ public class ExperimentServiceImpl implements ExperimentService {
 			throw new TooManyResultsException("ERROR: multiple protocols found with the same code name");
 		} else if (protocols.size() < 1) {
 			logger.warn("WARN: no protocols found with the query code name");
-			throw new NoResultException("WARN: no protocols found with the query code name");
+			throw new NotFoundException("WARN: no protocols found with the query code name");
 		}
 
 		Collection<Experiment> rawResults = Experiment.findExperimentsByProtocol(protocols.get(0)).getResultList();
 		if (propertiesUtilService.getRestrictExperiments()) {
+			if (projects == null) {
+				projects = new ArrayList<String>();
+			}
 			projects.add("unassigned");
 			Collection<Experiment> results = new HashSet<Experiment>();
 			for (Experiment rawResult : rawResults) {
