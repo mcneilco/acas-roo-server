@@ -30,6 +30,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
@@ -1680,6 +1681,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				// If standardization is disabled, pass through the current mol as the "standardized" structures
 				standardizedMol = mol;
 			}
+		}
+		// Batch standardization sets registration statuses; fail if the structure has a registration error
+		if (standardizedMol.getRegistrationStatus() == RegistrationStatus.ERROR) {
+			throw new CmpdRegMolFormatException("This structure cannot be registered: "
+					+ standardizedMol.getRegistrationComment() + ". Please modify the structure and try again.");
 		}
 		if (multipleFragments == null) {
 			multipleFragments = chemStructureService.checkForSalt(mol.getMolStructure());
