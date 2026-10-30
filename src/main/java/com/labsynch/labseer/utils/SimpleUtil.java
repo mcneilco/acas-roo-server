@@ -457,7 +457,7 @@ public class SimpleUtil {
 	public static String getFromExternalServer(String url, Map<String, String> queryParams, Logger logger)
 			throws MalformedURLException, IOException {
 		String charset = "UTF-8";
-		UriComponentsBuilder ub = UriComponentsBuilder.fromHttpUrl(url);
+		UriComponentsBuilder ub = UriComponentsBuilder.fromUriString(url);
 		if (queryParams != null) {
 			for (String param : queryParams.keySet()) {
 				ub.queryParam(param, URLEncoder.encode(queryParams.get(param), charset));

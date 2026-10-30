@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
@@ -26,25 +28,26 @@ import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
+@Table(indexes = {
+        @Index(name = "PreDef_CorpNumber_IDX", columnList = "corpNumber"),
+        @Index(name = "PreDef_CorpName_IDX", columnList = "corpName"),
+        @Index(name = "PreDef_Used_IDX", columnList = "used"),
+        @Index(name = "PreDef_Skip_IDX", columnList = "skip") })
 
 public class PreDef_CorpName {
 
     private static final Logger logger = LoggerFactory.getLogger(PreDef_CorpName.class);
 
-    @org.hibernate.annotations.Index(name = "PreDef_CorpNumber_IDX")
     private long corpNumber;
 
     @Size(max = 64)
-    @org.hibernate.annotations.Index(name = "PreDef_CorpName_IDX")
     private String corpName;
 
     @Size(max = 255)
     private String comment;
 
-    @org.hibernate.annotations.Index(name = "PreDef_Used_IDX")
     private Boolean used;
 
-    @org.hibernate.annotations.Index(name = "PreDef_Skip_IDX")
     private Boolean skip;
 
     public static PreDef_CorpName findNextCorpName() {

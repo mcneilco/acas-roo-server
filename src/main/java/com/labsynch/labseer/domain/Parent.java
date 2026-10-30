@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
@@ -52,6 +54,13 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @Entity
+@Table(indexes = {
+        @Index(name = "Parent_corpName_IDX", columnList = "corpName"),
+        @Index(name = "Parent_parentNumber_IDX", columnList = "parentNumber"),
+        @Index(name = "Parent_commonName_IDX", columnList = "commonName"),
+        @Index(name = "Parent_stereoCategory_IDX", columnList = "stereo_category"),
+        @Index(name = "Parent_CdId_IDX", columnList = "CdId"),
+        @Index(name = "Parent_RegDate_IDX", columnList = "registrationDate") })
 @Configurable
 @Transactional
 
@@ -65,21 +74,17 @@ public class Parent {
     @Column(unique = true)
     @NotNull
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Parent_corpName_IDX")
     private String corpName;
 
-    @org.hibernate.annotations.Index(name = "Parent_parentNumber_IDX")
     private long parentNumber;
 
     @Column(columnDefinition = "character varying")
     private String chemist;
 
     @Size(max = 1000)
-    @org.hibernate.annotations.Index(name = "Parent_commonName_IDX")
     private String commonName;
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Parent_stereoCategory_IDX")
     @JoinColumn(name = "stereo_category")
     private StereoCategory stereoCategory;
 
@@ -97,12 +102,10 @@ public class Parent {
     private String molFormula;
 
     @NotNull
-    @org.hibernate.annotations.Index(name = "Parent_CdId_IDX")
     private int CdId;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
-    @org.hibernate.annotations.Index(name = "Parent_RegDate_IDX")
     private Date registrationDate;
 
     @Column(columnDefinition = "character varying")

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
@@ -48,6 +50,12 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @Entity
+@Table(indexes = {
+        @Index(name = "SaltForm_CorpName_IDX", columnList = "corpName"),
+        @Index(name = "SaltForm_casNumber_IDX", columnList = "casNumber"),
+        @Index(name = "SaltForm_RegDate_IDX", columnList = "registrationDate"),
+        @Index(name = "SaltForm_CdId_IDX", columnList = "CdId"),
+        @Index(name = "SaltForm_Parent_IDX", columnList = "parent") })
 @Configurable
 @Transactional
 
@@ -59,11 +67,9 @@ public class SaltForm implements Comparable {
 	private String molStructure;
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name = "SaltForm_CorpName_IDX")
 	private String corpName;
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name = "SaltForm_casNumber_IDX")
 	private String casNumber;
 
 	@Column(columnDefinition = "character varying")
@@ -71,11 +77,9 @@ public class SaltForm implements Comparable {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(style = "S-")
-	@org.hibernate.annotations.Index(name = "SaltForm_RegDate_IDX")
 	private Date registrationDate;
 
 	// @NotNull
-	@org.hibernate.annotations.Index(name = "SaltForm_CdId_IDX")
 	private int CdId;
 
 	private Boolean ignore;
@@ -83,7 +87,6 @@ public class SaltForm implements Comparable {
 	private Double saltWeight;
 
 	@ManyToOne
-	@org.hibernate.annotations.Index(name = "SaltForm_Parent_IDX")
 	@JoinColumn(name = "parent")
 	private Parent parent;
 
