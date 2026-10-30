@@ -10,10 +10,9 @@
          Also registers default Formatters and Validators for use across all @Controllers -->
     <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
-    <bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" >
-        <property name="useTrailingSlashMatch" value="true" />
-    </bean>
+    <!-- Lowest-precedence fallback so /foo/ still matches a mapping declared as /foo
+         (replaces useTrailingSlashMatch, which Spring 7 removed) -->
+    <bean class="com.labsynch.labseer.web.TrailingSlashFallbackHandlerMapping"/>
 	<!-- Configures view for returning JSON to the client -->
 	<bean
 		class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">

@@ -296,6 +296,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
+		<!-- Hibernate 7 moved persistence.xml entity class scanning out of hibernate-core -->
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-scan-jandex</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
 		<!-- hypersistence-utils (formerly known as com.vladmihalcea hibernate-types) is used for bit type addition to hibernate which is used in bbchem structure searches -->
 		<dependency>
 			<groupId>io.hypersistence</groupId>
