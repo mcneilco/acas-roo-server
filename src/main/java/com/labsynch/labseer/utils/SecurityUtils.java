@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.FactorGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.ldap.userdetails.InetOrgPerson;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
@@ -54,6 +55,11 @@ public class SecurityUtils {
 			Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
 			Collection<String> grantedAuths = new HashSet<String>();
 			for (GrantedAuthority auth : auths) {
+				// Spring Security 7 adds authentication-factor authorities (e.g. FACTOR_PASSWORD);
+				// they are not directory roles and must not be synced as LDAP roles
+				if (auth instanceof FactorGrantedAuthority) {
+					continue;
+				}
 				grantedAuths.add(auth.getAuthority());
 			}
 			try {

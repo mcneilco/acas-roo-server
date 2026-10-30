@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
@@ -30,12 +32,13 @@ import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
+@Table(indexes = {
+        @Index(name = "ParentAlias_Parent_IDX", columnList = "parent") })
 public class ParentAlias {
 
     private static final Logger logger = LoggerFactory.getLogger(ParentAlias.class);
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "ParentAlias_Parent_IDX")
     @JoinColumn(name = "parent")
     private Parent parent;
 

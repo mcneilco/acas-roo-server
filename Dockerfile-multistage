@@ -1,6 +1,6 @@
 ARG 	CHEMISTRY_PACKAGE=bbchem
-ARG     NODE_VERSION=20.20.2
-ARG     TOMCAT_VERSION=10.1.55
+ARG     NODE_VERSION=22.23.4
+ARG     TOMCAT_VERSION=11.0.27
 FROM maven:3.9.9-eclipse-temurin-21 AS builder
 # glibc node (Debian) so it matches the debian-slim runtime below
 FROM node:${NODE_VERSION}-slim AS node
@@ -19,7 +19,8 @@ ADD 	. /src
 
 # Slow Step - Caching this Layer Greatly Improves Build Time  (~6x Faster)
 RUN 	--mount=type=cache,target=/root/.m2 mvn clean && \
-        mvn compile war:war -P ${CHEMISTRY_PACKAGE}
+        mvn compile war:war -P ${CHEMISTRY_PACKAGE} && \
+        mkdir /out && mv target/acas*.war /out/acas.war && mv target/acas*/ /out/acas
 
 # =============================================================================
 # Runtime: minimal Debian-slim (glibc) + Temurin JRE + Tomcat copied from the
@@ -40,7 +41,7 @@ WORKDIR $CATALINA_HOME
 # Runtime deps: bash for entrypoint/catalina + wait-for-it, freetype/fontconfig
 # for chemistry structure depiction, openssl/curl for TLS + readiness checks,
 # libstdc++6/libgomp1 for the native chemistry libraries.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
       bash curl openssl ca-certificates \
       libfreetype6 libfontconfig1 fontconfig fonts-dejavu \
       libstdc++6 libgomp1 \
@@ -78,8 +79,8 @@ RUN chgrp runner $JAVA_HOME/lib/security/cacerts && \
     ln -s $JAVA_HOME/lib/security/cacerts /usr/lib/jvm/java/jre/lib/security/cacerts
 
 # Get acas-roo-server compiled code
-COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/acas.war
-COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/webapps/acas/
+COPY 	--chown=runner:runner --from=compile /out/acas.war /usr/local/tomcat/webapps/acas.war
+COPY 	--chown=runner:runner --from=compile /out/acas/ /usr/local/tomcat/webapps/acas/
 
 # Wait for it startup script
 COPY 	--chown=runner:runner wait-for-it.sh ./wait-for-it.sh
