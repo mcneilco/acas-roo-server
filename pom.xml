@@ -32,23 +32,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<version>1.13-BUILD-SNAPSHOT</version>
 	<description>ACAS Java persistence layer</description>
 	<properties>
-		<aspectj.version>1.9.22</aspectj.version>
+		<aspectj.version>1.9.25.1</aspectj.version>
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
 		<slf4j.version>1.7.5</slf4j.version>
 		<log4j.version>2.25.5</log4j.version>
-		<jackson.version>2.18.12</jackson.version>
-		<spring.version>6.2.19</spring.version>
-		<spring-security.version>6.5.11</spring-security.version>
+		<jackson.version>2.21.8</jackson.version>
+		<spring.version>7.0.10</spring.version>
+		<spring-security.version>7.1.2</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>23.4.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
-		<hibernate.version>6.6.40.Final</hibernate.version>
+		<hibernate.version>7.4.14.Final</hibernate.version>
 		<maven-plugins.version>3.3.0</maven-plugins.version>
 	</properties>
 	<scm>
@@ -154,16 +154,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependencies>
 			<!-- Transitive version overrides for CVE remediation -->
 			<dependency>
-				<!-- spring-security-ldap 6.5.x pulls 3.2.x -->
-				<groupId>org.springframework.ldap</groupId>
-				<artifactId>spring-ldap-core</artifactId>
-				<version>3.3.8</version>
-			</dependency>
-			<dependency>
-				<!-- spring-ldap-core 3.3.x pulls 1.14.x; match micrometer-observation from spring-web -->
+				<!-- match micrometer-observation from spring-web / spring-ldap-core 4.1.x -->
 				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-core</artifactId>
-				<version>1.15.12</version>
+				<version>1.17.2</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-observation</artifactId>
+				<version>1.17.2</version>
 			</dependency>
 			<dependency>
 				<!-- cdk 1.5.13 pulls 17.0 -->
@@ -293,15 +292,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
 		<!-- hypersistence-utils (formerly known as com.vladmihalcea hibernate-types) is used for bit type addition to hibernate which is used in bbchem structure searches -->
 		<dependency>
 			<groupId>io.hypersistence</groupId>
-			<artifactId>hypersistence-utils-hibernate-63</artifactId>
-			<version>3.14.1</version>
+			<artifactId>hypersistence-utils-hibernate-73</artifactId>
+			<version>3.16.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -311,7 +310,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>8.0.1.Final</version>
+			<version>9.1.5.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.xml.bind</groupId>
@@ -326,17 +325,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.0.2</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
-			<version>3.1.0</version>
+			<version>3.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>5.0.0</version>
+			<version>6.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
