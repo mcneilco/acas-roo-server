@@ -36,6 +36,11 @@ ENV PATH=$JAVA_HOME/bin:$CATALINA_HOME/bin:$PATH
 COPY --from=tomcat /opt/java/openjdk /opt/java/openjdk
 COPY --from=tomcat /usr/local/tomcat /usr/local/tomcat
 RUN mkdir -p "$CATALINA_HOME/logs" "$CATALINA_HOME/temp" "$CATALINA_HOME/work"
+# Tomcat 11 lowered the default maxParameterCount from 10000 to 1000 and now rejects
+# requests over the limit (roo returns 500) instead of silently dropping the extras.
+# Restore the Tomcat 10.1 limit on the HTTP connector; fail the build if it doesn't apply.
+RUN sed -i 's|<Connector port="8080" protocol="HTTP/1.1"|<Connector port="8080" protocol="HTTP/1.1" maxParameterCount="10000"|' "$CATALINA_HOME/conf/server.xml" && \
+    grep -q 'maxParameterCount="10000"' "$CATALINA_HOME/conf/server.xml"
 WORKDIR $CATALINA_HOME
 
 # Runtime deps: bash for entrypoint/catalina + wait-for-it, freetype/fontconfig
