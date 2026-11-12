@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +31,8 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @Entity
+@Table(indexes = {
+        @Index(name = "SaltFormAlias_SaltForm_IDX", columnList = "salt_form") })
 @Configurable
 
 public class SaltFormAlias {
@@ -36,7 +40,6 @@ public class SaltFormAlias {
     private static final Logger logger = LoggerFactory.getLogger(SaltFormAlias.class);
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "SaltFormAlias_SaltForm_IDX")
     @JoinColumn(name = "salt_form")
     private SaltForm saltForm;
 
