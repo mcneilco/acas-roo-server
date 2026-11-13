@@ -1644,7 +1644,7 @@ public class ApiExperimentController {
 			return new ResponseEntity<String>(
 					Experiment.toJsonArrayStub(experiments),
 					headers, HttpStatus.OK);
-		} catch (NoResultException e) {
+		} catch (NotFoundException e) {
 			return new ResponseEntity<String>("[ ]", headers, HttpStatus.NOT_FOUND);
 
 		} catch (TooManyResultsException e) {

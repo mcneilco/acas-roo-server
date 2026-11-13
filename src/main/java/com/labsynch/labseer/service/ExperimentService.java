@@ -54,7 +54,7 @@ public interface ExperimentService {
 
     
     public Collection<Experiment> findExperimentsByProtocolCodeName(String query, List<String> projects)
-    throws TooManyResultsException;
+    throws TooManyResultsException, NotFoundException;
     
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName, Boolean includeDeleted)
 			throws TooManyResultsException;
